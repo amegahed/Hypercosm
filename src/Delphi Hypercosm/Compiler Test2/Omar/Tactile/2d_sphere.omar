@@ -1,0 +1,39 @@
+do tactile_block_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/meshes.ores";
+include "system/grids.ores";
+
+scalar myscale = 2.5;
+
+anim tactile_block_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape disk_shape is
+        write "making disk", ;
+        disk with
+            move to <0 0 0.05>;
+            magnify by myscale;
+            material is wood;
+        end;
+    end;    // disk_shape
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape disk_shape titled "Tactile Circle" in floor;
+end;    // tactile_block_anim

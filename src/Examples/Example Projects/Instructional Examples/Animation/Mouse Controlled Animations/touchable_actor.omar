@@ -1,0 +1,121 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         touchable_actor.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of touchable actors      }
+{       in an animation.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do touchable_fish_actor_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/native_picking.ores";
+include "actor.omar";
+
+subject touchable_fish_actor
+extends
+	fish_actor
+does
+	// rendering method
+	//
+	shape instance; 
+	
+	// animation method
+	//
+	verb update;
+has
+	// attributes
+	//
+	boolean blinking is false;
+is
+	//
+	// rendering method
+	//
+	
+	shape fish
+	is
+		scalar time = timer get_time;
+		scalar tail_deflection = sin (time * 360 *  tail_wags_per_sec) * max_tail_deflection;
+		scalar fin_deflection = sin (time * 360 * fin_wags_per_sec) * max_fin_deflection;
+		
+		body;
+		if blinking then
+			closed_eyes;
+		else
+			open_eyes;
+		end;
+	
+		// top fin
+		//
+		top_fin with
+			rotate by tail_deflection around <8 0 -5>;
+			move to <0 0 13>;
+		end;
+	
+		tail with
+			angle = tail_deflection;
+			rotate by tail_deflection around <0 0 1>;
+			move to <15 0 0>;
+		end;
+	
+		// side fins
+		//
+		side_fin with
+			rotate by (fin_deflection - 45) around <1 0 0>;
+			move to <-10 -4 -4>;
+		end;
+		side_fin with
+			rotate by (45 - fin_deflection) around <1 0 0>;
+			move to <-10 4 -4>;
+		end;
+	end;    // fish
+	
+	shape instance 
+	is 
+		// create animated fish
+		//
+		fish with
+			selection_set = 1;
+		end;
+		
+		// add bubbles
+		//
+		bubble_stream instance with
+			move to <-21 0 0>;
+			material is bubble_material;
+		end;
+	end;    // instance
+	
+	
+	//
+	// animation methods
+	//
+	
+	
+	verb update 
+	is   
+		// blink if touched
+		//    
+		blinking is is_shape_touched using 1;
+		
+		// call superclass method
+		//
+		fish_actor static update;
+	end;    // update
+end;    // touchable_fish_actor
+	
+anim touchable_fish_actor_anim
+	args type args;
+with
+	eye = <-50 -30 10>;
+	args check;
+is
+	touchable_fish_actor type fish_actor;
+	
+	mouse_controlled_actor fish_actor;
+end;    // touchable_fish_actor_anim

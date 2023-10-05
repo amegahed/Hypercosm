@@ -1,0 +1,82 @@
+{***************************************************************}
+{                          prisms.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ray_anim;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/optical_bench.ores";
+include "system/lenses.ores";
+include "system/anims.ores";
+
+
+optical_bench type optical_bench with
+    length = 10;
+    width = 5;
+    lamp_location = <4 0 2>;
+end;    // optical_bench
+
+
+anim ray_anim
+    args type args;
+with
+    //
+    // set rendering properties
+    //
+    eye = <10 -15 10>;
+    field_of_view = 45;
+    double_buffer is on;
+    render_mode is shaded;
+    window_name is "Prisms";
+    args check;
+is
+    //
+    // define optical elements to be simulated
+    //
+
+    shape upright_prism is
+        prism with
+            rotate by 90 around <0 0 1>;
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // upright_prism
+
+    shape inverted_prism is
+        prism with
+            rotate by 90 around <0 0 1>;
+            rotate by -90 around <1 0 0>;
+        end;
+    end;    // inverted_prism
+
+    vector upright_prism_location = <0 0 1>;
+    vector inverted_prism_location = <-2 0 1>;
+
+    //
+    // add elements to optical bench
+    //
+
+    optical_bench add_element upright_prism
+        at upright_prism_location + <0 0 .5>
+    with
+        base = upright_prism_location;
+    end;
+
+    optical_bench add_element inverted_prism
+        at inverted_prism_location + <0 0 1>
+    with
+        base = inverted_prism_location;
+    end;
+
+    //
+    // simulate optical bench
+    //
+
+    mouse_controlled_actor optical_bench;
+end;    // ray_anim

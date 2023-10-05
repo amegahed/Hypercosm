@@ -1,0 +1,33 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            star_shape.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a standard filled shape        }
+{       in the form of a star with n points.                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+
+shape star_shape with
+	integer points = 5;
+	scalar inner_radius = .5;
+is
+	vector vertex[1 .. points * 2];
+	for integer counter = 1..points do
+		scalar theta = (counter / points) * 360 + 90;
+		scalar x = cos theta;
+		scalar y = sin theta;
+		vertex[counter * 2 - 1] = <x y 0>;
+		theta = (counter + .5) / points * 360 + 90;
+		x = cos theta * inner_radius;
+		y = sin theta * inner_radius;
+		vertex[counter * 2] = <x y 0>;
+	end;
+	
+	polygon vertex;
+end;    // star_shape

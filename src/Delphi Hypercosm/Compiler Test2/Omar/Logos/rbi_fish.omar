@@ -1,0 +1,81 @@
+{***************************************************************}
+{                          rbi_fish.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rbi_fish_anim;
+
+
+include "system/3d.ores";
+include "system/alpha.omar";
+include "system/fish.omar";
+include "system/guppy.omar";
+
+
+subject rbi_fish
+extends
+    timed_actor
+does
+    shape instance;
+    verb advance
+        by scalar time_step;
+    end;
+has
+    bubbling_fish type fish1;
+    bubbling_guppy type fish2;
+is
+    shape instance is
+        scalar angle = time * 10;
+        scalar angle1, angle2;
+
+        rotating_word "RBI" with
+            angle = static angle;
+            rotate by angle around <0 0 1>;
+            rotate by angle around <1 0 0>;
+            material is plastic colored lime_green;
+        end;
+
+        // circling fish
+        //
+        angle1 = (angle / 2);
+        angle2 = (angle / 2) + 180;
+        fish1 instance with
+            magnify by .1;
+            move to <0 10 3>;
+            rotate by angle1 around <0 0 1>;
+        end;
+        fish2 instance with
+            magnify by .1;
+            move to <0 10 -3>;
+            rotate by angle2 around <0 0 1>;
+        end;
+    end;    // rbi_pic
+
+
+    verb advance 
+        by scalar time_step;
+    is
+        fish1 advance by time_step;
+        fish2 advance by time_step;
+        timed_actor static advance by time_step;
+    end;    // step
+end;    // rbi_fish
+
+
+anim rbi_fish_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <5 -30 5>;
+    lookat = <0 0 0>;
+    background = dark blue;
+    args check;
+is
+    rbi_fish type rbi_fish;
+
+    mouse_controlled_actor rbi_fish;
+end;    // rbi_fish_anim

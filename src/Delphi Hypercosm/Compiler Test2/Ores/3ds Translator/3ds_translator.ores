@@ -1,0 +1,24 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	    3ds_translator.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains a set of definitions that correspond to        }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+
+include "system/3ds_objects.ores";
+include "system/3ds_compound_objects.ores";
+include "system/3ds_shapes.ores";
+include "system/3ds_materials.ores";
+include "system/3ds_texture_mapping.ores";
+include "system/3ds_modifiers.ores";
+include "system/3ds_lights.ores";
+include "system/3ds_cameras.ores";
+include "system/3ds_animation.ores";
+include "system/3ds_demo_watermark.ores";

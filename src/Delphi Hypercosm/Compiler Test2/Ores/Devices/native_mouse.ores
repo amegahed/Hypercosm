@@ -1,0 +1,26 @@
+{***************************************************************}
+{                        native_mouse.ores                      }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the native mouse procedures.                   }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+native vector question get_mouse 
+	enum coords is raster, screen;
+	in coords type coords is screen;
+end;	// get_mouse
+
+
+native boolean question mouse_down 
+	button integer number = 1;
+end;	// mouse_down

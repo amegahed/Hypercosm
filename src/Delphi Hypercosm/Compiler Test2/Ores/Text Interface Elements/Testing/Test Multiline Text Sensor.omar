@@ -1,0 +1,32 @@
+do multiline_text_sensor_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "Multiline Text Sensor.ores";
+
+
+strings type text is ["press" "me" "please"];
+
+
+anim multiline_text_sensor_test with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+        
+    multiline_text_sensor type multiline_text_sensor text at <.75 0 0> with
+        h_alignment is left;
+        mouse_down_action is (new action type of static mouse_down_action);
+    end;
+    
+    picture test_picture is
+        multiline_text_sensor draw;
+    end;    // test_picture
+    
+    while true do
+        test_picture;
+    end;
+end;    // multiline_text_sensor_test

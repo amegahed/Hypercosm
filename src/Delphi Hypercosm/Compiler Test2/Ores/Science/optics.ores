@@ -1,0 +1,135 @@
+{***************************************************************}
+{                            optics.ores                        }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for simulating         }
+{       optical experiments.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_sensing.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/actors.ores";
+include "system/manipulation.ores";
+include "system/optical_ray_tracing.ores";
+include "system/anims.ores";
+
+
+subject optics
+does
+    verb new
+        tracing color type colors[] is spectrum;
+        of scalar indices_of_refraction[] is spectrum_indices;
+    end;
+    
+    // construction methods
+    //
+    verb add_element
+        shape form;
+        at vector location;
+    end;
+
+    shape instance;
+    shape tracing_rays
+        from vector location;
+        towards vector direction;
+    end;    // touch
+has
+private
+    struct element has
+        shape form;
+        vector location;
+        element type next is none;
+    end;    // element
+    
+    element type elements is none;
+    color type colors[];
+    scalar indices_of_refraction[];
+is
+    verb new
+        tracing color type colors[] is spectrum;
+        of scalar indices_of_refraction[] is spectrum_indices;
+    is
+        with optics do
+            its colors is colors;
+            its indices_of_refraction is indices_of_refraction;
+        end;
+    end;    // new
+
+
+    // construction methods
+    //
+    
+    
+    verb add_element
+        shape form;
+        at vector location;
+    is
+        element type element;
+
+        element's form does form;
+        element's location = location;
+
+        // add element to list
+        //
+        element's next is elements;
+        elements is element;
+    end;    // add_element
+
+
+    shape optical_elements is
+        for each element type element and its next in elements do
+            element's form with
+                move to element's location;
+            end;
+        end;
+    end;    // optical_elements
+
+
+    shape tracing_rays 
+        from vector location;
+        towards vector direction;
+    is
+        objective shape target is
+            optics optical_elements;
+        end;    // target
+        
+
+        // trace rays
+        //
+        for integer counter = min colors .. max colors do
+            arrow_ray_intersections of target
+                at location towards direction
+            with
+                index_of_refraction = indices_of_refraction[counter];
+                outside_color = colors[counter];
+                inside_color = light colors[counter];
+            end;
+        end;
+    end;    // tracing_rays
+
+
+    // actor methods
+    //
+    
+    
+    shape instance is
+        static material type glassy_material is glass;
+
+        // optical elements
+        //
+        optical_elements with
+            material is glassy_material;
+        end;
+        optical_elements with
+            render_mode is wireframe;
+            edges is silhouette;
+            color = white;
+        end;
+    end;    // instance
+end;    // optics

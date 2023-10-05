@@ -1,0 +1,248 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            position.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of position, a mathematical       }
+{       way of describing location and orientation in 3         }
+{       dimensions.                                             } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/orientation.ores";
+include "system/arrow_shapes.ores";
+
+subject position
+extends
+	orientation
+does
+	// constructor
+	//
+	verb new
+		at vector location = <0 0 0>;
+		oriented by quat type quat is unit_orientation;
+	end;
+
+	// setting methods
+	//  
+	verb set_position
+		to position type position;
+	end;
+
+	verb set_location
+		to vector location;
+	end;
+
+	verb set_trans
+		to trans type trans;
+	end;
+	
+	// attributes querying methods
+	//
+	vector question get_location;
+
+	verb get_trans
+		trans type reference trans;
+	end;
+	
+	// arithmetic methods
+	//
+	verb add
+		position type position2;
+	end;
+
+	verb subtract
+		position type position2;
+	end;
+
+	verb multiply
+		by position type position2;
+	end;
+
+	verb scale
+		by scalar s;
+	end;
+	
+	// arithmetic operators
+	//
+	position type question plus
+		position type position2;
+	end;
+
+	position type question minus
+		position type position2;
+	end;
+
+	position type question times
+		position type position2;
+	end;
+
+	position type question scaled
+		by scalar s;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public vector location;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at vector location = <0 0 0>;
+		oriented by quat type quat is unit_orientation;
+	is
+		// call superclass constructor
+		//
+		orientation new;
+		
+		// initialize orientation attributes
+		//
+		set to quat's s by quat's v;
+		
+		// initialize position attributes
+		//
+		set_location to location;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+	
+	verb set_position
+		to position type position;
+	is
+		set_orientation to position;
+		location = position's location;
+	end;    // set_position
+	
+	verb set_location
+		to vector location;
+	is
+		position's location = location;
+	end;    // set_location
+		
+	verb set_trans
+		to trans type trans;
+	is
+		// set attributes from trans
+		//      
+		location = trans's origin;
+		set_axes to trans;        
+	end;    // set_trans
+	
+	//
+	// attributes querying methods
+	//
+	
+	vector question get_location is
+		answer location;
+	end;    // get_location
+		
+	verb get_trans
+		trans type reference trans;
+	is
+		// set trans from attributes
+		//
+		trans's origin = location;   
+		get_axes trans;
+	end;    // get_trans
+	
+	//
+	// arithmetic methods
+	//
+	
+	verb add
+		position type position2;
+	is
+		location = itself + position2's location;
+		quat static add position2;
+	end;    // add
+	
+	verb subtract
+		position type position2;
+	is
+		location = itself - position2's location;
+		quat static subtract position2;
+	end;    // subtract
+	
+	verb multiply
+		by position type position2;
+	is
+		location = itself * position2's location;
+		quat static multiply by position2;
+	end;    // multiply
+	
+	verb scale
+		by scalar s;
+	is
+		location = itself * s;
+		quat static scale by s;
+	end;    // scale
+	
+	//  
+	// arithmetic operators
+	//
+	
+	position type question plus
+		position type position2;
+	is
+		answer new position at (location + position2's location)
+			oriented by (quat static plus position2);
+	end;    // plus
+	
+	position type question minus
+		position type position2;
+	is
+		answer new position at (location - position2's location)
+			oriented by (quat static minus position2);
+	end;    // minus
+	
+	position type question times
+		position type position2;
+	is
+		answer new position at (location * position2's location)
+			oriented by (quat static times position2);
+	end;    // times
+	
+	position type question scaled
+		by scalar s;
+	is
+		answer new position at (location * s)
+			oriented by (quat static scaled by s);
+	end;    // scaled
+	
+	//
+	// rendering methods
+	//
+	
+	shape instance is
+		trans type trans;   
+		get_axes trans;
+		
+		axes with
+			global trans = trans;
+		end;
+	end;    // instance
+		
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		write "position at ", location, " with ";
+		quat static print;
+	end;    // print
+end;    // position

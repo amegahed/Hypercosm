@@ -1,0 +1,42 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        operator_precedence.omar        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples that show          }
+{       operator precedence in the OMAR language.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do operator_precedence_example;
+
+include "system/math.ores";
+
+verb operator_precedence_example 
+is
+	// (2 < 3) and (3 < ( 4 * 5)) = TRUE
+	//
+	write "2 < 3 < 4 * 5 = ", 2 < 3 < 4 * 5, ;
+	
+	// (4 * 5) + (3 * 3) = 29
+	//
+	write "4 * 5 + 3 * 3 = ", 4 * 5 + 3 * 3, ;
+	
+	// (sqrt 4) + 12 = 14
+	//
+	write "sqrt 4 + 12 = ", sqrt 4 + 12, ;
+				
+	// 4 * (2 ^ 2) = 16
+	//
+	write "4 * 2 ^ 2 = ", 4 * 2 ^ 2, ;  
+	
+	// (true and false) or true = true
+	//
+	write "true and false or true = ", true and false or true, ;
+	
+	// <0 0 1> dot (<1 1 1> cross <0 1 0>) = -1
+	//
+	write "<0 0 1> dot <1 1 1> cross <1 0 0> = ", <0 0 1> dot <1 1 1> cross <1 0 0>, ;
+end;    // operator_precedence_example

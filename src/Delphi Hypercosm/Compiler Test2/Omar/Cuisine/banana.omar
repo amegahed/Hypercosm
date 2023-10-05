@@ -1,0 +1,101 @@
+{***************************************************************}
+{                          banana.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do banana_anim;
+
+
+include "system/3d.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+
+
+shape banana with
+    integer steps = facets;
+is
+    vector cross_section[0..4];
+    trans type path[0..6];
+    trans type reference trans;
+
+    // initialize cross_section
+    //
+    cross_section[0] = <0 0 1>;
+        cross_section[1] = <0 -.5 0>;
+    cross_section[2] = <0 0 -1>;
+        cross_section[3] = <0 .5 0>;
+    cross_section[4] = <0 0 1>;
+
+    // initialize path
+    //
+    trans refers to path[0];
+    rotate the trans by 15 around <0 1 0>;
+    magnify the trans by 0;
+    move the trans to <-4 0 1>;
+    
+    trans refers to path[1];
+    rotate the trans by 15 around <0 1 0>;
+    magnify the trans by .1;
+    move the trans to <-4 0 1>;
+
+    trans refers to path[2];
+    rotate the trans by 30 around <0 1 0>;
+    magnify the trans by .3;
+    move the trans to <-3 0 1>;
+
+    trans refers to path[3];
+    rotate the trans by 10 around <0 1 0>;
+    stretch the trans by .75 along <0 0 1>;
+    move the trans to <-1 0 0>;
+
+    trans refers to path[4];
+    rotate the trans by -10 around <0 1 0>;
+    stretch the trans by .75 along <0 0 1>;
+    move the trans to <1 0 0>;
+
+    trans refers to path[5];
+    magnify the trans by .3;
+    move the trans to <3.5 0 1>;
+
+    trans refers to path[6];
+    magnify the trans by 0;
+    move the trans to <4 0 1.25>;
+
+    // create curved hull from cross section and path
+    //
+    curved_hull of cross_section along path with
+        rows = steps;
+        columns = steps;
+        closed is true;
+        material is plastic poster "banana.jpg";
+        color = yellow;
+    end;
+end;    // banana
+
+
+anim banana_anim
+    args type args;
+with
+	lookat = <0 0 1>;
+    args check;
+is
+    shape scene is
+        banana with
+            material is plastic colored yellow;
+            move to <0 0 1>;
+        end;
+    end;
+    shape environment is
+    	plane with
+    		magnify by 10;
+    		render_mode is wireframe;
+    	end;
+    end;
+    mouse_controlled_shape scene in environment with
+    	auto_camera is on;
+    end;
+end;    // banana_anim

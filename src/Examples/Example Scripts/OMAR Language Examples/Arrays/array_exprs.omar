@@ -1,0 +1,62 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           array_exprs.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of             }
+{       array expressions to assign a series of values          }
+{       to arrays in the OMAR language.                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_exprs_example;
+
+// array declarations
+//
+integer a[1 .. 3];
+char message[];
+vector points[];
+
+verb write_arrays 
+is
+	// write values of array a
+	//
+	write "a = [";
+	for integer counter = min a .. max a do
+		write a[counter];
+		if counter <> max a then
+			write " ";
+		end;
+	end;
+	write "]", ;
+	
+	// write values of message array
+	//
+	write "message = ", message, ;
+	
+	// write values of points array
+	//
+	write "points = [";
+	for integer counter = min a .. max a do
+		write "<", points[counter], ">";
+		if counter <> max a then
+			write " ";
+		end;
+	end;
+	write "]", ;
+end;    // write_arrays
+
+verb array_exprs_example
+is
+	// array assignments using array expressions
+	//
+	a = [10 20 30];
+	message = "game over - you lose!";
+	points = [<-1 -1 0> <-1 1 0> <1 1 0> <1 -1 0>];
+	
+	// write array values
+	//
+	write_arrays;
+end;    // array_exprs_example

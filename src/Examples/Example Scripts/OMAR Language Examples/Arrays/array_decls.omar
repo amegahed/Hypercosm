@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            array_decls.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains some examples of single              }
+{       dimensional array declarations in the OMAR              }
+{       language.                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_decls_example;
+
+integer facets = 10;
+
+// some simple array declarations
+//
+boolean flags[0 .. 4];
+scalar radii[0 .. (facets * 2)];
+vector points[1 .. 100];
+char name[1 .. 40];
+
+// some mixed array and non-array declarations
+//
+boolean done is false, settings[0 .. 4], found is false;
+scalar temperature, pressures[0 .. (facets * 2)], time = 0;
+vector center = <0 0 0>, locations[1 .. 100], direction = <0 0 1>;
+char ch, title[1 .. 40];
+
+// array declarations with initializers
+//
+boolean finished[] = [true false true true];
+scalar heights[1 .. 4] = [0 10 40 30];
+vector vertices[] = [<-1 -1 0> <-1 1 0> <1 1 0> <1 -1 0>];
+char label[] = "Untitled";
+
+verb array_decls_example is
+	write "ok!", ;
+end;    // array_decls_example

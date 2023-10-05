@@ -1,0 +1,123 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             dock.omar                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a dock user           }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do dock_anim;
+
+include "system/3d.ores";
+include "system/args.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/icon.ores";
+include "system/overlay_selector_group.ores";
+include "system/overlay_component_subtree.ores";
+include "system/dock.ores";
+include "system/hiding_actions.ores";
+
+{***************************************************************}
+{                         render mode icons                     }
+{***************************************************************}
+
+verb default_smooth_action is
+	write "selecting smooth", ;
+end;
+verb default_flat_action is
+	write "selecting flat", ;
+end;
+verb default_outline_action is
+	write "selecting outline", ;
+end;
+verb default_wireframe_action is
+	write "select wireframe", ;
+end;
+verb default_pointplot_action is
+	write "select pointplot", ;
+end;
+	
+verb add_render_mode_selector
+	to container type container;
+with
+	// selection actions
+	//
+	activateable type select_smooth_action is new action of default_smooth_action;
+	activateable type select_flat_action is new action of default_flat_action;
+	activateable type select_outline_action is new action of default_outline_action;
+	activateable type select_wireframe_action is new action of default_wireframe_action;    
+	activateable type select_pointplot_action is new action of default_pointplot_action;
+is
+	// create new icons
+	//
+	icon type smooth_icon poster "smooth_icon.gif" labelled "Smooth"
+		selecting select_smooth_action;
+	icon type flat_icon poster "flat_icon.gif" labelled "Flat"
+		selecting select_flat_action;
+	icon type outline_icon poster "outline_icon.gif" labelled "Outline"
+		selecting select_outline_action;
+	icon type wireframe_icon poster "wireframe_icon.gif" labelled "Lines"
+		selecting select_wireframe_action;
+	icon type pointplot_icon poster "pointplot_icon.gif" labelled "Points"
+		selecting select_pointplot_action;
+	components type render_mode_icons is [smooth_icon flat_icon outline_icon
+		wireframe_icon pointplot_icon];
+	overlay_selector_group type render_mode_selector
+		containing render_mode_icons
+	with
+		hidden is true;
+	end;
+	icon type render_mode_icon poster "render_modes_icon.gif" labelled "Rendering"
+		selecting (new show_action of render_mode_selector)
+		deselecting (new hide_action of render_mode_selector);
+	
+	// add icons to container
+	//
+	container add render_mode_icon; 
+	container add render_mode_selector;
+end;    // add_render_mode_selector
+
+{***************************************************************}
+{                         dock animation                        }
+{***************************************************************}
+
+anim dock_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	dock type dock at bottom;
+			
+	verb check_keys is
+		if key_down char_to_key of "1" then
+			dock set_visible to false;
+		elseif key_down char_to_key of "2" then
+			dock set_visible to true;
+		end;
+	end;    // check_keys
+	
+	verb update is
+		dock update;
+	end;    // update
+		
+	picture scene is
+		sphere;
+		default_lights;
+		default_background at 100;
+		dock overlay at 10;
+	end;    // scene
+	// add icons docks
+	//
+	add_render_mode_selector to dock;
+		
+	while true do
+		scene;
+		update;
+	end;
+end;    // dock_anim

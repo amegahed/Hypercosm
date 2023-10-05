@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      labelled_sprite_sensor.omar       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a labelled sprite     }
+{       sensor user interface component.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do labelled_sprite_sensor_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/labelled_sprite_sensor.ores";
+include "system/check_keys.ores";
+
+anim labelled_sprite_sensor_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is    
+	labelled_sprite_sensor type wireframe_labelled_sprite_sensor 
+		labelled "Wireframe" poster "wireframe_icon.gif"
+	with
+		width = 32 / global width;
+		height = 32 / global height;
+	end;
+	
+	picture scene is
+		sphere;
+		wireframe_labelled_sprite_sensor overlay at 10;
+		default_lights;
+		default_background at 100;
+	end;    // scene
+	
+	wireframe_labelled_sprite_sensor set_location to <-.8 .8 0>;
+	while true do
+		scene;
+		wireframe_labelled_sprite_sensor update;
+		check_keys;
+	end;
+end;    // labelled_sprite_sensor_anim

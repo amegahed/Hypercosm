@@ -1,0 +1,254 @@
+{***************************************************************}
+{                          saturn_v.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do repeating_blastoff;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/paths.ores";
+
+
+subject saturn_v
+extends
+    step_actor
+does
+    objective shape form;
+    shape instance;
+    verb act;
+has
+    pixie_path type rocket_exhaust with
+        steps = 5;
+        sparkle is true;
+    end;
+is
+    objective shape escape_tower is
+        cone with
+            end1 = <0 0 350>; end2 = <0 0 352>;
+            radius1 = 2; radius2 = 1;
+        end;
+        cylinder with
+            end1 = <0 0 352>; end2 = <0 0 372>;
+            radius = 1;
+        end;
+        cone with
+            end1 = <0 0 372>; end2 = <0 0 375>;
+            radius1 = 1; radius2 = 0;
+        end;
+        cylinder with
+            end1 = <1 1 350>; end2 = <2 2 342>;
+            radius = .4;
+        end;
+        cylinder with
+            end1 = <-1 1 350>; end2 = <-2 2 342>;
+            radius = .4;
+        end;
+        cylinder with
+            end1 = <-1 -1 350>; end2 = <-2 -2 342>;
+            radius = .4;
+        end;
+        cylinder with
+            end1 = <1 -1 350>; end2 = <2 -2 342>;
+            radius = .4;
+        end;
+    end;    // escape_tower
+
+
+    objective shape command_module is
+        cone with
+            end1 = <0 0 336>; end2 = <0 0 345>;
+            radius1 = 7; radius2 = 1;
+        end;
+        cylinder with
+            end1 = <0 0 320>; end2 = <0 0 336>;
+            radius = 7;
+        end;
+        paraboloid with
+            material is chalk colored grey;
+            top = <0 0 322>; base = <0 0 314>;
+            radius = 4;
+        end;
+    end;    // command_module
+
+
+    objective shape third_stage is
+        cone with
+            end1 = <0 0 321>; end2 = <0 0 289>;
+            radius1 = 7; radius2 = 12;
+        end;
+        cylinder with
+            end1 = <0 0 289>; end2 = <0 0 243>;
+            radius = 12;
+        end;
+        cone with
+            end1 = <0 0 243>; end2 = <0 0 225>;
+            radius1 = 12; radius2 = 18;
+        end;
+        disk with
+            center = <0 0 225>; normal = <0 0 1>;
+            radius = 18;
+        end;
+    end;    // third_stage
+
+
+    objective shape second_stage is
+        disk with
+            center = <0 0 225>; normal = <0 0 1>;
+            radius = 18;
+        end;
+        cylinder with
+            end1 = <0 0 155>; end2 = <0 0 225>;
+            radius = 18;
+        end;
+        disk with
+            center = <0 0 155>; normal = <0 0 1>;
+            radius = 18;
+        end;
+    end;    // second_stage
+
+
+    objective shape fin is
+        polygon2d [[0 0] [10 0] [8 7] [0 10]] with
+            origin = <0 0 0>; X_axis = <1 0 0>; Y_axis = <0 0 1>;
+        end;
+    end;    // fin
+
+
+    objective shape engine is
+        cone with
+            end1 = <0 0 30>; end2 = <0 0 0>;
+            radius1 = 0; radius2 = 10;
+        end;
+        paraboloid with
+            material is chalk colored grey;
+            top = <0 0 5>; base = <0 0 -12>;
+            radius = 8;
+        end;
+        fin with move to <5 0 2>; end;
+    end;    // engine
+
+
+    objective shape first_stage is
+        disk with
+            center = <0 0 155>; normal = <0 0 1>;
+            radius = 18;
+        end;
+        cylinder with
+            end1 = <0 0 5>; end2 = <0 0 155>;
+            radius = 18;
+        end;
+
+        engine with
+            move to <15 0 0>;
+            rotate by 0 around <0 0 1>;
+        end;
+        engine with
+            move to <15 0 0>;
+            rotate by 90 around <0 0 1>;
+        end;
+        engine with
+            move to <15 0 0>;
+            rotate by 180 around <0 0 1>;
+        end;
+        engine with
+            move to <15 0 0>;
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // first_stage
+
+
+    objective shape form is
+        first_stage with material is chalk colored white; end;
+        second_stage with material is chalk colored white; end;
+        third_stage with material is chalk colored white; end;
+        command_module with material is chalk colored white; end;
+        escape_tower with material is chalk colored white; end;
+    end;    // form
+
+
+    shape instance is
+        form;
+        rocket_exhaust instance with
+            magnify by 20;
+            move to <0 0 -10>;
+        end;
+    end;    // instance
+
+
+    verb act is
+        scalar x_wiggle = sin (steps * 60) / 5;
+        scalar y_wiggle = cos (steps * 40) / 5;
+
+        rocket_exhaust step to <x_wiggle y_wiggle 2> in relative;
+        step;
+    end;    // act
+end;    // saturn_rocket
+
+
+anim blastoff with
+    field_of_view = 100;
+    background = sky_blue;
+    double_buffer is on;
+is
+    saturn_v type saturn_v;
+    scalar upward_velocity = 0;
+    scalar height = 0;
+    scalar eye_offset = 0;
+
+    picture blastoff_picture with
+        eye = <(20 + eye_offset) 20 400>;
+        lookat = <0 0 (300 + height / 2)>;
+        roll = 60 - 60 * (1 / (1 + height / 10));
+    is
+        distant_light from <.3 -.5 1>;
+        saturn_v instance with
+            move to <0 0 height>;
+        end;
+        plane with
+            magnify by 400;
+        end;
+    end;    // blastoff_picture
+
+
+    while (height < 1000) do
+        blastoff_picture;
+        check_keys;
+        upward_velocity = itself + .3;
+        height = itself + upward_velocity;
+        eye_offset = height;
+        saturn_v step;
+    end;
+end;    // blastoff
+
+
+anim repeating_blastoff
+    args type args;
+with
+    args check;
+is
+    while true do
+        blastoff;
+    end;
+end;    // repeating_blastoff
+
+
+anim saturn_v_anim
+    args type args;
+with
+    eye = <0 -500 150>;
+    lookat = <0 0 150>;
+    roll = 45;
+    double_buffer is on;
+    args check;
+is
+    saturn_v type saturn_v;
+
+    mouse_controlled_actor saturn_v;
+end;    // saturn_v_anim

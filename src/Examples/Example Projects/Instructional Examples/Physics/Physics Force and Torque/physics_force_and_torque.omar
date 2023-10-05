@@ -1,0 +1,252 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    physics_force_and_torque.omar       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of force         }
+{       and torque in the physics engine.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_force_and_torque_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the 'c' key to shoot a "force ray" at the         }
+{       object, creating a force in the direction the           }
+{       camera is pointing and applying it to the point         }
+{       on the block at which the camera is pointing.           }
+{                                                               }
+{     - Press the 'f' to apply a simple force along the         }
+{       scene's y_axis to the block's center.                   }
+{                                                               }
+{     - Press the 't' key to apply torque around the            }
+{       block's z-axis.                                         }
+{                                                               }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "physics_test_projectile.ores";
+
+// box shape definition
+//
+scalar box_height = 4;
+scalar box_length = 2;
+scalar box_width = 8;
+
+shape box_shape is
+	block with
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+	end;
+end;
+
+renderable type box_renderable is new static_shape of box_shape;
+
+anim physics_force_and_torque_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+	auto_pivot is true;
+is
+	trans type box_trans, eye_trans;
+	vector force_ray_offset = <0 0 0>;
+	vector force_ray_vector = <0 0 0>;
+	physics_actor type box_actor is none;
+	renderable_physics_scene type physics;
+	
+	// Create a "force ray" that applies force to the box where the camera
+	// is pointing, as if the camera were a finger poking the box
+	//
+	verb create_force_ray is
+		camera type current_camera is targeted_camera type's get_current;
+		// get the camera's current position
+		//
+		current_camera get_trans eye_trans;
+		// get the box's position
+		//
+		box_actor get_trans box_trans;
+		
+		// get the vector between the eye and the box's center to create the offset
+		//
+		force_ray_offset = eye_trans's origin - box_trans's origin;
+		
+		// get the direction of the camera for the force direction
+		//
+		force_ray_vector = eye_trans's y_axis;
+		
+		// remove the component of the offset that is parallel to the line from 
+		// the camera to the box
+		//
+		force_ray_offset = itself - (force_ray_offset dot force_ray_vector)*force_ray_vector;
+		// apply the force to the box
+		//
+		box_actor add_force (force_ray_vector * 100) with 
+			offset = force_ray_offset; 
+		end;
+	end;    // create_force_ray
+	
+	
+	shape render_force_location 
+		at vector force_location = <0 0 0>;
+	is
+		cylinder with
+			radius = .25;
+			end1 = force_location + (eye_trans's y_axis*4);
+			end2 = force_location - (eye_trans's y_axis*4);
+			material is chalk colored red;
+		end;
+		disk with
+			radius = .25;
+			normal = eye_trans's y_axis;
+			center = force_location - (eye_trans's y_axis*4);
+			material is chalk colored red;
+		end;            
+		disk with
+			normal = eye_trans's y_axis;
+			center = force_location;
+			radius = 4;
+			material is (glass colored red);
+		end;
+	end;    // render_force_location
+	
+	verb draw is
+		string type state_string is "box actor state: ";
+		string type gravity_string is "box gravity: ";
+					
+		// display on screen instructions
+		//
+		overlay_text "Press 't' to apply torque." at <0 .9 0>;
+		overlay_text "Press 'f' to apply simple force to the box's center" at <0 .85 0>;
+		overlay_text "Press 'c' to apply force to the box where the camera is pointing" at <0 .8 0>;
+		overlay_text "Press 's' to shoot a projectile." at <0 .75 0>;
+		overlay_text "Press '1' to set the block's state to STATIC." at <0 .7 0>;
+		overlay_text "Press '2' to set the block's state to DYNAMIC." at <0 .65 0>;
+		overlay_text "Press '3' to turn the block's gravity OFF." at <0 .6 0>;
+		overlay_text "Press '4' to turn the block's gravity ON." at <0 .55 0>;
+				
+		// display state information
+		// 
+		when box_actor get_state is
+			static_state:
+				state_string add "static";
+			end;
+			dynamic_state:
+				state_string add "dynamic";
+			end;
+		end;
+		overlay_text state_string at <0 -.85 0>;
+		
+		// display gravity information
+		// 
+		gravity_string add vector_to_string of box_actor get_gravity;
+		overlay_text gravity_string at <0 -.9 0>;    
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+		
+		// fire a projectile, only if we just pressed the key this frame
+		//
+		if key_down char_to_key of "s" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to physics;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+		
+		// press 't' to apply torque
+		//
+		if key_down char_to_key of "t" then
+			box_actor add_torque <0 0 190>;
+		end;
+			
+		// press 'f' to apply simple force to the box's center
+		//
+		if key_down char_to_key of "f" then
+			box_actor add_force <0 100 0>;
+		end;
+		// apply force to the box where the camera is pointing
+		//
+		if key_down char_to_key of "c" then
+			create_force_ray;
+		end;
+		// set the block's state to STATIC
+		//
+		if key_down char_to_key of "1" then
+			box_actor set_state to static_state;
+		end;
+		// set the block's state to DYNAMIC
+		//
+		if key_down char_to_key of "2" then
+			box_actor set_state to dynamic_state;
+		end;
+		
+		// turn the block's gravity OFF
+		//
+		if key_down char_to_key of "3" then
+			box_actor set_gravity to <0 0 0>;
+		end;
+		// turn the block's gravity ON
+		//
+		if key_down char_to_key of "4" then
+			box_actor set_gravity to <0 0 -9.8>;
+		end;
+	end;    // check_keys
+	
+		
+	verb update is 
+		draw;
+		check_keys;
+	end;    // update
+	
+	shape scene with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+		
+		physics instance;
+   
+		if key_down char_to_key of "c" then
+			render_force_location at (box_trans's origin  + force_ray_offset);
+		end;
+		
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // scene
+	
+	// add the box shape
+	//
+	box_actor is (new renderable_physics_box_actor rendering box_renderable with
+		trans's origin = <0 0 (box_height/2)>;
+		mass = 10;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	);
+	physics add_physics_actor box_actor;
+	   
+	// add the plane shape
+	//
+	physics add_physics_actor (new renderable_physics_plane_actor rendering none);
+	// turn on proxy rendering aka debug mode
+	//                        
+	physics set_render_proxies to true; 
+	// run!
+	//
+	mouse_controlled_animated_shape scene doing update;
+end;    // physics_force_and_torque_anim

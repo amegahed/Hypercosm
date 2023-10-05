@@ -1,0 +1,57 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   3ds_constant_scale_value_controller  3d      }
+{ |/  \|                      .ores                     To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_scale_value_controlling.ores";
+
+subject translated_3ds_constant_scale_value_controller 
+extends
+	translated_3ds_scale_value_controllable object
+does
+	// constructor
+	//
+	verb new
+		of translated_3ds_scale_value type value;
+	end;
+	
+	// getting method
+	//
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type t;
+	end;
+has
+	// attributes
+	//
+	translated_3ds_scale_value type scale_value is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of translated_3ds_scale_value type value;
+	is
+		// set constant scale value controller attributes
+		//
+		translated_3ds_constant_scale_value_controller's scale_value is value;
+	end;    // new
+	
+	//
+	// getting method
+	//
+	
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type time;
+	is
+		answer scale_value;
+	end;    // get_value
+end;    // translated_3ds_constant_scale_value_controller

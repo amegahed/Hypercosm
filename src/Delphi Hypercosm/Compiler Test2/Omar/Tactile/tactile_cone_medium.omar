@@ -1,0 +1,48 @@
+do tactile_cone_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+
+
+anim tactile_cone_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape solid_cone is
+        cone with
+            move to <0 0 1>;
+            magnify by 2;
+            material is wood;
+        end;
+        disk with
+            magnify by 2;
+            material is wood;
+        end;
+    end;    // solid_cone    
+    
+    shape cone_shape is
+        write "making cone", ;
+        cone with
+            move to <0 0 1>;
+            magnify by 2.5;
+            material is wood;
+        end;
+    end;    // cone_shape
+      
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape cone_shape titled "Tactile Cone Medium" in floor;
+end;    // tactile_cone_anim

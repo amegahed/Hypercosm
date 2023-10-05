@@ -1,0 +1,76 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "extrasolar_planets.hcvm";
+	WebOutputDir "Website";
+	Alignment;
+	CommandLine;
+	Width "800";
+	Height "600";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "Extrasolar Planets.html";
+		}
+	}
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar_main "extrasolar_planets.omar";
+			omar "planet.ores";
+			omar "planet_parser.ores";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+			other "planet_table.txt";
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+			resource "..\\..\\..\\..\\..\\..\\PROGRA~1\\HYPERC~1\\HYPERC~2\\sounds\\click.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\select.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\hide.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\deselect.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\show.wav";
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "Jupiter Map.jpg";
+			resource "Planet Map.jpg";
+			resource "Star Field.jpg";
+			resource "Orbit.png";
+			resource "Textures\\environment.jpg";
+			resource "Textures\\jupiter_map.jpg";
+			resource "Textures\\planet_map.jpg";
+			resource "Textures\\earth_map.jpg";
+			resource "Textures\\background.jpg";
+		}
+	}
+}

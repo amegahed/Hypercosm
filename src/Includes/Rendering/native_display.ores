@@ -1,0 +1,42 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        native_display.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native display utilities.                  }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "strings.ores";
+include "native_windows.ores";
+
+{***************************************************************} 
+{                    rendering window attributes                } 
+{***************************************************************} 
+
+native integer width = 512;
+native integer height = 384;
+native integer h_center = screen_width div 2;
+native integer v_center = screen_height div 2;
+native string type window_name = "Hypercosm";
+
+{***************************************************************} 
+{                       display attributes                      } 
+{***************************************************************}
+
+enum file_format is raw, tga, pict;
+native scalar aspect_ratio = 3 / 4;
+native boolean logo is false;
+native boolean frame is false;
+native boolean cursor is true;
+native boolean show_pictures is true;
+native boolean save_pictures is false;
+native file_format type file_format is tga;
+native integer frame_number = 0;
+native string type picture_name = "image";

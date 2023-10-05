@@ -1,0 +1,135 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         abstract_subjects.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of an abstract subject (or "class") in          }
+{       the OMAR language.                                      }
+{                                                               }
+{       Abstract subjects are just like abstract classes        }
+{       in languages such as C++ or Java.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do abstract_subject_example;
+
+include "system/math.ores";
+include "system/native_string.ores";
+
+abstract subject shape2d 
+does
+	// abstract methods
+	//
+	abstract scalar question get_area;
+	abstract string type question to_string;
+	
+	// non-abstract method
+	//
+	verb print;
+is
+	verb print is
+		write "shape ", to_string, " with area = ", get_area, ;
+	end;    // print
+end;    // shape2d
+
+subject square
+extends
+	shape2d
+does
+	// constructor
+	//
+	verb new with
+		scalar length = 1;
+	end;
+	
+	// methods
+	//
+	scalar question get_area;
+	string type question to_string;
+has
+	// attributes
+	//
+	scalar length;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		scalar length = 1;
+	is
+		square's length = length;
+	end;    // new
+	
+	//
+	// methods
+	//
+	
+	scalar question get_area is
+		answer length * length;
+	end;    // get_area
+	
+	string type question to_string is
+		answer "square";
+	end;    // to_string
+end;    // square
+
+subject circle
+extends
+	shape2d
+does
+	// constructor
+	//
+	verb new with
+		scalar radius = 1;
+	end;
+	
+	// methods
+	//
+	scalar question get_area;
+	string type question to_string;
+has
+	// attributes
+	//
+	scalar radius;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		scalar radius = 1;
+	is
+		circle's radius = radius;
+	end;    // new
+	
+	//
+	// methods
+	//
+	
+	scalar question get_area is
+		answer pi * radius ^ 2;
+	end;    // get_area
+	
+	string type question to_string is
+		answer "circle";
+	end;    // to_string
+end;    // circle
+
+verb abstract_subject_example 
+is
+	circle type circle with
+		radius = 1;
+	end;
+	square type square with
+		length = 2;
+	end;
+	shape2d type shape2d is circle;
+	
+	shape2d print;
+	shape2d is square;
+	shape2d print;
+end;    // abstract_subject_example

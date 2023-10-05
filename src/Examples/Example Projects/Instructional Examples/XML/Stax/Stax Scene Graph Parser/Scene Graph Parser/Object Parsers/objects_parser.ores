@@ -1,0 +1,46 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           object_parser.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a parser for parsing sphere          }
+{       instances from an XML stream.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2007 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/xml_reading.ores";
+include "instance_parser.ores";
+include "clone_parser.ores";
+include "block_parser.ores";
+include "sphere_parser.ores";
+include "cylinder_parser.ores";
+include "cone_parser.ores";
+
+verb parse_objects
+	into object_group type group;
+	from xml_reading type xml_reader;
+is
+	boolean done is false;
+	
+	while xml_reader is_ok and not done do
+		string type name is xml_reader get_name;            
+		if name matches "instance" then
+			group add parse_instance from xml_reader;
+		elseif name matches "clone" then
+			group add parse_clone from xml_reader;
+		elseif name matches "block" then
+			group add parse_block from xml_reader;
+		elseif name matches "sphere" then
+			group add parse_sphere from xml_reader;
+		elseif name matches "cylinder" then
+			group add parse_cylinder from xml_reader;
+		elseif name matches "cone" then
+			group add parse_cone from xml_reader;
+		else
+			done is true;
+		end;
+	end;
+end;    // parse_objects

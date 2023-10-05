@@ -1,0 +1,27 @@
+do animation_types_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// various fish definitions to display
+//
+include "shape.omar";
+include "animated_shape.omar";
+include "actor.omar";
+include "touchable_actor.omar";
+
+anim animation_types_anim 
+	args type args;
+with
+	eye = <-50 -30 10>;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new static_shape of fish_shape) named "shape";
+	multi_actor add_actor (new animated_shape of fish_animated_shape) named "animated_shape";
+	multi_actor add_actor (new fish_actor) named "actor";
+	multi_actor add_actor (new touchable_fish_actor) named "touchable_actor";
+		
+	mouse_controlled_actor multi_actor;
+end;    // animation_types_anim

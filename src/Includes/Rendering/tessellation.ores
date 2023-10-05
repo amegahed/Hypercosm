@@ -1,0 +1,15 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          tessellation.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard rendering related definitions    }
+{       and utilities.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+scalar tessellation = 1;
+integer min_circle_tessellation = 4;

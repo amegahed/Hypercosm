@@ -1,0 +1,74 @@
+do circle_test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/spline_shapes.ores";
+include "system/arrow_shapes.ores";
+include "system/arrows.ores";
+
+
+shape spline_circle with
+	integer splines = 3;
+	integer steps = 10;
+	scalar radius = 1;
+	boolean show_tangents is false;
+is
+	scalar angle = 360 / splines;
+	scalar a = (sin angle) * (sqrt (4 + 3 * sqr tan (angle / 2)) - 1);
+	//scalar a = .5517861843 * 3;
+	scalar t = a * radius;
+	write "angle = ", angle, ;
+	write "t = ", t, ;
+			
+	for integer counter = 1 .. splines do
+		scalar start_angle = (counter - 1) * angle;
+		scalar end_angle = start_angle + angle;
+				
+		vector start_point = <(cos start_angle) (sin start_angle) 0> * radius;
+		vector end_point = <(cos end_angle) (sin end_angle) 0> * radius;
+		
+		vector start_tangent = <(-sin start_angle) (cos start_angle) 0> * t;
+		vector end_tangent = <(-sin end_angle) (cos end_angle) 0> * t;
+		
+		cubic_curve from start_point start_tangent to end_point end_tangent with
+			steps = static steps;
+			show_tangents is static show_tangents;
+		end;
+	end;
+end;	// spline_circle
+
+
+shape scene is
+	circle with
+	    sides = 500;
+	    radius = 1;
+	    color = red;
+    end;
+	spline_circle with
+	    steps = 100;
+	    radius = 1;
+	    color = blue;
+    end;
+
+	{
+	arc from 0 to 120 with
+	    radius = 1;
+	    steps = 10;  
+	end;
+	spline_arc from 0 to 120 with
+		radius = 1;
+		steps = 10;
+	end;
+	}
+    
+    axes;
+end;	// scene
+
+
+anim circle_test with
+	eye = <0 -5 3>;
+is
+	mouse_controlled_shape scene;
+end;

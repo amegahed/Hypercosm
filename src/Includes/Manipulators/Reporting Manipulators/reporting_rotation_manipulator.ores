@@ -1,0 +1,157 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    reporting_rotation_maniplator       3d      }
+{ |/  \|                     .ores                      To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/rotation_manipulator.ores";
+include "system/reporting.ores";
+
+subject reporting_rotation_manipulator
+extends
+	reportable sendable addressable rotation_manipulator
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;      
+		around axis type axis;
+		controlling shape target;
+		bounded by shape bounding_shape does none;
+		transforming trans type reference trans refers to none;
+	with
+		scalar handle_size = default_handle_size;
+		scalar rotation_snap = 0, final_rotation_snap = 90;
+		boolean show_rotation is true;
+	end;
+	
+	// overridden methods
+	//
+	verb touch
+		from vector location;
+		towards vector direction;
+	end;
+	verb release 
+		from vector location;
+		towards vector direction;
+	end;
+		
+	// reporting methods
+	//
+	verb report;
+	verb send
+		message type message;
+	end;
+	verb address
+		receivable type recipient;
+	end;
+has
+	// attributes
+	//
+	string type name;
+	sender type sender;
+	boolean show_rotation;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		named string type name is none;      
+		around axis type axis;
+		controlling shape target;
+		bounded by shape bounding_shape does none;
+		transforming trans type reference trans refers to none;
+	with
+		scalar handle_size = default_handle_size;
+		scalar rotation_snap = 0, final_rotation_snap = 90;
+		boolean show_rotation is true;
+	is  
+		rotation_manipulator new around axis controlling target 
+			bounded by bounding_shape transforming trans
+		with
+			handle_size = static handle_size;
+			rotation_snap = static rotation_snap;
+			final_rotation_snap = static final_rotation_snap;
+		end;
+		
+		with reporting_rotation_manipulator do
+			its name is name;
+			its show_rotation is show_rotation;
+		end;
+	end;    // new
+	
+	//
+	// overridden methods
+	//
+	
+	verb touch
+		from vector location;
+		towards vector direction;
+	is         
+		rotation_manipulator static touch from location towards direction; 
+		
+		if pressed then
+			report;
+		end;          
+	end;    // touch
+	
+	verb release 
+		from vector location;
+		towards vector direction;
+	is
+		rotation_manipulator static release from location towards direction;
+		sender send (new text_message of empty_string);
+	end;    // release
+	  
+	//
+	// reporting methods
+	//
+	
+	verb report is
+		
+		// name message
+		//
+		string type message;
+		
+		if some axis then
+			if pressed then
+				message add "Rotating ";
+			else
+				message add "Press and Drag to Rotate ";
+			end;
+		end;
+		message add name;
+		
+		// rotation message
+		//
+		if show_rotation and pressed and some axis then
+			scalar angle = rotation;
+			
+			message add " to ";      
+			message add scalar_to_string of (normalized_angle of angle) to 0;
+			message add " degrees";
+		end;
+		
+		sender send (new text_message of message);
+	end;    // report
+	
+	verb send
+		message type message;
+	is
+		sender send message;
+	end;    // send
+	
+	verb address
+		receivable type recipient;
+	is
+		sender address recipient;
+	end;    // address
+end;    // reporting_rotation_manipulator

@@ -1,0 +1,205 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	numbered_labelled_checklist.ores 	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition for methods and             }
+{       structures to parse and store a checklist where         }
+{       each entry in the checklist may be multiple lines       }
+{       of text.                                                } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/numbered_checklist.ores";
+
+
+subject numbered_labelled_checklist
+does
+	// parsing methods
+	//
+    verb parse
+        from strings type text;
+    end;
+    verb input
+        from string type filename;
+    end;
+
+	// resizing method
+	//
+    verb resize
+        to integer number;
+    end;
+    
+    // querying methods
+    //
+    numbered_checklist type question get_checklist;
+    strings type question get_labels;
+        
+    // printing method
+    //
+    verb print;
+has
+	// attributes
+	//
+	numbered_checklist type numbered_checklist;
+	strings type labels;
+is 
+    objective integer question parse_number_of_steps
+        from strings type text;
+    is
+        integer line_number = min text;
+	    integer char_number = min text[line_number];
+        integer steps = 0;
+        
+        while (line_number <= max text) do
+            integer number;
+            
+            scan_through_whitespace 
+            	at column char_number on line line_number of text;
+            
+            // parse checklist number
+            //
+            parse_integer number
+            	at column char_number on line line_number of text;
+            	
+           	// update step number
+           	//
+            if number > steps then
+                steps = number;
+            end;
+            
+            scan_to_next_blank_line 
+            	at column char_number on line line_number of text;
+        end;
+        
+        answer steps;
+    end;    // parse_number_of_steps
+    
+
+	//
+	// parsing methods
+	//
+	
+	    
+    verb parse
+        from strings type text;
+    is
+        integer line_number = min text;
+	    integer char_number = min text[line_number];
+        integer steps = parse_number_of_steps from text;
+        integer block_begin, block_end;
+
+        if steps > 0 then
+        
+        	// allocate steps and labels
+        	//  
+            dim numbered_checklist[1 .. steps];
+            dim labels[1 .. steps];
+            
+            while (line_number <= max text) do
+                integer number;
+                
+                scan_through_whitespace 
+                	at column char_number on line line_number of text;
+    
+                if (line_number <= max text) then
+                           
+                    // parse checklist number
+                    //
+                    parse_integer number
+                    	at column char_number on line line_number of text;
+                    
+                    //line_number = itself + 1;
+                    
+                    // parse label
+                    //
+                    parse_next_line labels[number]
+						at column char_number on line line_number of text;
+						
+                    // copy strings
+                    //
+                    block_begin = line_number;
+                    scan_to_next_blank_line 
+                    	at column char_number on line line_number of text;
+                    block_end = line_number;
+                    
+                    if block_end > block_begin then    
+                        numbered_checklist[number][1 .. block_end - block_begin] = text[block_begin .. block_end - 1];
+                    end;
+                end;
+            end;
+        end;    // if
+    end;    // parse
+    
+    
+    verb input
+        from string type filename;
+    is
+        text_resource type checklist_resource named filename;  
+        
+        // wait for file to download
+        //
+        checklist_resource finish_loading;
+       
+        // parse checklist from file
+        //
+        parse from checklist_resource get_lines;      
+    end;    // input
+    
+
+	//
+	// resizing method
+	//
+	
+	
+    verb resize
+        to integer number;
+    is
+        numbered_checklist type new_checklist;
+        strings type new_labels;
+        
+        dim new_checklist[1 .. number];
+        dim new_labels[1 .. number];
+        
+        for integer counter = min numbered_checklist .. max numbered_checklist do
+            new_checklist[counter] is numbered_checklist[counter];
+            new_labels[counter] is labels[counter];
+        end;
+        
+        numbered_checklist is new_checklist;
+        labels is new_labels;
+    end;    // resize
+    
+
+	//
+    // querying methods
+    //
+    
+    
+    numbered_checklist type question get_checklist is
+    	answer numbered_checklist;
+    end;	// get_checklist
+    
+    
+    strings type question get_labels is
+    	answer labels;
+    end;	// get_labels
+    
+        
+	//
+	// printing method
+	//
+	
+	    
+    verb print is     
+        for integer counter = min numbered_checklist .. max numbered_checklist do
+        	write labels[counter];
+        	numbered_checklist[counter] print;
+        	write;
+        end;
+    end;    // print
+end;    // numbered_checklist

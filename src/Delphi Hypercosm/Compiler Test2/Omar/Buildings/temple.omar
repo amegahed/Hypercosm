@@ -1,0 +1,423 @@
+{***************************************************************}
+{                          temple.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do temple_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/solids.ores";
+include "system/bumps.ores";
+include "system/shaders.ores";
+include "system/column.omar";
+include "system/dodecahed.omar";
+
+
+shape pedestal with
+    integer segments = 24;
+is
+    shape urn is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .25>;
+            radius = 1.75;
+        end;
+        cone with
+            end1 = <0 0 .25>;
+            end2 = <0 0 .5>;
+            radius1 = 1.75;
+            radius2 = .1;
+        end;
+        cone with
+            end1 = <0 0 .3>;
+            end2 = <0 0 1.5>;
+            radius1 = .4;
+            radius2 = .2;
+        end;
+        paraboloid with
+            top = <0 0 1.5>;
+            base = <0 0 4>;
+            radius = 2;
+        end;
+    end;    // urn
+
+    column with
+        segments = static segments;
+        scale by .3 along <0 0 1>;
+    end;
+    urn with
+        material is golden;
+        move to <0 0 3>;
+    end;
+end;    // pedestal
+
+
+shape temple with
+    integer column_segments = 24;
+is
+    shape temple_column is
+        column with
+            segments = column_segments;
+        end;
+    end;    // temple_column
+
+
+    shape roof is
+        extrude [[-1 0] [1 0] [.05 .5] [-.05 .5]] with
+            height = .1;
+            magnify by 10;
+            smoothing is false;
+        end;
+    end;    // roof
+
+
+    shape roof_frame is
+        block with
+            scale by 10 along <1 0 0>;
+            scale by 1.5 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            move to <0 -13.5 .5>;
+        end;    // front
+        block with
+            scale by 10 along <1 0 0>;
+            scale by 1.5 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            move to <0 13.5 .5>;
+        end;    // back
+        block with
+            scale by 1.5 along <1 0 0>;
+            scale by 12 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            move to <-8.5 0 .5>;
+        end;    // left
+        block with
+            scale by 1.5 along <1 0 0>;
+            scale by 12 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            move to <8.5 0 .5>;
+        end;    // left
+    end;    // roof_frame
+
+
+    shape bench is
+        block with
+            vertex = <-2 -.5 0>;
+            side1 = <.3 0 0>;
+            side2 = <0 1 0>;
+            side3 = <0 0 1>;
+        end;
+        block with
+            vertex = <2 -.7 0>;
+            side1 = <-.3 0 0>;
+            side2 = <0 1.4 0>;
+            side3 = <0 0 1>;
+        end;
+        block with
+            vertex = <-2.5 -1 1>;
+            side1 = <5 0 0>;
+            side2 = <0 2 0>;
+            side3 = <0 0 .3>;
+        end;
+    end;    // bench
+
+
+    shape hollow_sphere is
+        sphere with
+            radius = 1;
+        end;
+        sphere with
+            radius = .9;
+        end;
+    end;    // hollow_sphere
+
+    // base of temple
+    //
+    {flat dirty bricked color light brown} block with
+        vertex = <-15 -20 0>;
+        side1 = <30 0 0>;
+        side2 = <0 40 0>;
+        side3 = <0 0 .5>;
+        magnify the shader_trans by 8;
+    end;
+
+    // floor
+    //
+    block with
+        vertex = <-10 -15 .5>;
+        side1 = <20 0 0>;
+        side2 = <0 30 0>;
+        side3 = <0 0 1>;
+    end;
+
+    // front and back benches
+    //
+    bench with
+        material is wood;
+        move to <0 -18 .5>;
+        magnify the shader_trans by 5;
+    end;
+    bench with
+        material is wood;
+        move to <0 18 .5>;
+        magnify the shader_trans by 5;
+    end;
+
+    // right and left bences
+    //
+    bench with
+        material is wood;
+        rotate by 90 around <0 0 1>;
+        move to <13 0 .5>;
+        magnify the shader_trans by 5;
+    end;
+    bench with
+        material is wood;
+        rotate by 90 around <0 0 1>;
+        move to <-13 0 .5>;
+        magnify the shader_trans by 5;
+    end;
+
+    // front columns
+    //
+    temple_column with
+        move to <8.5 -13.5 1.5>;
+    end;
+    temple_column with
+        move to <-8.5 -13.5 1.5>;
+    end;
+    temple_column with
+        move to <4.5 -13.5 1.5>;
+    end;
+    temple_column with
+        move to <-4.5 -13.5 1.5>;
+    end;
+
+    // back columns
+    //
+    temple_column with
+        move to <8.5 13.5 1.5>;
+    end;
+    temple_column with
+        move to <-8.5 13.5 1.5>;
+    end;
+    temple_column with
+        move to <4.5 13.5 1.5>;
+    end;
+    temple_column with
+        move to <-4.5 13.5 1.5>;
+    end;
+
+    // right columns
+    //
+    temple_column with
+        move to <8.5 9.5 1.5>;
+    end;
+    temple_column with
+        move to <8.5 -9.5 1.5>;
+    end;
+
+    // left columns
+    //
+    temple_column with
+        move to <-8.5 9.5 1.5>;
+    end;
+    temple_column with
+        move to <-8.5 -9.5 1.5>;
+    end;
+    roof_frame with
+        move to <0 0 11.5>;
+    end;
+    roof with
+        move to <0 -14 12.5>;
+    end;
+    roof with
+        move to <0 14 12.5>;
+    end;
+end;    // temple
+
+
+shape bubble_temple with
+    integer column_segments = 24;
+    scalar angle = 0;
+is
+    static material type blank is constant_color white;
+
+    static shape bubbles is
+        {soap_bubble} sphere with
+            material is aluminum;
+            center = <10 -25 10>;
+            radius = 1;
+        end;
+        sphere with
+            material is metal colored raspberry;
+            center = <16 10 15>;
+            radius = 3;
+        end;
+        {soap_bubble} sphere with
+            material is aluminum;
+            center = <10 -5 15>;
+            radius = 1.5;
+        end;
+
+        // spheres in back of temple
+        //
+        sphere with
+            material is metal colored pink;
+            center = <-10 -5 15>;
+            radius = 1;
+        end;
+        sphere with
+            material is metal colored light orange;
+            center = <-15 -10 18>;
+            radius = 2;
+        end;
+
+        // spheres in front goblet
+        //
+        sphere with
+            material is metal colored light blue;
+            center = <13.4 -18.4 7>;
+            radius = .6;
+        end;
+        sphere with
+            material is metal colored light red;
+            center = <13.3 -18 8>;
+            radius = .4;
+        end;
+
+        // bubbles in temple
+        //
+        sphere with
+            material is metal colored light purple;
+            magnify by 1.5;
+            move to <-7 -7 3.5>;
+        end;
+        sphere with
+            material is metal colored light aqua;
+            magnify by 1.5;
+            move to <8.5 0 5>;
+        end;
+        sphere with
+            material is metal colored light raspberry;
+            magnify by .5;
+            move to <4.5 -12 5>;
+        end;
+    end;    // bubbles
+
+
+    shape pedestals is
+        pedestal with
+            segments = column_segments;
+            move to <-13.5 -18.5 .5>;
+        end;
+        pedestal with
+            segments = column_segments;
+            move to <13.5 -18.5 .5>;
+        end;
+        pedestal with
+            segments = column_segments;
+            move to <-13.5 18.5 .5>;
+        end;
+        pedestal with
+            segments = column_segments;
+            move to <13.5 18.5 .5>;
+        end;
+    end;    // pedestals
+
+
+    bubbles;
+    pedestals with
+        material is stone;
+    end;
+    temple with
+        material is stone;
+        column_segments = static column_segments;
+    end;
+
+    // center sphere
+    //
+    fiery dodecahedron with
+        material is blank;
+        show_edges is false;
+        show_vertices is false;
+        magnify by 6;
+        rotate by angle around <0 0 1>;
+        rotate by angle around <1 0 0>;
+        move to <0 0 14>;
+    end;
+end;    // bubble_temple
+
+
+subject animated_bubble_temple
+extends
+    step_actor
+does
+    shape instance;
+is
+    shape instance is
+        bubble_temple with
+            column_segments = 0;
+            angle = steps * 5;
+        end;
+    end;    // instance
+end;    // animated_bubble_temple
+
+
+picture temple_picture
+    args type args;
+with
+    eye = <10 -60 30>;
+    lookat = <0 0 2>;
+    projection is fisheye;
+    field_of_view = 60;
+    render_mode is shaded;
+    shading is pixel;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+        background = black;
+    args check;
+is
+    distant_light from <.3 -.5 1> with
+        brightness = 1.25;
+    end;
+    {flat granite white} bubble_temple with
+        material is stone;
+        rotate by -30 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+end;    // temple_picture
+
+
+anim temple_anim
+    args type args;
+with
+    {
+    // outside view
+    eye = <10 -60 30>;
+    lookat = <0 0 2>;
+    }
+
+    // inside view
+    eye = <-4 -4 4>;
+    lookat = eye + <1 1 .5> * 20;
+    field_of_view = 100;
+    facets = 6;
+
+    double_buffer is on;
+    // background = grey;
+    // fog_factor = 50;
+    args check;
+is
+    animated_bubble_temple type bubble_temple;
+
+    mouse_controlled_actor bubble_temple about <0 0 0>;
+end;    // temple_anim

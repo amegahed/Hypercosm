@@ -1,0 +1,202 @@
+{***************************************************************}
+{                          ideal_gas.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do gas_anim;
+
+
+include "system/3d.ores";
+include "system/piston.omar";
+include "system/gauge.omar";
+include "system/button.omar";
+
+
+scalar gas_volume = .75;
+scalar pressure = .5;
+scalar temperature = .5;
+scalar clamped_temperature = .5;
+vector piston_orientation = <0 .03 0>;
+boolean instruments_changed is true;
+
+
+piston type piston with
+    molecules = 10;
+    max_speed = .15;
+    volume = gas_volume;
+end;
+
+
+picture gas_picture with
+    render_mode is shaded;
+    projection is perspective;
+    edges is outline;
+    eye = <0 -8 4>;
+    field_of_view = 30;
+    lookat = <0 0 1.25>;
+    aspect_ratio = 3 / 4;
+    window_name is "Cylinder of Gas Molecules";
+is
+    // change volume
+    //
+    piston set_volume to gas_volume;
+
+    // create scene
+    //
+    distant_light from <.3 -.5 1>;
+
+    piston instance with
+        rotate by (piston_orientation dot <1 0 0>) * 360 around <0 0 1>;
+        rotate by (piston_orientation dot <0 1 0>) * 360 around <-1 0 0>;
+    end;
+    piston step;
+end;    // gas_picture
+
+
+picture instruments_picture with
+    render_mode is wireframe;
+    background = black;
+    window_name is "Instruments";
+is
+    scalar factor = 1.05;
+    scalar step_seconds = 1 / 30;
+    scalar aspect_ratio = height / width;
+    static scalar pressure;
+    static boolean previous_hotter_pressed is false;
+    static boolean previous_colder_pressed is false;
+    static scalar previous_time;
+    scalar current_time = get_seconds;
+
+    // controls
+    //
+    static gauge type volume_gauge labelled "Volume"
+        shows gas_volume;
+    static gauge type pressure_gauge labelled "Pressure"
+        shows pressure;
+    static gauge type temperature_gauge labelled "Temperature"
+        shows clamped_temperature;
+    static button type hotter_button labelled "Hot" with
+        label_size = 3;
+    end;
+    static button type colder_button labelled "Cold" with
+        label_size = 3;
+    end;
+
+    clamped_temperature = temperature;
+
+    // control layout
+    //
+    pressure = temperature / gas_volume * .5;
+    parallelogram with
+        magnify by .9;
+        color = grey;
+    end;
+    volume_gauge instance with
+        magnify by .4;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <-.45 .5 .1>;
+    end;
+    pressure_gauge instance with
+        magnify by .4;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <.45 .5 .1>;
+    end;
+    temperature_gauge instance with
+        magnify by .4;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 0 .1>;
+    end;
+    hotter_button instance with
+        color = red;
+        scale by .3 along <1 0 0>;
+        scale by .2 along <0 1 0>;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <.5 -.5 .1>;
+    end;
+    colder_button instance with
+        color = cyan;
+        scale by .3 along <1 0 0>;
+        scale by .2 along <0 1 0>;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <-.5 -.5 .1>;
+    end;
+
+    // step animation
+    //
+    instruments_changed is false;
+    if hotter_button's pressed then
+        if previous_hotter_pressed then
+            factor = itself ^
+                ((current_time - previous_time) / step_seconds);
+        end;
+        piston accelerate_molecules by factor;
+        temperature = itself * factor;
+        instruments_changed is true;
+        previous_time = current_time;
+        previous_hotter_pressed is true;
+    else
+        previous_hotter_pressed is false;
+    end;
+    if colder_button's pressed then
+        if previous_colder_pressed then
+            factor = itself ^
+                ((current_time - previous_time) / step_seconds);
+        end;
+        piston accelerate_molecules by (1 / factor);
+        temperature = itself * (1 / factor);
+        instruments_changed is true;
+        previous_time = current_time;
+        previous_colder_pressed is true;
+    else
+        previous_colder_pressed is false;
+    end;
+end;    // instruments_picture
+
+
+anim gas_anim with
+    double_buffer is on;
+    width = width div 2;
+is
+    vector gas_volume_tracker = <0 gas_volume 0>;
+    vector previous_gas_volume_tracker = <0 0 0>;
+
+    interaction type piston_interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging gas_volume_tracker);
+        button2_behavior is (new draggable_vector_behavior type
+            dragging piston_orientation);
+        button3_behavior is button2_behavior;
+        default_cursor is arrow;
+    end;
+
+    while true do
+        if mouse_down or instruments_changed or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                h_center = (screen_width div 2) + (width
+                    div 2);
+                ortho_view;
+            end;
+        end;
+
+        gas_picture with
+            h_center = (screen_width div 2) - (width div 2);
+        end;
+
+        piston_interaction update;
+
+        gas_volume = gas_volume_tracker dot <0 1 0>;
+        gas_volume = clamp gas_volume from .01 to 1;
+        gas_volume_tracker = <0 gas_volume 0>;
+
+        if gas_volume_tracker <> previous_gas_volume_tracker then
+            instruments_changed is true;
+            previous_gas_volume_tracker = gas_volume_tracker;
+        end;
+    end;
+end;    // gas_anim

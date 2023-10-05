@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 beveled_shapes.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard beveled shapes which are			}
+{		useful for rendering shapes with nice round 			}
+{		edges and corners.										}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/beveled_block.ores";
+include "system/beveled_cylinder.ores";
+include "system/half_beveled_cylinder.ores";

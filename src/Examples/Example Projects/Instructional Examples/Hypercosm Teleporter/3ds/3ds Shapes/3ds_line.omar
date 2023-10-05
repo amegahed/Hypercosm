@@ -1,0 +1,90 @@
+do translated_3ds_line_anim;
+
+include "system/3d.ores";
+include "system/3ds_line.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape closed_loop with
+	scalar tessellation = 1;
+is
+	translated_3ds_line of [
+		translated_3ds_connected_cyclic_spline through [
+			translated_3ds_smooth_vertex at <-25 -25 0>	
+			translated_3ds_smooth_vertex at <25 -25 0>
+			translated_3ds_smooth_vertex at <25 25 0>
+			translated_3ds_smooth_vertex at <-25 25 0>
+			translated_3ds_smooth_vertex at <-25 -25 0>	
+		]			
+	] with
+	    steps = round (8 * tessellation);
+        renderable is true;
+        thickness = 1;
+        sides = 6;	    
+	end;
+end;	// closed_loop
+
+shape backwards_loop with
+    scalar tessellation = 1;
+is
+	translated_3ds_line of [
+		translated_3ds_connected_cyclic_spline through [
+			translated_3ds_corner_vertex at <-25 -25 0>	
+			translated_3ds_corner_vertex at <-25 25 0>
+			translated_3ds_corner_vertex at <25 25 0>
+			translated_3ds_corner_vertex at <25 -25 0>
+		]				
+	] with
+	    steps = round (8 * tessellation);
+        renderable is true;
+        thickness = 1;
+        sides = 4;
+	end;
+end;	// backwards_loop
+
+shape curvy_loop with
+    scalar tessellation = 1;
+is
+	translated_3ds_line of [
+		translated_3ds_connected_cyclic_spline through [
+			translated_3ds_bezier_vertex at <0 -25 0> from -<50 0 0> to <50 0 0>
+			translated_3ds_corner_vertex at <25 0 0>
+			translated_3ds_bezier_vertex at <0 25 0> from -<-50 0 0> to <-50 0 0>
+			translated_3ds_bezier_corner_vertex at <-25 0 0> from -<0 -50 0> to <-50 -50 0>
+		]
+	] with
+	    steps = round (8 * tessellation);
+        renderable is true;
+        thickness = 1;
+        sides = 4;
+	end;
+end;	// curvy_loop
+
+shape translated_3ds_line_scene with
+    scalar time = 0;
+	scalar tessellation = 1;
+is
+	closed_loop with
+		tessellation = static tessellation;
+	end;
+end;    // translated_3ds_line_scene
+	
+	
+anim translated_3ds_line_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_line_scene
+		within new static_shape of environment 
+	    titled "3DS Line" 
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_line_anim

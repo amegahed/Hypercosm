@@ -1,0 +1,18 @@
+do fob_test;
+
+
+include "system/native_fob.ores";
+
+
+verb fob_test is
+    while true do
+        if fob enabled then
+            write "fob is enabled!", ;
+            write "fob position is ", fob get_position, ;
+            write "fob orientation is ", fob get_orientation, ;
+        else
+            write "fob is not enabled!", ;
+        end;
+        write;
+    end;
+end;    // fob_test

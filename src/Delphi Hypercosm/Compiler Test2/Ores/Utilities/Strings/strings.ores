@@ -1,0 +1,109 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   strings.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the standard string type definition  			}
+{		for arrays of strings.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/string.ores";
+
+
+subject strings 
+extends
+    string type[]
+does
+	// comparison method
+	//
+    boolean question matches
+        strings type string2;
+    end;
+    
+    // query methods
+    //
+    integer question get_max_string_length;
+    	
+	// printable method
+	//
+    verb print;
+is
+	//
+	// comparison method
+	//
+	
+	
+    boolean question matches
+        strings type strings2;
+    is
+        integer index1, index2;
+        
+        if strings is none then
+            if strings2 is none then
+                answer yes;
+            else
+                answer no;
+            end;
+        end;
+        
+        if strings2 is none then
+            answer no;
+        end;
+
+        if num strings = num strings2 then
+            index1 = min strings;
+            index2 = min strings2;
+            while index1 <= max strings do
+                if not strings[index1] matches strings2[index2] then
+                    answer no;
+                else
+                    index1 = itself + 1;
+                    index2 = itself + 1;
+                end;
+            end;
+            answer yes;
+        else
+            answer no;
+        end;    	
+    end;	// matches
+    
+
+	//
+    // query methods
+    //
+    
+    
+    integer question get_max_string_length is
+    	integer max_string_length = 0;
+    	
+    	for each string type string in strings do
+    		if num string > max_string_length then
+    			max_string_length = num string;
+    		end;
+    	end;
+    	
+    	answer max_string_length;
+    end;	// get_max_string_length
+    
+    
+	//	
+	// printable method
+	//
+	
+	
+    verb print is
+        integer counter = min strings;
+        for each string type string in strings do
+            write string;
+            if counter <> max strings then
+                write;
+            end;
+            counter = itself + 1;
+        end;
+    end;    // print
+end;    // strings

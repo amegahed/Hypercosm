@@ -1,0 +1,57 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          camera_utils.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utility code to support the camera and other   }
+{       related facilities.                                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// auto_upright_trans rotates the given target trans so that the
+// targets_up becomes aligned with the worlds_up as seen from the
+// line_of_rotation.  factor controls how fast the rotation occurs,
+// and can be used to reduce the jumpiness of the rotation when
+// the targets_up is nearly parallel to the line_of_rotation.
+//
+// auto_upright_trans assumes that the target and all vectors are
+// given in world coordinates.
+
+verb auto_upright_trans
+	trans type reference target;
+	around vector line_of_rotation;
+	from vector targets_up;
+	to vector worlds_up;
+	by scalar factor;
+is
+	vector rotation_up;
+	vector rotation_right;
+	scalar x, y, angle;
+	
+	// compute the rotational frame of reference, that will be used
+	// to calculate the angle of rotation to make the target's
+	// up appear upright relative to the world's up.
+	//
+	rotation_up = normalized (targets_up perpendicular line_of_rotation);
+	rotation_right = normalized (line_of_rotation cross rotation_up);
+	
+	// compute the angle between the camera's up axis in the
+	// rotational frame of reference and the projection of the
+	// world's up onto the plane of rotation
+	//
+	x = rotation_up dot worlds_up;
+	y = rotation_right dot worlds_up;
+	angle = arctan y x;
+	if angle > 180 then
+		angle = itself - 360;
+	end;
+	
+	if x < factor then
+		angle = itself * abs (x / factor);
+	end;
+	
+	revolve the target by angle around line_of_rotation;
+end;    // auto_upright_trans

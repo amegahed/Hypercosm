@@ -1,0 +1,82 @@
+do room_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "arena.omar";
+
+const scalar room_width = 480;
+const scalar room_height = 144;
+
+// materials
+//
+const material type room_wall_m is chalk colored light brown poster "stone.jpg";
+const material type room_ceiling_m is chalk colored light brown;
+const material type room_floor_m is chalk colored <.7 .5 .1> textured wood_texture;
+
+shape room with
+	boolean show_ceiling is true;
+	boolean show_walls is true;
+is
+	// room floor
+	//
+	for integer i = -2 .. 1 do
+	   for integer j = -2 .. 1 do
+			parallelogram with
+				move to <(2*i + 1) (2*j + 1) 0>;
+				magnify by (room_width/8);
+				move to <0 0 -table_height>;
+				material is room_floor_m;
+			end;
+		end;
+	end;
+	
+	// room walls
+	//
+	for integer i = 0 .. 3 do
+		if i <> 1 or show_walls then
+			parallelogram with
+				vertex = <(-room_width/2) (-room_width/2) -table_height>;
+				side1 = <0 (room_width/2) 0>;
+				side2 = <0 0 room_height>;
+				rotate by (90 * i) around <0 0 1>;
+				material is room_wall_m;
+			end;
+			parallelogram with
+				vertex = <(-room_width/2) 0 -table_height>;
+				side1 = <0 (room_width/2) 0>;
+				side2 = <0 0 room_height>;
+				rotate by (90 * i) around <0 0 1>;
+				material is room_wall_m;
+			end;
+		end;
+	end;
+	
+	// ceiling
+	//
+	if show_ceiling then
+		for integer i = -2 .. 1 do
+		   for integer j = -2 .. 1 do
+				parallelogram with
+					move to <(2*i + 1) (2*j + 1) 0>;
+					magnify by (room_width/8);
+					move to <0 0 (room_height - table_height)>;
+					material is room_ceiling_m;
+				end;
+			end;
+		end;
+	end;
+end;    // room
+
+anim room_anim
+	args type args;
+with
+	args check;
+is
+	shape scene is
+		room;
+	end;    // scene
+	
+	mouse_controlled_shape scene titled "Air Hockey Room" with
+		auto_camera is on;
+	end;
+end;    // room_anim

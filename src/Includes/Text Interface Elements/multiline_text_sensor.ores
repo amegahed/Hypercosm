@@ -1,0 +1,281 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      multiline_text_sensor.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a text display that    }
+{        can respond to mouse clicks and mouse overs.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_text.ores";
+include "mouse_responder.ores";
+include "regions.ores";
+include "text_sensor.ores";
+
+subject multiline_text_sensor
+extends
+	drawable mouse_responder
+does
+	// constructor
+	//
+	verb new
+		strings type text;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+			   
+		// text colors
+		//
+		color type text_color = white, background = black;
+		boolean transparent_background is false;
+		
+		// user defined callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	end;
+	
+	// state changing methods
+	//
+	verb set_color
+		to color type text_color = white;
+		over color type background = black;
+	end;
+	verb set_text
+		to strings type text;
+	end; 
+	
+	// querying methods
+	//
+	boolean question is_mouse_over;
+	
+	// redefined responses
+	//
+	verb mouse_over_response;
+	verb mouse_away_response;
+	
+	// drawing method
+	//
+	verb draw;
+has
+	// attributes
+	//
+	public strings type text;
+	
+	// colors
+	//
+	public color type text_color, background;
+	public boolean transparent_background;
+	
+	// size and location information
+	//
+	public vector location;
+	public integer text_size, text_spacing;
+	public h_alignment type h_alignment;
+	public scalar character_height;
+	
+	// bounding box
+	//
+	public regions type regions is none;
+is
+	region type question text_region
+		of string type string;
+		at vector location = <0 0 0>;
+		size integer text_size;
+	is
+		integer characters = num string;
+		scalar character_length = text_size / width;
+		scalar character_height = text_size / height;
+		scalar string_length = character_length * characters;
+		vector v1, v2;
+		
+		when h_alignment is
+			center:
+				v1 = location + <(-string_length / 2) (-character_height) 0>;
+				v2 = location + <(string_length / 2) (character_height) 0>;
+			end;
+			
+			left:
+				v1 = location + <0 (-character_height) 0>;
+				v2 = location + <string_length (character_height) 0>;
+			end;
+			
+			right:
+				v1 = location + <(-string_length) (-character_height) 0>;
+				v2 = location + <0 (character_height) 0>;
+			end;
+		end;
+	
+		answer new region type from v1 to v2;
+	end;    // text_sensor
+
+	string type question padded_string
+		string type string;
+	is
+		string type string2;
+	
+		dim string2[1 .. num string + 2];
+		string2[1] is " ";
+		string2[2..num string + 1] = string[..];
+		string2[num string + 2] is " ";
+	
+		answer string2;
+	end;    // padded_string
+
+	//
+	// constructor
+	//
+	
+	verb new
+		strings type text;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+		
+		// text colors
+		//
+		color type text_color = white, background = black;
+		boolean transparent_background is false;
+		
+		// user defined callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	is
+		// call superclass constructor
+		//
+		mouse_responder new with
+			mouse_down_action is static mouse_down_action;
+			mouse_up_action is static mouse_up_action;
+			mouse_over_action is static mouse_over_action;
+			mouse_away_action is static mouse_away_action;
+		end;
+			   
+		// initialize attributes
+		//
+		multiline_text_sensor's location = location;
+		multiline_text_sensor's text_size = text_size;
+		multiline_text_sensor's text_spacing = text_spacing;
+		multiline_text_sensor's character_height = text_size / height * 2;
+		multiline_text_sensor's h_alignment is h_alignment;
+		
+		// initialize colors
+		//
+		multiline_text_sensor's text_color = text_color;
+		multiline_text_sensor's background = background;
+		multiline_text_sensor's transparent_background is transparent_background;
+		
+		// position items
+		//
+		multiline_text_sensor's location = location;
+		
+		// initialize text
+		//
+		multiline_text_sensor set_text to text;
+	end;    // new
+	
+	//
+	// state changing methods
+	//
+	
+	verb set_color
+		to color type text_color = white;
+		over color type background = black;
+	is
+		multiline_text_sensor's text_color = text_color;
+		multiline_text_sensor's background = background;
+	end;    // set_color
+	
+	verb set_text
+		to strings type text;
+	is
+		vector location = multiline_text_sensor's location;
+		
+		multiline_text_sensor's text is text;
+		
+		regions is none;
+			if some text then
+			dim none regions[min text .. max text];
+			
+			for integer counter = min text .. max text do
+				regions[counter] is text_region of text[counter] at location size text_size;
+				location.y = itself - character_height;
+			end;
+		end;
+	end;    // set_text
+	
+	//
+	// querying methods
+	//
+	
+	boolean question is_mouse_over is
+		boolean done is false, found is false;
+		integer counter = 1;
+		
+		if some regions then
+			while not (done or found) do
+				if regions[counter] contains get_mouse then
+					found is true;
+				else
+					counter = itself + 1;
+					if counter > max regions then
+						done is true;
+					end;
+				end;
+			end;
+		end;
+		
+		answer found;
+	end;    // mouse_over
+	
+	//
+	// redefined responses
+	//
+	
+	verb mouse_over_response is
+		set_cursor to finger_point;
+		mouse_responder static mouse_over_response;
+	end;    // mouse_over_response
+	
+	verb mouse_away_response is
+		set_cursor to arrow;
+		mouse_responder static mouse_away_response;
+	end;    // mouse_away_response
+	
+	//
+	// drawing method
+	//
+	
+	verb draw is
+		vector location = multiline_text_sensor's location;
+		
+		for each string type string in text do
+			if some string then
+				overlay_text padded_string string at location with
+					size = text_size;
+					italic is true;
+					transparent_background is false;
+					h_align is h_alignment;               
+					color = text_color;
+					background_color = background;
+					transparent_background is static transparent_background;
+				end;
+			end;
+			location.y = itself - character_height;
+		end;
+		
+		update;
+	end;    // draw
+end;    // multiline_text_sensor

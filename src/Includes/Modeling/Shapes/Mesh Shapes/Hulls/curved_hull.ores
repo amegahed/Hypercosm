@@ -1,0 +1,123 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          curved_hull.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a hull which is lies           }
+{       along a curved path.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/cross_section.ores";
+include "system/cubic_splines.ores";
+include "system/bicubic_patch_mesh.ores";
+include "system/comparisons.ores";
+
+shape curved_hull
+	of perimeter type perimeter;
+	along trans type path[];
+with
+	// tessellation parameters
+	//
+	boolean triangulate is false;
+	boolean alternate is true;
+	boolean patches is true;
+	integer rows = 8, columns = 8;
+	boolean start_cap is false;
+	boolean end_cap is false;
+	
+	// rendering parameters
+	//
+	boolean smoothing is true;
+	boolean mending is true;
+	boolean closed is true;
+	
+	// texturing parameters
+	//
+	boolean textured is true;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	vector vertices[min path..max path, min perimeter ..
+		max perimeter];
+		
+	shape cap is
+		if patches then
+			cubic_spline type cubic_spline is piecewise_cubic_spline through perimeter;
+			polygon cubic_spline get_values in rows;
+		else
+			polygon perimeter;
+		end;
+	end;    // cap
+	
+	// create grid of points
+	//
+	for integer counter1 = min path..max path do
+		trans type trans = path[counter1];
+		for integer counter2 = min perimeter..max perimeter do
+			vertices[counter1, counter2] = trans transformed
+				perimeter[counter2];
+		end;
+	end;
+	
+	if patches and rows <> 1 and columns <> 1 then
+
+		// create mesh from grid of bicubic patches
+		//
+		bicubic_patch_mesh of vertices with
+		
+			// tessellation parameters
+			//
+			triangulate is static triangulate;
+			alternate is static alternate;
+			rows = static rows;
+			columns = static columns;
+			
+			// rendering parameters
+			//
+			smoothing is static smoothing;
+			closed is static closed;
+			outline is subtle;
+			
+			// texturing parameters
+			//
+			textured is static textured;
+			mapping is static mapping;
+		end;  
+	else
+		// create mesh from grid of vertices
+		//
+		grid_mesh of vertices with
+		
+			// tessellation parameters
+			//
+			triangulate is static triangulate;
+			alternate is static alternate;
+  
+			// rendering parameters
+			//          
+			smoothing is static smoothing;
+			mending is static mending;
+			closed is static closed;
+			// texturing parameters
+			//
+			textured is static textured;
+			mapping is static mapping;
+		end;
+	end;
+
+	// hull end caps
+	//    
+	if start_cap then
+		cap with
+			trans = path[min path];
+		end;
+	end;
+	if end_cap then
+		cap with
+			trans = path[max path];
+		end;
+	end;
+end;    // curved_hull

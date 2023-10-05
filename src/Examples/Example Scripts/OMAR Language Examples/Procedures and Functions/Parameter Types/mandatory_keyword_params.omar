@@ -1,0 +1,67 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     mandatory_keyword_params.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of mandatory keyword parameters in the          }
+{       OMAR language.                                          }
+{                                                               }
+{       Mandatory keyword parameters are just like ordinary     }
+{       mandatory parameters except that when the method        }
+{       is called, the caller must specify the correct          }
+{       keyword preceding the parameter along with the          }
+{       parameter values.  The keywords are used to make        }
+{       the code more readable by providing context for         }
+{       the parameter values.                                   }
+{                                                               }
+{       There is no direct analogy for these types of           }
+{       parameters in languages such as C, C++, and Pascal.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do mandatory_keyword_params_example;
+
+verb init_table
+	integer table[];            // mandatory parameter for table
+	to integer value;           // mandatory keyword parameter for table contents (no default)
+is
+	for each integer i in table do
+		i = value;
+	end;
+end;    // init_table
+
+verb write_table
+	integer table[];
+is
+	for each integer i in table do
+		write i, " ";
+	end;
+end;    // write_table
+
+verb mandatory_keyword_params_example is
+	integer table[1 .. 10];
+	// call "init_table" method with keyword parameter set to 0
+	//
+	init_table table to 0;          
+	write "table = ";
+	write_table table;
+	// write an empty line to seperate output
+	//  
+	write;  
+	
+	// call "init_table" method with keyword parameter set to -1
+	//
+	init_table table to -1;         
+	write "table = ";
+	write_table table;
+	
+	{
+	// compile error - procedure call must include the mandatory
+	// keyword followed by the parameter's value (no default value)
+	//
+	init_table; 
+	}       
+end;    // mandatory_keyword_params_example

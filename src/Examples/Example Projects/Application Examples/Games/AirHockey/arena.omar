@@ -1,0 +1,247 @@
+do arena_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/grid_shapes.ores";
+
+const scalar arena_width = 52;
+const scalar arena_length = 100;
+const scalar arena_wall_height = 5;
+const scalar goal_width = arena_width/3;
+const scalar table_height = 50;
+
+const color type wall_color = <.75 0 0>;
+const material type hypercosm_m is constant_color white poster "hyper_small.jpg";
+const material type hyperlogo_m is constant_color white poster "hyperlogo.jpg";
+const material type floor_m is chalk colored light light blue poster "rink_surface.gif";
+
+shape arena with
+    scalar arena_width = global arena_width;
+    scalar arena_length = global arena_length;
+    scalar arena_wall_height = global arena_wall_height;
+is
+    const integer side_wall_segments = 10; 
+    scalar wall_width = arena_wall_height/12;
+    material type wall_material is plastic colored wall_color;
+
+    shape side_walls is
+        material type segment_material is none;
+        
+        shape wall_segment with
+            scalar length = 1;
+        is
+            parallelogram with
+                vertex = <0 (-length/2) 0>;
+                side1 = <0 length 0>;
+                side2 = <0 0 arena_wall_height>;
+            end;
+        end;
+        
+        for integer i = 0 .. (side_wall_segments - 1) do
+            if (i > 1 and < (side_wall_segments - 2)) and ((random from 0 to 1) > 0.4) then
+                segment_material is hyperlogo_m;
+            else
+                segment_material is wall_material;
+            end;
+            
+            wall_segment with 
+                length = arena_length/side_wall_segments;
+                move to <(-arena_width / 2) (-arena_length/2 + (length * (i + .5))) 0>;
+                material is segment_material;
+            end;
+            
+            if (i > 1 and < (side_wall_segments - 2)) and ((random from 0 to 1) > 0.4) then
+                segment_material is hyperlogo_m;
+            else
+                segment_material is wall_material;
+            end;
+            
+            wall_segment with 
+                length = arena_length/side_wall_segments;
+                rotate by 180 around <0 0 1>;
+                move to <(arena_width / 2) (-arena_length/2 + (length * (i + .5))) 0>;
+                material is segment_material;
+            end;
+        end;
+        
+        material is wall_material;
+        // wall tops
+        //
+        parallelogram with
+            vertex = <(-arena_width/2) (-arena_length/2) arena_wall_height>;
+            side1 = <(-wall_width) 0 0>;
+            side2 = <0 arena_length 0>;
+        end;
+        parallelogram with
+            vertex = <(arena_width/2) (-arena_length/2) arena_wall_height>;
+            side1 = <wall_width 0 0>;
+            side2 = <0 arena_length 0>;
+        end;
+        
+        // outer walls
+        //
+        parallelogram with
+            vertex = <(-arena_width/2 - wall_width) (-arena_length/2) (-arena_wall_height*1.5)>;
+            side1 = <0 arena_length 0>;
+            side2 = <0 0 (arena_wall_height*2.5)>;
+        end;
+        parallelogram with
+            vertex = <(arena_width/2 + wall_width) (-arena_length/2) (-arena_wall_height*1.5)>;
+            side1 = <0 arena_length 0>;
+            side2 = <0 0 (arena_wall_height*2.5)>;
+        end;
+    end;    // side_walls
+    
+        
+    shape chute with
+    is
+        vector side_shape[] = [<0 (-arena_wall_height) 0> <0 0 0> <0 0 arena_wall_height>
+                               <0 (-arena_wall_height / 2) arena_wall_height>];
+        vector back[] = [<(-goal_width/2) (-arena_wall_height) 0>
+                         <(-goal_width/2) (-arena_wall_height / 2) arena_wall_height>
+                         <(goal_width/2) (-arena_wall_height / 2) arena_wall_height>
+                         <(goal_width/2) (-arena_wall_height) 0>];
+        vector half_back[] = [<(-goal_width/2) (-arena_wall_height) 0>
+                              <(-goal_width/2) (-3 * arena_wall_height / 4) (arena_wall_height/2)>
+                              <(goal_width/2) (-3 * arena_wall_height / 4) (arena_wall_height/2)>
+                              <(goal_width/2) (-arena_wall_height) 0>];
+                
+        // bottom
+        //
+        parallelogram with
+            vertex = <(-goal_width/2) (-arena_wall_height) 0>;
+            side1 = <goal_width 0 0>;
+            side2 = <0 (arena_wall_height) 0>;
+        end;
+        
+        polygon side_shape with
+            move to <(-goal_width/2) 0 0>;
+        end;
+        
+        polygon side_shape with
+            move to <(goal_width/2) 0 0>;
+        end;
+        
+        // top
+        //
+        parallelogram with
+            vertex = <(-goal_width/2) (-arena_wall_height / 2) arena_wall_height>;
+            side1 = <goal_width 0 0>;
+            side2 = <0 (arena_wall_height / 2) 0>;
+        end;
+        polygon back with
+            color = black;
+            render_mode is wireframe;
+        end;
+        polygon half_back;
+    end;    // chute
+    
+    
+    shape end_walls is
+        scalar segment_width = (arena_width - goal_width) / 2; 
+        shape wall_segment is
+            block with
+                vertex = <0 0 (-arena_wall_height * 1.5)>;
+                side1 = <(segment_width + wall_width) 0 0>;
+                side2 = <0 wall_width 0>;
+                side3 = <0 0 (arena_wall_height * 2.5)>;
+            end;
+        end;
+        
+        material is wall_material;    
+    
+        wall_segment with
+            move to <(arena_width/2 - segment_width) (arena_length/2) 0>;
+        end;
+        wall_segment with
+            move to <(-arena_width/2 - wall_width) (arena_length/2) 0>;
+        end;
+        wall_segment with
+            move to <(arena_width/2 - segment_width) (-arena_length/2 - wall_width) 0>;
+        end;
+        wall_segment with
+            move to <(-arena_width/2 - wall_width) (-arena_length/2 - wall_width) 0>;
+        end;
+        
+        // panels below goals (these could be removed for optimization)
+        //
+        parallelogram with
+            vertex = <(-goal_width/2) (arena_length/2) (-arena_wall_height * 1.5)>;
+            side1 = <goal_width 0 0>;
+            side2 = <0 0 (arena_wall_height * 1.5)>;
+        end;
+        parallelogram with
+            vertex = <(-goal_width/2) (-arena_length/2) (-arena_wall_height * 1.5)>;
+            side1 = <goal_width 0 0>;
+            side2 = <0 0 (arena_wall_height * 1.5)>;
+        end;        
+    end;    // end_walls
+    
+    
+    shape floor is
+	    rectangular_grid with
+	        rotate by -90 around <0 0 1>;
+	        scale by arena_width/2 along <1 0 0>;
+	        scale by arena_length/2 along <0 1 0>;
+	    end;
+	end;    // floor
+    
+        
+    floor with material is floor_m; end;
+    side_walls;
+    end_walls;
+    chute with
+        material is plastic colored grey;
+        move to <0 (-arena_length / 2) 0>;
+    end;
+    chute with
+        material is plastic colored grey;
+        move to <0 (-arena_length / 2) 0>;
+        rotate by 180 around <0 0 1>;
+    end;
+end;    // arena
+
+shape legs with
+    scalar upper_radius = arena_wall_height * 1.25;
+    scalar lower_radius = arena_wall_height * .6;
+is
+    shape leg is
+        cone with
+            end1 = <0 0 (-table_height)>;
+            end2 = <0 0 (-arena_wall_height/20)>;
+            radius1 = lower_radius;
+            radius2 = upper_radius;
+        end;
+    end;
+    
+    color = light brown;
+    leg with
+        move to <(-arena_width/2 + upper_radius) (-arena_length/2 + upper_radius) 0>;
+    end;
+    leg with
+        move to <(arena_width/2 - upper_radius) (-arena_length/2 + upper_radius) 0>;
+    end;
+    leg with
+        move to <(arena_width/2 - upper_radius) (arena_length/2 - upper_radius) 0>;
+    end;
+    leg with
+        move to <(-arena_width/2 + upper_radius) (arena_length/2 - upper_radius) 0>;
+    end;
+end;    // legs
+
+anim arena_anim 
+	args type args;
+with
+	eye = <50 -100 50>;
+	args check;
+is
+	shape scene is
+		arena;
+		legs;
+	end;
+	
+	mouse_controlled_shape scene titled "Air Hockey Area" with
+		auto_camera is on;
+	end;
+end;	// arena_anim

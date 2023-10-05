@@ -1,0 +1,24 @@
+{***************************************************************}
+{                     texture_coordinates.ores                  }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{		Contains standard texture mapping definitions.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/vectors.ores";
+include "system/vector_grids.ores";
+
+
+{***************************************************************}
+{	texture coordinates are used to pin a texture to a surface	}
+{***************************************************************}
+
+
+type texcoord is vector;
+subject texcoords extends vectors type;
+subject texcoord_grid extends vector_grid type;

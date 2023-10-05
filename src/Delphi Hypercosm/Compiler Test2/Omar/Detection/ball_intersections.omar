@@ -1,0 +1,445 @@
+{***************************************************************}
+{                      ball_intersections.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// This code demonstrates how to do a reliable real-time based simulation
+// of collisions between balls and walls.  The basic per-frame algorithm
+// is:
+//
+// Compute the new location of each ball based on the elapsed time since
+// the previous frame and the velocity of the ball, as if the ball doesn't
+// collide with anything.
+//
+// Then, for each ball, test its path from the old position to the new
+// position against every wall and every other ball.  Determine when the
+// earliest collision in the frame occurs.
+//
+// Compute the ball positions at the time of the first collision, handle
+// the collision by updating the velocities of the ball or balls involved,
+// and repeat the algorithm for the time remaining in the frame after the
+// first collision.
+//
+// The rest of the code in here is a minor madness to deal with the result
+// of numerical error - sometimes a ball's new position at the time of the
+// collision with a wall or another ball can be slightly inside the other
+// object.  The general solution to this problem is difficult and outside
+// the point of this demo, so a cheap hack is used instead - just move the
+// ball towards the center of the arena until it clears the collision.
+// WARNING - the "zero time collision" handling is not quite reliable -
+// occasionally a ball will get stuck in a wall forever and the animation
+// will stop.  I've tried to fix this but it doesn't go away, and I don't
+// have any more time to spend on it.
+
+do ball_intersections_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/path_intersections.ores";
+include "system/random.ores";
+
+
+scalar prev_time;
+
+boolean allow_overlaps is false;
+
+enum obstacle is wall, plane, ball;
+
+const integer num_segments = 6;
+const integer num_infinite_lines = 4;
+
+vector segments[1..num_segments][1..2] = [
+	[<(-10) 10 0> <(-10) (-7) 0>]
+	[<(-10) (-7) 0> <12 (-10) 0>]
+	[<12 (-10) 0> <10 10 0>]
+	[<10 10 0> <(-10) 10 0>]
+	[<-2 -4 0> <3 1 0>]
+	[<0 -4 0> <5 1 0>]
+];
+
+const integer num_planes = 2;
+
+vector planes[1..num_planes][1..2] = [
+	// origin, normal
+	[<0 0 -3> <0 0 1>]
+	[<0 0  3> <0 0 1>]
+];
+
+const integer num_balls = 8;
+
+vector ball_positions[1..num_balls];
+vector ball_velocities[1..num_balls];
+
+const scalar ball_radius = 0.6;
+
+verb init_simulation
+is
+	prev_time = get_seconds;
+	
+	for integer i = 1..num_balls do
+		ball_positions[i] = vrandom <(-6) (-6) 0> to <6 6 0>;
+		ball_velocities[i] = vrandom <(-9) (-9) (-9)> to <9 9 9>;
+	end;
+end;
+
+shape advance_simulation
+	by scalar time_step;
+	to scalar current_time;
+is
+	vector new_pos[1..num_balls];
+	scalar min_time;
+	scalar pt, lt;
+	boolean hit;
+	obstacle type first_item_hit_kind;
+	integer first_ball_hitting;
+	integer first_item_hit;
+	vector position_hit;
+	scalar wall_position_hit;
+	vector plane_position_hit;
+	
+	while time_step > 0 do
+		// compute new ball positions at end of the frame assuming no collisions
+		for integer i = 1..num_balls do
+			new_pos[i] = ball_positions[i] + (time_step * ball_velocities[i]);
+		end;
+		
+		min_time = 2;
+		
+		for integer i = 1..num_balls do
+			// test intersections with walls
+			for integer j = 1..num_segments do
+				vector ball_start = ball_positions[i];
+				vector ball_end = new_pos[i];
+				
+				ball_start.z = 0;
+				ball_end.z = 0;
+				
+				if j <= num_infinite_lines then
+					hit is (sphere_path_intersects_line
+						ball_start ball_end segments[j][1] segments[j][2] at pt
+					with
+						overlapping_objects_collide is not allow_overlaps;
+						line_t refers to lt;
+						radius = ball_radius;);
+				else
+					hit is (sphere_path_intersects_line_segment
+						ball_start ball_end segments[j][1] segments[j][2] at pt
+					with
+						overlapping_objects_collide is not allow_overlaps;
+						line_t refers to lt;
+						radius = ball_radius;);
+				end;
+				
+				if hit and pt < min_time then
+					min_time = pt;
+					first_ball_hitting = i;
+					first_item_hit = j;
+					first_item_hit_kind is wall;
+					position_hit = ((1 - lt) * segments[j][1]) + (lt * segments[j][2]);
+					position_hit.z = (((1 - lt) * ball_positions[i]) + (lt * new_pos[i]))
+						dot <0 0 1>;
+					wall_position_hit = lt;
+				end;
+			end;
+			
+			// test intersections with planes
+			for integer j = 1..num_planes do
+				hit is (sphere_path_intersects_plane
+					ball_positions[i] new_pos[i] planes[j][1] planes[j][2] at pt
+				with
+					overlapping_objects_collide is not allow_overlaps;
+					plane_intersect refers to plane_position_hit;
+					radius = ball_radius;);
+				
+				if hit and pt < min_time then
+					min_time = pt;
+					first_ball_hitting = i;
+					first_item_hit = j;
+					first_item_hit_kind is plane;
+					position_hit = plane_position_hit;
+				end;
+			end;
+			
+			// test intersections with other balls
+			// we only need to test against balls indexed higher than the current ball,
+			// since we already tested against the rest when they were the current ball.
+			for integer j = (i + 1)..num_balls do
+				hit is (sphere_path_intersects_sphere_path
+					ball_positions[i] new_pos[i] ball_positions[j] new_pos[j] at pt
+				with
+					overlapping_objects_collide is not allow_overlaps;
+					radius_sum = 2 * ball_radius;);
+				
+				if hit and pt < min_time then
+					min_time = pt;
+					first_ball_hitting = i;
+					first_item_hit = j;
+					first_item_hit_kind is ball;
+				end;
+			end;
+		end;
+		
+		if min_time <= 1 then
+			scalar time_to_hit;
+			
+			// Reduce the likelyhood of balls getting stuck in the walls by not moving
+			// them all the way to the collision point.
+			time_to_hit = time_step * min_time * 0.97;
+			
+			// find the ball positions at the time of the first collision
+			for integer i = 1..num_balls do
+				ball_positions[i] = itself + (time_to_hit * ball_velocities[i]);
+			end;
+			
+			// find the new ball velocities for the balls affected by the collision
+			when first_item_hit_kind is
+				wall:
+					vector wall_normal;
+					
+					if (first_item_hit > num_infinite_lines) and
+							((wall_position_hit <= 0) or (wall_position_hit >= 1)) then
+						// hit an endpoint
+						vector endpoint;
+						
+						if wall_position_hit <= 0 then
+							endpoint = segments[first_item_hit][1];
+						else
+							endpoint = segments[first_item_hit][2];
+						end;
+						
+						wall_normal = ball_positions[first_ball_hitting];
+						wall_normal.z = 0;
+						wall_normal = itself - endpoint;
+					else
+						wall_normal =
+							(segments[first_item_hit][2] - segments[first_item_hit][1]) cross
+							<0 0 1>;
+					end;
+					
+					ball_velocities[first_ball_hitting] =
+						vreflect ball_velocities[first_ball_hitting] across wall_normal;
+					
+					block with
+						magnify by 0.2;
+						move to position_hit;
+						color = light green;
+					end;
+				end;
+				
+				plane:
+					ball_velocities[first_ball_hitting] =
+						vreflect ball_velocities[first_ball_hitting]
+							across planes[first_item_hit][2];
+					
+					block with
+						magnify by 0.2;
+						move to position_hit;
+						color = light green;
+					end;
+				end;
+				
+				ball:
+					vector collision_normal =
+						ball_positions[first_item_hit] - ball_positions[first_ball_hitting];
+					
+					vector ball1_velocity, ball2_velocity;
+					
+					ball1_velocity =
+						ball_velocities[first_ball_hitting] perpendicular collision_normal;
+					ball2_velocity =
+						ball_velocities[first_ball_hitting] parallel collision_normal;
+					ball1_velocity = itself +
+						ball_velocities[first_item_hit] parallel (-collision_normal);
+					ball2_velocity = itself +
+						ball_velocities[first_item_hit] perpendicular (-collision_normal);
+					
+					ball_velocities[first_ball_hitting] = ball1_velocity;
+					ball_velocities[first_item_hit] = ball2_velocity;
+				end;
+			end;
+			
+			if min_time = 0 then
+				// We've updated the velocities, but the balls are all in the same places,
+				// so the collision will continue.  Move the offending ball somewhere to
+				// alleviate the collision.
+				
+				vector correction;
+				
+				write "correcting ball ", first_ball_hitting, " stuck on ";
+				
+				when first_item_hit_kind is
+					wall:
+						write "wall ";
+					end;
+					
+					plane:
+						write "plane ";
+					end;
+					
+					ball:
+						write "ball ";
+					end;
+				end;
+				
+				write first_item_hit, ", at time ", current_time, ": ";
+				
+				// find a correction vector along which to move the ball until it clears
+				// the collision.  We use a vector that is roughly towards the center to
+				// keep the ball within the arena.
+				
+				correction = -(ball_positions[first_ball_hitting]);
+				
+				if (correction dot correction) < 0.001 then
+					correction = <1 0 0>;
+				else
+					correction = normalized correction;
+				end;
+				
+				correction = itself * 0.15;
+				
+				while min_time < 0.05 do
+					vector ball_pos1, ball_pos2;
+					
+					write ".";
+					
+					min_time = 2;
+					
+					ball_positions[first_ball_hitting] = itself + correction;
+					
+					ball_pos1 = ball_positions[first_ball_hitting];
+					ball_pos2 = ball_pos1 + ball_velocities[first_ball_hitting];
+					
+					when first_item_hit_kind is
+						wall:
+							ball_pos1.z = 0;
+							ball_pos2.z = 0;
+							
+							if first_item_hit <= num_infinite_lines then
+								hit is (sphere_path_intersects_line
+									ball_pos1
+									ball_pos2
+									segments[first_item_hit][1]
+									segments[first_item_hit][2] at pt
+								with
+									overlapping_objects_collide is not allow_overlaps;
+									radius = ball_radius;);
+							else
+								hit is (sphere_path_intersects_line_segment
+									ball_pos1
+									ball_pos2
+									segments[first_item_hit][1]
+									segments[first_item_hit][2] at pt
+								with
+									overlapping_objects_collide is not allow_overlaps;
+									radius = ball_radius;);
+							end;
+						end;
+						
+						plane:
+							hit is (sphere_path_intersects_plane
+								ball_pos1
+								ball_pos2
+								planes[first_item_hit][1]
+								planes[first_item_hit][2] at pt
+							with
+								overlapping_objects_collide is not allow_overlaps;
+								radius = ball_radius;);
+						end;
+						
+						ball:
+							vector ball2_pos1 = ball_positions[first_item_hit];
+							vector ball2_pos2 = ball2_pos1 +
+								ball_velocities[first_item_hit];
+							
+							hit is (sphere_path_intersects_sphere_path
+								ball_pos1
+								ball_pos2
+								ball_positions[first_item_hit]
+								ball_positions[first_item_hit] at pt
+							with
+								overlapping_objects_collide is not allow_overlaps;
+								radius_sum = 2 * ball_radius;);
+						end;
+					end;
+					
+					if hit then
+						min_time = pt;
+					end;
+				end;
+				
+				write ;
+			end;
+			
+			// repeat this calculation for the remaining time in the frame
+			time_step = itself - time_to_hit;
+		else
+			for integer i = 1..num_balls do
+				ball_positions[i] = new_pos[i];
+			end;
+			
+			time_step = 0;
+		end;
+	end;
+	
+	// reset any balls that have gone astray
+	for integer i = 1..num_balls do
+		if (vlength of ball_positions[i]) > 100 then
+			write "resetting ball ", i, ", at time ", current_time,;
+			ball_positions[i] = vrandom <(-6) (-6) 0> to <6 6 0>;
+		end;
+	end;
+end;
+
+picture ball_intersections_picture
+is
+	scalar current_time = get_seconds;
+	
+	when key_to_char get_key is
+		"r":
+			init_simulation;
+		end;
+		
+		"i":
+			allow_overlaps is not itself;
+		end;
+	end;
+	
+	advance_simulation by (current_time - prev_time) to current_time;
+	
+	prev_time = current_time;
+	
+	default_lights;
+	
+	for integer i = 1..num_segments do
+		parallelogram with
+			vertex = segments[i][1] - <0 0 0.5>;
+			side1 = segments[i][2] - segments[i][1];
+			side2 = <0 0 1>;
+		end;
+	end;
+	
+	// TODONOW - draw the planes
+	
+	for integer i = 1..num_balls do
+		sphere with
+			center = ball_positions[i];
+			radius = ball_radius;
+		end;
+	end;
+end;
+
+anim ball_intersections_anim
+with
+	eye = itself * 1.25;
+	field_of_view = 48;
+is
+	init_simulation;
+	
+	mouse_controlled_picture ball_intersections_picture;
+end;

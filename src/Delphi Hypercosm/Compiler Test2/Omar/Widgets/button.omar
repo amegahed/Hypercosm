@@ -1,0 +1,94 @@
+{***************************************************************}
+{                          button.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do button_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/button.ores";
+include "system/views.ores";
+
+
+picture button_picture is
+    static button type button1 labelled "button 1";
+    static button type button2 labelled "button 2";
+    static button type button3 labelled "button 3";
+    static button type button4 labelled "button 4";
+
+    button1 instance with
+        magnify by .4;
+        move to <-.5 .5 0>;
+    end;
+    button2 instance with
+        magnify by .4;
+        move to <.5 .5 0>;
+    end;
+    button3 instance with
+        magnify by .4;
+        move to <-.5 -.5 0>;
+    end;
+    button4 instance with
+        magnify by .4;
+        move to <.5 -.5 0>;
+    end;
+
+    if button1's pressed then
+        button1 relabel "pressed";
+    else
+        button1 relabel "button 1";
+    end;
+    if button2's pressed then
+        button2 relabel "pressed";
+    else
+        button2 relabel "button 2";
+    end;
+    if button3's pressed then
+        button3 relabel "pressed";
+    else
+        button3 relabel "button 3";
+    end;
+    if button4's pressed then
+        button4 relabel "pressed";
+    else
+        button4 relabel "button 4";
+    end;
+
+    set_cursor to arrow;
+    if button1's mouse_is_over then
+        set_cursor to finger_point;
+    end;
+    if button2's mouse_is_over then
+        set_cursor to finger_point;
+    end;
+    if button3's mouse_is_over then
+        set_cursor to finger_point;
+    end;
+    if button4's mouse_is_over then
+        set_cursor to finger_point;
+    end;
+end;    // button_picture
+
+
+anim button_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Button Demo";
+    render_mode is wireframe;
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        button_picture with
+            ortho_view;
+        end;
+    end;
+end;    // button_anim

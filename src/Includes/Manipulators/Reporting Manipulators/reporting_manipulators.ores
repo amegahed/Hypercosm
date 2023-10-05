@@ -1,0 +1,17 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     reporting_manipulators.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/reporting_translation_manipulator.ores";
+include "system/reporting_rotation_manipulator.ores";
+include "system/reporting_orientation_manipulator.ores";
+include "system/reporting_transformation_manipulator.ores";

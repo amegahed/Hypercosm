@@ -1,0 +1,125 @@
+{***************************************************************}
+{                         trans_stack.ores                      }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the routines to transform to different         }
+{       reference frames in the transformation hierarchy.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_trans_stacks.ores";
+
+
+// definition of transformation levels
+//
+enum trans_state is current, outer, world;
+
+
+integer question trans_stack_level
+    of trans_state type trans_state;
+is
+    when trans_state is
+        current:
+            answer trans_level + 1;
+        end;
+        outer:
+            answer trans_level;
+        end;
+        world:
+            answer 1;
+        end;
+    end;
+end;    // trans_stack_level
+
+
+verb transform_trans
+    trans type reference trans;
+
+    // source and destination transformation levels
+    //
+    from trans_state type source is world;
+    to trans_state type dest is current;
+is
+    if source isn't dest then
+        integer source_level = trans_stack_level of source;
+        integer dest_level = trans_stack_level of dest;
+        integer current_level = trans_stack_level of current;
+
+        if source_level < dest_level then
+
+            // transforming global to local
+            //
+            while source_level <= dest_level do
+                trans type level_trans;
+
+                if source_level <> current_level then
+                    level_trans = trans_stack[source_level];
+                else
+                    level_trans = global trans;
+                end;
+
+                level_trans invert;
+                trans transform from level_trans;
+                source_level = itself + 1;
+            end;
+        else
+            // transforming local to global
+            //
+            while source_level >= dest_level do
+                trans type level_trans;
+
+                if source_level <> current_level then
+                    level_trans = trans_stack[source_level];
+                else
+                    level_trans = global trans;
+                end;
+
+                trans transform from level_trans;
+                source_level = itself - 1;
+            end;
+        end;
+    end;
+end;    // transform_trans
+
+
+vector question transformed_vector
+    vector direction;
+
+    // source and destination transformation levels
+    //
+    from trans_state type source is world;
+    to trans_state type dest is current;
+is
+    trans type trans;
+    transform_trans trans from source to dest;
+    answer trans oriented direction;
+end;    // transformed_vector
+
+
+vector question transformed_point
+    vector point;
+
+    // source and destination transformation levels
+    //
+    from trans_state type source is world;
+    to trans_state type dest is current;
+is
+    trans type trans;
+    transform_trans trans from source to dest;
+    answer trans transformed point;
+end;    // transformed_point
+
+
+verb get_global_trans
+    trans type reference trans;
+is
+    trans = global trans;
+
+    // transform current local transformation to world coords
+    //
+    transform_trans trans from current to world;
+end;    // get_global_trans

@@ -1,0 +1,169 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    phsyics_scenes.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of an applet with           }
+{       multiple physics scene instances.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_scenes_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the '1' key to launch projectiles within          }
+{       'scene a' and '2' to launch one in 'scene b'            }
+{                                                               }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "physics_test_projectile.ores";
+ 
+// box shape definition
+//
+scalar box_height = 4;
+scalar box_length = 8;
+scalar box_width = 2;
+
+shape box_shape_a is
+	block with
+		material is chalk colored red;
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+	end;
+end;    // box_shape_A
+
+renderable type box_renderable_a is (new static_shape of box_shape_a);
+
+shape box_shape_b is
+	block with
+		material is chalk colored blue;
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+	end;
+end;    // box_shape_B
+
+renderable type box_renderable_b is (new static_shape of box_shape_b);
+
+shape projectile_shape_a is
+	sphere with
+		material is chalk colored red;
+		radius = projectile_radius;
+	end;
+end;    // projectile_shape_a
+
+renderable type projectile_renderable_a is new static_shape of projectile_shape_a;
+
+shape projectile_shape_b is
+	sphere with
+		material is chalk colored blue;
+		radius = projectile_radius;
+	end;
+end;    // projectile_shape_b
+
+renderable type projectile_renderable_b is new static_shape of projectile_shape_b;
+
+anim physics_scenes_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+is
+	renderable_physics_scene type scene_a;
+	renderable_physics_scene type scene_b;
+	verb draw is
+		// display on screen instructions
+		//
+		overlay_text "Press '1' to shoot a projectile in scene a." at <0 .9 0>;
+		overlay_text "Press '2' to shoot a projectile in scene b." at <0 .85 0>;
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+				  
+		// fire a projectile, only if we just pressed the key this frame
+		//
+		if key_down char_to_key of "1" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to scene_a using projectile_renderable_a;
+			end;
+			s_down_last_frame is true;
+		elseif key_down char_to_key of "2" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to scene_b using projectile_renderable_b;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+	end;    // check_keys
+	
+		
+	verb update is
+		draw;
+		check_keys;
+	end;    // update
+	
+	shape instance with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+				
+		scene_a instance;
+		scene_b instance;
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // instance
+	
+	
+	// add the box shape to scene a
+	//
+	scene_a add_physics_actor (new renderable_physics_box_actor rendering box_renderable_a with
+		trans's origin = <-box_width 0 (box_height/2)>;
+		mass = 10;
+		friction = .95;
+		restitution = .05;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	);
+			
+	// add the box shape to scene b
+	//
+	scene_b add_physics_actor (new renderable_physics_box_actor rendering box_renderable_b with
+		trans's origin = <box_width 0 (box_height/2)>;
+		mass = 10;
+		friction = .95;
+		restitution = .05;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	);
+	
+	// add the plane shape
+	//
+	scene_a add_physics_actor (new physics_plane_actor);
+	scene_b add_physics_actor (new physics_plane_actor);
+	// turn on proxy rendering aka debug mode
+	//                        
+	scene_a set_render_proxies to true;
+	scene_b set_render_proxies to true; 
+	
+	// run!
+	//    
+	mouse_controlled_animated_shape instance doing update;
+end;    // physics_scenes_anim

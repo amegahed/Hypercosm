@@ -1,0 +1,300 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        3ds_uvw_mapping.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains uvw mapping definitions that correspond        }
+{       to entities from Discreet's 3D Studio Max software.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/texture_mapping.ores";
+include "system/3ds_modifier.ores";
+include "system/3ds_editable_spline.ores";
+include "system/polygon_meshes.ores";
+include "system/copying.ores";
+
+type translated_3ds_xyz_alignment is vector_axis type;
+
+abstract subject translated_3ds_uvw_mapping
+extends
+	translated_3ds_stackable translated_3ds_collapsable2 
+	translated_3ds_activatable recycleable transformable_texture_mapping
+does
+	// constructor
+	//
+	verb new with
+	
+		// texture scaling and tiling parameters
+		//
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+		boolean u_flip is false, v_flip is false, w_flip is false;
+		
+		// transformation parameters
+		//
+		translated_3ds_xyz_alignment type alignment is z;
+		trans type trans;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	end;
+	
+	// texture scaling methods
+	//
+	verb tile_u
+		by scalar u_tile;
+	end;
+	verb tile_v
+		by scalar v_tile;
+	end;
+	verb tile_w
+		by scalar w_tile;
+	end;
+	
+	// texture flipping methods
+	//
+	verb flip_u;
+	verb flip_v;
+	verb flip_w;
+	
+	// get point relative to texture transformation
+	//  
+	vector question get_transformed_point
+		vector point;
+	end;
+	vector question get_transformed_direction
+		vector direction;
+	end;
+		
+	// copying methods
+	//
+	verb copy
+		from translated_3ds_uvw_mapping type source;
+	end;
+	abstract translated_3ds_uvw_mapping type question clone;
+
+	// stacking methods
+	//
+	object type question get_self;
+	
+	// collapsing methods
+	//    
+	translated_3ds_stackable type question get_collapsed
+		translated_3ds_stackable type argument;
+	end;
+	
+	// activating methods
+	//  
+	verb activate;
+	verb deactivate;
+	boolean question is_activated;
+	boolean question is_deactivated;
+	
+	// recycling methods
+	//
+	abstract reference verb recycle;    
+has
+	// attributes
+	//
+	public scalar u_tile, v_tile, w_tile;
+	public boolean u_flip, v_flip, w_flip;
+	
+	// axis alignment attributes
+	//
+	public translated_3ds_xyz_alignment type alignment;
+	
+	// activatable attributes
+	//
+	boolean active is true;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+	
+		// scaling and tiling parameters
+		//
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+		boolean u_flip is false, v_flip is false, w_flip is false;
+		
+		// transformation parameters
+		//
+		translated_3ds_xyz_alignment type alignment is z;
+		trans type trans;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	is
+		transformable_texture_mapping new with
+			trans = static trans;
+		end;
+		with translated_3ds_uvw_mapping do
+		
+			// set scaling and tiling parameters
+			//
+			its u_tile = u_tile;
+			its v_tile = v_tile;
+			its w_tile = w_tile;
+			its u_flip is u_flip;
+			its v_flip is v_flip;
+			its w_flip is w_flip;
+			
+			// set axis alignment parameters
+			//
+			its alignment is alignment;
+			
+			// set activation parameters
+			//
+			its active is active;
+		end;
+	end;    // new
+	
+	//  
+	// texture scaling methods
+	//
+	
+	verb tile_u
+		by scalar u_tile;
+	is
+		translated_3ds_uvw_mapping's u_tile = u_tile;  
+	end;    // tile_u
+	
+	verb tile_v
+		by scalar v_tile;
+	is
+		translated_3ds_uvw_mapping's v_tile = v_tile;   
+	end;    // tile_v
+	
+	verb tile_w
+		by scalar w_tile;
+	is
+		translated_3ds_uvw_mapping's w_tile = w_tile;
+	end;    // tile_w
+	
+	//  
+	// texture flipping methods
+	//
+	
+	verb flip_u is
+		u_flip is not u_flip;
+	end;    // flip_u
+	
+	verb flip_v is
+		v_flip is not v_flip;
+	end;    // flip_v
+	
+	verb flip_w is
+		w_flip is not w_flip;
+	end;    // flip_w
+	
+	//  
+	// get point relative to texture transformation
+	//  
+	
+	vector question get_transformed_point
+		vector point;
+	is
+		answer inverse_trans transformed point;
+	end;    // get_transformed_point
+	
+	vector question get_transformed_direction
+		vector direction;
+	is
+		answer inverse_trans oriented direction;
+	end;    // get_transformed_direction
+	
+	//          
+	// copying methods
+	//
+	
+	verb copy
+		from translated_3ds_uvw_mapping type source;
+	is   
+		transformable_texture_mapping static copy from source; 
+		with source do
+		
+			// copy scaling and tiling parameters
+			//
+			u_tile = its u_tile;
+			v_tile = its v_tile;
+			w_tile = its w_tile;
+			u_flip is its u_flip;
+			v_flip is its v_flip;
+			w_flip is its w_flip;
+			
+			// copy transformation parameters
+			//
+			alignment is its alignment;
+			trans = source's trans;
+			inverse_trans = source's inverse_trans;
+		end;
+	end;    // copy
+	
+	//
+	// stacking methods
+	//
+	
+	object type question get_self is
+		answer translated_3ds_uvw_mapping;
+	end;    // get_self
+	
+	//        
+	// collapsing methods
+	//
+	
+	translated_3ds_stackable type question get_collapsed
+		translated_3ds_stackable type argument;
+	is
+		// extrude if argument is a spline
+		//
+		if translated_3ds_editable_spline type argument get_self then
+			translated_3ds_editable_spline type editable_spline is 
+				translated_3ds_editable_spline type argument get_self; 
+			translated_3ds_editable_mesh type editable_mesh;
+			polylines type polylines;
+			editable_spline orient;
+			polylines is editable_spline to_polylines;  
+			if some polylines then
+				editable_mesh add_element (get_polygon_mesh of polylines[1] with   
+					smoothing is true;
+					one_sided is true;
+				);
+			end;
+			argument is editable_mesh;
+		end;
+		
+		if texturable type argument then
+			texturable type texturable is texturable type argument;
+			texturable apply translated_3ds_uvw_mapping;
+		end;
+		
+		recycle;
+		answer argument;
+	end;    // get_collapsed
+	
+	//  
+	// activating methods
+	//
+	
+	verb activate is
+		active is true;
+	end;    // activate
+	
+	verb deactivate is
+		active is false;
+	end;    // deactivate
+	
+	boolean question is_activated is
+		answer active;
+	end;    // is_activated
+	
+	boolean question is_deactivated is
+		answer not active;
+	end;    // is_deactivated
+end;    // translated_3ds_uvw_mapping

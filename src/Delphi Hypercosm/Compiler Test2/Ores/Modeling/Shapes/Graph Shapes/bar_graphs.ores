@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		   bar_graphs.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard shapes for creating simple bar		}
+{		graphs with multicolored bars.							}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/shapes.ores";
+
+
+shape bar_graph
+    scalar heights[];
+with
+    scalar width = 1;
+    scalar depth = 1;
+    color type bar_color[];
+is
+    integer number = max heights - min heights + 1;
+    scalar bar_width = width / number;
+
+    move to <(-width / 2) (-depth / 2) 0>;
+    for integer counter = 1..number do
+        block with
+            vertex = <0 0 0>;
+            side1 = <bar_width 0 0>;
+            side2 = <0 depth 0>;
+            side3 = <0 0 heights[counter]>;
+            if (max bar_color <> 0) then
+                color = bar_color[counter];
+            end;
+        end;
+        move to <bar_width 0 0>;
+    end;
+end;    // bar_graph

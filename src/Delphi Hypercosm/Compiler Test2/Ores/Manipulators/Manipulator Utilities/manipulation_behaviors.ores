@@ -1,0 +1,36 @@
+{***************************************************************}
+{                    manipulation_behaviors.ores                }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{          Contains some standard interfaces useful in          }
+{                   interactive applications.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+adjective touchable
+does
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;    // touch
+end;    // touchable
+
+
+adjective pressable
+does
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;    // press
+    
+    verb release
+        from vector location;
+        towards vector direction;
+    end;    // release
+end;    // pressable 

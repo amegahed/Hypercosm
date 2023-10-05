@@ -1,0 +1,123 @@
+{***************************************************************}
+{                          perspective.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do perspective_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.omar";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+
+
+shape perspective_scene is
+    line [<-1 -1 -1> <1 -1 -1> <1 1 -1> <-1 1 -1> <-1 -1 -1>];
+    line [<-1 -1 1> <1 -1 1> <1 1 1> <-1 1 1> <-1 -1 1>];
+    line [<-1 -1 -1> <-1 -1 1>];
+    line [<1 -1 -1> <1 -1 1>];
+    line [<1 1 -1> <1 1 1>];
+    line [<-1 1 -1> <-1 1 1>];
+end;    // perspective_scene
+
+
+shape perspective_rays is
+
+    {rays}
+    line [<.25 1 -.25> <-.25 -1 .25>];
+    line [<-.25 1 -.25> <.25 -1 .25>];
+    line [<.25 1 .25> <-.25 -1 -.25>];
+    line [<-.25 1 .25> <.25 -1 -.25>];
+    line [<.25 1.5 -.25> <-.16 -1 .16>];
+    line [<-.25 1.5 -.25> <.16 -1 .16>];
+    line [<.25 1.5 .25> <-.16 -1 -.16>];
+    line [<-.25 1.5 .25> <.16 -1 -.16>];
+end;    // perspective_rays
+
+
+shape perspective_projection is
+
+    {image on plane}
+    line [<-.25 -1 -.25> <.25 -1 -.25> <.25 -1 .25> <-.25 -1 .25> <
+        -.25 -1 -.25>];
+    line [<-.16 -1 -.16> <.16 -1 -.16> <.16 -1 .16> <-.16 -1 .16> <
+        -.16 -1 -.16>];
+    line [<-.25 -1 -.25> <-.16 -1 -.16>];
+    line [<.25 -1 -.25> <.16 -1 -.16>];
+    line [<.25 -1 .25> <.16 -1 .16>];
+    line [<-.25 -1 .25> <-.16 -1 .16>];
+end;    // perspective_projection
+
+
+shape perspective_screen is
+    parallelogram with
+        rotate by 90 around <1 0 0>;
+        scale by .6 along <1 0 0>;
+        scale by .4 along <0 0 1>;
+    end;
+end;    // perspective_screen
+
+
+anim perspective_anim with
+    eye = <6 -6 4>;
+    field_of_view = 30;
+    //background_name is none;
+    //background = black;
+is
+	shape scene is
+	    arrow from <0 -1 0> to <0 2.5 0> with
+	        arrow_head_length = .05;
+	        color = green;
+	    end;
+	    mark at <0 0 0>;
+
+	    perspective_scene with
+	        magnify by .25;
+	        move to <0 1.25 0>;
+        	color = red;
+	    end;
+	    outlined perspective_screen with
+	        material is glass;
+	        move to <0 -.99 0>;
+	    end;
+
+	    futura_l_word "FOCAL POINT";
+	    futura_l_word "IMAGE PLANE" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 -1 -.5>;
+	    end;
+	    futura_l_word "LINE" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 .15>;
+	    end;
+	    futura_l_word "OF" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 0>;
+	    end;
+	    futura_l_word "SIGHT" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 -.15>;
+	    end;
+	    futura_l_word "SCENE" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 1 .5>;
+	    end;
+	    perspective_rays with
+	        color = blue;
+	    end;
+	    perspective_projection with
+	        color = red;
+	    end;
+	end;	// scene
+	
+	mouse_controlled_shape scene;
+end;	// perspective_anim

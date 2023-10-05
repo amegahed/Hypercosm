@@ -1,0 +1,16 @@
+{***************************************************************}
+{                          smoothing.ores                       }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains some standard rendering related utilities.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+adjective smoothable
+does
+	verb smooth;
+end;	// smoothable

@@ -1,0 +1,103 @@
+{***************************************************************}
+{                        widget_panel.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do widget_panel_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/widget_panel.ores";
+include "system/beveled_slider_component.ores";
+include "system/beveled_button_component.ores";
+include "system/beveled_toggle_component.ores";
+
+
+widget_panel type widget_panel with
+    //write_position_over is true;
+    write_position_clicked is true;
+    //write_component_over is true;
+    //write_component_clicked is true;
+    write_component_selected is true;
+    override_cursor is finger_point;
+end;
+
+
+material type m is constant_color white poster "grid.jpg";
+
+
+beveled_slider_component type slider;
+beveled_button_component type button;
+beveled_toggle_component type toggle;
+
+
+picture widget_panel_picture is
+    if not some current_interaction then
+        set_cursor to arrow;
+    end;
+    
+    default_lights with
+        get_view_trans into trans;
+    end;
+    
+{
+    if even (trunc (get_seconds / 2)) then
+        button enable;
+    else
+        button disable;
+    end;
+}
+    
+    if button's value then
+        if toggle is_enabled then
+            toggle disable;
+        else
+            toggle enable;
+        end;
+        button's value is false;
+    end;
+    
+    if toggle's value then
+        slider enable;
+    else
+        slider disable;
+    end;
+    
+    widget_panel instance with
+        magnify by 7;
+        material is m;
+    end;
+end;    // widget_panel_picture
+
+
+anim widget_panel_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Widget Panel Demo";
+    background = black;
+    args check;
+is
+    widget_panel add (widget_panel_component type slider)
+        from <-0.5 0.5 -0.1> to <0.5 0.75 0.101>;
+    
+    widget_panel add (widget_panel_component type button)
+        from <-0.75 -0.75 -0.1> to <-0.25 -0.25 0.101>;
+
+    widget_panel add (widget_panel_component type toggle)
+        from <0.25 -0.25 -0.1> to <0.75 0.25 0.101>;
+
+    mouse_controlled_picture widget_panel_picture;
+{
+    while true do
+        widget_panel_picture with
+            ortho_view;
+        end;
+    end;
+}
+end;    // widget_panel_anim

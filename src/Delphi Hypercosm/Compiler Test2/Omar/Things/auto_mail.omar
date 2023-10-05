@@ -1,0 +1,63 @@
+{***************************************************************}
+{                          auto_mail.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do auto_mail_anim;
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/mailbox.omar";
+
+subject auto_mailbox
+extends
+    timed_actor
+does
+    verb new with
+        scalar door_per_sec = 2/11;
+        scalar flag_per_sec = 1/4;
+    end;    // new
+
+    shape instance;
+has
+    scalar door_per_sec;
+    scalar flag_per_sec;
+is
+    verb new with
+        scalar door_per_sec = 2/11;
+        scalar flag_per_sec = 1/4;
+    is
+        auto_mailbox's door_per_sec = door_per_sec;
+        auto_mailbox's flag_per_sec = flag_per_sec;
+    end;    // new
+
+    shape instance is
+        mailbox with
+            material is plastic colored white;
+            door_angle = sin (time * 360 *
+                door_per_sec) * 45 + 45;
+            flag_angle = sin (time * 360 *
+                flag_per_sec) * 45 + 45;
+        end;
+    end;    // instance
+end;
+
+anim auto_mail_anim
+    args type args;
+with
+    facets = 5;
+    eye = <-8 -7 4>;
+    lookat = <-1 0 -.5>;
+    double_buffer is on;
+    args check;
+is
+    auto_mailbox type mailbox;
+
+    mouse_controlled_actor mailbox;
+end;

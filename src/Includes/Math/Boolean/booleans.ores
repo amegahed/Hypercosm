@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           booleans.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{            Contains some standard boolean utilities.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+//
+// some common boolean constants
+//
+
+const boolean on is true, off is false;
+const boolean yes is true, no is false;

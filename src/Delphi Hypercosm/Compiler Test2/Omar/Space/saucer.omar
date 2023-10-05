@@ -1,0 +1,346 @@
+{***************************************************************}
+{                          saucer.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do saucer_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+include "system/shaders.ores";
+include "system/bumps.ores";
+
+
+
+shape saucer is
+    shape wheel is
+
+        // wheel
+        torus with
+            material is chalk colored dark grey;
+            normal = <0 1 0>;
+            inner_radius = 0;
+        end;
+        sphere with
+            material is aluminum;
+            radius = .75;
+        end;
+        sphere with
+            radius = 1.25;
+            umin = 90;
+            umax = 270;
+            vmin = 0;
+            vmax = 90;
+        end;
+        sphere with
+            radius = 1.25;
+            umin = -90;
+            umax = 90;
+            vmin = 0;
+            vmax = 90;
+            scale by 1.5 along <1 0 0>;
+        end;
+    end;    // wheel
+
+
+    shape front_landing_gear is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = 0;
+            radius2 = .5;
+            skew from <0 0 1> to <1 0 1>;
+            scale by .2 along <0 1 0>;
+        end;
+        wheel with
+            magnify by .3;
+        end;
+    end;    // front_landing_gear
+
+
+    shape side_landing_gear is
+        torus with
+            normal = <1 0 0>;
+            inner_radius = .9;
+            outer_radius = 1;
+            scale by 5 along <1 0 0>;
+            umin = 0;
+            umax = 90;
+        end;
+        wheel with
+            magnify by .3;
+            move to <0 1 0>;
+        end;
+    end;    // side_landing_gear
+
+
+    shape saucer_seat is
+        shape seat_back is
+            sphere with
+                center = <0 -5 20>;
+                radius = 3;
+            end;
+            sphere with
+                center = <0 5 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <0 0 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 -5 0>;
+                end2 = <0 -5 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 5 0>;
+                end2 = <0 5 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 5 20>;
+                end2 = <0 -5 20>;
+                radius = 3;
+            end;
+        end;    // seat_back
+
+        // tilt seat back
+        seat_back with
+            rotate by 15 around <0 1 0>;
+            move to <8 0 0>;
+        end;
+        cylinder with
+            end1 = <8 5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 -5 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 0 0>;
+            end2 = <8 0 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <-8 -5 0>;
+            radius = 3;
+        end;    // front of seat
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <8 5 0>;
+            radius = 3;
+        end;    // side of seat
+        cylinder with
+            end1 = <-8 -5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;    // side of seat
+    end;    // saucer_seat
+
+
+    shape half_saucer_body is
+        sphere with
+            umin = 270;
+            umax = 90;
+            vmin = 30;
+            vmax = 60;
+            move to <0 0 (-sin vmin)>;
+        end;
+        sphere with
+            umin = 270;
+            umax = 90;
+            vmin = -30;
+            vmax = -90;
+            move to <0 0 (-sin vmin)>;
+            scale by .5 along <0 0 1>;
+        end;
+
+        // glass dome
+        transparent <.9 .9 1> sphere with
+            umin = 270;
+            umax = 90;
+            vmin = 0;
+            vmax = 90;
+            magnify by cos 60;
+            scale by 1.5 along <0 0 1>;
+            move to <0 0 (sin 60 - sin 30)>;
+        end;
+        transparent <.9 .9 1> sphere with
+            radius = .95;
+            umin = 270;
+            umax = 90;
+            vmin = 0;
+            vmax = 90;
+            magnify by cos 60;
+            scale by 1.5 along <0 0 1>;
+            move to <0 0 (sin 60 - sin 30)>;
+        end;
+    end;    // half_saucer_body
+
+
+    shape saucer_body is
+        half_saucer_body with
+            scale by -.75 along <1 0 0>;
+        end;
+        half_saucer_body with
+            scale by 1.125 along <1 0 0>;
+        end;
+    end;    // saucer_body
+
+
+    shape saucer_tail is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = .5;
+            radius2 = .25;
+            skew from <0 0 1> to <1 0 1>;
+            scale by .2 along <0 1 0>;
+        end;
+        sphere with
+            radius = .25;
+            scale by .2 along <0 0 1>;
+            scale by .2 along <0 1 0>;
+            move to <0 0 1>;
+            skew from <0 0 1> to <1 0 1>;
+        end;
+    end;    // saucer_tail
+
+    saucer_body with
+        scale by .5 along <0 0 1>;
+        scale by .75 along <0 1 0>;
+        move to <-.3 0 0>;
+    end;
+
+    saucer_seat with
+        material is chalk colored brown;
+        magnify by .012;
+        move to <-.2 0 .1>;
+    end;
+
+    saucer_tail with
+        magnify by .5;
+        move to <.4 0 0>;
+    end;
+    saucer_tail with
+        magnify by .5;
+        move to <.25 0 0>;
+        rotate by 60 around <1 0 0>;
+    end;
+    saucer_tail with
+        magnify by .5;
+        move to <.25 0 0>;
+        rotate by -60 around <1 0 0>;
+    end;
+    side_landing_gear with
+        magnify by .25;
+
+        {move to .125 .3 -.25;}
+        move to <-.1 .3 -.25>;
+        scale by 1 along <0 1 0>;
+    end;
+    side_landing_gear with
+        magnify by .25;
+
+        {move to .125 .3 -.25;}
+        move to <-.1 .3 -.25>;
+        scale by -1 along <0 1 0>;
+    end;
+    front_landing_gear with
+        magnify by .25;
+        move to <-1 0 -.25>;
+    end;
+end;    // saucer
+
+
+picture saucer_picture with
+    eye = <-1 -3 .75>;
+    lookat = <0 0 .5>;
+    render_mode is shaded;
+    background = black;
+    fog_factor = 50;
+    shading is vertex;
+
+    {
+        shadows is on;
+        reflections is on;
+        refractions is on;
+        }
+is
+    distant_light from <-.25 -1 1>;
+    saucer with
+        material is plastic colored red;
+        move to <.1 0 .3>;
+    end;
+    saucer with
+        material is plastic colored yellow;
+        rotate by 330 around <0 0 1>;
+        move to <-.75 8 .3>;
+    end;
+    saucer with
+        material is plastic colored blue;
+        rotate by 20 around <0 0 1>;
+        rotate by -40 around <1 0 1>;
+        move to <1.5 2 1.5>;
+    end;
+    flat speckled light brown plane;
+end;    // saucer_picture
+
+
+picture saucer_picture2 with
+    eye = <-2 -1.5 2>;
+    lookat = <0 0 .25>;
+    render_mode is shaded;
+    shading is pixel;
+    background = black;
+    facets = 0;
+    reflections is on;
+    shadows is on;
+    refractions is on;
+is
+    distant_light from <-.25 -1 1>;
+    metallic bumpy white saucer with
+        move to <.1 0 .3>;
+        magnify the shader_trans by .1;
+    end;
+end;    // saucer_picture2
+
+
+anim saucer_anim
+    args type args;
+with
+    eye = <1 -3 2>;
+    double_buffer is on;
+    window_name is "UFO's Exist!";
+    args check;
+is
+    shape saucer1 is
+        saucer with
+            material is brushed_metal;
+        end;
+    end;
+    mouse_controlled_shape saucer1;
+end;    // saucer_anim

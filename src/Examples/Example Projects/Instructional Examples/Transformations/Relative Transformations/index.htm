@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script>
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+function GetPlugin()
+{
+	return InternetExplorer ? window.HyperX1 : window.document.HyperX1;
+}
+function formHandler() {
+	var Choice = document.form.site.options[document.form.site.selectedIndex].value;
+	//alert(Choice);
+	GetPlugin().SendMessage(Choice);
+}
+</script>
+</head>
+<body>
+<form name="form">
+<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif">Select Relative Transformation To Display: </font>
+<select name="site" size=1 onChange="javascript:formHandler()">
+<option value="direct">Direct 
+<option value="magnify">Magnify 
+<option value="move">Move 
+<option value="orient">Orient
+<option value="rotate">Rotate 
+<option value="scale">Scale 
+<option value="skew">Skew
+<option value="slant">Slant
+<option value="stretch">Stretch 
+</select>
+</div>
+</form>
+<div align="center">
+  <SCRIPT SRC="http://www.hypercosm.com/download/player/scripts/checkforplayer.js"></SCRIPT>
+  <!--HypercosmAppletBegin--> <!--HypercosmAppletEnd--> </div>
+</body>
+</html>

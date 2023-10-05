@@ -1,0 +1,95 @@
+{***************************************************************}
+{                         3ds_keys.ores             			}
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   	Contains key definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_key.ores";
+
+
+subject translated_3ds_interval
+does
+	// constructor
+	//
+	verb new
+		from translated_3ds_key type prev_key is none;
+		to translated_3ds_key type next_key is none;
+	end;
+	
+	// attributes setting methods
+	//
+	verb set
+		from translated_3ds_key type prev_key is none;
+		to translated_3ds_key type next_key is none;
+	end;
+	
+	// query methods
+	//
+	boolean question is_valid
+		at translated_3ds_time type time;
+	end;
+has
+	// interval attributes
+	//
+	public translated_3ds_key type prev_key is none;
+	public translated_3ds_key type next_key is none;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		from translated_3ds_key type prev_key is none;
+		to translated_3ds_key type next_key is none;
+	is
+		set from prev_key to next_key;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set
+		from translated_3ds_key type prev_key is none;
+		to translated_3ds_key type next_key is none;
+	is
+		with translated_3ds_interval do
+			its prev_key is prev_key;
+			its next_key is next_key;
+		end;
+	end;	// set
+	
+		
+	//
+	// query methods
+	//
+	
+	
+	boolean question is_valid
+		at translated_3ds_time type time;
+	is
+		if some prev_key and some next_key then
+			answer time >= prev_key's time and time <= next_key's time;
+		elseif some prev_key then
+			answer time < prev_key's time;
+		elseif some next_key then
+			answer time > next_key's time;
+		else
+			answer false;
+		end;
+	end;	
+end;	// translated_3ds_interval
+
+
+
+

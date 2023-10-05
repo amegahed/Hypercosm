@@ -1,0 +1,162 @@
+{***************************************************************}
+{                          earth.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do earth_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/bumps.ores";
+include "system/solids.ores";
+include "system/mappings.ores";
+
+
+// integer earth_image = load_image "clearmap.tga";
+
+
+shader starry is
+    scalar x;
+
+    x = noise location in local;
+    if (x > .85) then
+        answer white * (x - .8) * 5;
+    else
+        answer black;
+    end;
+end;    // starry
+
+
+shader mars_colored is
+    vector n = vnoise (location * 5);
+    scalar r = 1.0;
+    scalar g = .4 + (n dot <1 0 0>) * .1;
+    scalar b = .15 + (n dot <0 1 0>) * .2;
+
+    answer <r g b>;
+end;    // mars_colored
+
+
+shader moon_colored is
+    scalar s = noise (location * 5);
+
+    s = .5 + (s * .5);
+    answer white * s;
+end;    // moon_colored
+
+
+shape celestial_sphere is
+    shadowless starry sphere with
+        magnify by 1000;
+    end;
+end;    // celestial_sphere
+
+
+shape earth is
+
+    // semi_glossy show_image earth_image
+    sphere with
+        move the shader_trans to <.5 .5 0>;
+        magnify the shader_trans by 2.15;
+        rotate the shader_trans by 90 around <1 0 0>;
+    end;
+
+    {cloudy sphere with radius = 1.01; end;}
+end;    // earth
+
+
+shape mars is
+    flat bumpy mars_colored sphere;
+end;    // mars
+
+
+shape earth_moon is
+    flat bumpy moon_colored sphere;
+end;    // earth_moon
+
+
+shape dirty_earth is
+
+    sphere with
+        move the shader_trans to <.5 .5 0>;
+        magnify the shader_trans by 2.15;
+        rotate the shader_trans by 90 around <1 0 0>;
+    end;
+end;    // dirty_earth
+
+
+shape planet_abe is
+
+    // glossy show_image in local abe_image
+    sphere with
+        move the shader_trans to <.6 .7 0>;
+        magnify the shader_trans by 2.15;
+        rotate the shader_trans by 90 around <1 0 0>;
+    end;
+end;    // planet_abe
+
+
+picture earth_picture with
+    scalar rotation = 0;
+
+    eye = <1 -5 1.25>;
+    render_mode is shaded;
+    facets = 0;
+    refractions is on;
+    reflections is on;
+    shadows is off;
+    ambient = black;
+is
+
+    // distant_light from 1 -.5 .5 with brightness = 1.25; end;
+    distant_light from <.3 -.5 1> with
+        brightness = 1.25;
+    end;
+    earth with
+        rotate by rotation around <0 0 1>;
+        move to <.5 0 0>;
+    end;
+    earth_moon with
+        rotate by rotation around <0 0 1>;
+        magnify by .4;
+        move to <-2 1 1>;
+    end;
+    mars with
+        rotate by rotation around <0 0 1>;
+        magnify by .8;
+        move to <-1.5 0 -.8>;
+    end;
+    celestial_sphere with
+        rotate by rotation around <0 0 1>;
+    end;
+
+    {
+        planet_abe with move to -1 0 0; end;
+        dirty_earth with move to 1 0 0; end;
+        }
+end;    // earth_picture
+
+
+anim earth_anim with
+    double_buffer is off;
+is
+    scalar angle = 0;
+
+    while true do
+        earth_picture with
+            rotation = angle;
+            render_mode is shaded;
+            shading is pixel;
+            facets = 0;
+            min_feature_size = 1 / 60;
+            scanning is random;
+        end;
+        angle = angle + 10;
+    end;
+end;    // earth_anim

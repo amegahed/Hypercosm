@@ -1,0 +1,164 @@
+{***************************************************************}
+{                         sound_demo.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sound_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/native_sounds.ores";
+include "system/multibutton.ores";
+include "system/view_alignments.ores";
+include "system/native_text.ores";
+
+
+// This code demonstrates how to control playback of sound files in OMAR
+
+
+sound type demo_sound named "riff.mp3";
+
+
+// sound control buttons
+//
+multibutton type sound_control with
+    //write_position_over is true;
+    //write_position_clicked is true;
+    //write_index_clicked is true;
+    draw_boundaries is true;
+    //write_index_over is true;
+    override_cursor is finger_point;
+    draw_parallelogram is false;
+    //auto_override_interaction is false;
+end;
+
+
+// control shapes
+//
+shape play_button
+is
+    triangle <-.2 0 .2> <.2 0 0> <-.2 0 -.2>;
+end;
+
+shape rew_button
+is
+    triangle <.15 0 .2> <-.25 0 0> <.15 0 -.2>;
+    triangle <.25 0 .2> <-.15 0 0> <.25 0 -.2>;
+end;
+
+shape pause_button
+is
+    polygon [<-.15 0 -.2> <-.05 0 -.2> <-.05 0 .2> <-.15 0 .2>];
+    polygon [<.15 0 -.2> <.05 0 -.2> <.05 0 .2> <.15 0 .2>];
+end;
+
+
+picture scene
+is
+    string type s;
+    
+    // actual interface
+    //
+    sound_control instance with
+        scale by .33 along <0 1 0>;
+        rotate by 90 around <1 0 0>;
+        place_on_view_ray at <-.5 -.75 0>;
+        color = red;
+    end;
+    
+    // shapes on top of multibutton object
+    //
+    play_button with
+        place_on_view_ray at <-.2 -.75 0>;
+        if (demo_sound status is playing) then
+            material is constant_color green;
+        else
+            material is constant_color red;
+        end;
+    end;
+    pause_button with
+        place_on_view_ray at <-.5 -.75 0>;
+        if (demo_sound status is playing) then
+            material is constant_color red;
+        else
+            material is constant_color green;
+        end;
+    end;
+    rew_button with
+        place_on_view_ray at <-.8 -.75 0>;
+        if sound_control's index_clicked_this_frame = 1 then
+            material is constant_color green;
+        else
+            material is constant_color red;
+        end;
+    end;
+    
+    // text feedback
+    //
+    s is "Sound position: ";
+    s add (scalar_to_string of (clamp (demo_sound position) from 0 to 10));
+    overlay_text s at <0 .9 0> with
+        size = 30;
+    end;
+    
+    // other feedback
+    //
+    parallelogram with
+        scale by .2 along <0 1 0>;
+        scale by 4 along <1 0 0>;
+        rotate by 90 around <1 0 0>;
+        render_mode is wireframe;
+        material is constant_color red;
+    end;
+    triangle <-.1 -.1 .1> <.1 -.1 .1> <0 -.1 -.1> with
+        material is constant_color red;
+        move to <((demo_sound position * 8 / 9) - 4) 0 0>;
+    end;
+end;    // scene
+
+
+anim sound_demo_anim with
+    double_buffer is on;
+    eye = <0 -10 0>;
+is  
+    // set clickable regions of multibutton object
+    //
+    sound_control add rectangle as 1 at [<-1 -1 0> <-.33 1 0>];
+    sound_control add rectangle as 2 at [<-.33 -1 0> <.33 1 0>];
+    sound_control add rectangle as 3 at [<.33 -1 0> <1 1 0>];
+    
+    // wait for the sound to finish downloading
+    //
+    demo_sound finish_loading;
+    
+    demo_sound set_looping;
+    while true do
+    
+        // rewind
+        //
+        if sound_control's index_clicked_this_frame = 1 then
+            demo_sound skip to 0;
+            
+        // pause
+        //
+        elseif sound_control's index_clicked_this_frame = 2 then
+            demo_sound stop;
+            
+        // play
+        //
+        elseif sound_control's index_clicked_this_frame = 3 then
+            if demo_sound status is stopped then
+                demo_sound resume;
+            else
+                demo_sound play;
+            end;
+        end;
+        
+        scene;
+    end;
+end;    // sound_demo_anim

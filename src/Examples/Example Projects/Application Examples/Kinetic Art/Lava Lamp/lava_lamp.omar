@@ -1,0 +1,327 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          lava_lamp.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This simulation depicts a groovy, oozing lava lamp!     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do lava_lamp_anim;
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/fields.ores";
+include "system/meshes.ores";
+include "system/scalar_field.ores";
+include "system/vector_volumes.ores";
+include "system/random.ores";
+include "system/common_materials.ores";
+
+subject lava_lamp
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new with
+		integer x_steps = 8, y_steps = 8, z_steps = 16;
+		material type lamp_material is copper;
+		material type up_lava_material is plastic colored orange;
+		material type down_lava_material is plastic colored raspberry;
+		color type glass_color = violet;
+		scalar lava_speed = 1;
+	end;    // new
+	
+	// attributes setting methods
+	//
+	verb set_increments with
+		integer x_steps = 8, y_steps = 8, z_steps = 16;
+	end;
+	// rendering methods
+	//
+	shape instance;
+has
+	// attributes
+	//
+	integer x_steps = 0, y_steps = 0, z_steps = 0;
+	vector_volume type vector_volume;
+	scalar lava_speed;
+	material type lamp_material is none;
+	material type up_lava_material is none, down_lava_material is none;
+	material type glass_material is none;
+is
+	// implementation
+	//
+	const scalar min_lamp_radius = .15;
+	const scalar max_lamp_height = 2.7;
+	const scalar max_lamp_radius = .4;
+	const scalar min_lamp_height = 1;
+	const scalar lamp_height = max_lamp_height - min_lamp_height;
+	const scalar radius_difference = max_lamp_radius - min_lamp_radius;
+	
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		integer x_steps = 8, y_steps = 8, z_steps = 16;
+		material type lamp_material is copper;
+		material type up_lava_material is plastic colored orange;
+		material type down_lava_material is plastic colored raspberry;
+		color type glass_color = white;
+		scalar lava_speed = 1;
+	is
+		// call superclass constructor
+		//
+		timed_actor new;
+		
+		// set attributes
+		//
+		with lava_lamp do
+			its lamp_material is lamp_material;
+			its up_lava_material is up_lava_material;
+			its down_lava_material is down_lava_material;
+			its lava_speed = lava_speed;
+		end;
+		glass_material is (glass colored glass_color with transparency = .9);
+		set_increments with
+			x_steps = static x_steps;
+			y_steps = static y_steps;
+			z_steps = static z_steps;
+		end;
+	end;    // new
+
+	//
+	// attributes setting methods
+	//
+	
+	verb set_increments with
+		integer x_steps = 8, y_steps = 8, z_steps = 16;
+	is
+		if x_steps <> lava_lamp's x_steps or 
+		   y_steps <> lava_lamp's y_steps or
+		   z_steps <> lava_lamp's z_steps
+		then
+			// set attributes
+			//
+			with lava_lamp do
+				its x_steps = x_steps;
+				its y_steps = y_steps;
+				its z_steps = z_steps;
+			end;
+	
+			// create vector grid
+			//
+			vector_volume is (get_flattened_conical_vector_volume z_steps of y_steps by
+				x_steps with radius = min_lamp_radius /
+				max_lamp_radius; roundness = 1);
+		end;   
+	end;    // set_steps
+	
+	//
+	// rendering methods
+	//
+	
+		   
+	shape up_lava is
+		scalar time = timer get_time;
+		
+		objective scalar question lava_density
+			at vector location;
+		is
+			answer noisy_field at (location * <1 1 3> + <0 0 (time * lava_speed)>);
+		end;    // lava_density
+	
+		scalar_field type scalar_field using lava_density through vector_volume;
+		volume scalar_field's values through vector_volume with
+			threshold = .5;
+			scale by max_lamp_radius * .95 along <1 0 0>;
+			scale by max_lamp_radius * .95 along <0 1 0>;
+			scale by (lamp_height / 2) along <0 0 1>;
+			move to <0 0 (min_lamp_height + (lamp_height / 2))>;
+		end;
+		scalar_field's values is none;
+	end;    // up_lava
+
+	shape down_lava is
+		scalar time = timer get_time;
+		
+		objective scalar question lava_density
+			at vector location;
+		is
+			answer noisy_field at (location * <1 1 3> - <0 0 (time * lava_speed)>);
+		end;    // lava_density
+		
+		scalar_field type scalar_field using lava_density through vector_volume;
+		volume scalar_field's values through vector_volume with
+			threshold = .5;
+			scale by max_lamp_radius * .95 along <1 0 0>;
+			scale by max_lamp_radius * .95 along <0 1 0>;
+			scale by (lamp_height / 2) along <0 0 1>;
+			move to <0 0 (min_lamp_height + (lamp_height / 2))>;
+		end;
+		scalar_field's values is none;
+	end;    // down_lava
+
+	shape lava is
+		up_lava with
+			material is up_lava_material;
+		end;
+		down_lava with
+			material is down_lava_material;
+		end;
+	end;    // lava
+	
+	
+	shape lava_base is
+		disk with
+			center = <0 0 1>;
+			radius = .4;
+			normal = <0 0 -1>;
+		end;
+	end;    // lava_base
+
+	shape lamp_body is
+		// base of lava lamp
+		//
+		cone with
+			end1 = <0 0 0>;
+			end2 = <0 0 .8>;
+			radius1 = .5;
+			radius2 = .2;
+		end;
+		cone with
+			end1 = <0 0 .8>;
+			end2 = (<0 0 min_lamp_height>);
+			radius1 = .2;
+			radius2 = max_lamp_radius;
+		end;
+		// glass lava enclosure
+		//
+		cone with
+			material is glass_material;
+			end1 = <0 0 min_lamp_height>;
+			end2 = <0 0 max_lamp_height>;
+			radius1 = max_lamp_radius;
+			radius2 = min_lamp_radius;
+		end;
+		// top cap of lava lamp
+		//
+		cone with
+			end1 = <0 0 max_lamp_height>;
+			end2 = <0 0 (max_lamp_height + .3)>;
+			radius1 = min_lamp_radius;
+			radius2 = .1;
+		end;
+		disk with
+			center = <0 0 (max_lamp_height + .3)>;
+			normal = <0 0 -1>;
+			radius = .1;
+		end;
+	end;    // lamp_body
+
+	shape instance is
+		lamp_body with
+			material is lamp_material;
+		end;
+		lava;
+		lava_base with
+			material is up_lava_material;
+		end;
+	end;    // instance
+end;    // lava_lamp
+
+anim lava_lamp_anim
+	args type args;
+with
+	double_buffer is on;
+	eye = <0 -4 2>;
+	lookat = <0 0 1.4>;
+	roll = -50;
+	facets = 12;
+	window_name is "Lava!";
+	background = grey;
+	auto_upright is false;
+	auto_pivot is false;
+	args check;
+is
+	material type flower_power is chalk colored white poster "flower_power.jpg";
+	
+	lava_lamp type lava_lamp with
+		lamp_material is metal colored white poster "scratched.jpg";
+		up_lava_material is plastic poster "tie_dye.jpg";
+		down_lava_material is plastic poster "tie_dye2.jpg";
+		glass_color = purple;
+	end;
+	shape cube_mesh is
+		mesh
+			// vertices
+			//
+			[<-1 -1 -1> <1 -1 -1> <1 1 -1> <-1 1 -1>
+			 <-1 -1 1> <1 -1 1> <1 1 1> <-1 1 1>]
+	
+			// edges
+			//
+			[[1 2][2 3][3 4][4 1]
+			 [5 6][6 7][7 8][8 5]
+			 [1 5][2 6][3 7][4 8]]
+	
+			// faces
+			//
+			[-4 -3 -2 -1 0
+			 5 6 7 8 0
+			 1 10 -5 -9 0
+			 2 11 -6 -10 0
+			 3 12 -7 -11 0
+			 4 9 -8 -12 0
+			]
+		with
+			texcoords =
+			[<1 1 -1> <-1 1 -1> <-1 -1 -1> <1 -1 -1>
+			 <-1 -1 1> <1 -1 1> <1 1 1> <-1 1 1>];
+		end;
+	end;    // cube_mesh
+	
+ 
+	shape scene with
+		scalar time = 0;
+	is
+		lava_lamp instance;
+		lava_lamp set_increments with
+			x_steps = trunc (8 * tessellation ^ .33);
+			y_steps = trunc (8 * tessellation ^ .33);
+			z_steps = trunc (16 * tessellation ^ .33);
+		end; 
+		
+		// environment
+		//      
+		cube_mesh with
+			magnify by 10;
+			move to eye;
+			material is flower_power;
+			rotate by get_seconds * 10 around <0 0 1>;
+			shadows is false;
+		end;
+		distant_light from <1 -1 -1> with
+			rotate by time * -90 around <1 0 1>;
+			color = yellow;
+			brightness = .75;
+		end;
+		distant_light from <-1 1 1> with
+			rotate by time * 90 around <-1 0 -1>;
+			color = red;
+			brightness = .75;
+		end;
+	end;    // scene
+	
+	verb update is
+		lava_lamp update;
+	end;    // update
+	
+	mouse_controlled_animated_shape scene doing update;
+end;    // lava_lamp_anim

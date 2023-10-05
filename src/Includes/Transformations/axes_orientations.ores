@@ -1,0 +1,145 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        axes_orientations.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{     Contains foundational procedures which are used by        }
+{     the standard transformations in "transformations.ores".   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_trans.ores";
+
+verb scale_axes
+	axes type reference axes;
+	by scalar s;
+	along vector axis;
+is
+	axes's x_axis = (<1 0 0> perpendicular axis) +
+		(<1 0 0> parallel axis) * s;
+	axes's y_axis = (<0 1 0> perpendicular axis) +
+		(<0 1 0> parallel axis) * s;
+	axes's z_axis = (<0 0 1> perpendicular axis) +
+		(<0 0 1> parallel axis) * s;
+end;    // scale_axes
+
+verb stretch_axes
+	axes type reference axes;
+	by scalar s;
+	along vector axis;
+is
+	scalar root = 1 / sqrt s;
+	axes's x_axis = (<1 0 0> perpendicular axis) * root +
+		(<1 0 0> parallel axis) * s;
+	axes's y_axis = (<0 1 0> perpendicular axis) * root +
+		(<0 1 0> parallel axis) * s;
+	axes's z_axis = (<0 0 1> perpendicular axis) * root +
+		(<0 0 1> parallel axis) * s;
+end;    // stretch_axes
+
+verb skew_axes
+	axes type reference axes;
+	from vector direction1;
+	to vector direction2;
+is
+	scalar d = direction1 dot direction2;
+	if d <> 0 then
+		axes's x_axis = (<1 0 0> perpendicular direction1) +
+			(direction2 * (<1 0 0> dot direction1) / d);
+		axes's y_axis = (<0 1 0> perpendicular direction1) +
+			(direction2 * (<0 1 0> dot direction1) / d);
+		axes's z_axis = (<0 0 1> perpendicular direction1) +
+			(direction2 * (<0 0 1> dot direction1) / d);
+	end;
+end;    // skew_axes
+
+verb orient_axes
+	axes type reference axes;
+	from vector axis1;
+	to vector axis2;
+is
+	vector component1 = axis1 perpendicular axis2;
+	vector component2 = axis2 perpendicular axis1;
+	if component1 <> <0 0 0> and component2 <> <0 0 0> then
+		axes type axes2;
+
+		// create first axes
+		//
+		axes's z_axis = axis1;
+		axes's x_axis = normalized component2;
+		axes's y_axis = normalized (axes's z_axis cross axes's x_axis);
+
+		// create second axes
+		//
+		axes2's z_axis = axis2;
+		axes2's x_axis = normalized component1;
+		axes2's y_axis = normalized (axes2's z_axis cross axes2's x_axis);
+		
+		// invert first transformation
+		//
+		axes invert;
+		axes orient from axes2;
+	else
+		scalar factor = vlength of axis2 / vlength of axis1;
+		if axis1 dot axis2 >= 0 then
+			scale_axes axes by factor along axis1;
+		else
+			scale_axes axes by -factor along axis1;
+		end;
+	end;
+end;    // orient_axes
+
+verb orient_axes2
+	axes type reference axes;
+	from vector x_axis1, y_axis1;
+	to vector x_axis2, y_axis2;
+is
+	axes type axes2;
+
+	// create first axes
+	//
+	axes's x_axis = x_axis1;
+	axes's y_axis = y_axis1;
+	axes's z_axis = x_axis1 cross y_axis1;
+
+	// create second axes
+	//
+	axes2's x_axis = x_axis2;
+	axes2's y_axis = y_axis2;
+	axes2's z_axis = x_axis2 cross y_axis2;
+
+	// invert first transformation
+	//
+	axes invert;
+	axes orient from axes2;
+end;    // orient_axes2
+
+verb orient_axes3
+	trans type reference trans;
+	from vector point1, point2, point3;
+	to vector point4, point5, point6;
+is
+	trans type trans2;
+
+	// create first trans
+	//
+	trans's origin = point1;
+	trans's x_axis = point2 - point1;
+	trans's y_axis = point3 - point1;
+	trans's z_axis = trans's x_axis cross trans's y_axis;
+
+	// create second axes
+	//
+	trans2's origin = point4;
+	trans2's x_axis = point5 - point4;
+	trans2's y_axis = point6 - point4;
+	trans2's z_axis = trans2's x_axis cross trans2's y_axis;
+
+	// invert first transformation
+	//
+	trans invert;
+	trans transform from trans2;
+end;    // orient_axes3

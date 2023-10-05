@@ -1,0 +1,58 @@
+{***************************************************************}
+{                       beveled_slider.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 1999 Hypercosm, Inc.             }
+{***************************************************************} 
+do beveled_slider_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/beveled_slider.ores";
+
+
+picture beveled_slider_picture is
+    static beveled_slider type beveled_slider with
+        end1 = < -2 0 0>;
+        end2 = <  2 0 0>;
+        radius = 0.2;
+        knob_size = 0.0875;
+    end;
+
+    default_lights;
+
+    beveled_slider instance;
+    
+    //beveled_slider's value = ((sin (get_seconds * 10)) + 1) / 2;
+
+    if some current_interaction then
+        if not current_interaction is_tracking then
+            if beveled_slider's mouse_is_over then
+                set_cursor to crosshair;
+                current_interaction override;
+            end;
+        end;
+    else
+        if beveled_slider's mouse_is_over then
+            set_cursor to crosshair;
+        else
+            set_cursor to arrow;
+        end;
+    end;
+end;    // beveled_slider_picture
+
+
+anim beveled_slider_anim
+    args type args;
+with
+	eye = <0 -10 0>;
+    double_buffer is on;
+    window_name is "Slider Demo";
+    args check;
+is
+    mouse_controlled_picture beveled_slider_picture;
+end;    // beveled_slider_anim 

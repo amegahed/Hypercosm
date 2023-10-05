@@ -1,0 +1,66 @@
+{***************************************************************}
+{                          volume.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do volume_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+include "system/densities.ores";
+include "system/fields.ores";
+include "system/arrow_shapes.ores";
+
+
+density_field type density_field using noisy_field
+    // using wave_function_p
+    // from -1 -1 -1.5 to 1 1 1.5
+with
+    x_steps = 15;
+    y_steps = 15;
+    z_steps = 15;
+end;    // density_field
+
+
+shape isosurface with
+    scalar threshold = .5;
+    boolean capping is on;
+is
+    volume density_field's density with
+        threshold = static threshold;
+        capping is static capping;
+    end;
+    transparent white block;
+end;    // isosurface
+
+
+shape volume_primitive is
+	isosurface with
+		magnify by .75;
+	end;
+end;	// volume_primitive
+
+
+anim volume_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Volume Primitive";
+    args check;
+is
+	shape scene is
+		outlined volume_primitive with
+			material is glass colored volume_color;
+		end;
+		axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // volume_anim

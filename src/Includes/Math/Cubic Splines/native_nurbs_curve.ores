@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        native_nurbs_curve.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native NURBS curve functionality.          }
+{                                                               }
+{                              NOTE:                            }
+{       Native entities may not be changed.  Doing so may       }
+{       cause the the system to malfunction or even crash.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+subject nurbs_curve
+does
+	// constructor
+	//
+	native verb new 
+		integer order;
+		scalar knots[];
+		vector control_points[];
+		scalar weights[];
+	end;
+
+	// methods
+	//
+	native verb free;
+	native vector question evaluate
+		at scalar t;
+	end;
+has
+	// attributes
+	//
+	private long id;
+end;

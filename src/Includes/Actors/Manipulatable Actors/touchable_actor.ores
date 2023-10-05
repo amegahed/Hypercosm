@@ -1,0 +1,48 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        touchable_actor.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/acting.ores";
+include "system/manipulation.ores";
+include "system/manipulation_behaviors.ores";
+
+//
+// actors that respond to user manipulations
+//
+
+abstract subject touchable_actor
+extends
+	touchable actor
+does
+	// acting method
+	//
+	verb act;
+	
+	// rendering method
+	//
+	abstract shape instance;
+	
+	// touching method
+	//
+	abstract verb touch
+		from vector location;
+		towards vector direction;
+	end;    // touch
+is
+	//
+	// acting method
+	//
+	
+	verb act is
+		global touch touchable type touchable_actor;
+	end;    // act
+end;    // touchable_actor

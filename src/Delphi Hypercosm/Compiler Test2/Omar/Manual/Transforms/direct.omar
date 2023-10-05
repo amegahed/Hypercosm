@@ -1,0 +1,53 @@
+{***************************************************************}
+{                          direct.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do direct_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+include "system/snowman.omar";
+
+
+anim direct_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <.75 0 .85>;
+    args check;
+is
+	shape scene is
+        scalar h = 3.6 * .5;
+
+        snowman with
+            magnify by .5;
+            color = white;
+            render_mode is wireframe;
+        end;
+        snowman with
+            magnify by .5;
+            direct from <0 0 1> to <1 0 1>;
+            color = red;
+            render_mode is wireframe;
+        end;
+        arrow from <0 0 0> to <0 0 1.5>;
+        arrow from <0 0 0> to <1 0 1>;
+        line [<0 0 1.5> <1 0 1>];
+        futura_l_word "DIRECT" with
+            rotate by 90 around <1 0 0>;
+            move to <.75 0 h>;
+        end;
+        axes;
+	end;
+	
+    mouse_controlled_shape scene titled "The Direct Transformation";
+end;    // direct_anim

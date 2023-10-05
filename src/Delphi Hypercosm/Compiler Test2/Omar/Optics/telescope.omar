@@ -1,0 +1,272 @@
+{***************************************************************}
+{                          telescope.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do interactive_telescope;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/check_keys.ores";
+include "system/anims.ores";
+
+
+shape astroscan with
+    scalar heading = 0;
+    scalar pitch = 0;
+is
+    static shape lens is
+        paraboloid with
+            top = <0 0 .2>;
+            base = <0 0 .1>;
+            radius = .4;
+        end;
+        cylinder with
+            end1 = <0 0 .1>;
+            end2 = <0 0 -.1>;
+            radius = .4;
+        end;
+        paraboloid with
+            top = <0 0 -.2>;
+            base = <0 0 -.1>;
+            radius = .4;
+        end;
+    end;    // lens
+
+
+    static shape eyepiece is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 1.5>;
+            radius = .5;
+        end;
+        cone with
+            material is plastic colored grey;
+            end1 = <0 0 1.5>;
+            end2 = <0 0 1.8>;
+            radius1 = .5;
+            radius2 = .3;
+        end;
+
+        lens with
+            material is silver;
+            move to <0 0 1>;
+        end;
+        lens with
+            material is silver;
+            move to <0 0 .5>;
+        end;
+    end;    // eyepiece
+
+
+    static shape knobs is
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <1 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <-1.2 0 0>;
+            radius = .4;
+        end;
+        cylinder with
+            end1 = <1 0 0>;
+            end2 = <1.2 0 0>;
+            radius = .4;
+        end;
+        disk with
+            center = <-1.2 0 0>;
+            normal = <1 0 0>;
+            radius = .4;
+        end;
+        disk with
+            center = <1.2 0 0>;
+            normal = <1 0 0>;
+            radius = .4;
+        end;
+    end;    // knobs
+
+
+    static shape corrector_plate is
+        paraboloid with
+            top = <0 0 -.2>;
+            base = <0 0 0>;
+            radius = 1.7;
+        end;
+        paraboloid with
+            top = <0 0 -.4>;
+            base = <0 0 -.2>;
+            radius = 1.7;
+        end;
+
+        render_mode is shaded;
+        disk with
+            material is chalk colored charcoal;
+            center = <0 0 -.2>;
+            normal = <0 0 1>;
+            radius = .5;
+        end;
+
+        // secondary mirror
+        //
+        cylinder with
+            material is silver;
+            end1 = <0 0 -.4>;
+            end2 = <0 0 -1.7>;
+            radius = .2;
+        end;
+        polygon2d [[.5 .8] [-.5 .8] [-.5 -.8]
+            [.5 -.8]]
+        with
+            material is silver;
+            origin = <0 0 -1.8>;
+            x_axis = <0 1 0>;
+            y_axis = <1 0 1>;
+        end;
+    end;    // corrector_plate
+
+
+    static shape body is
+        sphere with
+            center = <0 0 0>;
+            radius = 3.5;
+            vmax = 60;
+        end;
+        cylinder with
+            end1 = <0 0 2.5>;
+            end2 = <0 0 8.5>;
+            radius = 2;
+        end;
+        ring with
+            material is chalk colored charcoal;
+            center = <0 0 8.5>;
+            normal = <0 0 1>;
+            inner_radius = 1.8;
+            outer_radius = 2;
+        end;
+        transparent white corrector_plate with
+            move to <0 0 8>;
+        end;
+        cylinder with
+            end1 = <0 0 2.5>;
+            end2 = <0 0 8.5>;
+            radius = 1.8;
+        end;
+
+        // objective mirror
+        //
+        paraboloid with
+            material is silver;
+            top = <0 0 -3>;
+            base = <0 0 -2.5>;
+            radius = 2;
+        end;
+        eyepiece with
+            material is silver;
+            rotate by 90 around <0 1 0>;
+            move to <2 0 6.5>;
+        end;
+        knobs with
+            material is chalk colored charcoal;
+            rotate by 90 around <0 0 1>;
+            move to <2 0 5.5>;
+        end;
+    end;    // body
+
+
+    static shape base is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1.5>;
+            radius1 = 3;
+            radius2 = 2.4;
+        end;
+        ring with
+            center = <0 0 1.5>;
+            normal = <0 0 1>;
+            inner_radius = 1.8;
+            outer_radius = 2.4;
+        end;
+        ring with
+            center = <0 0 0>;
+            normal = <0 0 1>;
+            inner_radius = 1.8;
+            outer_radius = 3;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 1.5>;
+            radius = 1.8;
+        end;
+    end;    // base
+
+    pitch = smod pitch to 360;
+    if pitch < 0 then
+        pitch = itself + 360;
+    end;
+    if pitch > 180 then
+        pitch = itself - 360;
+    end;
+    pitch = clamp pitch from -120 to 120;
+
+    base with
+        material is plastic colored beige;
+    end;
+    body with
+        rotate by pitch around <0 1 0>;
+        rotate by heading around <0 0 1>;
+        move to <0 0 4.5>;
+        material is plastic colored red;
+    end;
+end;    // astroscan
+
+
+anim interactive_telescope
+    args type args;
+with
+    eye = <10 -20 10>;
+    lookat = <0 0 5>;
+    facets = 6;
+    double_buffer is on;
+    args check;
+is
+    vector orientation = <0 0 0>;
+
+
+    picture telescope_picture is
+        scalar heading = orientation dot <1 0 0>;
+        scalar pitch = orientation dot <0 1 0>;
+
+        default_lights;
+        astroscan with
+            heading = static heading;
+            pitch = static pitch;
+        end;
+        plane with
+            magnify by 5;
+            render_mode is wireframe;
+        end;
+    end;    // telescope_picture
+
+
+    vector old_pos, new_pos, delta;
+
+    old_pos = get_mouse;
+    while true do
+        new_pos = get_mouse;
+        delta = new_pos - old_pos;
+        old_pos = new_pos;
+        orientation = orientation + delta * 360;
+        telescope_picture with
+            double_buffer is on;
+        end;
+        check_keys;
+    end;
+end;    // interactive_telescope

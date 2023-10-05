@@ -1,0 +1,194 @@
+{***************************************************************}
+{                          camera.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do camera_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape camera is
+    shape lens is
+        shape barrel is
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <0 .6 0>;
+                radius = .4;
+            end;
+            cone with
+                end1 = <0 .6 0>;
+                end2 = <0 1 0>;
+                radius1 = .4;
+                radius2 = .5;
+            end;
+            tube with
+                end1 = <0 1 0>;
+                end2 = <0 1.2 0>;
+                outer_radius = .5;
+                inner_radius = .45;
+            end;
+            tube with
+                material is chalk colored charcoal;
+                end1 = <0 .2 0>;
+                end2 = <0 .5 0>;
+                outer_radius = .45;
+                inner_radius = .4;
+            end;
+        end;
+
+        barrel with
+            material is plastic colored dark grey;
+        end;
+        paraboloid with
+            material is silver;
+            base = <0 1 0>;
+            top = <0 1.1 0>;
+            radius = .49;
+        end;
+    end;    // lens
+
+
+    shape pentaprism is
+        block with
+            scale by .3 along <1 0 0>;
+            scale by .25 along <0 1 0>;
+            scale by .1 along <0 0 1>;
+            move to <0 0 .1>;
+        end;
+
+        // front and back
+        //
+        polygon [<.3 -.25 .2> <-.3 -.25 .2> <-.1 -.2 .3>
+            <.1 -.2 .3>];
+        polygon [<.3 .25 .2> <-.3 .25 .2> <-.1 .1 .3> <.1 .1 .3>];
+
+        // sides
+        //
+        polygon [<.3 -.25 .2> <.3 .25 .2> <.1 .1 .3> <.1 -.2 .3>];
+        polygon [<-.3 -.25 .2> <-.3 .25 .2> <-.1 .1 .3> <-.1 -.2
+            .3>];
+
+        // top
+        //
+        polygon [<.1 .1 .3> <-.1 .1 .3> <-.1 -.2 .3> <.1 -.2 .3>];
+    end;    // pentaprism
+
+
+    shape eyepiece is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 .05 0>;
+            radius = .15;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 .05 0>;
+            radius = .1;
+        end;
+        ring with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            inner_radius = .1;
+            outer_radius = .15;
+        end;
+
+        disk with
+            material is constant_color light blue;
+            center = <0 .01 0>;
+            radius = .14;
+            normal = <0 1 0>;
+        end;
+    end;    // eyepiece
+
+
+    shape knobs is
+        cylinder with
+            end1 = <.8 0 .6>;
+            end2 = <.8 0 .7>;
+            radius = .15;
+        end;
+        disk with
+            material is silver;
+            center = <.8 0 .7>;
+            radius = .15;
+        end;
+        cylinder with
+            end1 = <.5 0 .6>;
+            end2 = <.5 0 .7>;
+            radius = .1;
+        end;
+        disk with
+            center = <.5 0 .7>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-.8 0 .6>;
+            end2 = <-.8 0 .7>;
+            radius = .15;
+        end;
+        disk with
+            center = <-.8 0 .7>;
+            radius = .15;
+        end;
+    end;    // knobs
+
+
+    // main camera definition
+    //
+    extrude [[1 .15] [.9 .2] [-.9 .2] [-1 .15] [-1 -.15] [-.9 -.2]
+        [.9 -.2] [1 -.15]]
+    with
+        material is plastic colored dark grey;
+        rotate by 90 around <1 0 0>;
+        scale by .8 along <0 0 1>;
+    end;
+
+    extrude [[1 .15] [.9 .2] [-.9 .2] [-1 .15]
+        [-1 -.15] [-.9 -.2] [.9 -.2] [1 -.15]]
+    with
+        material is silver;
+        magnify by .95;
+        rotate by 90 around <1 0 0>;
+        scale by .2 along <0 0 1>;
+        move to <0 0 .5>;
+    end;
+
+    knobs with
+        material is aluminum;
+    end;
+
+    lens with
+        material is plastic colored dark grey;
+        move to <0 .2 0>;
+    end;
+
+    pentaprism with
+        material is plastic colored dark grey;
+        move to <0 0 .5>;
+    end;
+    eyepiece with
+        material is aluminum;
+        move to <0 -.3 .5>;
+    end;
+end;    // camera
+
+
+anim camera_anim
+    args type args;
+with
+    eye = <2 3 1>;
+    lookat = <0 .5 0>;
+    facets = 8;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape camera;
+end;    // camera_anim

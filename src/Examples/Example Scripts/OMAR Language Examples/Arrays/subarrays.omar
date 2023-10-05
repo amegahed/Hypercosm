@@ -1,0 +1,76 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            subarrays.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of             }
+{       subarray expressions to conveniently access             }
+{       subportions of arrays in the OMAR language.             }
+{                                                               }
+{       There is no direct analogy for this language            }
+{       feature in languages such as C, C++, and Pascal.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do subarrays_example;
+
+include "system/string_utils.ores";
+
+string type question array_to_string
+	of integer array[];
+is
+	string type string is "[";
+	for integer counter = min array .. max array do
+		string add integer_to_string of array[counter];
+		if counter <> max array then
+			string add " ";
+		end;
+	end;
+	string add "]";
+	
+	answer string;
+end;    // write_array
+
+integer i[1 .. 5], j[1 .. 10];
+
+verb write_arrays is
+	write "i = ", array_to_string of i, ", ";
+	write "j = ", array_to_string of j, ;
+end;    // write_arrays
+
+verb subarrays_example is
+	
+	// initialize arrays to ramps of increasing integer values
+	//
+	for integer counter = min i .. max i do
+		i[counter] = counter;
+	end;
+	for integer counter = min j .. max j do
+		j[counter] = counter;
+	end;
+	
+	write "initial arrays:", ;
+	write_arrays;
+	write;
+	
+	i = j[6 .. 10];                 // Copy a subarray to an array
+	write "after copying j[6 .. 10] to i:", ;
+	write_arrays;   
+	write;
+	
+	i[1 .. 3] = j[8 .. 10];         // Copy a subarray to another subarray
+	write "after copying j[8 .. 10] to i[1 .. 3]:", ;
+	write_arrays;
+	write;
+	
+	i = j[6 ..];                    // Copy an implicit subrange to an array
+	write "after copying j[6 ..] to i:", ;
+	write_arrays;
+	write;
+	
+	i[.. 3] = j[8 ..];
+	write "after copying j[8 ..] to i[.. 3]:", ;
+	write_arrays;
+end;    // subarray_example

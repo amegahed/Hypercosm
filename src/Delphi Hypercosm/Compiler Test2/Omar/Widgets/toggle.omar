@@ -1,0 +1,48 @@
+{***************************************************************}
+{                          toggle.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do toggle_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/toggle.ores";
+include "system/views.ores";
+
+
+picture toggle_picture is
+    static toggle type toggle labelled "Toggle";
+
+    toggle instance with
+        height = .5;
+    end;
+
+    if toggle's mouse_is_over then
+        set_cursor to finger_point;
+    else
+        set_cursor to arrow;
+    end;
+end;    // toggle_picture
+
+
+anim toggle_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Toggle Demo";
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        toggle_picture with
+            ortho_view;
+        end;
+    end;
+end;    // toggle_anim

@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          continue_stmt.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a continue       }
+{       statement that is used to advance to the next           }
+{       iteration of a loop.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do continue_stmt_example;
+
+verb continue_stmt_example is
+	char name[] = "Fred Frogburger";
+	
+	write "Writing out a string, continuing when we find a space:", ;
+	
+	// Write out the first and last name with no spaces in between
+	//
+	for integer counter = min name .. max name do
+		if name[counter] is " " then
+			continue;
+		end;
+		write name[counter];
+	end;
+end;    // continue_stmt_example

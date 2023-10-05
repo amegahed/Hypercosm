@@ -1,0 +1,154 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            lists.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a few useful generic list definitions.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/collections.ores";
+include "system/list_iterators.ores";
+include "system/reversing.ores";
+include "system/discarding.ores";
+include "system/copying.ores";
+
+{***************************************************************}
+{       lists are ordered collections that have a start,        }
+{       called a "head" where elements are added or deleted.    }
+{                                                               }
+{       The abstract list class defines a minimum set of        }
+{       functionality that must be implemented by all lists     }
+{       regardless of their implementation.                     }
+{***************************************************************}   
+
+enum list_end is head, tail;
+
+abstract subject list
+extends
+	reverseable collection
+does
+	// list construction methods
+	//
+	verb add_first
+		object type element;
+	end;
+	object type question removed_first;
+	
+	// list querying methods
+	//
+	object type question get_first;
+	list_iterator type question get_start;
+
+	// list modification methods
+	//
+	verb reverse;
+		
+	// collection construction methods
+	//
+	verb add
+		object type element;
+	end;
+	verb remove
+		object type element;
+	end;
+	verb purge
+		object type element;
+	end;
+
+	// collection iteration methods
+	//
+	iterator type question get_iterator;
+		
+	// copying and cloning methods
+	//    
+	abstract verb copy 
+		from object type source;
+	end;
+	abstract object type question clone;
+is
+	//
+	// list construction methods
+	//
+	
+	verb add_first
+		object type element;
+	is
+		list_iterator type iterator is get_start;
+		iterator insert prev element;
+	end;    // add_first
+	
+	object type question removed_first is
+		list_iterator type iterator is list get_start;
+		answer iterator removed;
+	end;    // removed_first
+	
+	//    
+	// list querying methods
+	//
+	
+	object type question get_first is
+		iterator type iterator is get_start;
+		answer iterator get;
+	end;    // get_first
+	
+	list_iterator type question get_start is
+		list_iterator type iterator is list_iterator type list get_iterator;
+		iterator to_first;
+		answer iterator;
+	end;    // get_start
+	
+	//    
+	// list modification methods
+	//
+	
+	verb reverse is
+		iterator type iterator is get_start;
+		list type reversed_list is list type clone;
+		reversed_list clear;
+		while iterator is_iterating do
+			reversed_list add_first iterator next;
+		end;
+		list clear;
+		list copy from reversed_list;
+	end;    // reverse
+	
+	//    
+	// collection construction methods
+	//
+	
+	verb add
+		object type element;
+	is
+		add_first element;
+	end;    // add
+	
+	verb remove
+		object type element;
+	is
+		list_iterator type iterator is get_start;
+		iterator advance to element;
+		discard iterator removed;
+	end;    // remove
+	
+	verb purge
+		object type element;
+	is
+		list_iterator type iterator is get_start;
+		while iterator is_iterating do
+			iterator advance to element;
+			discard iterator removed;
+		end;
+	end;    // purge
+	
+	//    
+	// collection iteration methods
+	//
+	
+	iterator type question get_iterator is
+		answer get_start;
+	end;    // get_iterator
+end;    // list

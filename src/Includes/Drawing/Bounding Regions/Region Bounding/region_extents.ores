@@ -1,0 +1,180 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         region_extents.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some useful standard shapes, supplementing     }
+{       the primitive shapes found in "native_shapes.ores".     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/validation.ores";
+include "system/region_reshaping.ores";
+include "system/region_bounding.ores";
+include "system/comparisons.ores";
+include "system/printing.ores";
+include "system/constants.ores";
+
+subject region_extents
+extends
+	validifyable invalidateable region_reshapeable 
+	region_bounding scribable object
+does
+	// constructor
+	//
+	verb new
+		from pixel type low is none;
+		to pixel type high is none;
+	end;
+	
+	// setting methods
+	//
+	verb reshape
+		from pixel type low;
+		to pixel type high;
+	end;
+	verb invalidate;
+	
+	// querying methods
+	//
+	boolean question is_valid;
+  
+	// region bounding methods
+	//
+	boolean question contains
+		pixel type pixel;
+	end;
+	pixel type question get_min;
+	pixel type question get_max;
+			
+	// constructing methods
+	//
+	verb extend
+		to pixel type pixel;
+	end;
+	verb expand
+		to region_bounding type bounds;
+	end;
+	
+	// operators
+	//
+	region_extents type question plus
+		region_bounding type bounds;
+	end;        
+		
+	// converting methods
+	//
+	string type question to_string;
+has
+	// attributes
+	//
+	pixel type low is none;
+	pixel type high is none; 
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		from pixel type low is none;
+		to pixel type high is none;
+	is
+		reshape from low to high;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+	
+	verb reshape
+		from pixel type low;
+		to pixel type high;
+	is
+		with region_extents do
+			its low = low;
+			its high = high;
+		end;    
+	end;    // reshape
+	
+	verb invalidate is
+		with region_extents do
+			its low is none;
+			its high is none;
+		end;
+	end;    // invalidate
+	
+	//
+	// querying methods
+	//
+	
+	boolean question is_valid is
+		answer some low and some high;
+	end;    // is_valid
+	
+	//
+	// region bounding methods
+	//
+	
+	boolean question contains
+		pixel type pixel;
+	is
+		answer (low's h <= pixel's h <= high's h) and
+			(low's v <= pixel's v <= high's v); 
+	end;    // contains
+	
+	pixel type question get_min is
+		answer low;
+	end;    // get_min
+	
+	pixel type question get_max is
+		answer high;
+	end;    // get_max
+
+	//
+	// constructing methods
+	//
+	
+	verb extend
+		to pixel type pixel;
+	is
+		low's h = ismaller of low's h and pixel's h;
+		low's v = ismaller of low's v and pixel's v;
+		high's h = ilarger of high's h and pixel's h;
+		high's v = ilarger of high's v and pixel's v;
+	end;    // extend
+	
+	verb expand
+		to region_bounding type bounds;
+	is
+		extend to bounds get_min;
+		extend to bounds get_max;
+	end;    // expand
+
+	//
+	// operators
+	//
+	
+	region_extents type question plus
+		region_bounding type bounds;
+	is
+		region_extents type extents from low to high;
+		extents expand to bounds;
+		answer extents;
+	end;    // plus
+	
+	//
+	// converting methods
+	//
+	
+	string type question to_string is
+		string type string is "region extents";
+		string add " from ";
+		string add low to_string;
+		string add " to ";
+		string add high to_string;
+		answer string;
+	end;    // print
+end;    // region_extents

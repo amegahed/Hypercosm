@@ -1,0 +1,17 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		    sorting.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a few utilities for sorting arrays of 			}
+{		numbers and definitions of behaviors and utilities 		}
+{		for sorting arrays and lists of objects.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/number_sorting.ores";
+include "system/object_sorting.ores";

@@ -1,0 +1,74 @@
+do tactile_block_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/grids.ores";
+include "system/grid_meshes.ores";
+include "system/common_materials.ores";
+
+
+scalar myscale = 1.5;
+
+
+anim tactile_block_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape block_shape is
+        write "making block", ;
+        block with
+            move to <-3.5 0 1>;
+            magnify by myscale;
+            material is wood;
+        end;
+    end;    // block_shape
+    
+    shape sphere_shape is
+        write "making sphere", ;
+        quad_grid_mesh of (globe_grid 10 by 20) with
+            move to <0 0 1>;
+            magnify by myscale;
+            smoothing is on;
+            mending is on;
+            material is wood;
+        end;
+    end;    // sphere_shape
+    
+    shape cone_shape is
+        write "making cone", ;
+        cone with
+            move to <3.5 0 1>;
+            magnify by myscale;
+            material is wood;
+        end;
+    end;    // cone_shape
+    
+    shape shapes is
+        write "making shapes", ;
+        
+        block_shape;
+        
+        sphere_shape;
+        
+        cone_shape;
+        
+    end;    // shapes
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape shapes titled "Tactile Primitive Shapes" in floor;
+end;    // tactile_block_anim

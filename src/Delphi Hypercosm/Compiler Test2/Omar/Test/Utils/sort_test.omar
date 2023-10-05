@@ -1,0 +1,75 @@
+{***************************************************************}
+{                          sort_test.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "sorts.ores";
+
+
+subject thing
+extends
+    sortable
+does
+    verb new with
+        integer value = 0;
+    end;
+    boolean question greater
+        than thing type thing2;
+    end;
+    verb print;
+has
+    integer value;
+is
+    verb new with
+        integer value = 0;
+    is
+        thing's value = value;
+    end;    // new
+
+
+    boolean question greater
+        than thing type thing2;
+    is
+        answer thing's value > thing2's value;
+    end;    // greater
+
+
+    verb print is
+        while some thing do
+            write "thing with value = ", thing's value, ;
+            thing is thing type its next;
+        end;
+    end;    // print
+end;    // thing
+
+
+verb test is
+    thing type thing1 with value = 20, thing2 with value = 100,
+        thing3 with value = 6, thing4 with value = 8;
+    end;
+
+    // make list
+    //
+    thing1 add thing2, thing3, thing4;
+
+    // write list
+    //
+    write "before sort, thing list = ", ;
+    thing1 print;
+
+    // sort list
+    //
+    thing1 is thing type thing1 sorted;
+
+    // write list again
+    //
+    write "after sort, thing list = ", ;
+    thing1 print;
+end;    // test

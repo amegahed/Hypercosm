@@ -1,0 +1,285 @@
+do navy_ships_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/manipulator_group.ores";
+include "system/udp_broadcaster.ores";
+include "system/collaborative_transformation_manipulator.ores";
+include "system/collaboration_manager.ores";
+include "system/tcp_connection.ores";
+include "navy_destroyer.omar";
+include "navy_escort.omar";
+
+shape ship1 is
+	navy_destroyer with
+		magnify by .01;
+		move to <8 -4 0>;
+		material is plastic colored blue;
+	end;
+end;    // ship1
+
+shape ship2 is 
+	navy_escort with
+		magnify by .01;
+		move to <4 1 0>;
+		material is plastic colored blue;
+	end;
+end;    // ship2
+
+shape ship3 is 
+	navy_escort with
+		magnify by .01;
+		move to <8 -8 0>;
+		material is plastic colored red;
+	end;
+end;    // ship3
+
+shape ship4 is 
+	navy_escort with
+		magnify by .01;
+		rotate by 90 around <0 0 1>;
+		move to <10 -10 0>;
+		material is plastic colored red;
+	end;
+end;    // ship4
+
+string type navy_units is "miles";
+scalar navy_unit_size = 1.5;
+string type connection_status is "disconnected";
+
+//
+// monitor classes
+//
+
+subject connection_monitor
+extends
+	connection_listening object
+does
+	verb on_connection_state_change
+		from object type dispatcher;
+		to connection_state type state;
+	end;
+is
+	verb on_connection_state_change
+		from object type dispatcher;
+		to connection_state type state;
+	is
+		string type message is "connection changed to ";
+		message add connection_state_to_string of state;
+		//alert message;
+		write message, ;
+		connection_status is connection_state_to_string of state;
+	end;
+end;    // connection_monitor
+
+subject collaboration_monitor
+extends
+	collaboration_listening object
+does
+	verb on_collaboration_state_change
+		from object type dispatcher;
+		to collaboration_state type state;
+	end;
+is
+	verb on_collaboration_state_change
+		from object type dispatcher;
+		to collaboration_state type state;
+	is
+		string type message is "collaboration changed to ";
+		message add collaboration_state_to_string of state;
+		//alert message;
+		write message, ;
+	end;
+end;    // collaboration_monitor
+
+//
+// main anim
+//
+
+anim navy_ships_anim
+	args type args;
+with
+	eye = <20 -15 3>;
+	lookat = <7 -5 0>;
+	background = dark blue;
+	width = 640;
+	height = 480;
+	args check;
+is
+	// map underlay
+	//
+	material type map_material is none;
+	
+	// collaboration attributes
+	//
+	collaboration type collaboration;
+	collaboration_manager type collaboration_manager using none;
+	connection_monitor type connection_monitor;
+	
+	// manipualators
+	//
+	collaborative_transformation_manipulator type manipulator1 is none;
+	collaborative_transformation_manipulator type manipulator2 is none;
+	collaborative_transformation_manipulator type manipulator3 is none;
+	collaborative_transformation_manipulator type manipulator4 is none;
+	manipulator type manipulators[] is none;
+	manipulator_group type manipulator_group is none;
+	shape scene is
+		parallelogram with
+			magnify by 50;
+			material is map_material;
+		end;
+	end;
+	verb draw_connection_state
+		at vector location;
+	with
+		horizontal_alignment type horizontal_alignment is left;
+	is
+		string type string is "connection status is ";
+		string add connection_status;
+		shadowed_overlay_text string at location with
+			horizontal_alignment is static horizontal_alignment;
+		end;
+	end;    // draw_connection_state
+		
+	verb draw_collaboration_state
+		at vector location;
+	with
+		horizontal_alignment type horizontal_alignment is left;
+	is
+		string type string is "collaboration state is ";
+		string add (collaboration_state_to_string of (collaboration get_state));
+		shadowed_overlay_text string at location with
+			horizontal_alignment is static horizontal_alignment;
+		end;
+	end;    // draw_collaboration_state
+	
+	verb draw_instructions
+		at vector location;
+	is
+		multiline_shadowed_overlay_text [
+			"To change collaboration state, press 'm' for master,'s' for slave, or 'l' for local"
+			"To change connection state, press 'c' to connect,'d' to disconnect"
+		] at location with
+			line_spacing = 2;
+		end;
+	end;    // draw_instructions
+	
+	verb draw is
+		draw_instructions at <0 .9 0>;
+		
+		// draw current state
+		//
+		draw_connection_state at <-.9 -.825 0> with
+			horizontal_alignment is left;
+		end;
+		draw_collaboration_state at <-.9 -.9 0> with
+			horizontal_alignment is left;
+		end;
+	end;
+	boolean question is_connected is
+		network_connectable type connection is collaboration_manager get_connection;
+		answer some connection and connection get_connection_state is connected;
+	end;    // is_connected
+	
+	verb connect is
+		tcp_connection type connection;
+		connection_status is "connecting...";
+		collaboration_manager set_connection to connection;
+		connection add_connection_listener connection_monitor;  
+	end;    // connect
+	
+	verb disconnect is
+		network_connectable type connection is collaboration_manager get_connection;
+		collaboration_manager disconnect;
+		connection_status is "disconnected";
+	end;    // disconnect
+		
+	verb check_keys
+	is
+		integer key;
+		
+		reset_frame_events;
+		key = get_key;
+		// connection state changing keys
+		//          
+		if key = char_to_key of "c" then
+			connect;
+		elseif key = char_to_key of "d" then
+			disconnect;
+					
+		// collaboration state changing keys
+		//
+		elseif key = char_to_key of "m" then
+			collaboration set_state to master;
+		elseif key = char_to_key of "s" then
+			collaboration set_state to slave;
+		elseif key = char_to_key of "l" then
+			collaboration set_state to local;
+		end;
+	end;    // check_keys
+	verb update is
+		collaboration_manager update;
+		check_keys;
+		draw;
+	end;
+	
+	// create collaborative manipulators
+	//
+	manipulator1 is
+		(new collaborative_transformation_manipulator
+			participating in collaboration
+			controlling ship1 
+			reporting "Destroyer" in navy_units
+		with
+			handle_size = .25;
+			final_rotation_snap = 0;
+			unit_size = navy_unit_size;
+		);
+		
+	manipulator2 is 
+		(new collaborative_transformation_manipulator
+			participating in collaboration
+			controlling ship2 
+			reporting "Escort" in navy_units
+		with
+			handle_size = .25;
+			final_rotation_snap = 0;
+			unit_size = navy_unit_size;
+		);
+	
+	manipulator3 is
+		(new collaborative_transformation_manipulator
+			participating in collaboration
+			controlling ship3
+			reporting "Escort" in navy_units
+		with
+			handle_size = .25;
+			final_rotation_snap = 0;
+			unit_size = navy_unit_size;
+		);
+			
+	manipulator4 is
+		(new collaborative_transformation_manipulator
+			participating in collaboration
+			controlling ship4
+			reporting "Escort" in navy_units
+		with
+			handle_size = .25;
+			final_rotation_snap = 0;
+			unit_size = navy_unit_size;
+		);
+	manipulators is [manipulator1 manipulator2 manipulator3 manipulator4];
+	manipulator_group is (new manipulator_group using manipulators);
+	
+	// configure collaboration
+	//
+	collaboration_manager add_collaboration collaboration;
+	// create map underlay
+	//
+	map_material is chalk poster "gulf.jpg";
+	
+	// run!
+	//  
+	mouse_controlled_actor manipulator_group within new static_shape of scene doing update;
+end;    // navy_ships_anim

@@ -1,0 +1,86 @@
+do translated_3ds_bicubic_patch_anim;
+
+include "system/3d.ores";
+include "system/3ds_bicubic_patch.ores";
+include "system/anims.ores";
+include "system/bicubic_patch.ores";
+	
+shape translated_3ds_bicubic_patch_example with
+	scalar tessellation = 1;
+is
+	static bicubic_basis type bicubic_basis is none;
+    // create control vertices and tangents
+    //
+    vector vertices[0..1, 0..1];
+    vector h_tangents[0..1, 0..1];
+    vector v_tangents[0..1, 0..1];
+	    
+	if bicubic_basis is none then
+	    for each vector h_tangent in h_tangents do
+	        scalar y = (random from -1 to 1) * 4;
+	        scalar z = (random from -1 to 1) * 4;
+	        h_tangent = <1 y z>;
+	    end;
+	    for each vector v_tangent in v_tangents do
+	        scalar x = (random from -1 to 1) * 4;
+	        scalar z = (random from -1 to 1) * 4;
+	        v_tangent = <x 1 z>;
+	    end;
+	
+	    vertices[0, 0] = <-1 -1 0>;
+	    vertices[1, 0] = <1 -1 0>;
+	    vertices[0, 1] = <-1 1 0>;
+	    vertices[1, 1] = <1 1 0>;
+	    
+	    bicubic_basis is ferguson_bicubic through
+			vertices towards h_tangents v_tangents;
+	end;
+	
+	// use native patch
+	//
+	//bicubic_patch 8 by 8 of bicubic_basis;
+	
+	// use 3ds patch
+	//
+    translated_3ds_bicubic_patch of bicubic_basis with
+        length_segments = round (8 * tessellation);
+    	width_segments = round (8 * tessellation);            
+    end;
+end;    // translated_3ds_bicubic_patch_example
+
+shape translated_3ds_bicubic_patch_scene with
+    scalar time = 0;
+	scalar tessellation = 1;
+is
+	static material type hyper_material is plastic poster "hyper.jpg";
+	static material type tie_dye_material is plastic poster "tie_dye.jpg";
+	static material type flag_material is plastic poster "flag.gif";
+		
+    translated_3ds_bicubic_patch_example with
+        magnify by 25;
+        move to <0 0 12.5>;
+        tessellation = static tessellation;
+        material is hyper_material; 
+    end;
+end;    // translated_3ds_bicubic_patch_scene
+    
+    
+anim translated_3ds_bicubic_patch_anim with
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_bicubic_patch_scene
+		within new static_shape of environment
+	    titled "3DS Bicubic Patch"
+	with
+		auto_camera is on;
+	end;
+end;    // translated_3ds_bicubic_patch_anim
+

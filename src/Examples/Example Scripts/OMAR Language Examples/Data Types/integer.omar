@@ -1,0 +1,34 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            integer.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of usage of        }
+{       the integer data type in the OMAR language.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do integer_example;
+
+include "system/native_math.ores";
+
+byte i = 1;
+short goo = 100;
+integer value = trunc 3.1415;
+integer a = -value;
+long b = 10 + 5 * a;
+	
+	
+verb integer_example is
+	write "This example declares, assigns, and prints", ;
+	write "values for a series of integer variables:", ;
+	write;
+	
+	write "i = ", i, ;
+	write "goo = ", goo, ;
+	write "value = ", value, ;
+	write "a = ", a, ;
+	write "b = ", b, ;
+end;    // integer_example

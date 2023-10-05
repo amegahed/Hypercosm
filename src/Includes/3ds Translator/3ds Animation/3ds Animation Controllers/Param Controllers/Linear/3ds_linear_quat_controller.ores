@@ -1,0 +1,93 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     3ds_linear_quat_controller.ores    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_keys.ores";
+include "system/3ds_quat_key.ores";
+include "system/3ds_key_controller.ores";
+include "system/3ds_quat_controlling.ores";
+
+subject translated_3ds_linear_quat_controller 
+extends
+	translated_3ds_quat_controllable translated_3ds_key_controller
+does
+	// constructor
+	//
+	verb new
+		of quat type values[];
+		at translated_3ds_time type times[];
+	end;
+	
+	// getting method
+	//
+	quat type question get_value
+		at translated_3ds_time type t;
+	end;
+is
+	objective translated_3ds_keys type question quat_keys
+		of quat type values[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_keys type keys;
+		integer key_number = num values;
+		
+		// create array of keys
+		//
+		dim none keys[1 .. key_number];
+		for integer counter = 1 .. key_number do
+			keys[counter] is new translated_3ds_quat_key
+				of values[counter] at times[counter];
+		end;
+		
+		answer keys;
+	end;    // quat_keys
+	
+	//
+	// constructor
+	//
+	
+	verb new
+		of quat type values[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_key_controller new using quat_keys of values at times;
+	end;    // new
+	
+	//
+	// getting method
+	//
+	
+	quat type question get_value
+		at translated_3ds_time type time;
+	is
+		translated_3ds_quat_key type prev_key is
+			translated_3ds_quat_key type (keys get_prev at time);
+		translated_3ds_quat_key type next_key is
+			translated_3ds_quat_key type (keys get_next at time);
+			
+		if some prev_key and some next_key then
+			scalar duration = next_key's time - prev_key's time;
+			scalar t1 = (time - prev_key's time) / duration;
+			scalar t2 = 1 - t1;
+			quat type quat1 is prev_key's value scaled by t2;
+			quat type quat2 is next_key's value scaled by t1;
+			quat type quat3 is quat1 plus quat2;
+			answer quat3;
+		elseif some next_key then
+			answer next_key's value;
+		elseif some prev_key then
+			answer prev_key's value;
+		else
+			answer unit_quat;
+		end;
+	end;    // get_value
+end;    // translated_3ds_linear_quat_controller

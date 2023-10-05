@@ -1,0 +1,406 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   3ds_editable_mesh.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains editable mesh definitions that correspond  	}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_object.ores";
+include "system/meshes.ores";
+include "system/singly_linked_lists.ores";
+include "system/3ds_renderable_mesh.ores";
+
+
+subject translated_3ds_editable_mesh_element extends mesh type;
+subject translated_3ds_editable_mesh_elements extends meshes type;
+
+
+subject translated_3ds_editable_mesh
+extends
+    translated_3ds_collapsable transformable texturable renderable printable translated_3ds_object
+does
+    // constructor
+    //
+    verb new
+    	of translated_3ds_editable_mesh_elements type elements is none;
+    end;
+
+	// attributes setting methods
+	//
+	verb set
+		to translated_3ds_editable_mesh_elements type elements is none;
+	end;
+	    
+	// mesh editing methods
+	//
+	verb clear;
+	verb add_element
+		translated_3ds_editable_mesh_element type element;
+	end;
+	verb add_elements
+		translated_3ds_editable_mesh_elements type elements;
+	end;
+	verb add_editable_mesh_elements
+	    of translated_3ds_editable_mesh type editable_mesh;
+    end;
+    verb add_renderable_mesh
+	    translated_3ds_renderable_mesh type renderable_mesh;
+    end;
+    verb add
+    	translated_3ds_stackable type stackable;
+    end;
+    
+    // querying methods
+    //
+    integer question get_num_elements;
+
+    // transformable methods
+    //
+    verb transform
+        from trans type trans;
+    end;
+    	
+	// texturable methods
+	//
+	verb apply
+	    texture_mapping type texture_mapping;
+	end;    // apply
+
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+		
+	// renderable method
+	//
+	shape instance;
+	
+	// scribable method
+	//
+	string type question to_string;
+
+	// printable method
+	//
+	verb print;
+
+	// recycling methods
+	//
+	objective translated_3ds_editable_mesh type question get;
+	reference verb recycle;	
+has
+	// editable mesh attributes
+	//
+    singly_linked_list type elements;
+private	
+	// recycling attributes
+	//
+	translated_3ds_editable_mesh type next is none;
+is
+    // recycling free list attributes
+    //
+    translated_3ds_editable_mesh type free_list is none;
+    
+	// collapsing attributes
+	//
+	const boolean collapse_mesh_elements is true;
+	
+	
+    //
+    // constructor
+    //
+    
+    
+    verb new
+    	of translated_3ds_editable_mesh_elements type elements is none;
+    is
+		if verbose_recycling then
+			write "new 3ds editable mesh", ;
+		end;
+		
+        add_elements elements;
+    end;	// new
+    
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set
+		to translated_3ds_editable_mesh_elements type elements is none;
+	is
+		clear;
+		add_elements elements;
+	end;	// set
+	
+	 
+    //   
+	// mesh editing methods
+	//
+	
+
+	verb clear is
+		while not elements is_empty do
+			translated_3ds_editable_mesh_element type editable_mesh_element is
+				translated_3ds_editable_mesh_element type elements removed_first;
+				
+			if recycleable type editable_mesh_element then
+				recycleable type recycleable is recycleable type editable_mesh_element;
+				recycleable recycle;
+			end;	
+		end;
+	end;	// clear
+	
+		
+	verb add_element
+		translated_3ds_editable_mesh_element type element;
+	is
+		if some element then
+	    	elements add element;
+	    end;
+	end;	// add_element
+
+
+	verb add_elements
+		translated_3ds_editable_mesh_elements type elements;
+	is
+		for each translated_3ds_editable_mesh_element type element in elements do
+			add_element element;
+		end;
+	end;	// add_elements
+	
+	
+	verb add_editable_mesh_elements
+	    of translated_3ds_editable_mesh type editable_mesh;
+	is  
+	    if some editable_mesh then  
+	        elements add_all of editable_mesh's elements;
+        	editable_mesh's elements clear;
+        end;
+    end;    // add_editable_mesh_elements
+    
+
+    verb add_renderable_mesh
+	    translated_3ds_renderable_mesh type renderable_mesh;
+	is
+		if some renderable_mesh then
+			add_element renderable_mesh get_mesh;
+			renderable_mesh reset;
+		end;
+    end;	// add_renderable_mesh
+    
+
+    verb add
+    	translated_3ds_stackable type stackable;
+    is
+    	translated_3ds_modifier type modifier is none;
+    	
+    	// attempt to collapse
+    	//
+    	if translated_3ds_collapsable type stackable then
+    	    translated_3ds_collapsable type collapsable is translated_3ds_collapsable type stackable; 
+    	    stackable is collapsable get_collapsed;
+    	end;
+    	
+    	// add modifier elements if it collapses to an editable mesh or 
+    	// a renderable mesh
+    	//
+    	modifier is translated_3ds_modifier type stackable get_self;
+    	
+    	if translated_3ds_editable_mesh type modifier then
+    		add_editable_mesh_elements of translated_3ds_editable_mesh type modifier;
+    	elseif translated_3ds_renderable_mesh type modifier then
+    		add_renderable_mesh translated_3ds_renderable_mesh type modifier;
+    	end;
+    	
+    	// recycle modifier after elements have been added
+    	//
+    	modifier recycle;
+    end;	// add
+    
+    
+    //
+    // querying methods
+    //
+    
+    
+    integer question get_num_elements is
+    	answer elements get_size;
+    end;	// get_num_elements
+    
+         
+    //        
+    // transformable methods
+    //
+    
+    
+    verb transform
+        from trans type trans;
+    is
+        iterator type iterator is elements get_iterator;
+        while iterator is_iterating do
+            translated_3ds_editable_mesh_element type element is 
+            	translated_3ds_editable_mesh_element type iterator next;
+            element transform from trans;
+        end;
+    end;    // transform
+    
+
+    //    
+	// texture application methods
+	//
+	
+	
+	verb apply
+	    texture_mapping type texture_mapping;
+	is
+        iterator type iterator is elements get_iterator;
+        while iterator is_iterating do
+            translated_3ds_editable_mesh_element type element is 
+            	translated_3ds_editable_mesh_element type iterator next;
+            element apply texture_mapping;
+        end;
+	end;    // apply
+	
+
+	meshes type question get_meshes is
+	    if some elements then
+	        if not elements is_empty then
+        		meshes type meshes;
+        		iterator type iterator is elements get_iterator;
+        		integer counter = 1;
+        	
+        		dim meshes[1 .. elements get_size];
+        		while iterator is_iterating do
+        			meshes[counter] is mesh type iterator next;
+        			counter = itself + 1;
+        		end;
+        		
+        		answer meshes;
+    		else
+    		    answer none;
+    		end;
+		else
+		    answer none;
+		end;
+	end;	// get_meshes
+	
+
+	//	
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+        translated_3ds_renderable_mesh type renderable_mesh is 
+        	translated_3ds_renderable_mesh type's get;
+        	  	
+        renderable_mesh set to get_meshes;
+        recycle;     
+         
+		answer renderable_mesh;
+	end;	// get_collapsed
+	
+
+	//
+	// renderable method
+	//
+	
+	
+	shape instance is
+        iterator type iterator is elements get_iterator;
+        while iterator is_iterating do
+            translated_3ds_editable_mesh_element type element is 
+            	translated_3ds_editable_mesh_element type iterator next;
+            element instance;
+        end;
+	end;	// instance
+	
+
+    //
+    // scribable method
+    //
+    
+    
+    string type question to_string is
+    	answer "3ds editable mesh";
+    end;	// to_string	 
+	
+			
+    //	
+	// printable methods
+	//
+	
+	
+	verb print is
+        iterator type iterator is elements get_iterator;
+        integer counter = 1;
+        write to_string, ;
+        write "editable mesh with ", get_num_elements, " elements:", ;
+        
+        while iterator is_iterating do
+            translated_3ds_editable_mesh_element type element is 
+            	translated_3ds_editable_mesh_element type iterator next;
+        	write "element #", counter, ;
+            element print;
+            counter = itself + 1;
+        end;
+        
+	    write;
+	end;    // print
+   
+   	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_editable_mesh type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_editable_mesh type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_editable_mesh;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+		translated_3ds_editable_mesh clear;
+		
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_editable_mesh;
+		
+		translated_3ds_editable_mesh is none;
+	end;		// recycle	
+end;    // translated_3ds_editable_mesh
+
+
+translated_3ds_editable_mesh type question to_translated_3ds_editable_mesh
+    of translated_3ds_object type translated_3ds_object;
+is		
+	translated_3ds_collapsable type collapsable is none;
+    
+    // collapse stackable to editable mesh
+    //
+    collapsable is translated_3ds_collapsable type translated_3ds_object;
+    translated_3ds_object is translated_3ds_object type collapsable get_collapsed;
+    
+    answer translated_3ds_editable_mesh type translated_3ds_object; 
+end;    // to_translated_3ds_editable_mesh
+

@@ -1,0 +1,45 @@
+do smooth_scale_controller_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+include "scale_marker.omar";
+   
+		
+shape smooth_scale_controller_scene with
+	scalar time = 0;
+is   
+	static translated_3ds_smooth_scale_controller type scale_controller 
+		of translated_3ds_scale_values of [<1 1 1> <.5 1 1> <1 .5 1> <1 1 .5> <1 1 1>]
+		at converted_3ds_ticks_array_from_frames_array of [0 25 50 75 100];
+		
+	static scalar duration = converted_3ds_seconds_from_frames of 100;
+	scale_marker with
+		scale_controller apply to trans at (converted_3ds_ticks_from_seconds of (smod time to duration));
+	end;
+end;    // smooth_scale_controller_scene
+
+anim smooth_scale_controller_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	translated_3ds_scale_values type scale_values is none;
+	translated_3ds_smooth_scale_controller type scale_controller is none;
+	
+	mouse_controlled_animated_shape smooth_scale_controller_scene
+		within new static_shape of environment 
+		titled "3DS Smooth Scale Controller";
+end;    // smooth_scale_controller_anim

@@ -1,0 +1,130 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             car.omar                   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of the           }
+{       vehicle in the physics engine.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do car_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/infinite_plane.ores";
+include "system/tube.ores";
+
+shape body is
+	extrude2 [
+		// rear
+		//    
+		{[-2 3]}[-3 2] [-5 1.5] [-5 .5] 
+		// rear wheel well
+		//    
+		[-4 0] [-4 .5] [-3.5 1] [-2.5 1] [-2 .5] [-2 0]
+	
+		// front wheel well
+		//
+		[2.5 0] [2.5 .5] [3 1] [4 1] [4.5 .5] [4.5 0]
+		// front
+		//        
+		[5 0] [5 1] [4.5 1.5] [2 2] {[1 3]}
+		
+	] along <0 1 0> 
+	with
+		height = 4;
+	end;
+	
+	// windows
+	//
+	extrude2 [
+		[-2 2.9] [-3 2] [2 2] [1 2.9]
+	] along <0 1 0>
+	with
+		height = 4;
+		material is plastic colored light blue;
+	end;
+	// top
+	//    
+	extrude2 [
+		[-2 2.9] [-1.9 3] [.9 3] [1 2.9]
+	] along <0 1 0>
+	with
+		height = 4;
+	end;  
+end;    // body
+
+shape wheel is
+	tube with
+		end1 = <0 -.25 0>;
+		end2 = <0 .25 0>;
+		inner_radius = .5;
+		outer_radius = 1;
+		color = dark grey;
+	end;
+	cone with
+		end1 = <0 0 0>;
+		end2 = <0 .25 0>;
+		radius1 = .5;
+		radius2 = 0;
+		material is metal;
+	end;
+end;    // wheel
+
+shape car is
+	body;
+	
+	// rear left wheel
+	//
+	wheel with
+		move to <-3 1.75 0>;
+	end;
+	
+	// rear right wheel
+	//
+	wheel with
+		rotate by 180 around <0 0 1>;
+		move to <-3 -1.75 0>;
+	end;
+	
+	// front left wheel
+	//
+	wheel with
+		move to <3.5 1.75 0>;
+	end;
+	
+	// front right wheel
+	//
+	wheel with
+		rotate by 180 around <0 0 1>;
+		move to <3.5 -1.75 0>;
+	end;
+end;    // car
+
+anim car_anim with
+	eye = <5 -20 10>;
+	lookat = <0 0 1>;
+is
+	shape scene with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+		car with
+			move to <0 0 1>;
+		end;
+			
+		// ground
+		//
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+			magnify by 10;
+		end;
+	end;
+	// run!
+	//
+	mouse_controlled_animated_shape scene;
+end;    // physics_vehicle_anim

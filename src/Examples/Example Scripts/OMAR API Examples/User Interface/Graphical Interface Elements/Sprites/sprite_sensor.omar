@@ -1,0 +1,52 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          sprite_sensor.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a sprite sensor       }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do sprite_sensor_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/sprite_sensor.ores";
+
+anim sprite_sensor_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	verb mouse_down_action is
+		write "pressed!", ;
+	end;
+	verb mouse_up_action is
+		write "released!", ;
+	end;
+	
+	sprite_sensor type wireframe_sprite_sensor
+		at <-.8 .8 0> poster "wireframe_icon.gif"
+	with
+		width = 32 / global width;
+		height = 32 / global height;
+		mouse_down_action is (new action of static mouse_down_action);
+		mouse_up_action is (new action of static mouse_up_action);
+	end;
+	
+	picture scene is
+		wireframe_sprite_sensor overlay at 10;
+		sphere;
+		default_background at 100;      
+		default_lights;
+	end;    // scene
+	while true do
+		scene;
+		wireframe_sprite_sensor update;
+	end;
+end;    // sprite_sensor_anim

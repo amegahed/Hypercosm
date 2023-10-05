@@ -1,0 +1,15 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      manipulatable_actors.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/touchable_actor.ores";
+include "system/pressable_actor.ores";

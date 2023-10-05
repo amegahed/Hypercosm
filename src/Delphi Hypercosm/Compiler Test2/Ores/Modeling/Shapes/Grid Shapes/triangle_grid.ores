@@ -1,0 +1,32 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	  	triangle_grid.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		grid of triangle shapes.								}
+{																}
+{		Note: this implementation is very inefficient due		}
+{		to the number of individual triangle shapes.  If		}
+{		efficiency is important, use a grid mesh instead.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+include "system/vector_grid.ores";
+
+
+shape triangle_grid
+    of vector_grid type vector_grid;
+is
+    for integer h = min vector_grid[] .. max vector_grid[] - 1 do
+        for integer v = min vector_grid .. max vector_grid - 1 do
+            triangle vector_grid[v, h] vector_grid[v + 1, h + 1] vector_grid[v, h + 1];
+            triangle vector_grid[v, h] vector_grid[v + 1, h] vector_grid[v + 1, h + 1];
+        end;
+    end;
+end;    // triangle_grid

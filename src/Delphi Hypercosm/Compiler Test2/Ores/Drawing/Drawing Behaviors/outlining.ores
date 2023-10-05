@@ -1,0 +1,20 @@
+{***************************************************************}
+{                          outlining.ores                  		}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{        Contains interface definitions for drawing             }
+{        behaviors.                                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+adjective outlineable  
+does
+	verb set_outline
+		to boolean state is true;
+	end;
+	boolean question is_outlined;
+end;    // outlineable

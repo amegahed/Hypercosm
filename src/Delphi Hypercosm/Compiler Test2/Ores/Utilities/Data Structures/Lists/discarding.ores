@@ -1,0 +1,30 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   discarding.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       List iterators can be used to navigate around a         }
+{       list and also to modify the list by inserting           }
+{       and removing elements.                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+{***************************************************************} 
+{       This method is used when removing elements from         }
+{       a list.  The standard list removal methods return       }
+{       a reference to the removed node.  If we don't want      }
+{       to do anything with the removed node, we can just       }
+{       pass the reference to discard which will throw          }
+{       it away.                                                }
+{                                                               }
+{       example:        discard iterator removed;               }
+{***************************************************************}
+verb discard
+    object type element;
+is
+    element is none;
+end;    // discard

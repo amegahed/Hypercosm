@@ -1,0 +1,608 @@
+{***************************************************************}
+{                         timers.ores                           }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{               Contains standard procedures for                }
+{                 capturing and measuring time.                 }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "native_time.ores";
+include "booleans.ores";
+include "math.ores";
+include "time_conversions.ores";
+include "printing.ores";
+include "active.ores";
+
+
+// The timer subject is an easy way to keep track of elapsed time for
+// any number of different applications. It works very much like a
+// stopwatch.
+//
+// When you create a timer, it immediately begins "ticking". You may
+// choose any starting value for the timer (its default is 0), and you
+// may choose any tick speed (its default speed is 1 unit / second).
+//
+// At any time, you can request the timer's value to find out how
+// many units have passed since the timer's creation. You may also
+// reset, pause, and unpause the timer.
+//
+// Because the timer is linked to the passage of real time (rather
+// than to the frame count of an animation) it can be used to ensure
+// an animation runs at a consistent speed for all frame rates.
+//
+// For example, in an animation containing a rotating shape, the angle
+// of the shape's rotation could be set to equal to a timer position.
+// Changing the tick speed of the timer would change the speed of
+// the shape's rotation.
+// 
+// You can also use the timer to add precision to simulations. If, for
+// example, your applet simulates an event that lasts for exactly 1750
+// milliseconds, you could create a millisecond timer (by setting
+// ticks_per_second to 1000) and terminate the animation when the timer
+// position reaches 1750.
+
+
+{***************************************************************}
+{                            timers                             }
+{***************************************************************}
+
+
+abstract subject timer
+extends
+    printable object
+does
+    verb new
+        at scalar time = 0;
+    end;
+    scalar question get_time;
+    
+    // printable methods
+    //
+    verb print;
+has
+    scalar time = 0;
+is
+    verb new
+        at scalar time = 0;
+    is
+        timer's time = time;
+    end;    // new
+    
+    
+    scalar question get_time is
+        answer time;
+    end;    // get_time
+    
+
+    // printable methods
+    //
+    verb print is
+        write "time = ", time, ;
+    end;    // print    
+end;    // timer
+
+
+subject manual_timer
+extends
+    advanceable setable resetable timer
+does
+    // constructor
+    //
+    verb new
+        at scalar time = 0;
+    end;    // new
+    
+    // advanceable methods
+    //
+    verb advance
+        by scalar time_step;
+    end;
+    
+    // setable methods
+    //
+    verb set
+        to scalar time;
+    end;
+    
+    // resetable methods
+    //  
+    verb reset;
+    boolean question is_reset;
+is
+    verb new
+        at scalar time = 0;
+    is
+        timer new at time;
+    end;    // new
+    
+    
+    // advanceable methods
+    //
+    verb advance
+        by scalar time_step;
+    is
+        set to time + time_step;
+    end;    // advance
+    
+    
+    // setable methods
+    //
+    verb set
+        to scalar time;
+    is
+        manual_timer's time = time;
+    end;    // set
+    
+    
+    // resetable methods
+    //    
+    verb reset is
+        time = 0;
+    end;    // reset
+    
+    
+    boolean question is_reset is
+        answer (time = 0);
+    end;    // is_reset  
+end;    // manual_timer
+
+
+subject clock_timer
+extends
+    changeable manual_timer
+does
+    // constructor
+    //
+    verb new
+        at scalar time = 0;
+    end;
+       
+    // changeable methods
+    //
+    verb update;
+has
+    scalar previous_time = get_seconds;
+is
+    // constructor
+    //
+    verb new
+        at scalar time = 0;
+    is
+        manual_timer new at time;
+    end;    // new
+    
+    
+    // changeable methods
+    //    
+    verb update is
+        scalar current_time = get_seconds;
+        advance by (current_time - previous_time);
+        previous_time = current_time;
+    end;    // update
+end;    // clock_timer
+
+
+subject stopwatch_timer
+extends
+    pauseable clock_timer
+does
+    verb new
+        at scalar time = 0;
+    with
+        boolean paused is false;
+    end;
+        
+    // pauseable methods
+    //
+    verb pause;         // stop playing at current position
+    verb resume;        // resume playing at current position
+    verb toggle;        // toggle between play and pause
+    boolean question is_paused;
+    
+    // overriden methods
+    //   
+    verb advance
+        by scalar time_step;
+    end;
+    verb reset;
+has
+    boolean paused is false;
+is
+    verb new 
+        at scalar time = 0;
+    with
+        boolean paused is false;
+    is
+        clock_timer new at time;
+        stopwatch_timer's paused is paused;
+    end;    // new
+    
+        
+    // pauseable methods
+    //
+    verb pause is
+        paused is true;
+    end;    // pause
+    
+    
+    verb resume is
+        paused is false;
+    end;    // resume
+    
+
+    verb toggle is
+        paused is not paused;
+    end;    // toggle
+    
+    
+    boolean question is_paused is
+        answer paused;
+    end;    // is_paused
+    
+    
+    // overriden methods
+    // 
+    verb advance 
+        by scalar time_step;
+    is
+        if not paused then
+            time = itself + time_step;
+        end;
+    end;    // advance
+    
+    
+    verb reset is
+        if not paused then
+            manual_timer static reset;
+        end;
+    end;    // reset
+end;    // stopwatch_timer
+
+
+subject variable_timer
+extends
+    variable reversable stopwatch_timer
+does
+    verb new
+        at scalar time = 0;
+        running at scalar rate = 1;
+    with
+        boolean paused is false;
+    end;
+
+    // variable methods
+    //      
+    verb set_rate
+        to scalar rate = 1;
+    end;
+    scalar question get_rate;
+    
+    // reversible methods
+    //
+    verb play;          // play forwards
+    verb backup;        // play backwards
+    verb reverse;       // change directions
+    boolean question in_reverse;
+    
+    // overriden methods
+    //   
+    verb advance
+        by scalar time_step;
+    end;
+has
+    scalar rate = 1;
+is
+    verb new
+        at scalar time = 0;
+        running at scalar rate = 1;
+    with
+        boolean paused is false;
+    is
+        stopwatch_timer new at time with
+            paused is static paused;
+        end;
+        set_rate to rate;
+    end;    // new
+
+
+    // variable methods
+    //     
+    verb set_rate
+        to scalar rate = 1;
+    is
+        variable_timer's rate = rate;
+    end;    // set_rate
+    
+    
+    scalar question get_rate is
+        answer rate;
+    end;    // get_rate
+    
+          
+    // reversable methods
+    //
+    verb play is
+        rate = abs rate;
+        resume;
+    end;    // play
+    
+    
+    verb backup is
+        rate = -abs rate;
+        resume;
+    end;    // backup
+    
+    
+    verb reverse is
+        rate = -rate;
+    end;    // reverse
+    
+    
+    boolean question in_reverse is
+        answer rate < 0;
+    end;    // in_reverse
+    
+
+    // overriden methods
+    // 
+    verb advance
+        by scalar time_step;
+    is
+        stopwatch_timer static advance by time_step * rate;
+    end;    // advance  
+end;    // variable_timer
+
+
+subject interval_timer
+extends
+    mortal variable_timer
+does
+    verb new
+        at scalar time = 0;    
+        lasting scalar duration = 1;
+    with
+        boolean paused is false;
+    end;   
+
+    // interval methods
+    //
+    verb set_duration
+        to scalar duration;
+    end;
+    scalar question get_duration;
+    scalar question get_t;
+    verb finish;
+    boolean question is_finished;
+    verb complete;
+    boolean question is_completed;
+    
+    // overriden methods
+    //
+    verb advance
+        by scalar time_step;
+    end;
+    verb set
+        to scalar time;
+    end;
+    verb reset;
+    verb resume;
+    verb restart;
+has
+    scalar duration = 1;
+    scalar t = 0;
+is
+    verb new
+        at scalar time = 0;    
+        lasting scalar duration = 1;
+    with
+        boolean paused is false;
+    is
+        variable_timer new at time with
+            paused is static paused;
+        end;
+        set_duration to duration;
+    end;    // new
+    
+    
+    // interval methods
+    //
+    verb set_duration
+        to scalar duration;
+    is
+        interval_timer's duration = duration;
+        set to time;
+    end;    // set_duration
+    
+    
+    scalar question get_duration is
+        answer duration;
+    end;    // get_duration
+    
+    
+    scalar question get_t is
+        answer t;
+    end;    // get_t
+    
+    
+    verb finish is
+        set to duration;
+    end;    // finish
+    
+    
+    boolean question is_finished is
+        answer time >= duration;
+    end;    // is_finished
+    
+
+    verb complete is
+        if not in_reverse then
+            finish;
+        else
+            restart;
+        end;
+    end;    // complete
+    
+    
+    boolean question is_completed is
+        if not in_reverse then
+            answer is_finished;
+        else
+            answer is_reset;
+        end;
+    end;    // is_completed
+    
+        
+    // overriden methods
+    //
+    verb advance
+        by scalar time_step;
+    is
+        variable_timer static advance by time_step;
+        set to time; 
+    end;    // advance
+    
+    
+    verb set
+        to scalar time;
+    is
+        interval_timer's time = clamp time from 0 to duration;
+        
+        // set parametric t
+        //
+        if duration = 0 then
+            if not in_reverse then
+                t = 1;
+            else
+                t = 0;
+            end;
+        elseif duration = infinity then
+            t = 0;
+        else
+            t = interval_timer's time / duration;
+        end;
+    end;    // set
+    
+    
+    verb reset is
+        if not paused then
+            if not in_reverse then
+                restart;
+            else
+                finish;
+            end;
+        end;
+    end;    // reset
+    
+    
+    verb resume is
+        paused is false;
+        if duration = 0 then
+            complete;
+        end; 
+    end;    // resume
+    
+    
+    verb restart is
+        set to 0;
+    end;    // restart
+end;    // interval_timer
+
+
+subject cycle_timer
+extends
+    cycleable interval_timer
+does
+    verb new
+        at scalar time = 0;    
+        lasting scalar duration = 1;
+    with
+        boolean paused is false;
+        boolean autostop is false;
+        boolean autoreverse is false;
+    end; 
+    
+    // cycleable methods
+    //
+    verb set_autostop
+        to boolean state is true;
+    end;  
+    verb set_autoreverse
+        to boolean state is true;
+    end;
+    
+    // overriden methods
+    //   
+    verb advance
+        by scalar time_step;
+    end;
+has
+    boolean autostop is false;
+    boolean autoreverse is false;
+is
+    verb new
+        at scalar time = 0;   
+        lasting scalar duration = 1;
+    with
+        boolean paused is false;
+        boolean autostop is false;
+        boolean autoreverse is false;
+    is
+        interval_timer new at time lasting duration with
+            paused is static paused;
+        end;
+        with cycle_timer do
+            its autostop is autostop;
+            its autoreverse is autoreverse;
+        end;
+    end;    // new
+    
+    
+    // cycle controls
+    //
+    
+    
+    verb set_autostop
+        to boolean state is true;
+    is
+        autostop is state;
+    end;    // set_autostop
+    
+        
+    verb set_autoreverse
+        to boolean state is true;
+    is
+        autoreverse is state;
+    end;    // set_autoreverse
+    
+    
+    // overriden methods
+    //
+    
+        
+    verb advance
+        by scalar time_step;
+    is      
+        if not paused then 
+            if is_completed then
+                if autostop then
+                    pause;
+                elseif autoreverse then
+                    reverse;
+                else
+                    if is_finished then
+                        reset;
+                    elseif is_reset then
+                        finish;
+                    end;
+                end;
+            end;
+            
+            interval_timer static advance by time_step;
+        end;
+    end;    // advance
+end;    // cycle_timer

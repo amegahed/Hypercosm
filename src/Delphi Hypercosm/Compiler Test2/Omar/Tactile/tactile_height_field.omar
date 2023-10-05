@@ -1,0 +1,47 @@
+do tactile_height_field_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/meshes.ores";
+
+
+anim tactile_height_field_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape height_field_shape is
+        scalar question f
+            at scalar x, y;
+        is
+            scalar d = sqrt (x*x + y*y);
+            answer sin (d * d * 360 / 4) / (abs (x * y / d) + 1) - 1; 
+        end;
+         
+        write "making new height field";      
+        height_function using f with
+            h_steps = 20;
+            v_steps = 20;
+            material is plastic poster "grid2.jpg";
+            move to <0 0 1>;
+            magnify by 5;
+        end;
+    end;    // height_field_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape height_field_shape titled "Tactile Height Field" in floor;
+end;    // tactile_height_field_anim

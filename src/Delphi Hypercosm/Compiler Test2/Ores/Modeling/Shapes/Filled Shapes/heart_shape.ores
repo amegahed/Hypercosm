@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 	heart_shape.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of a standard filled shape		}
+{		in the form of a heart.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+
+
+shape heart_shape with
+    integer steps = 20;
+is
+    shape half_heart is
+        vector vertex[0..steps];
+
+        for integer counter = 0..steps do
+            scalar theta = (counter / steps) * 180;
+
+                        // r = ln(1 + (theta / 22.5) * 7 / 8) / (ln 2) / 2;
+            scalar r = sqrt (theta / 22.5) / 2;
+            scalar x = cos theta * r + .5;
+            scalar y = sin theta * r;
+
+            vertex[counter] = <x y 0>;
+        end;
+        
+        polygon vertex with
+            rotate by 90 around <0 0 1>;
+        end;
+    end;    // half_heart
+
+    half_heart;
+    half_heart with
+        scale by -1 along <1 0 0>;
+    end;
+end;    // heart_shape

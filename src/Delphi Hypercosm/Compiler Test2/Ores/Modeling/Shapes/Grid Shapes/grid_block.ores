@@ -1,0 +1,113 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	       grid_block.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		grid block.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/rectangular_grid.ores";
+
+
+shape grid_block with
+
+	// geometry parameters
+	//
+    vector vertex = <-1 -1 -1>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+    vector side3 = <0 0 2>;
+    
+    // tessellation parameters
+    //
+    integer steps = 4;
+    
+    // rendering parameters
+    //
+    boolean smoothing is true;
+    boolean one_sided is true;
+    boolean reversed is false;
+    
+    // texturing parameters
+    //
+    boolean textured is true;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+    shape unit_grid is
+        rectangular_grid with
+        
+        	// tessellation parameters
+        	//
+            h_steps = steps;
+            v_steps = steps;
+
+			// rendering parameters
+			//            
+            smoothing is static smoothing;         
+            one_sided is static one_sided;
+            reversed is static reversed;
+            
+            // texturing parameters
+            //
+            textured is static textured;  
+            mapping is static mapping;
+            
+			// transformation parameters
+			//
+            trans's x_axis = <1 0 0>;
+            trans's y_axis = <0 1 0>;
+            trans's z_axis = trans's x_axis cross trans's y_axis;
+        end;
+    end;    // unit_grid
+    
+
+    shape unit_grid_pair is
+        unit_grid with
+            trans's origin = <0 0 1>;
+            trans's x_axis = <1 0 0>;
+            trans's y_axis = <0 1 0>;
+            trans's z_axis = trans's x_axis cross trans's y_axis;
+        end;
+        unit_grid with
+            trans's origin = <0 0 -1>;
+            trans's x_axis = <1 0 0>;
+            trans's y_axis = <0 1 0>;
+            trans's z_axis = trans's y_axis cross trans's x_axis;
+        end;
+    end;    // unit_grid_pair
+    
+      
+    shape unit_grid_block is
+    
+        // top and bottom faces
+        //
+        unit_grid_pair;
+        
+        // left and right faces
+        //
+        unit_grid_pair with
+            rotate by 90 around <1 0 0>;
+            rotate by 90 around <0 0 1>;
+        end;
+        
+        // front and back faces
+        //
+        unit_grid_pair with
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // unit_grid_block
+    
+    
+    unit_grid_block with
+        trans's origin = vertex + (side1 / 2) + (side2 / 2) + (side3 / 2);
+        trans's x_axis = (side1 / 2);
+        trans's y_axis = (side2 / 2);
+        trans's z_axis = (side3 / 2);
+    end;
+end;    // grid_block

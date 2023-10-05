@@ -1,0 +1,22 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   		indexing.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of indexing behavior for			}
+{		an immutable ("read-only") indexable collection.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+adjective indexable
+does
+    // random access element querying methods
+    //
+    object type question get
+        element integer index;
+    end;
+end;    // indexable

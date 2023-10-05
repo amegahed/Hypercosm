@@ -1,0 +1,45 @@
+do linear_rotation_controller_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+include "rotation_marker.omar";
+
+shape linear_rotation_controller_scene with
+	scalar time = 0;
+is   
+	static translated_3ds_linear_rotation_controller type rotation_controller of [
+		(unit_quat) 
+		(new quat of 0.7071 by <0.0000 0.0000 -0.7071>)
+		(new quat of 0.5000 by <-0.5000 -0.5000 -0.5000>)
+	] at converted_3ds_ticks_array_from_frames_array of [
+		0 50 100
+	];  // rotation_controller
+	static scalar duration = converted_3ds_seconds_from_frames of 100;
+	
+	rotation_marker with
+		rotation_controller apply to trans at (converted_3ds_ticks_from_seconds of (smod time to duration));
+	end;
+end;    // linear_rotation_controller_scene
+
+anim linear_rotation_controller_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_shape linear_rotation_controller_scene
+		within new static_shape of environment 
+		titled "3DS Linear Rotation Controller";
+end;    // linear_rotation_controller_anim

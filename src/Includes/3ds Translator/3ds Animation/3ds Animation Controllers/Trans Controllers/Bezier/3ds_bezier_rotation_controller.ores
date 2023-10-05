@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   3ds_bezier_rotation_controller.ores  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_rotation_controller.ores";
+include "system/3ds_bezier_quat_controller.ores";
+
+subject translated_3ds_bezier_rotation_controller 
+extends
+	translated_3ds_rotation_controller
+does
+	// constructor
+	//
+	verb new
+		of quat type quats[];
+		from quat type in_tangents[];
+		to quat type out_tangents[];
+		at translated_3ds_time type times[];
+	end;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of quat type quats[];
+		from quat type in_tangents[];
+		to quat type out_tangents[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_rotation_controller new controlled by
+			new translated_3ds_bezier_quat_controller
+				of quats from in_tangents to out_tangents at times;
+	end;    // new
+end;    // translated_3ds_bezier_rotation_controller

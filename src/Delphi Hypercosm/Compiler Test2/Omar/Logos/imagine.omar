@@ -1,0 +1,107 @@
+{***************************************************************}
+{                          imagine.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do imagine_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/solids.ores";
+include "system/alpha.omar";
+include "system/specs.omar";
+include "system/earth.omar";
+
+
+// integer paper_image = load_image "paper.tga";
+
+
+shape imagine is
+    letter_i with
+        move to <-14.5 0 0>;
+    end;
+    letter_m with
+        move to <-10 0 0>;
+    end;
+    letter_a with
+        move to <-5 0 0>;
+    end;
+    letter_g with
+        move to <0 0 0>;
+    end;
+    letter_i with
+        move to <4.5 0 0>;
+    end;
+    letter_n with
+        move to <9 0 0>;
+    end;
+    letter_e with
+        move to <13.5 0 0>;
+    end;
+end;    // imagine
+
+
+shape imagine_imagine is
+    flat marble dark grey imagine with
+        rotate by -90 around <1 0 0>;
+        scale by 2 along <0 1 0>;
+        move to <0 7 0>;
+        magnify the shader_trans by 10;
+    end;
+    flat marble dark grey imagine with
+        rotate by -90 around <1 0 0>;
+        scale by -2 along <0 1 0>;
+        move to <0 -7 0>;
+        magnify the shader_trans by 10;
+    end;
+    flat marble dark grey ring with
+        center = <0 0 -.4>;
+        normal = <0 0 1>;
+        inner_radius = 22;
+        outer_radius = 24;
+        magnify the shader_trans by 10;
+    end;
+
+    disk with
+        material is chalk colored light grey;
+        center = <0 0 -.8>;
+        normal = <0 0 1>;
+        radius = 24;
+        magnify the shader_trans by 80;
+    end;
+end;    // imagine_imagine
+
+
+picture imagine_picture
+    args type args;
+with
+    field_of_view = 32;
+    eye = <0 -500 350>;
+    lookat = <0 -15 0>;
+    render_mode is shaded;
+    shading is pixel;
+    background = black;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+    ambient = white * .4;
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    imagine_imagine with
+        magnify by 5;
+    end;
+    specs with
+        material is copper;
+        rotate by 30 around <0 0 1>;
+        move to <30 -50 1>;
+    end;
+    celestial_sphere;
+end;    // imagine_picture

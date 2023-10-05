@@ -1,0 +1,117 @@
+{***************************************************************}
+{                          wavelets.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do interference_anim;
+
+
+include "system/3d.ores";
+include "system/figures.ores";
+include "system/button_meter.omar";
+
+
+scalar spacing = .5;
+scalar wavelength = .75;
+
+
+shape wavelets with
+    scalar t = 0;
+    scalar wavelength = 1;
+    scalar radius = 10;
+is
+    color type circle_color[0..2] = [red green blue];
+    scalar s = (t - trunc t) * wavelength;
+    integer wavelet_number = trunc (radius / wavelength);
+
+    for integer counter = 1..wavelet_number do
+        circle with
+            {
+            color = circle_color[abs(counter - offset)
+            mod 3];
+            }
+            magnify by s;
+        end;
+        s = itself + wavelength;
+    end;
+end;    // wavelets
+
+
+picture interference_picture with
+    scalar t = 0;
+
+    projection is orthographic;
+    eye = <0 0 10>;
+    field_of_view = 30;
+    window_name is "Interference";
+is
+    wavelets with
+        t = static t;
+        wavelength = static wavelength;
+        move to <(-spacing * 2) 0 0>;
+    end;
+    wavelets with
+        t = static t;
+        wavelength = static wavelength;
+        move to <(spacing * 2) 0 0>;
+    end;
+end;    // interference_picture
+
+
+picture instruments_picture with
+    window_name is "Instruments";
+    background = black;
+is
+    static button_meter type wavelength_meter labelled "wavelength"
+        from .5 to 1 controls wavelength;
+    static button_meter type spacing_meter labelled "spacing"
+        controls spacing;
+    scalar aspect_ratio = height / width;
+
+    wavelength_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .35 0>;
+    end;
+    spacing_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.35 0>;
+    end;
+end;    // instruments_picture
+
+
+anim interference_anim with
+    double_buffer is on;
+    render_mode is wireframe;
+is
+    integer total_width = width;
+    boolean first_frame is true;
+    scalar t = 0;
+
+    while true do
+        if mouse_down or first_frame or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+
+        interference_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((total_width -
+                width) div 2);
+            t = static t;
+        end;
+        first_frame is false;
+        t = t + .02;
+    end;
+end;    // interference_anim

@@ -1,0 +1,397 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          quaternions.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard procedures for storing           }
+{       and transforming orientations using the quaternion      }
+{       representation.                                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/vectors.ores";
+include "system/printing.ores";
+include "system/axes.ores";
+include "system/comparisons.ores";
+
+subject quat
+extends
+	printable object
+does
+	// constructor
+	//
+	verb new
+		of scalar s = 1;
+		by vector v = <0 0 0>;
+	end;
+	
+	// initialization methods
+	//
+	verb set
+		to scalar s;
+		by vector v;
+	end;
+
+	// converting methods
+	//
+	verb set_axes
+		to axes type axes;
+	end;
+
+	verb get_axes
+		axes type reference axes;
+	end;
+	
+	// euler angle methods
+	//
+	verb set_euler
+		to scalar angle;
+		around vector axis;
+	end;
+
+	verb get_euler
+		scalar reference angle;
+		around vector reference axis;
+	end;
+	
+	// modification methods
+	//
+	verb normalize;
+	verb invert;
+	verb conjugate;
+		
+	// querying methods
+	//
+	scalar question length;
+	scalar question length_sqr;
+	quat type question normalized;
+	quat type question inverse;
+	quat type question conjugated;
+	quat type question abs;
+	
+	// arithmetic methods
+	//
+	verb add
+		quat type quat2;
+	end;
+
+	verb subtract
+		quat type quat2;
+	end;
+
+	verb multiply
+		by quat type quat2;
+	end;
+
+	verb scale
+		by scalar s;
+	end;
+	
+	// arithmetic operators
+	//
+	quat type question plus
+		quat type quat2;
+	end;
+
+	quat type question minus
+		quat type quat2;
+	end;
+
+	quat type question times
+		quat type quat2;
+	end;
+
+	quat type question scaled
+		by scalar s;
+	end;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public scalar s;
+	public vector v;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of scalar s = 1;
+		by vector v = <0 0 0>;
+	is
+		with quat do
+			its s = s;
+			its v = v;
+		end;
+	end;    // new
+	
+	//  
+	// initialization methods
+	//
+	
+	verb set
+		to scalar s;
+		by vector v;
+	is
+		with quat do
+			its s = s;
+			its v = v;
+		end;
+	end;    // set
+	
+	//  
+	// converting methods
+	//
+	
+	verb set_axes
+		to axes type axes;
+	is
+		const scalar small = 1.0e-6;
+		scalar t = axes trace + 1;
+		scalar x, y, z, w;
+		if t > small then
+		
+			// if the trace of the matrix is greater than zero,
+			// then perform an "instant" calculation.
+			//  
+			s = (sqrt t) * 2;
+			x = (axes's z_axis.y - axes's y_axis.z) / s;
+			y = (axes's x_axis.z - axes's z_axis.x) / s;
+			z = (axes's y_axis.x - axes's x_axis.y) / s;
+			w = .25 * s; 
+		else
+			// if the trace of the matrix is equal to zero then identify
+			// which major diagonal element has the greatest value.
+			// depending on this, calculate the following:
+			//
+			if (axes's x_axis.x > axes's y_axis.y) and 
+				(axes's x_axis.x > axes's z_axis.z) then
+			
+				// x diagonal element is the greatest
+				//
+				s  = sqrt(1.0 + axes's x_axis.x - axes's y_axis.y - axes's z_axis.z) * 2;
+				x = 0.25 * s;
+				y = (axes's y_axis.x + axes's x_axis.y) / s;
+				z = (axes's x_axis.z + axes's z_axis.x) / s;
+				w = (axes's z_axis.y - axes's y_axis.z) / s;
+				
+			elseif (axes's y_axis.y > axes's z_axis.z) then
+			
+				// y diagonal element is the greatest
+				// 
+				s  = sqrt(1.0 + axes's y_axis.y - axes's x_axis.x - axes's z_axis.z) * 2;
+				x = (axes's y_axis.x + axes's x_axis.y) / s;
+				y = 0.25 * s;
+				z = (axes's z_axis.y + axes's y_axis.z) / s;
+				w = (axes's x_axis.z - axes's z_axis.x) / s;
+			else
+				// z diagonal element is the greatest
+				//
+				s  = sqrt(1.0 + axes's z_axis.z - axes's x_axis.x - axes's y_axis.y) * 2;
+				x = (axes's x_axis.z + axes's z_axis.x) / s;
+				y = (axes's z_axis.y + axes's y_axis.z) / s;
+				z = 0.25 * s;
+				w = (axes's y_axis.x - axes's x_axis.y) / s;
+			end;
+		end;
+		
+		// set quaternion 
+		//
+		v = <x y z>;
+		s = w;
+	end;    // set_axes 
+		
+	verb get_axes
+		axes type reference axes;
+	is
+		scalar two_over_length_sqr;
+		scalar xs, ys, zs;
+		scalar wx, wy, wz;
+		scalar xx, xy, xz;
+		scalar yy, yz, zz;
+		
+		two_over_length_sqr = 2 / length_sqr;
+		xs = v.x * two_over_length_sqr;
+		ys = v.y * two_over_length_sqr;
+		zs = v.z * two_over_length_sqr;
+		
+		wx = s * xs;
+		wy = s * ys;
+		wz = s * zs;
+		
+		xx = v.x * xs;
+		xy = v.x * ys;
+		xz = v.x * zs;
+		
+		yy = v.y * ys;
+		yz = v.y * zs;
+		zz = v.z * zs;
+				
+		with axes do
+			its x_axis.x = 1 - yy - zz;
+			its x_axis.y = xy - wz;
+			its x_axis.z = xz + wy;
+			
+			its y_axis.x = xy + wz;
+			its y_axis.y = 1 - xx - zz;
+			its y_axis.z = yz - wx;
+			
+			its z_axis.x = xz - wy;
+			its z_axis.y = yz + wx;
+			its z_axis.z = 1 - xx - yy;
+		end;    
+	end;    // get_axes
+	
+	//  
+	// euler angle methods
+	//
+	
+	verb set_euler
+		to scalar angle;
+		around vector axis;
+	is
+		with quat do
+			its s = cos (angle / 2);
+			its v = axis * sin (angle / 2);
+		end;
+	end;    // set_euler
+	
+	verb get_euler
+		scalar reference angle;
+		around vector reference axis;
+	is
+		scalar cos_angle = s;
+		scalar sin_angle = sqrt (1 - sqr cos_angle);
+			
+		angle = acos (cos_angle);
+		axis.x = v.x / sin_angle;
+		axis.y = v.y / sin_angle;
+		axis.z = v.z / sin_angle;
+	end;    // get_euler
+	
+	//  
+	// modification methods
+	//
+	
+	verb normalize is
+		scale by 1 / length;
+	end;    // normalize
+	
+	verb invert is
+		scalar s2 = s * s + v dot v;
+		s = itself / s2;
+		v = itself * (-1 * s2);
+	end;    // invert
+	
+	verb conjugate is
+		v = -itself;
+	end;    // conjugate
+	
+	//
+	// querying methods
+	//
+	
+	scalar question length is
+		answer sqrt length_sqr;
+	end;    // length
+	
+	scalar question length_sqr is
+		answer (v dot v) + sqr s;
+	end;    // length_sqr
+			
+	quat type question normalized is
+		answer new quat of (s / length) by (v / length);
+	end;    // normalized
+	
+	quat type question inverse is
+		scalar s2 = s * s + v dot v;
+		answer new quat of (s / s2) by (v * -s2);
+	end;    // inverse
+	
+	quat type question conjugated is
+		answer new quat of s by (-v);
+	end;    // conjugated
+	
+	quat type question abs is
+		answer new quat of (sqrt (s * s + v dot v)) by <0 0 0>;
+	end;    // abs
+	
+	//
+	// arithmetic methods
+	//
+	
+	verb add
+		quat type quat2;
+	is
+		s = itself + quat2's s;
+		v = itself + quat2's v;
+	end;    // add
+	
+	verb subtract
+		quat type quat2;
+	is
+		s = itself - quat2's s;
+		v = itself - quat2's v;
+	end;    // subtract
+	
+	verb multiply
+		by quat type quat2;
+	is
+		set to ((s * quat2's s) - (v dot quat2's v))
+			by ((quat2's v * s) + (v * quat2's s) + (v cross quat2's v));
+	end;    // multiply
+	
+	verb scale
+		by scalar s;
+	is
+		quat's s = itself * s;
+		quat's v = itself * s;
+	end;    // scale
+
+	//  
+	// arithmetic operators
+	//
+	
+	quat type question plus
+		quat type quat2;
+	is
+		answer new quat of (quat's s + quat2's s)
+			by (quat's v + quat2's v);
+	end;    // plus
+	
+	quat type question minus
+		quat type quat2;
+	is
+		answer new quat of (quat's s - quat2's s)
+			by (quat's v - quat2's v);
+	end;    // minus
+	
+	quat type question times
+		quat type quat2;
+	is
+		answer new quat of ((quat's s * quat2's s) - (quat's v dot quat2's v))
+			by ((quat2's v * quat's s) + (quat's v * quat2's s) + (quat's v cross quat2's v));
+	end;    // times
+	
+	quat type question scaled 
+		by scalar s;
+	is
+		answer new quat of (quat's s * s) by (quat's v * s);
+	end;    // scaled
+	
+	//
+	// printing methods
+	//
+	
+	verb print is
+		write s, " <", v, ">", ;
+	end;    // print
+end;    // quat
+
+const quat type unit_quat;

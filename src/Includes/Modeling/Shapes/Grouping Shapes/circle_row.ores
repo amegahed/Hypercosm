@@ -1,0 +1,30 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           circle_row.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       circle row of other shapes.                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/transformations.ores";
+
+shape circle_row
+	of integer i;
+	shape thing;
+	around vector axis = <0 0 1>;
+with
+	scalar radius = 10;
+is
+	for integer counter = 1..i do
+		scalar angle = 360 * (counter - 1) / i;
+		thing with
+			move to <radius 0 0>;
+			rotate by angle around axis;
+		end;
+	end;
+end;    // circle_row

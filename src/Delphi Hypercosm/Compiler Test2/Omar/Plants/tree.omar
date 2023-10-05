@@ -1,0 +1,85 @@
+{***************************************************************}
+{                          tree.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tree_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape tree with
+        integer branching = 8;
+is
+    shape leaf is
+        sphere with
+            material is plastic colored dark green polished semi shiny;
+            radius = .5;
+        end;
+    end;    // leaf
+
+    // trunc
+    //
+    cone with
+        material is wood;
+        end1 = <0 0 0>;
+        end2 = <0 0 1>;
+        radius1 = .2;
+        radius2 = .1;
+    end;
+    if branching > 1 then
+
+        // branches
+        //
+        tree with
+            branching = static branching - 1;
+            rotate by 60 around <0 0 1>;
+            rotate by 30 around <0 1 0>;
+            magnify by .7;
+            move to <0 0 1>;
+        end;
+        tree with
+            branching = static branching - 1;
+            rotate by -60 around <0 0 1>;
+            rotate by -30 around <0 1 0>;
+            magnify by .7;
+            move to <0 0 1>;
+        end;
+    else
+
+        // leaf
+        //
+        leaf with
+            move to <0 0 1>;
+        end;
+    end;
+end;    // tree
+
+
+anim tree_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    lookat = <0 0 1.25>;
+    field_of_view = 40;
+    double_buffer is on;
+    background = sky_blue;
+    facets = 2;
+    args check;
+is
+        shape scene is
+                tree;
+                plane with
+                        magnify by 4;
+                        render_mode is wireframe;
+                end;
+        end;    // scene
+
+        mouse_controlled_shape scene;
+end;    // tree_anim

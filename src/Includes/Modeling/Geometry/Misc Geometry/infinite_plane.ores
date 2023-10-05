@@ -1,0 +1,40 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          infinite_plane.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a geometric definition of an infinite          }
+{       planar surface.                                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+subject infinite_plane
+does
+	// constructor
+	//
+	verb new
+		at vector origin = <0 0 0>;
+		around vector normal = <0 0 1>;
+	end;
+has
+	// attributes
+	//
+	public vector origin, normal;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at vector origin = <0 0 0>;
+		around vector normal = <0 0 1>;
+	is
+		with infinite_plane do
+			its origin = origin;
+			its normal = normal;
+		end;
+	end;    // new
+end;    // infinite_plane

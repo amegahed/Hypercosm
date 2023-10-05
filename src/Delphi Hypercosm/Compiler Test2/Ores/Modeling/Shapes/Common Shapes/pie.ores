@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     pie.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		pie.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/extrude.ores";
+include "system/math.ores";
+
+
+shape pie with
+    scalar angle = 90;
+    integer steps = 50;
+    scalar radius = 1;
+is
+    integer sides = trunc (steps * angle / 360) + 1;
+    scalar vertex[0..sides + 1, 1..2];
+
+    for integer counter = 0..sides do
+        scalar theta = counter / sides * angle;
+        scalar x = cos theta * radius;
+        scalar y = sin theta * radius;
+
+        vertex[counter, 1] = x;
+        vertex[counter, 2] = y;
+    end;
+    vertex[sides + 1, 1] = 0;
+    vertex[sides + 1, 2] = 0;
+    
+    extrude vertex;
+end;    // pie

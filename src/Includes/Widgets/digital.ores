@@ -1,0 +1,816 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             digital.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains shape and subject definitions for creating     }
+{       digital readouts.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_shapes.ores";
+include "comparisons.ores";
+include "text.ores";
+
+shape digital_segment with
+	scalar width = 3;
+	scalar height = 1;
+is
+	width = itself / 2;
+	height = itself / 2;
+	
+	if (width > height) then
+		// horizontal digital segment
+		polygon [<width 0 0> <(width - height) height 0> 
+			<(-width + height) height 0> <-width 0 0> 
+			<(-width + height) (-height) 0>
+			<(width - height) (-height) 0>];
+	else
+		// vertical digital segment
+		polygon [<0 height 0> <(-width) (height - width) 0>
+			<(-width) (-height + width) 0>
+			<0 (-height) 0> <width (-height + width) 0>
+			<width (height - width) 0>];
+	end;
+end;    // digital_segment
+
+shape digital_glyph
+	integer lit_segments[];
+with
+	scalar width = 1;
+	scalar height = 1.8; 
+is
+	{*******************************}
+	{   LED digit is composed of    }
+	{   segments as shown below:    }
+	{*******************************}
+	{                               }
+	{            /-----\            }
+	{           <   1   >           }
+	{        / \ \-----/ / \        }
+	{       |   |       |   |       }
+	{       | 4 |       | 6 |       }
+	{       |   |       |   |       }
+	{        \ / /-----\ \ /        }
+	{           <   2   >           }
+	{        / \ \-----/ / \        }
+	{       |   |       |   |       }
+	{       | 5 |       | 7 |       }
+	{       |   |       |   |       }
+	{        \ / /-----\ \ / / \    }
+	{           <   3   >   < 8 >   }
+	{            \-----/     \ /    }
+	{                               }
+	{                               }
+	{*******************************}
+	boolean code[1..8];
+	scalar segment_width = (smaller of (static width) and
+							(static height * .75)) / 5;
+	shape h_digital_segment is
+		digital_segment with
+			width = static width - (segment_width * 1.33333);
+			height = segment_width;
+		end;
+	end;    // h_digital_segment
+	shape v_digital_segment is
+		digital_segment with
+			width = segment_width;
+			height = (static height)/2 - (.83333 * segment_width);
+		end;
+	end;    // v_digital_segment
+
+	// read segments into code
+	for integer counter = 1..8 do
+		code[counter] is false;
+	end;
+	for each integer index in lit_segments do
+		code[index] is true;
+	end;
+	
+	if code[1] then
+		h_digital_segment with
+			move to <0 ((height - segment_width)/2) 0>;
+		end;
+	end;
+	if code[2] then
+		h_digital_segment;
+	end;
+	if code[3] then
+		h_digital_segment with
+			move to <0 ((segment_width - height)/2) 0>;
+		end;
+	end;
+	if code[4] then
+		v_digital_segment with
+			move to <((segment_width - width)/2)
+					 ((height - segment_width)/4) 0>;
+		end;
+	end;
+	if code[5] then
+		v_digital_segment with
+			move to <((segment_width - width)/2)
+					 ((segment_width - height)/4) 0>;
+		end;
+	end;
+	if code[6] then
+		v_digital_segment with
+			move to <((width - segment_width)/2)
+					 ((height - segment_width)/4) 0>;
+		end;
+	end;
+	if code[7] then
+		v_digital_segment with
+			move to <((width - segment_width)/2)
+					 ((segment_width - height)/4) 0>;
+		end;
+	end;
+	if code[8] then
+		digital_segment with
+			width = 1.25 * segment_width;
+			height = 1.25 * segment_width;
+			move to <(.6 * static width)
+					 ((segment_width - static height)/2) 0>;
+		end;
+	end;
+end;    // digital_glyph
+
+shape digital_digit
+	integer value;
+with
+	scalar width = 1;
+	scalar height = 1.8;
+is
+	value = value mod 10;
+	if value = 0 then
+		digital_glyph [1 4 5 6 7 3] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 1 then
+		digital_glyph [6 7] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 2 then
+		digital_glyph [1 6 2 5 3] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 3 then
+		digital_glyph [1 6 2 7 3] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 4 then
+		digital_glyph [4 2 6 7] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 5 then
+		digital_glyph [1 4 2 7 3] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 6 then
+		digital_glyph [1 4 2 5 7 3] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 7 then
+		digital_glyph [1 6 7] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 8 then
+		digital_glyph [1 2 3 4 5 6 7] with
+			width = static width;
+			height = static height;
+		end;
+	elseif value = 9 then
+		digital_glyph [1 4 6 2 7] with
+			width = static width;
+			height = static height;
+		end;
+	end;
+end;    // digital_digit
+
+// *** digital_integer ***
+// This shape can be used to display an LED-display number in a scene.
+//
+// The digital number is drawn onto the XY plane, centered at the
+// origin.
+//
+// If "value" has more digits than the "places" parameter allows, then
+// digital_integer displays "9" in each of its places.
+//
+// You can use digital_integer to display negative integers, in which
+// case a negative sign takes up one of the digit-places. Because the 
+// negative sign takes up one digit-place, digital_integer cannot
+// display as many numerical digits for negative numbers as it can for
+// positive numbers. For example, with "places" set to 3,
+// digital_integer can display 100, but not -100, because -100 requires
+// four places.
+//
+// If "reserve_sign_place" is set to true, then the leftmost place is
+// reserved for the negative sign, and no numerical digit will be
+// displayed in that place, whether the value be negative or positive.
+//
+shape digital_integer
+	integer value;
+with
+	integer places = 3;
+	boolean show_leading_zeros is true;
+	boolean reserve_sign_place is false;
+	scalar width = 0;     // When width = 0, then each digit's width
+						  //   is 1, and each place's width is 
+						  //   roughly 1.2
+	scalar height = 1.8;
+is
+	scalar digit_width = 1;
+	integer max_value = trunc (10 ^ places - 1);
+	integer min_value = trunc (-(10 ^ (places - 1))) + 1;
+	boolean negative is (value < 0);
+	if width <> 0 then
+		digit_width = (width * 5) / (6*places - 1);
+	end;
+	if reserve_sign_place then
+		max_value = itself div 10;
+	end;  
+	value = iabs (iclamp value from min_value to max_value);
+	move to <((places - 1) * digit_width * .6) 0 0>;
+	for integer counter = 1 .. places do
+		integer digit = value mod 10;
+		if (not show_leading_zeros) and negative and (value = 0) then
+			digital_glyph [2] with      // show negative sign
+				width = digit_width;
+				height = static height;
+			end;
+			break;
+		end;
+		
+		if negative and (counter = places) then
+		
+			digital_glyph [2] with      // show negative sign
+				width = digit_width;
+				height = static height;
+			end;
+			
+		elseif (counter = 1 or value <> 0 or show_leading_zeros) and
+			   not (counter = places and reserve_sign_place) then
+				
+			digital_digit digit with    // show digit
+				width = digit_width;
+				height = static height;
+			end;
+			
+		end;
+		move to <-(digit_width * 1.2) 0 0>;
+		value = itself div 10;
+	end;
+end;    // digital_integer
+
+// *** digital_scalar ***
+// This shape can be used to display an LED-styled scalar in a scene.
+// Scalars are displayed with fixed, rather than floating, precision.
+//
+// The digital number is drawn onto the XY plane, centered at the
+// origin.
+//
+// If "value" has more digits than the "places" parameter allows, then
+// digital_scalar displays "9" as each of its digits.
+//
+// You can use digital_scalar to display negative numbers, in which
+// case a negative sign takes up one of the digit-places. Because the 
+// negative sign takes up one digit-place, digital_scalar cannot
+// display as many numerical digits for negative numbers as it can for
+// positive numbers. For example, with "places" set to 3, digital_scalar
+// can display 10.1, but not -10.1, because -10.1 requires four places.
+//
+// If "decimal_places" is equal to "places", then digital_scalar does
+// not display negative numbers, because there is no digit-place left
+// of the decimal point available for the negative sign. 
+//
+// If "reserve_sign_place" is set to true, then the left-most place is
+// reserved for the negative sign, and no numerical digit is
+// displayed in that place, whether the value be negative or positive.
+// In this case, "decimal_places" cannot be equal to "places" because
+// the decimal point cannot be placed at the far left. If you set
+// "decimal_places" >= "places", then digital_scalar will reset
+// decimal_places to = places - 1.
+//
+// If "zero_before_fraction" is set to true, then a zero will always
+// appear left of the decimal point for values > -1 and < 1. If
+// "zero_before_fraction" is true, then "decimal_places" must
+// be <= (places - 2), to allow for numbers such as -0.1 for example,
+// which would require three "places" and one "decimal_place".
+//
+// When the fractional part of the scalar contains more digits than can
+// be displayed, the "round_last_digit" parameter determines whether 
+// the number is rounded or truncated in order to fit in the display.
+// If "round_last_digit" is true, the number is rounded. If
+// "round_last_digit" is false, the undisplayable digits are merely
+// truncated.
+//
+shape digital_scalar
+	scalar value;
+with
+	integer places = 3;
+	integer decimal_places = 1;
+	
+	boolean show_leading_zeros is true;
+	boolean zero_before_fraction is false;
+	boolean reserve_sign_place is false;
+	boolean round_last_digit is true;
+	scalar width = 0;     // When width = 0, then each digit's width
+						  //   is 1, and each place's width is 
+						  //   roughly 1.2
+	scalar height = 1.8;
+is
+	integer ivalue;
+	scalar digit_width = 1;
+	integer max_value = trunc (10 ^ places - 1);
+	integer min_value = trunc (-(10 ^ (places - 1))) + 1;
+	boolean negative;
+	if width <> 0 then
+		digit_width = (width * 5) / (6*places - 1);
+	end;
+	
+	if reserve_sign_place then
+		if decimal_places >= places then
+			decimal_places = places - 1;
+		end;
+		max_value = itself div 10;
+	end;
+	
+	if zero_before_fraction and decimal_places >= (places - 1) then
+		decimal_places = places - 2;
+	end;
+	if decimal_places >= places then
+		min_value = 0;
+		
+		digital_glyph[8] with
+			width = digit_width;
+			height = static height;
+			move to <(-(places + 1) * digit_width * .6) 0 0>;
+		end;
+	end;
+	if round_last_digit then
+		ivalue = round (value * (10 ^ decimal_places));
+	else
+		ivalue = trunc (value * (10 ^ decimal_places));
+	end;
+	negative is (ivalue < 0);
+	ivalue = iabs (iclamp ivalue from min_value to max_value);
+	
+	// Draw
+	//
+	move to <((places - 1) * digit_width * .6) 0 0>;
+	for integer counter = 1 .. places do
+		integer digit = ivalue mod 10;
+		if (decimal_places > 0) and (counter = decimal_places + 1) then
+			digital_glyph [8] with        // show decimal point
+				width = digit_width;
+				height = static height;
+			end;
+			if zero_before_fraction and ivalue = 0 then
+				digital_digit digit with  // show zero before fraction
+					width = digit_width;
+					height = static height;
+				end;
+				move to <-(digit_width * 1.2) 0 0>;
+				continue;
+			end;
+		end;
+		if (not show_leading_zeros) and negative and (ivalue = 0) and
+		   (decimal_places < places) and
+		   (counter > decimal_places) then
+		   
+			digital_glyph [2] with      // show negative sign
+				width = digit_width;
+				height = static height;
+			end;
+			break;
+		end;
+		if (counter = places) and negative and
+		   (decimal_places < places) then
+		
+			digital_glyph [2] with      // show negative sign
+				width = digit_width;
+				height = static height;
+			end;
+			
+		elseif (counter = 1 or ivalue <> 0 or show_leading_zeros or
+			   counter < (decimal_places + 1)) and
+			   not (counter = places and reserve_sign_place) then
+				
+			digital_digit digit with    // show digit
+				width = digit_width;
+				height = static height;
+			end;            
+		end;
+		move to <-(digit_width * 1.2) 0 0>;
+		ivalue = trunc (ivalue / 10);
+	end;
+end;    // digital_scalar
+
+// *** digital_readout ***
+// A digital_readout keeps track of the value of an integer and
+// displays that value as a digital readout. This version of
+// digital_readout is obsolescent code, available only to support
+// older OMAR files. The subjects, integer_readout and scalar_readout
+// (defined below), provide greater flexibility and are more accurate.
+//
+subject digital_readout
+does
+	// constructor
+	//
+	verb new
+		shows integer reference value refers to none;
+	with
+		integer digits = 3;
+		integer decimal_places = 1;
+		boolean show_leading_zeros is true;
+	end;
+
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public integer reference value;
+
+	// protected attributes
+	//
+	integer digits, decimal_places;
+	boolean show_leading_zeros;
+	integer internal_value = 0;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		shows integer reference value refers to none;
+	with
+		integer digits = 3;
+		integer decimal_places = 1;
+		boolean show_leading_zeros is true;
+	is
+		digital_readout's digits = digits;
+		digital_readout's decimal_places = decimal_places;
+		digital_readout's show_leading_zeros is show_leading_zeros;
+		if value refers to none then
+			digital_readout's value refers to internal_value;
+		else
+			digital_readout's value refers to value;
+		end;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+
+	shape digital_integer
+		integer value;
+	with
+		integer digits = 3;
+		integer decimal_places = 1;
+		boolean show_leading_zeros is true;
+	is
+		scalar width = 1.2; // width of digit
+		integer max_value = trunc (10 ^ digits - 1);
+		value = iclamp value from 0 to max_value;
+		move to <((digits - 1) * width / 2) 0 0>;
+		for integer counter = 1..digits do
+			integer digit = (trunc (value)) mod 10;
+			// show digit of integer
+			//
+			if (value <> 0) or show_leading_zeros or
+				counter < decimal_places
+			then
+				digital_digit digit;
+			end;
+			// show decimal point
+			//
+			if (counter = decimal_places) then
+				digital_glyph [8];
+			end;
+			move to <-width 0 0>;
+			value = itself div 10;
+		end;
+	end;    // digital_integer
+
+	shape instance is
+		digital_integer value with
+			decimal_places = static decimal_places;
+			digits = static digits;
+			show_leading_zeros is static show_leading_zeros;
+			magnify by 1.5 / digits;
+		end;
+	end;    // instance
+end;    // digital_readout
+
+// *** integer_readout ***
+// integer_readout keeps track of the value of an integer and displays
+// that value as a digital readout. See the digital_integer definition
+// above for descriptions of the various integer_readout constructor
+// parameters.
+//
+subject integer_readout
+does
+	// constructor
+	//
+	verb new
+		shows integer reference value refers to none;
+	with
+		integer places = 3;
+		boolean show_leading_zeros is true;
+		boolean reserve_sign_place is false;
+	
+		scalar width = 0;     // When width = 0, then each digit's 
+							  //   width is 1, and each place's width
+							  //   is roughly 1.2
+		scalar height = 1.8;
+	end;
+
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public integer reference value;
+
+	// protected attributes
+	//
+	integer places;
+	boolean show_leading_zeros;
+	boolean reserve_sign_place;
+	scalar width, height;
+	integer internal_value = 0;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		shows integer reference value refers to none;
+	with
+		integer places = 3;
+		boolean show_leading_zeros is true;
+		boolean reserve_sign_place is false;
+	
+		scalar width = 0;
+		scalar height = 1.8;
+	is
+		integer_readout's places = places;
+		integer_readout's show_leading_zeros is show_leading_zeros;
+		integer_readout's reserve_sign_place is reserve_sign_place;
+		integer_readout's width = width;
+		integer_readout's height = height;
+		if value refers to none then
+			integer_readout's value refers to internal_value;
+		else
+			integer_readout's value refers to value;
+		end;
+	end;    // new
+
+	//
+	// rendering method
+	//
+
+	shape instance is
+		digital_integer value with
+			places = static places;
+			show_leading_zeros is static show_leading_zeros;
+			reserve_sign_place is static reserve_sign_place;
+			width = static width;
+			height = static height;
+			// magnify by 1.5 / places;
+		end;
+	end;    // instance
+end;    // integer_readout
+
+// *** scalar_readout ***
+// scalar_readout takes a scalar, rather than integer, value
+// and displays a fixed decimal position digital readout. See the
+// digital_scalar definition above for descriptions of the various
+// scalar_readout constructor parameters.
+//
+subject scalar_readout
+does
+	// constructor
+	//
+	verb new
+		shows scalar reference value refers to none;
+	with
+		integer places = 3;
+		integer decimal_places = 1;
+		
+		boolean show_leading_zeros is true;
+		boolean zero_before_fraction is false;
+		boolean reserve_sign_place is false;
+		boolean round_last_digit is true;
+	
+		scalar width = 0;   // When width = 0, then each digit's width
+							//   is 1, and each place's width is 
+							//   roughly 1.2
+		scalar height = 1.8;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public scalar reference value;
+
+	// protected attributes
+	//
+	integer places;
+	integer decimal_places;
+	boolean show_leading_zeros;
+	boolean zero_before_fraction;
+	boolean reserve_sign_place;
+	boolean round_last_digit;
+	scalar width, height;
+	scalar internal_value = 0;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		shows scalar reference value refers to none;
+	with
+		integer places = 3;
+		integer decimal_places = 1;
+		
+		boolean show_leading_zeros is true;
+		boolean zero_before_fraction is false;
+		boolean reserve_sign_place is false;
+		boolean round_last_digit is true;
+	
+		scalar width = 0;   // When width = 0, then each digit's width
+							//   is 1, and each place's width is 
+							//   roughly 1.2
+		scalar height = 1.8;
+	is
+		scalar_readout's places = places;
+		scalar_readout's decimal_places = decimal_places;
+		scalar_readout's show_leading_zeros is show_leading_zeros;
+		scalar_readout's zero_before_fraction is zero_before_fraction;
+		scalar_readout's reserve_sign_place is reserve_sign_place;
+		scalar_readout's round_last_digit is true;
+		scalar_readout's width = width;
+		scalar_readout's height = height;
+		if value refers to none then
+			scalar_readout's value refers to internal_value;
+		else
+			scalar_readout's value refers to value;
+		end;
+	end;    // new
+
+	//
+	// rendering method
+	//
+
+	shape instance is
+		digital_scalar value with
+			places = static places;
+			decimal_places = static decimal_places;
+			show_leading_zeros is static show_leading_zeros;
+			zero_before_fraction is static zero_before_fraction;
+			reserve_sign_place is static reserve_sign_place;
+			round_last_digit is static round_last_digit;
+			width = static width;
+			height = static height;
+		end;
+	end;    // instance
+end;    // scalar_readout
+
+// *** digital_gauge ***
+// digital_gauge is a widget that displays a labelled scalar_readout
+//
+subject digital_gauge
+extends
+	scalar_readout
+does
+	// constructor
+	//
+	verb new
+		labelled string type label is none;
+		shows scalar reference value refers to none;
+	with
+		integer places = 3;
+		integer decimal_places = 2;
+		
+		boolean show_leading_zeros is true;
+		boolean zero_before_fraction is false;
+		boolean reserve_sign_place is false;
+		boolean round_last_digit is true;
+	
+		// width and height control the size of the entire gauge, and
+		// not just the size of the actual digital number
+		//
+		scalar width = 2; 
+		scalar height = 2;
+	end;
+
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	string type label;
+	scalar width, height;
+is
+	scalar text_size;
+
+	//
+	// constructor
+	//
+
+	verb new
+		labelled string type label is none;
+		shows scalar reference value refers to none;
+	with
+		integer places = 3;
+		integer decimal_places = 2;
+		
+		boolean show_leading_zeros is true;
+		boolean zero_before_fraction is false;
+		boolean reserve_sign_place is false;
+		boolean round_last_digit is true;
+	
+		scalar width = 2;
+		scalar height = 2;
+	is
+		scalar_readout new shows value with
+			places = static places;
+			decimal_places = static decimal_places;
+			show_leading_zeros is static show_leading_zeros;
+			zero_before_fraction is static zero_before_fraction;
+			reserve_sign_place is static reserve_sign_place;
+			round_last_digit is static round_last_digit;
+			width = (static width * .85);
+			height = (static height * .45);
+		end;
+		
+		digital_gauge's label is label;
+		digital_gauge's width = width;
+		digital_gauge's height = height;
+		
+		text_size = height * .08;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+
+	objective shape face is
+		parallelogram with
+			magnify by .999;
+			color = white;
+		end;
+		parallelogram with
+			scale by .9 along <1 0 0>;
+			scale by .15 along <0 1 0>;
+			move to <0 -.75 .1>;
+			color = light grey;
+		end;
+	end;    // face
+
+	shape label_text is
+		if some label then
+			while ((text_length of label with size = text_size;) >
+				   (width * .8)) do
+				text_size = itself * .93333;
+			end;
+			
+			text label with
+				size = text_size;
+				rotate by -90 around <1 0 0>;
+				move to <0 (-height * .375) (height * .1)>;
+			end;
+		end;
+	end;    // label_text
+	
+	shape instance is
+		face with
+			scale by (width / 2) along <1 0 0>;
+			scale by (height / 2) along <0 1 0>;
+			render_mode is wireframe;
+		end;
+		label_text;
+		scalar_readout static instance with
+			move to <0 (height / 8) 0>;
+		end;
+	end;    // instance
+end;    // digital_gauge

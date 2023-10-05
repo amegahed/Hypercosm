@@ -1,0 +1,78 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	3ds_xyz_rotation_controller.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_trans_controller.ores";
+include "system/3ds_xyz_controller.ores";
+include "system/trig_constants.ores";
+
+
+subject translated_3ds_xyz_rotation_controller 
+extends
+	translated_3ds_trans_controller
+does
+    // constructor
+    //
+	verb new with
+		translated_3ds_float_controllable type x_rotation_controller is none;
+		translated_3ds_float_controllable type y_rotation_controller is none;
+		translated_3ds_float_controllable type z_rotation_controller is none;
+	end;
+	
+	// trans controller method
+	//
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	end;
+has
+	translated_3ds_point3_controllable type controller is none;
+is
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+		translated_3ds_float_controllable type x_rotation_controller is none;
+		translated_3ds_float_controllable type y_rotation_controller is none;
+		translated_3ds_float_controllable type z_rotation_controller is none;
+	is
+		translated_3ds_xyz_rotation_controller's controller is (
+			new translated_3ds_xyz_controller with
+				x_controller is x_rotation_controller;
+				y_controller is y_rotation_controller;
+				z_controller is z_rotation_controller;
+		);
+	end;	// new
+	
+
+    //
+	// trans controller method
+	//
+	
+		
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	is
+		vector rotation = controller get_value at time;
+		rotate the trans by (rotation.x * radians_to_degrees) around <1 0 0>;
+		rotate the trans by (rotation.y * radians_to_degrees) around <0 1 0>;
+		rotate the trans by (rotation.z * radians_to_degrees) around <0 0 1>;
+	end;	// transform
+end;	// translated_3ds_xyz_rotation_controller
+
+
+
+

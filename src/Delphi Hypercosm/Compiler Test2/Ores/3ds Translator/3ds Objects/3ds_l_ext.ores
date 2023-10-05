@@ -1,0 +1,472 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 			3ds_l_ext.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains l ext definitions that correspond to 		    }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_textureable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+
+
+final subject translated_3ds_l_ext
+extends
+    translated_3ds_collapsable translated_3ds_texturable_object
+does
+    // constructor
+    //
+	verb new with
+	
+    	// geometry parameters
+    	//
+    	scalar side_length = 1;
+    	scalar front_length = 1;
+    	scalar side_width = .5;
+    	scalar front_width = .5;
+    	scalar height = 1;
+    	
+    	// tessellation parameters
+    	//
+    	integer side_segments = 1;
+    	integer front_segments = 1;
+    	integer width_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	end;
+
+    // attributes setting methods
+    //
+	verb set with
+	
+    	// geometry parameters
+    	//
+    	scalar side_length = 1;
+    	scalar front_length = 1;
+    	scalar side_width = .5;
+    	scalar front_width = .5;
+    	scalar height = 1;
+    	
+    	// tessellation parameters
+    	//
+    	integer side_segments = 1;
+    	integer front_segments = 1;
+    	integer width_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	end;
+		
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_l_ext type question get;
+	reference verb recycle;	
+has
+	// geometry attributes
+	//
+	scalar side_length;
+	scalar front_length;
+	scalar side_width;
+	scalar front_width;
+	scalar height;
+	
+	// tessellation attributes
+	//
+	integer side_segments;
+	integer front_segments;
+	integer width_segments;
+	integer height_segments;
+	
+private	
+	// recycling attributes
+	//
+	translated_3ds_l_ext type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_l_ext type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    	
+	verb new with
+	
+    	// geometry parameters
+    	//
+    	scalar side_length = 1;
+    	scalar front_length = 1;
+    	scalar side_width = .5;
+    	scalar front_width = .5;
+    	scalar height = 1;
+    	
+    	// tessellation parameters
+    	//
+    	integer side_segments = 1;
+    	integer front_segments = 1;
+    	integer width_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+
+		if verbose_recycling then
+			write "new 3ds l ext", ;
+		end;
+				    
+		with translated_3ds_l_ext do
+		
+        	// set geometry attributes
+        	//
+        	its side_length = side_length;
+        	its front_length = front_length;
+        	its side_width = side_width;
+        	its front_width = front_width;
+        	its height = height;
+        	
+        	// set tessellation attributes
+        	//
+        	its side_segments = side_segments;
+        	its front_segments = front_segments;
+        	its width_segments = width_segments;
+        	its height_segments = height_segments;
+	    end;
+	end;	// new	
+
+
+	//
+    // attributes setting methods
+    //
+    
+    
+	verb set with
+	
+    	// geometry parameters
+    	//
+    	scalar side_length = 1;
+    	scalar front_length = 1;
+    	scalar side_width = .5;
+    	scalar front_width = .5;
+    	scalar height = 1;
+    	
+    	// tessellation parameters
+    	//
+    	integer side_segments = 1;
+    	integer front_segments = 1;
+    	integer width_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+    is
+		with translated_3ds_l_ext do
+		
+        	// set geometry attributes
+        	//
+        	its side_length = side_length;
+        	its front_length = front_length;
+        	its side_width = side_width;
+        	its front_width = front_width;
+        	its height = height;
+        	
+        	// set tessellation attributes
+        	//
+        	its side_segments = side_segments;
+        	its front_segments = front_segments;
+        	its width_segments = width_segments;
+        	its height_segments = height_segments;
+        	
+            // set texturing parameters
+            //
+	        its gen_mapping_coords is gen_mapping_coords;
+	    end;    
+	end;	// set
+	
+	
+    //
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;		
+	    
+    	// points on perimeter of shape from origin 
+    	// in a counterclockwise direction
+    	//  
+    	//  y                     side_width
+    	//  |                       4---3
+    	//  |---x                   |   |
+    	//                          |   |side_length
+    	//	          6-------------5   |
+    	// front_width |                 |
+    	//            1-----------------2
+    	//                front_length
+    	//
+    	
+    	vector points[1..12];
+    
+    	integer xsign = sign front_length;
+    	integer ysign = sign side_length;
+    	integer zsign = sign height;
+    	boolean reversed is (xsign * ysign * zsign < 0);
+    	    		
+    	// normalize geometry parameters
+    	//
+    	side_length = abs side_length;
+    	front_length = abs front_length;
+    	side_width = larger of side_width and 0;
+    	front_width = larger of front_width and 0;
+    	height = abs height;
+    	
+    	// bottom vertices
+    	//
+    	points[1] = <0 0 0>;
+    	points[2] = <front_length 0 0>;
+    	points[3] = <front_length side_length 0>;
+    	points[4] = <(front_length - side_width) side_length 0>;
+    	points[5] = <(front_length - side_width) front_width 0>;
+    	points[6] = <0 front_width 0>;
+    
+    	// top vertices
+    	//	
+    	points[7] = points[1] + <0 0 height>;
+    	points[8] = points[2] + <0 0 height>;
+    	points[9] = points[3] + <0 0 height>;
+    	points[10] = points[4] + <0 0 height>;
+    	points[11] = points[5] + <0 0 height>;
+    	points[12] = points[6] + <0 0 height>;
+
+    	// flip vertices according to signs
+    	//
+        if xsign <> 1 or ysign <> 1 or zsign <> 1 then    	
+        	for each vector point in points do
+        	    point = itself * <xsign ysign zsign>;
+        	end;
+    	end;
+    	
+		// bottom sides
+		//
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[6] points[5] points[2] points[1]
+		with
+			rows = width_segments;
+			columns = front_segments;
+			one_sided is true;
+			reversed is static reversed;
+			textured is gen_mapping_coords;
+		);
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[5] points[4] points[3] points[2]
+		with
+			rows = width_segments;
+			columns = side_segments;
+			one_sided is true;
+			reversed is static reversed;
+			textured is gen_mapping_coords; 
+		);		
+			
+		// top sides
+		//
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[7] points[8] points[11] points[12]
+		with
+			rows = width_segments;
+			columns = front_segments;
+			one_sided is true;
+			reversed is static reversed;
+			textured is gen_mapping_coords;
+		);
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[8] points[9] points[10] points[11]
+		with
+			rows = width_segments;
+			columns = side_segments;
+			one_sided is true;
+			reversed is static reversed; 
+			textured is gen_mapping_coords;
+		);			
+		
+		// perimeter sides
+		//
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[1] points[2] points[8] points[7]
+		with
+			rows = height_segments;
+			columns = front_segments;
+			one_sided is true;
+			reversed is static reversed; 
+			textured is gen_mapping_coords;
+		);
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[2] points[3] points[9] points[8]
+		with
+			rows = height_segments;
+			columns = side_segments;
+			one_sided is true;
+			reversed is static reversed;
+			textured is gen_mapping_coords;
+		);		
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[3] points[4] points[10] points[9]
+		with
+			rows = height_segments;
+			columns = width_segments;
+			one_sided is true;
+			reversed is static reversed; 
+			textured is gen_mapping_coords;
+		);
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[4] points[5] points[11] points[10]
+		with
+			rows = height_segments;
+			columns = side_segments;
+			one_sided is true;
+			reversed is static reversed;
+			textured is gen_mapping_coords;
+		);
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[5] points[6] points[12] points[11]
+		with
+			rows = height_segments;
+			columns = front_segments;
+			one_sided is true;
+			reversed is static reversed; 
+			textured is gen_mapping_coords;
+		);
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[6] points[1] points[7] points[12]
+		with
+			rows = height_segments;
+			columns = width_segments;
+			one_sided is true;
+			reversed is static reversed; 
+			textured is gen_mapping_coords;
+		);
+		
+		recycle;
+		answer editable_mesh;
+	end;	// get_collapsed	
+	
+    	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_l_ext type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_l_ext type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_l_ext;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_l_ext;
+		
+		translated_3ds_l_ext is none;
+	end;		// recycle		
+end;    // translated_3ds_l_ext
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_l_ext with
+
+	// geometry parameters
+	//
+	scalar side_length = 1;
+	scalar front_length = 1;
+	scalar side_width = .5;
+	scalar front_width = .5;
+	scalar height = 1;
+	
+	// tessellation parameters
+	//
+	integer side_segments = 1;
+	integer front_segments = 1;
+	integer width_segments = 1;
+	integer height_segments = 1;
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+    
+    // modifier stack
+    //
+	translated_3ds_l_ext type translated_3ds_l_ext is translated_3ds_l_ext type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_l_ext;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_l_ext set with
+	
+    	// set geometry parameters
+    	//
+    	side_length = static side_length;
+    	front_length = static front_length;
+    	side_width = static side_width;
+    	front_width = static front_width;
+    	height = static height;
+    	
+    	// settessellation parameters
+    	//
+    	side_segments = static side_segments;
+    	front_segments = static front_segments;
+    	width_segments = static width_segments;
+    	height_segments = static height_segments;
+    	
+    	// set texturing parameters
+    	//
+    	gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_l_ext

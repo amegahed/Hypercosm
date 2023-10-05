@@ -1,0 +1,350 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		3ds_spline_segment.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains spline segment definitions that correspond		}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/trans.ores";
+include "system/rendering.ores";
+include "system/printing.ores";
+include "system/3ds_spline_vertex.ores";
+include "system/spline_shapes.ores";
+
+
+enum translated_3ds_spline_segment_kind is line, curve;
+
+
+subject translated_3ds_spline_segment
+extends
+	transformable scribable recycleable object
+does
+    // constructor
+    //
+    verb new
+    
+    	// geometry parameters
+    	//
+        translated_3ds_spline_segment_kind type kind;
+        from translated_3ds_spline_vertex type vertex1 is none;
+        to translated_3ds_spline_vertex type vertex2 is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean show_vertices is false;
+    end;
+    
+    // attributes setting method
+    //
+    verb set
+    
+    	// geometry parameters
+    	//
+        translated_3ds_spline_segment_kind type kind;
+        from translated_3ds_spline_vertex type vertex1 is none;
+        to translated_3ds_spline_vertex type vertex2 is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean show_vertices is false;
+    end;
+    
+    // modification metheds
+    //
+    verb to_line;
+    verb to_curve;
+    verb reverse;
+
+    // querying methods
+    // 
+    boolean question is_line;
+    boolean question is_curve;
+    vpolynomial type question get_cubic_spline;
+       
+    // transformable methods
+    //
+    verb transform
+        from trans type trans;
+    end;
+	
+	// renderable methods
+	//
+	shape instance with
+	    integer steps = 4;
+	end;
+	
+	// scribable methods
+	//
+	string type question to_string;
+	
+	// recycleable methods
+	//
+    objective translated_3ds_spline_segment type question get;
+	reference verb recycle;
+has
+	// geometry attributes
+	//
+    public translated_3ds_spline_segment_kind type kind;
+    public translated_3ds_spline_vertex type vertex1 is none;
+    public translated_3ds_spline_vertex type vertex2 is none;
+    
+    // rendering attributes
+    //
+    public boolean show_vertices;
+    
+private	
+	// recycling attributes
+	//
+	translated_3ds_spline_segment type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_spline_segment type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+    verb new
+    
+    	// geometry parameters
+    	//
+        translated_3ds_spline_segment_kind type kind;
+        from translated_3ds_spline_vertex type vertex1 is none;
+        to translated_3ds_spline_vertex type vertex2 is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean show_vertices is false;
+    is
+		if verbose_recycling then
+			write "new 3ds spline segment", ;
+		end;
+			
+        with translated_3ds_spline_segment do
+        
+        	// set geometry attributes
+        	//
+            its kind is kind;
+            its vertex1 is vertex1;
+            its vertex2 is vertex2;
+            
+            // set rendering attributes
+            //
+            its show_vertices is show_vertices;
+        end;
+    end;    // new
+    
+    
+    //
+    // attributes setting method
+    //
+    
+    
+    verb set
+    
+    	// geometry parameters
+    	//
+        translated_3ds_spline_segment_kind type kind;
+        from translated_3ds_spline_vertex type vertex1 is none;
+        to translated_3ds_spline_vertex type vertex2 is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean show_vertices is false;
+    is
+        with translated_3ds_spline_segment do
+            its kind is kind;
+            its vertex1 is vertex1;
+            its vertex2 is vertex2;
+            its show_vertices is show_vertices;
+        end;           
+    end;    // set
+    
+
+    //
+    // modification metheds
+    //
+    
+    
+    verb to_line is
+        translated_3ds_spline_segment's kind is line; 
+    end;	// to_line
+    
+    
+    verb to_curve is
+        translated_3ds_spline_segment's kind is curve;
+    end;	// to_curve
+    
+    
+    verb reverse is
+    	translated_3ds_spline_vertex type temp is vertex1;
+    	vertex1 is vertex2;
+    	vertex2 is temp;
+    end;	// reverse
+    
+
+    //            
+    // querying methods
+    //
+    
+    
+    boolean question is_line is
+        answer (kind is line) or ((vertex1 is_corner) and (vertex2 is_corner));
+    end;    // is_line_segment
+    
+    
+    boolean question is_curve is
+        answer (kind is curve) and ((vertex1 is_smooth) or (vertex2 is_smooth));
+    end;    // is_curve_segment
+    
+
+    vpolynomial type question get_cubic_spline is
+		{
+        answer get_hermite_vcubic from vertex1's point (vertex1's out_tangent * 3)
+            to vertex2's point (vertex2's out_tangent * 3);
+        }
+        answer get_bezier_vcubic using
+			(vertex1's point) 
+			(vertex1's point + vertex1's out_tangent)
+            (vertex2's point + vertex2's in_tangent)
+			(vertex2's point);
+    end;    // get_cubic_spline
+    
+ 
+    //           
+    // transformable methods
+    //
+    
+    
+    verb transform
+        from trans type trans;
+    is
+        vertex1 transform from trans;
+        vertex2 transform from trans;
+    end;    // transform
+    
+
+    //	
+	// renderable methods
+	//
+	
+	
+	shape instance with
+	    integer steps = 4;
+	is
+        when kind is
+        
+            line:
+	            line [(vertex1's point) (vertex2's point)];
+	        end;
+	        
+	        curve:
+	        	{
+        		cubic_curve from vertex1's point (vertex1's out_tangent * 3)
+                    to vertex2's point (vertex2's out_tangent * 3)
+	            with
+        			steps = static steps + 1;
+        		end;
+        		}
+        		bezier_curve using 
+        			(vertex1's point) 
+        			(vertex1's point + vertex1's out_tangent)
+	                (vertex2's point + vertex2's in_tangent)
+	                (vertex2's point) 
+	            with
+        			steps = static steps;
+        		end;
+	        end;
+		end;	// when
+	           
+        if show_vertices then
+    		vertex1 instance;
+    		vertex2 instance;
+        end;	         
+	end;    // instance
+	
+
+    //	
+	// scribable methods
+	//
+	
+	
+	string type question to_string is
+		string type string is "translated 3ds spline segment";
+		string add " from ";
+		string add vertex1 to_string;
+	    string add " to ";
+	    string add vertex2 to_string;
+	    answer string;
+	end;    // to_string
+	
+	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_spline_segment type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_spline_segment type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_spline_segment curve;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+		
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_spline_segment;
+		
+		translated_3ds_spline_segment is none;
+	end;		// recycle  
+end;	// translated_3ds_spline_segment
+
+
+{***************************************************************} 
+{          utility spline segment construction methods          }
+{***************************************************************}
+
+
+translated_3ds_spline_segment type question translated_3ds_line_segment
+    from translated_3ds_spline_vertex type vertex1 is none;
+    to translated_3ds_spline_vertex type vertex2 is none;
+is
+    translated_3ds_spline_segment type segment is 
+        translated_3ds_spline_segment type's get;
+	segment set line from vertex1 to vertex2;
+	answer segment;
+end;	// translated_3ds_line_segment
+
+
+translated_3ds_spline_segment type question translated_3ds_curve_segment
+    from translated_3ds_spline_vertex type vertex1 is none;
+    to translated_3ds_spline_vertex type vertex2 is none;
+is
+    translated_3ds_spline_segment type segment is 
+        translated_3ds_spline_segment type's get;
+	segment set curve from vertex1 to vertex2;
+	answer segment;
+end;	// translated_3ds_curve_segment

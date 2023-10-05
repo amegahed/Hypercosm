@@ -1,0 +1,89 @@
+{***************************************************************}
+{                          orbit_things.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do crazy_system_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/gravity.ores";
+include "system/fish.omar";
+include "system/dragonfly.omar";
+include "system/bounce.omar";
+
+
+verb init_crazy_system
+    g_system type system;
+is
+    static shape orb is
+        sphere;
+    end;    // orb
+
+
+    static shape saturn is
+        sphere;
+        ring with
+            inner_radius = 1.2;
+            outer_radius = 1.8;
+        end;
+    end;    // saturn
+
+
+    // planet shape declarations
+    //
+    spinning_shape type sun in form of orb with
+        rpm = 30;
+    end, planet in form of saturn with
+        rpm = 50;
+        axis = <.1 .2 1>;
+    end;
+    fish type fish;
+    dragonfly type dragonfly;
+    bouncing_actor type bouncing_actor of planet;
+
+    // bouncing_balls type balls with number = 4; end;
+    // orbit planets
+    //
+    system orbit sun with
+        size = 2;
+        mass = 100;
+        color = <1 1 0>;
+    end, planet at <5 0 0>, bouncing_actor at <-5 0 0> with
+        color = orange;
+        size = .5;
+    end, dragonfly at <0 10 0> with
+        color = lavender;
+        size = .3;
+    end, fish at <0 -10 0> with
+        color = yellow;
+        size = .1;
+    end;
+
+    // create orbital system
+    //
+    system init;
+end;    // init_crazy_system
+
+
+anim crazy_system_anim
+    args type args;
+with
+    field_of_view = 60;
+    eye = <10 -30 20>;
+    shading is face;
+    double_buffer is on;
+    background = black;
+    args check;
+is
+    g_system type g_system;
+
+    init_crazy_system g_system;
+    mouse_controlled_actor g_system;
+end;    // crazy_system_anim

@@ -1,0 +1,66 @@
+{***************************************************************}
+{                       cubic_spline_test.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cubic_spline_test;
+
+
+include "system/3d.ores";
+include "system/tangents.ores";
+include "system/anims.ores";
+include "system/spline_shapes.ores";
+include "system/arrow_shapes.ores";
+
+
+anim cubic_spline_test
+    args type args;
+with
+    args check;
+is
+	shape shape1 is
+        vector p1 = <-1 0 -1>, m1 = <0 0 -5>;
+        vector p2 = <1 1 0>, m2 = <2 0 0>;
+        
+        vector c1 = p1 + m1 / 3.1;
+        vector c2 = p2 - m2 / 3.1;
+		
+        cubic_curve from p1 m1 to p2 m2 with
+        	steps = 20;
+        	color = yellow;
+        	show_tangents is true;
+        end;
+        
+        bezier_curve using p1 c1 c2 p2 with 
+        	steps = 20;
+        	color = orange;
+        	show_control_hull is true;
+        	show_control_points is true;
+        	show_control_vertices is true;
+        end;
+	end;	// shape1
+	
+	{
+	shape shape2 is
+        cubic_spline_curve from
+            [<0 1 0> <-.5 .5 -1> <0 0 1> <.5 -.5 -1> <1 0 0>]
+        with
+            steps = facets;
+        end;
+	end;	// shape2
+	}
+	
+    shape scene is
+		shape1;
+		//shape2;
+        axes;
+    end;    // scene
+
+    mouse_controlled_shape scene with
+    	auto_camera is on;
+    end;
+end;    // cubic_spline_test

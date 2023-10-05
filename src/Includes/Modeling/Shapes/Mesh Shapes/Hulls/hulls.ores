@@ -1,0 +1,17 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              hulls.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a few standard hull shapes.  Hulls are         }
+{       used to approximate regular curved surfaces that        }
+{       can be described by cross sections.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/linear_hull.ores";
+include "system/curved_hull.ores";
+include "system/round_hull.ores";

@@ -1,0 +1,26 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           shapes.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definitions of a set of useful shapes.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/cube.ores";
+include "system/extrude.ores";
+include "system/i_beam.ores";
+include "system/lathe.ores";
+include "system/pie.ores";
+include "system/point_cloud.ores";
+include "system/polygon2d.ores";
+include "system/prism.ores";
+include "system/pyramid.ores";
+include "system/rod.ores";
+include "system/rounded_disk.ores";
+include "system/rounded_rod.ores";
+include "system/square.ores";
+include "system/tube.ores";

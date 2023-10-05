@@ -1,0 +1,145 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   physics_camera_fps_interaction.omar  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of a camera      }
+{       interaction for use with a physics scene.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2010 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{       Use the mouse to look                                   }
+{       Press 'w' to walk forward                               }
+{       Press 's' to walk backward                              }
+{       Press 'a' to strafe left                                }
+{       Press 'd' to strafe right                               }
+{       Press spacebar to jump                                  }
+{                                                               }
+{***************************************************************}
+do physics_camera_fps_interaction_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "physics_camera.ores";
+include "physics_fps_camera_interaction.ores";
+
+// box shape definition
+//
+scalar box_height = 6;
+scalar box_length = 1;
+scalar box_width = 2;
+
+shape box_shape is
+	block with
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+	end;
+end;
+static_shape type static_box_shape of box_shape;
+
+anim physics_camera_fps_interaction_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+is
+	renderable_physics_scene type physics;
+	verb draw is    
+		// display on screen instructions
+		//
+		overlay_text "Use the mouse to look" at <0 .94 0>;
+		overlay_text "Press 'w' to walk forward" at <0 .9 0>;
+		overlay_text "Press 's' to walk backward" at <0 .86 0>;
+		overlay_text "Press 'a' to strafe left" at <0 .82 0>;
+		overlay_text "Press 'd' to strafe right" at <0 .78 0>;
+		overlay_text "Press spacebar to jump" at <0 .74 0>;
+	end;    // draw
+
+	verb update is
+		draw;
+		physics update;
+	end;    // update
+	
+	shape instance with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+				
+		physics instance;
+		
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // instance
+	
+	// add physics camera
+	//
+	physics add_physics_actor (new physics_camera with
+		height = 4;
+		radius = 1;
+		
+		// (height/2 + radius) is the distance from the bottom of the physics_camera's enclosing
+		// capsule to its origin
+		//
+		trans's origin =<0 -10 (height/2 + radius)>; 
+		
+		// this interaction is actually the default - defined explicitly here for extra clarity
+		//
+		physics_camera_interaction is new physics_fps_camera_interaction; 
+	);  
+	
+	// add the box shapes
+	//
+	physics add_physics_actor (new renderable_physics_box_actor rendering static_box_shape with
+		trans's origin = <-2 0 (box_height/2)>;
+		state is static_state;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	); 
+	
+	physics add_physics_actor (new renderable_physics_box_actor rendering static_box_shape with
+		trans's origin = <2 2 (box_height/2)>;
+		state is static_state;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	); 
+	physics add_physics_actor (new renderable_physics_box_actor rendering static_box_shape with
+		trans's origin = <-2 4 (box_height/2)>;
+		state is static_state;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	); 
+	physics add_physics_actor (new renderable_physics_box_actor rendering static_box_shape with
+		trans's origin = <2 6 (box_height/2)>;
+		state is static_state;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	); 
+	// add the plane (ground) shape
+	//
+	physics add_physics_actor (new physics_plane_actor with
+		friction = .95;
+		restitution = .05
+	);
+	// turn on/off proxy rendering aka debug mode
+	//                        
+	physics set_render_proxies to true; 
+	// run!
+	//
+	mouse_controlled_animated_shape instance doing update;
+end;

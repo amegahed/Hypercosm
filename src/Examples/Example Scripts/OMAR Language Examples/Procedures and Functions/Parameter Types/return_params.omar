@@ -1,0 +1,43 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         return_params.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of return parameters in the OMAR language.      }
+{                                                               }
+{       Return parameters are useful whenever you have          }
+{       a method that has values to return.                     }
+{                                                               }
+{       There is no direct analogy for these types of           }
+{       parameters in languages such as C, C++, and Pascal.     }
+{       They are similar to "out" parameters in Ada.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do return_params_example;
+
+verb average 
+	integer n1, n2;
+return
+	// mandatory return parameter
+	//
+	scalar average;
+	integer sum;
+is
+	sum = n1 + n2;
+	average = sum / 2;
+end;    // average
+
+verb return_params_example is
+	scalar m;
+	integer s;
+	
+	// Return only the average
+	//
+	average 10 30 return m s;
+	write "average = ", m, ;
+	write "sum = ", s, ;
+end;    // return_params_example

@@ -1,0 +1,47 @@
+{***************************************************************}
+{                          crosshair.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do crosshair_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/crosshair.ores";
+include "system/views.ores";
+
+
+picture crosshair_picture is
+    static crosshair type crosshair labelled "Crosshair";
+
+    crosshair instance;
+
+    if crosshair's mouse_is_over then
+        set_cursor to crosshair;
+    elseif not some current_interaction then
+            set_cursor to arrow;
+    end;
+end;    // crosshair_picture
+
+
+anim crosshair_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Crosshair Demo";
+    render_mode is wireframe;
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        crosshair_picture with
+            ortho_view;
+        end;
+    end;
+end;    // crosshair_anim

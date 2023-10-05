@@ -1,0 +1,50 @@
+do bezier_position_controller_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_translator.ores";
+include "position_marker.omar";
+
+shape bezier_position_controller_scene with
+	scalar time = 0;
+is 
+	static translated_3ds_bezier_position_controller type position_controller of [
+		<-50 0 0>
+		<0 0 0>
+		<50 0 0>
+	] from [
+		<0 -100 0>
+		<0 100 0>
+		<0 -100 0>
+	] to [
+		<0 100 0>
+		<0 -100 0>
+		<0 100 0>
+	] at converted_3ds_ticks_array_from_frames_array of [
+		0 50 100
+	];  // Sphere01_Controller
+	
+	static scalar duration = converted_3ds_seconds_from_frames of 100;
+	position_controller instance;
+	position_marker with
+		position_controller apply to trans at (converted_3ds_ticks_from_seconds of (smod time to duration));
+	end;
+end;    // bezier_position_controller_scene
+
+anim bezier_position_controller_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_shape bezier_position_controller_scene within new static_shape of environment 
+		titled "3DS Bezier Position Controller";
+end;    // bezier_position_controller_anim

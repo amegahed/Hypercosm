@@ -1,0 +1,73 @@
+{***************************************************************}
+{                          selector.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do selector_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/selector.ores";
+include "system/views.ores";
+
+
+picture selector_picture
+    of selector type selector;
+is
+    selector instance;
+
+    if selector's mouse_is_over then
+        set_cursor to crosshair;
+    else
+        set_cursor to arrow;
+    end;
+end;    // selector_picture
+
+
+anim selector_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Button Demo";
+    render_mode is wireframe;
+    background = black;
+    width = 320;
+    height = 320;
+    args check;
+is
+    selector type selector labelled "Geom";
+
+    // selection shapes
+    //
+    static shape thing1 is
+        sphere with
+            rotation of <10 20 30>;
+        end;
+    end;    // thing1
+    static shape thing2 is
+        cylinder with
+            rotate by 90 around <1 0 0>;
+            rotation of <10 20 30>;
+        end;
+    end;    // thing2
+    static shape thing3 is
+        block with
+            rotation of <10 20 30>;
+        end;
+    end;    // thing3
+
+    selector add thing1 as 1;
+    selector add thing2 as 2;
+    selector add thing3 as 3;
+
+    while true do
+        selector_picture of selector with
+            ortho_view;
+        end;
+    end;
+end;    // selector_anim

@@ -1,0 +1,84 @@
+{***************************************************************}
+{                          stencils.ores                        }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{             Contains some standard stencil shaders.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_shading.ores";
+include "system/native_noise.ores";
+include "system/standard_colors.ores";
+include "system/vectors.ores";
+include "system/turbulence.ores";
+
+
+shader holey
+    color type color;
+is
+    scalar hole_spacing = 1;
+    scalar hole_size = .25;
+    vector v = location in local;
+    vector hole_center = vsnap v to (<1 1 1> * hole_spacing);
+    vector offset = hole_center - v;
+
+    if vlength of (offset) < hole_size then
+        answer refract 1 white;
+    else
+        answer color;
+    end;
+end;    // pocked
+
+
+shader diced
+    color type color;
+    in coords type coords is local;
+is
+    scalar epsilon = .0123;
+    vector v = location in coords;
+    scalar x = v dot <1 0 0> + epsilon;
+    scalar y = v dot <0 1 0> + epsilon;
+    scalar z = v dot <0 0 1> + epsilon;
+    integer i = 1;
+
+    if x < 0 then
+        x = 1 - x;
+    end;
+    if y < 0 then
+        y = 1 - y;
+    end;
+    if z < 0 then
+        z = 1 - z;
+    end;
+    if (trunc x mod 2) = 0 then
+        i = -i;
+    end;
+    if (trunc y mod 2) = 0 then
+        i = -i;
+    end;
+    if (trunc z mod 2) = 0 then
+        i = -i;
+    end;
+    if (i < 0) then
+        answer refract 1 white;
+    else
+        answer color;
+    end;
+end;    // diced
+
+
+shader eroded
+    color type color;
+is
+    vector v = location in local;
+
+    if turbulence v < .5 then
+        answer refract 1 white;
+    else
+        answer color;
+    end;
+end;    // eroded

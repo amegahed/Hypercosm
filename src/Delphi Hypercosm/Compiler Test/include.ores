@@ -1,0 +1,4 @@
+verb included is
+	write "this procedure has been included";
+	write "from a separate file!";
+end;	// included

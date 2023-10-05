@@ -1,0 +1,43 @@
+{***************************************************************}
+{                          mobius.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do mobius_anim;
+
+
+include "system/3d.ores";
+include "system/args.ores";
+include "system/check_keys.ores";
+include "system/meshes.ores";
+
+
+picture mobius_picture with
+    scalar x = get_mouse dot <1 0 0>;
+    scalar y = get_mouse dot <0 1 0>;
+is
+    distant_light from <.3 -.5 1>;
+    mobius_strip with
+        inner_radius = abs y;
+        rotate by x * 360 around trans's z_axis;
+    end;
+end;    // mobius_picture
+
+
+anim mobius_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    double_buffer is on;
+    args check;
+is
+    while true do
+        mobius_picture;
+        check_keys;
+    end;
+end;    // mobius_anim

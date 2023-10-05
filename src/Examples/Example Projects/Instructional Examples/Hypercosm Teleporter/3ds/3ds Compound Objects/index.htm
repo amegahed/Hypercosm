@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script>
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+function GetPlugin() {
+  return InternetExplorer ? window.HyperX1 : window.document.HyperX1;
+}
+function selectHandler() {
+  var choice = document.getElementById("select").value;
+  GetPlugin().SendMessage(choice);
+}
+</script>
+</head>
+<body>
+<div align="center">
+<font face="Verdana, Arial, Helvetica, sans-serif">Select 3ds Compound Object To Display: </font>
+<select name="site" size=1 onChange="selectHandler()" id="select">
+<option value="3ds_extruded_arc">3ds Extruded Arc 
+<option value="3ds_extruded_circle">3ds Extruded Circle
+<option value="3ds_extruded_line">3ds Extruded Line 
+<option value="3ds_lathed_line">3ds Lathed Line
+<option value="3ds_lathed_spline">3ds Lathed Spline
+<option value="3ds_loft">3ds Loft
+</select>
+<script src="http://www.hypercosm.com/download/player/scripts/checkforplayer.js"></script>
+<!--HypercosmAppletBegin-->
+<!--HypercosmAppletEnd-->
+</div>
+</body>
+</html>

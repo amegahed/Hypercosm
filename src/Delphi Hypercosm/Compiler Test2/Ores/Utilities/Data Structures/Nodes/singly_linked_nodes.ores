@@ -1,0 +1,120 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   singly_linked_nodes.ores 		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a standard subject for nodes that can  		}
+{		be linked together into lists.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/nodes.ores";
+include "system/recycling.ores";
+
+
+subject singly_linked_node
+extends
+	recycleable node
+does
+	// constructor
+	//
+	verb new
+		containing object type item;
+		to singly_linked_node type next is none;
+	end;
+
+	// attributes setting methods
+	//	
+	verb set_node
+		containing object type item;
+		to singly_linked_node type next is none;
+	end;
+	
+	// recycling methods
+	//
+	objective singly_linked_node type question get_node
+		containing object type item;
+		to singly_linked_node type next is none;
+	end;
+	reference verb recycle;	
+has
+    // singly linked list node attributes
+    //
+	public singly_linked_node type next is none;
+is
+    // free list used for recycling
+    //
+    singly_linked_node type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+	verb new
+		containing object type item;
+		to singly_linked_node type next is none;
+	is
+		node new containing item;
+		singly_linked_node's next is next;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//	
+	
+	
+	verb set_node
+		containing object type item;
+		to singly_linked_node type next is none;
+	is
+		with singly_linked_node do
+			its item is item;
+			its next is next;
+		end;
+	end;	// set_node
+	
+		
+	//
+	// recycling methods
+	//
+	
+
+	objective singly_linked_node type question get_node 
+		containing object type item;
+		to singly_linked_node type next is none;
+	is
+		if free_list is none then
+		
+			// create new node
+			//
+			answer new singly_linked_node containing item to next;
+		else
+			// get node from free list
+			//
+			singly_linked_node type temp is free_list;
+			free_list is its next;
+			
+			temp set_node containing item to next;
+			answer temp;
+		end;
+	end;	// get_node
+	
+		
+	reference verb recycle is
+		item is none;
+		
+		// add node to free list
+		//
+		singly_linked_node's next is free_list;
+		free_list is singly_linked_node;
+		
+		singly_linked_node is none;
+	end;		// recycle
+end;	// singly_linked_node

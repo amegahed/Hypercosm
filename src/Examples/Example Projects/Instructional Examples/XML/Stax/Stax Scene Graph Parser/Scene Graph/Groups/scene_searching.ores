@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          scene_searching.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a searchable behavior          }
+{       for finding objects in the scene graph.                 }
+{                                                               }
+{       The "get_element_by_name" method traverses the          }
+{       scene graph and returns the first element that          }
+{       is found with a matching name.                          }
+{                                                               }
+{       The "get_element_by_names" method allows you to         }
+{       select an element uniquely by specifying a list         }
+{       of names.  For example, if you had a scene with         }
+{       a two vehicles, a car and a truck, both of which        }
+{       have wheels, you could get access a car wheel by        }
+{       asking for ["car" "wheel"] or a truck wheel by          }
+{       asking for ["truck" "wheel"].                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "object_instance.ores";
+
+adjective scene_searchable
+does
+	// methods for finding elements by name
+	//
+	object_instance type question get_element_by_name
+		string type name;
+	end;
+	object_instance type[] question get_elements_by_name
+		string type name;
+	end;
+	
+	// methods for finding elements by path
+	//
+	object_instance type question get_element_by_names
+		string type names[];
+	end;
+	object_instance type[] question get_elements_by_names
+		string type names[];
+	end;
+end;    // scene_searchable

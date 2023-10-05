@@ -1,0 +1,85 @@
+{***************************************************************}
+{                          rods2.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rods_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/shapes.ores";
+
+
+shape rods is
+    rod with
+        end1 = <-1.5 0 0>;
+        end2 = <1.5 0 0>;
+        radius = .5;
+        material is silver;
+    end;
+    rod with
+        material is plastic colored lavender;
+    end;
+end;    // thing
+
+
+picture rods_picture
+    vector location, orientation;
+with
+    eye = <0 -8 0>;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    scanning is random;
+    min_feature_size = 1 / 50;
+    width = 320;
+    height = 200;
+is
+    distant_light from <.3 -.5 1>;
+    rods with
+        rotate by (orientation dot <1 0 0>) around -trans's x_axis;
+        rotate by (orientation dot <0 0 1>) around trans's z_axis;
+        move to location;
+    end;
+    flat checkered red white plane with
+        move to <0 0 -2>;
+    end;
+end;    // cube_picture
+
+
+anim rods_anim with
+    double_buffer is off;
+    render_mode is shaded;
+is
+    vector old_mouse, new_mouse, delta;
+    vector orientation = <0 0 0>, location = <0 0 0>;
+    scalar dx, dy;
+
+    old_mouse = get_mouse;
+    while true do
+        new_mouse = get_mouse;
+        delta = new_mouse - old_mouse;
+        old_mouse = new_mouse;
+        dx = delta dot <1 0 0>;
+        dy = delta dot <0 1 0>;
+        if mouse_down button 1 then
+
+            // move shape
+            location = location + (<dx 0 dy>) * 2;
+        else
+
+            // rotate shape
+            orientation = orientation + (<dy 0 dx>) * 180;
+        end;
+
+        // draw picture
+        rods_picture location orientation;
+    end;
+end;    // cube_anim

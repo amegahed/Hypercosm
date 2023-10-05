@@ -1,0 +1,53 @@
+<html>
+<head>
+<style type="text/css">
+<!--
+body {
+	background-color: #FFFFFF;
+}
+-->
+</style>
+<title>Untitled</title>
+</head>
+<body>
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="1"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0" width="500" height="40">
+      <param name="movie" value="flash/test.swf">
+      <param name="quality" value="high">
+      <embed src="flash/test.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="500" height="40"></embed>
+    </object>    </td>
+  </tr>
+  <tr>
+    <td width="100%" height="100%"><div id="applet" style="width:100%; height:100%; border: 0px"></div></td>
+  </tr>
+</table>
+</body>
+<script language="javascript" type="text/javascript" src="scripts/utilities/javascript_utils.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/string_utils.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/web_browser_utils.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/browsersniffer.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/hc_checkforplayer.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/rgb_color.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/common_colors.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/hc_vector3.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/components/component.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/applet/hc_applet.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/applet/hc_scriptable_applet.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/resources/hc_transparency_resources.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/resources/hc_default_resources.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+var applet = new HCScriptableApplet("applet", "applet/javascript_message_test.hcvm", getDefaultResources("applet/resources"));
+function setColor(color) {
+  
+  // send message to applet
+  //
+  applet.sendMessage("-color " + color);
+}
+function receiveMessage(message) {
+  // alert(message);
+}
+//]]>
+</script>
+</html>

@@ -1,0 +1,417 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             othello.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an interactive game of         }
+{       othello.                                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do othello_anim;
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/infinite_plane.ores";
+include "system/check_keys.ores";
+include "system/above_plane.ores";
+include "othello_set.omar";
+
+subject othello_game
+extends
+	pressable_actor
+does
+	// constructor
+	//
+	verb new with
+		integer rows = 8, columns = 8;
+		scalar thickness = .1;
+		color type black_color = grey;
+		color type white_color = white;
+		color type board_color1 = evergreen;
+		color type board_color2 = grey;
+		color type line_color = white;
+		boolean show_lines is false;
+	end;    // new
+	// rendering method
+	//
+	shape instance;
+	
+	// animation method
+	//
+	verb update;
+	// interaction methods
+	//
+	verb touch
+		from vector location;
+		towards vector direction;
+	end;
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	end; 
+	verb release
+		from vector location;
+		towards vector direction;
+	end;
+	// configuration methods
+	//
+	objective verb check_args
+		string type args[];
+		integer reference rows, columns;
+	end;    // check_args
+has
+	// attributes
+	//
+	enum othello_mode is selecting, flipping, done;
+	othello_set type othello_set is none;
+	// black always goes first
+	//
+	othello_color type othello_color is black;
+	othello_mode type mode is none;
+	othello_piece type selected_piece is none;
+	vector selection_point;
+	scalar selection_height;
+	othello_piece type flipped_pieces is none;
+	scalar next_flip_time;
+	
+	// user interface elements
+	//
+	text_display type text_display at <0 .9 0> with
+		font set_size to get_default_title_text_size;
+	end;
+is
+	const scalar flip_seconds = 0.2;
+
+	verb start is
+		othello_set init;
+		text_display set_text to "Black Player Starts";
+	end;    // start
+	
+	
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		integer rows = 8, columns = 8;
+		scalar thickness = .1;
+		color type black_color = grey;
+		color type white_color = white;
+		color type board_color1 = evergreen;
+		color type board_color2 = grey;
+		color type line_color = white;
+		boolean show_lines is false;
+	is
+		// build othello set
+		//
+		new othello_set with
+			rows = static rows;
+			columns = static columns;
+			thickness = static thickness;
+			black_color = static black_color;
+			white_color = static white_color;
+			board_color1 = static board_color1;
+			board_color2 = static board_color2;
+			line_color = static line_color;
+			show_lines is static show_lines;
+		end;
+		
+		start;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+	
+	
+	boolean question piece_hit
+		othello_piece type reference othello_piece;
+		in vector direction;
+		at vector reference location;
+	is
+		objective shape thing is
+			othello_set piece othello_piece;
+		end;
+		answer ray_hits_shape from location towards direction into thing
+			return at location towards direction;
+	end;    // piece_hit
+
+	boolean question select_piece
+		othello_piece type reference othello_piece;
+		of othello_color type othello_color;
+		in vector direction;
+		at vector reference location;
+	is
+		for integer row = 1 .. num othello_set's othello_pieces do
+			for integer column = 1 .. num othello_set's othello_pieces[] do
+				othello_set get_piece othello_piece at row column;
+				if othello_piece isn't none then
+					if othello_color is othello_piece's othello_color then
+						if piece_hit othello_piece in direction at location
+						then
+							answer true;
+						end;
+					end;
+				end;
+			end;
+		end;
+		answer false;
+	end;    // select_piece
+	
+	
+	shape instance
+	is
+		if mode is selecting then
+			integer new_row, new_column;
+			vector ray_location = get_transformed_point eye;
+			vector ray_direction = get_transformed_vector project get_mouse;
+			simulation type current_simulation is none;
+			interaction type current_interaction is none;
+			// find intersection with horizontal selection plane
+			//
+			scalar t = (selection_height - ray_location dot <0 0 1>) /
+				(ray_direction dot <0 0 1>);
+			vector drag_point = ray_location + ray_direction * t;
+			current_simulation is (global simulation);
+			current_interaction is (global interaction);
+			othello_set find_position of new_row new_column at drag_point;
+			if selected_piece valid_move to new_row new_column of
+				othello_set's othello_pieces
+			then
+				othello_set piece selected_piece
+				with
+					render_mode is wireframe;
+					move to drag_point - selection_point;
+				end;
+			else
+				othello_set piece selected_piece
+				with
+					bad_move is true;
+					bad_move_color = red;
+					render_mode is wireframe;
+					move to drag_point - selection_point;
+				end;
+			end;
+			if some current_interaction then
+				(mouse_interaction type current_interaction) override;
+				set_cursor to arrow;
+			end;
+		elseif mode is flipping then
+			scalar current_time = get_seconds;
+			while (some flipped_pieces) and
+					(current_time >= next_flip_time) do
+				flipped_pieces flip;
+				flipped_pieces is its next;
+				next_flip_time = itself + flip_seconds;
+			end;
+			if not some flipped_pieces then
+				// change turns
+				//
+				othello_color is opposite_color of othello_color;
+				when othello_color is
+					black:
+						text_display set_text to "Go Black Player!";
+					end;
+					white:
+						text_display set_text to "Go White Player!";
+					end;
+				end;
+				
+				// check for end of game
+				//
+				if othello_set's number_of_pieces >=
+						othello_set's number_of_places then
+					mode is done;
+					text_display set_text to "Game Over";
+				else
+					mode is none;
+				end;
+			end;
+		end;
+		othello_set instance;
+		text_display draw;
+	end;    // instance
+
+	//
+	// animation methods
+	//
+	
+	
+	verb update is
+		integer key = get_key;
+		
+		while key <> 0 do
+			if key = char_to_key of "r" then
+				start;
+				mode is none;
+				othello_color is black;
+			end;
+			key = get_key;
+		end;
+		
+		pressable_actor static update;
+	end;    // update
+	
+	
+	//
+	// interaction methods
+	//
+	
+	
+	verb touch
+		from vector location;
+		towards vector direction;
+	is
+		simulation type current_simulation is none;
+		mouse_interaction type current_interaction is none;
+		current_simulation is (global simulation);
+		current_interaction is mouse_interaction type (global interaction);
+		
+		if (mode is none) and (some current_interaction) and not (current_interaction is_tracking) then
+			if select_piece selected_piece of othello_color in direction at location then
+				current_interaction override;
+				set_cursor to arrow;
+			end;
+		end;
+	end;    // touch
+	
+	
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	is
+		if mode is none then
+			if select_piece selected_piece of othello_color in direction
+					at location then
+				selection_point = location;
+				selection_height = selection_point dot <0 0 1>;
+				mode is selecting;
+			end;
+		elseif mode is done then
+			start;
+			mode is none;
+			othello_color is black;
+		end;
+	end;    // press
+
+	verb release
+		from vector location;
+		towards vector direction;
+	is
+		if mode is selecting then
+			integer new_row, new_column;
+			// find intersection with horizontal selection plane
+			//
+			scalar t = (selection_height - location dot <0 0 1>) /
+				(direction dot <0 0 1>);
+			vector drag_point = location + direction * t;
+			othello_set find_position of new_row new_column at drag_point;
+			if selected_piece valid_move to new_row new_column of
+				othello_set's othello_pieces
+			then
+				othello_set add_piece at new_row new_column
+					to othello_color;
+				// find flipped pieces
+				//
+				othello_piece type's get_flipped_pieces flipped_pieces;
+				mode is flipping;
+				next_flip_time = get_seconds + flip_seconds;
+			else
+				selected_piece is none;
+				mode is none;
+			end;
+		end;
+	end;    // release
+
+	//
+	// configuration methods
+	//
+	
+	
+	objective verb check_args
+		string type args[];
+		integer reference rows, columns;
+	is
+		integer index = min args;
+		string type arg;
+
+		string type question next_arg is
+			if index < max args then
+				index = itself + 1;
+				answer args[index];
+			else
+				answer none;
+			end;
+		end;    // next_arg
+
+		// set attributes from command line args
+		//
+		if some args then
+			arg is args[index];
+		end;
+		while some arg do
+			if arg matches "-rows" then
+				// rows
+				//
+				arg is next_arg;
+				rows = arg to_integer;
+			elseif arg matches "-columns" then
+				// columns
+				//
+				arg is next_arg;
+				columns = arg to_integer;
+			else
+				arg is next_arg;
+			end;
+		end;
+	end;    // check_args
+end;    // othello_game
+
+anim othello_anim
+	args type args;
+with
+	integer rows = 8, columns = 8;
+	eye = <0 -9 8>;
+	lookat = <0 0 -1>;
+	facets = 8;
+	show_controls is false;
+	constraints is [new above_plane_constraint];
+	args check;
+	othello_game type's check_args args rows columns;
+is
+	othello_game type game with
+		rows = static rows;
+		columns = static columns;
+		black_color = dark violet;
+		white_color = white;
+		board_color1 = evergreen;
+		board_color2 = dark evergreen;
+		line_color = white;
+		show_lines is true;
+	end;
+	
+	material type ground_material is plastic colored black poster "grid.png";
+	shape scene with
+		scalar time = 0;
+	is
+		game instance;
+		infinite_plane to 100 with
+			material is ground_material;
+		end;
+	end;    // scene
+	
+	verb update is
+		game update;
+	end;
+	
+	mouse_controlled_animated_shape scene doing update;
+end;    // othello_anim

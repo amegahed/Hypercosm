@@ -1,0 +1,194 @@
+{***************************************************************}
+{                          toggle.ores                          }
+{         Object-Oriented Modelling and Rendering (OMAR)        }
+{***************************************************************}
+{                                                               }
+{       Contains a subject definition for a toggle widget.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "interactions.ores";
+include "futura_l.ores";
+include "picking.ores";
+
+
+subject toggle
+extends
+    mouse_state_filter object
+does
+    verb new
+        labelled string type label is none;
+        controls boolean reference state refers to none;
+    end;
+    shape instance with
+        scalar width = 1;
+        scalar height = 1;
+    end;
+
+    // mouse_state_filter interface methods
+    boolean question accept_click at vector location; end;
+    boolean question in_region at vector location; end;
+has
+    public boolean reference state;
+    public boolean mouse_is_over is false;
+
+    public mouse_state type mouse_state is none;    // allocated in new
+
+    // private attributes
+    //
+    string type label;
+    boolean internal_state is false;
+    scalar width = 1;
+    scalar height = 1;
+is
+    verb new
+        labelled string type label is none;
+        controls boolean reference state refers to none;
+    is
+        toggle's label is label;
+
+        if state refers to none then
+            toggle's state refers to internal_state;
+        else
+            toggle's state refers to state;
+        end;
+
+        mouse_state is (new mouse_state type with filter is toggle;);
+    end;    // new
+
+
+    objective shape switch is
+        sphere with
+            radius = .1;
+            vmin = 0;
+            vmax = 90;
+            center = <0 0 1>;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = .05;
+            radius2 = .1;
+        end;
+    end;    // switch
+
+
+    shape face is
+        parallelogram with
+            color = white;
+            magnify by .99;
+        end;
+        parallelogram with
+            color = grey;
+            scale by .3 along <1 0 0>;
+            scale by .3 along <0 1 0>;
+            move to <-.6 .45 0>;
+        end;
+        parallelogram with
+            color = grey;
+            scale by .3 along <1 0 0>;
+            scale by .3 along <0 1 0>;
+            move to <0 .45 0>;
+        end;
+        parallelogram with
+            color = grey;
+            scale by .3 along <1 0 0>;
+            scale by .3 along <0 1 0>;
+            move to <.6 .45 0>;
+        end;
+        parallelogram with
+            color = grey;
+            scale by .9 along <1 0 0>;
+            scale by .3 along <0 1 0>;
+            move to <0 -.45 0>;
+        end;
+    end;    // face
+
+
+    boolean question accept_click
+        at vector location;
+    is
+        answer in_region at location;
+    end;    // accept_click
+
+
+    boolean question in_region
+        at vector location;
+    is
+        if mouse_state's down then
+            answer yes;
+        else
+            answer (xy_plane_touched at location with
+                restrict_to_bounds is true;
+                min_bounds = <(-width) (-height) 0>;
+                max_bounds = <width height 0>;);
+        end;
+    end;    // in_region
+
+
+    shape instance with
+        scalar width = 1;
+        scalar height = 1;
+    is
+        scalar toggle_angle = 15;
+        scalar upper_height = height / 4 + .1;
+        scalar lower_height = -upper_height;
+
+        toggle's width = width;
+        toggle's height = height;
+
+        // toggle state
+        //
+        if some mouse_state then
+            mouse_state update;
+
+            if not (state refers to none) then
+                integer clicks = mouse_state's clicks;
+                if mouse_state's pressed then
+                    clicks = itself + 1;
+                end;
+
+                while clicks > 0 do
+                    state is not itself;
+                    clicks = itself - 1;
+                end;
+            end;
+        end;
+
+        mouse_is_over is in_region at get_mouse;
+
+        render_mode is wireframe;
+        // create toggle
+        //
+        face with
+            scale by width along <1 0 0>;
+            scale by height along <0 1 0>;
+        end;
+        futura_l_word "off" with
+            move to <(-width * 2 / 3) upper_height .01>;
+        end;
+        futura_l_word "on" with
+            move to <(width * 2 / 3) upper_height .01>;
+        end;
+        disk with
+            color = light grey;
+            magnify by .5;
+            radius = height / 2 - .1;
+            move to <0 upper_height .01>;
+        end;
+        if (state refers to none) or (not state) then
+            toggle_angle = -itself;
+        end;
+        switch with
+            material is silver;
+            rotate by toggle_angle around <0 1 0>;
+            move to <0 upper_height 0>;
+        end;
+        futura_l_word label with
+            move to <0 lower_height .01>;
+        end;
+    end;    // instance
+end;    // toggle

@@ -1,0 +1,282 @@
+{***************************************************************}
+{                          balloon.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do balloon_anim;
+
+
+include "system/3d.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+
+
+shape balloon with
+    integer steps = 3;
+    integer gores = 12;
+    vector colors[];
+is
+    scalar gore_angle = 360 / gores;
+
+    shape section is
+        vector cross_section[0..2];
+        trans type path[1..6];
+        trans type reference trans;
+        scalar x = cos (gore_angle / 2);
+        scalar y = sin (gore_angle / 2);
+        integer index = 1;
+
+        // initialize cross_section
+        //
+        cross_section[0] = <x (-y) 0> * .9;
+        cross_section[1] = <1 0 0>;
+        cross_section[2] = <x y 0> * .9;
+
+        // initialize path
+        //
+        trans refers to path[index];
+        magnify the trans by .1;
+        move the trans to <0 0 0>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .3;
+        move the trans to <0 0 .3>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .5;
+        move the trans to <0 0 .6>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .45;
+        move the trans to <0 0 .9>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .2;
+        move the trans to <0 0 1>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by 0;
+        move the trans to <0 0 .95>;
+        index = itself + 1;
+
+        // create curved hull from cross section and path
+        //
+        curved_hull of cross_section along path with
+            rows = steps;
+            columns = steps;
+            closed is false;
+        end;
+    end;    // section
+
+
+    shape airbag is
+        for integer counter = 1 .. gores do
+            section with
+                rotate by counter * gore_angle around <0 0 1>;
+                if some colors then
+                    color = colors[min colors + (counter
+                        mod num colors)];
+                    material is plastic colored color polished semi shiny;
+                end;
+            end;
+        end;
+    end;    // airbag
+
+
+    shape basket is
+        vector cross_section[0..4];
+        trans type path[1..4];
+        trans type reference trans;
+        integer index = 1;
+
+        // initialize cross_section
+        //
+        cross_section[0] = <-1 -1 0>;
+        cross_section[1] = <1 -1 0>;
+        cross_section[2] = <1 1 0>;
+        cross_section[3] = <-1 1 0>;
+        cross_section[4] = <-1 -1 0>;
+
+        // initialize path
+        //
+        trans refers to path[index];
+        magnify the trans by 0;
+        move the trans to <0 0 0>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .8;
+        move the trans to <0 0 0>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by 1;
+        move the trans to <0 0 .3>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .9;
+        move the trans to <0 0 1.5>;
+        index = itself + 1;
+
+        // create curved hull from cross section and path
+        //
+        curved_hull of cross_section along path with
+            rows = steps;
+            columns = steps;
+            closed is false;
+        end;
+    end;    // basket
+
+
+    shape connector with
+        scalar bottom_radius = .9;
+        scalar top_radius = .75;
+        scalar height = 1.5;
+        scalar tube_radius = .05;
+    is
+        scalar radius_difference = bottom_radius - top_radius;
+        scalar tilt = atan (radius_difference / height);
+
+        shape connector_piece is
+            scalar size = sqrt(sqr radius_difference + sqr height);
+
+            torus with
+                outer_radius = bottom_radius;
+                inner_radius = outer_radius - (tube_radius * 2);
+                umin = 0; umax = 180;
+                center = <0 (-bottom_radius) 0>;
+                normal = <0 -1 0>;
+                scale by size / bottom_radius along <0 0 1>;
+                rotate by -tilt around <1 0 0> about center;
+            end;
+        end;    // connector_piece
+
+        // connections from basket to burner assembly
+        //
+        connector_piece;
+        connector_piece with rotate by 90 around <0 0 1>; end;
+        connector_piece with rotate by 180 around <0 0 1>; end;
+        connector_piece with rotate by 270 around <0 0 1>; end;
+
+        // top assembly
+        //
+        torus with
+            center = <0 0 height>;
+            outer_radius = top_radius;
+            inner_radius = outer_radius - (tube_radius * 2);
+        end;
+    end;    // connector
+
+
+    shape burner_assembly is
+        shape burner is
+            cylinder with
+                end1 = <0 0 0>; end2 = <0 0 1>;
+                radius = .25;
+            end;
+        end;    // burner
+
+        disk with
+            radius = .75;
+        end;
+        burner with
+            material is aluminum;
+            move to <.25 0 0>;
+        end;
+        burner with
+            material is aluminum;
+            move to <-.25 0 0>;
+        end;
+    end;    // burner_assembly
+
+
+    shape shroud with
+        scalar bottom_radius = .75;
+                scalar top_radius = 1.8;
+        scalar height = 2;
+        integer lines = 12;
+    is
+        for integer counter = 1 .. lines do
+                        scalar angle = ((counter - .5) / lines) * 360;
+
+            line [<bottom_radius 0 0> <top_radius 0 height>] with
+                rotate by angle around <0 0 1>;
+            end;
+        end;
+    end;    // shroud
+
+
+    airbag with
+        move to <0 0 .25>;
+    end;
+    basket with
+        material is chalk colored brown;
+        magnify by .05;
+    end;
+    connector with
+        material is chalk colored light brown;
+        move to <0 0 1.5>;
+        magnify by .05;
+    end;
+    burner_assembly with
+        material is chalk colored brown;
+        move to <0 0 3>;
+        magnify by .05;
+    end;
+    shroud with
+        move to <0 0 3>;
+        magnify by .05;
+        color = beige;
+    end;
+end;    // balloon
+
+
+picture balloon_picture
+    args type args;
+with
+    eye = <.75 -1 -1>;
+    lookat = <0 0 .6>;
+    render_mode is shaded;
+    background = sky_blue;
+    args check;
+is
+    default_lights;
+    balloon with
+        colors = [red green blue orange yellow cyan
+            purple white evergreen pink grey brown];
+    end;
+end;    // balloon_picture
+
+
+anim balloon_anim
+    args type args;
+with
+    eye = <.75 -1 -1>;
+    lookat = <0 0 .6>;
+    double_buffer is on;
+    background = sky_blue;
+    args check;
+is
+    shape scene is
+        balloon with
+            {
+            colors = [red green blue orange yellow cyan
+                purple white evergreen pink grey brown];
+            }
+            // colors = [(blend dark blue to grey) lime_green (light grey)];
+            colors = [red white blue];
+        end;
+    end;
+
+    mouse_controlled_shape scene;
+end;    // balloon_anim

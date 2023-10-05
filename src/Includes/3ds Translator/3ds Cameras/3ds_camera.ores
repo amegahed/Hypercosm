@@ -1,0 +1,227 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          3ds_camera.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains camera definitions that correspond to          }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/camera.ores";
+include "system/rendering.ores";
+include "system/shapes.ores";
+include "system/vectors.ores";
+
+abstract subject translated_3ds_camera
+extends
+	camera
+does
+	// constructor
+	//
+	verb new
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens and focus parameters
+		//
+		scalar fov = 60;
+		scalar distance = 100;
+		boolean orthographic is false;
+		
+		// rendering parameters
+		//
+		boolean visible is false;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public boolean orthographic is false;
+	public boolean visible;
+is
+	//
+	// constructor
+	//
+		
+	verb new
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens and focus parameters
+		//
+		scalar fov = 60;
+		scalar distance = 100;
+		boolean orthographic is false;
+		
+		// camera rendering parameters
+		//
+		boolean visible is false;
+	is
+		// call superclass constructor
+		//
+		camera new at location towards direction oriented by up_vector with
+			field_of_view = fov;
+			distance = static distance;
+		end;
+		
+		// set 3ds camera attributes
+		//
+		with translated_3ds_camera do
+			its orthographic is orthographic;
+			its visible is visible;
+		end;
+	end;    // new
+	
+	//
+	// rendering methods
+	//
+	
+	objective shape icon is
+		shape body is
+			extrude [[-.5 0] [-.75 .25] [-.25 1] [.25 1] [.75 .75] [.75 .25] [.5 0] [-.5 0]]
+				along <0 1 0>
+			with
+				height = .5;
+				smoothing is false;
+			end;
+		end;    // body
+		
+		shape film_reel with
+			scalar thickness = .25;
+			scalar diameter = 1.25;
+		is
+			rod with
+				end1 = <0 (-thickness / 2) 0>;
+				end2 = <0 (thickness / 2) 0>;
+				radius = diameter / 2;
+			end;
+		end;    // film_reel
+		
+		shape lens is
+			cylinder with
+				end1 = <0 0 0>;
+				end2 = <.375 0 0>;
+				radius = .2;
+			end;
+			ring with
+				center = <.375 0 0>;
+				normal = <1 0 0>;
+				inner_radius = .2;
+				outer_radius = .25;
+			end;
+			cylinder with
+				end1 = <.375 0 0>;
+				end2 = <.75 0 0>;
+				radius = .25;
+			end;
+		end;    // lens
+		
+		shape lens_shade is
+			vector inner[] = [<0 -.35 -.25> <0 -.35 .25> <0 .35 .25> <0 .35 -.25>];
+			vector outer[] = [<.5 -.75 -.5> <.5 -.75 .5> <.5 .75 .5> <.5 .75 -.5>];
+			
+			polygon [inner[1] inner[2] outer[2] outer[1]];
+			polygon [inner[2] inner[3] outer[3] outer[2]];
+			polygon [inner[3] inner[4] outer[4] outer[3]];
+			polygon [inner[4] inner[1] outer[1] outer[4]];
+			polygon [inner[1] inner[2] inner[3] inner[4]];
+		end;    // lens_shade
+	
+		shape camera is 
+			body;
+			film_reel with
+				move to <0 0 1.6>;
+			end;
+			film_reel with
+				move to <-1 0 1>;
+			end;
+			lens with
+				move to <.75 0 .5>;
+			end;
+			lens_shade with
+				move to <1.5 0 .5>;
+			end;
+		end;    // camera
+		
+		camera with
+			
+			// make camera pointing up and centered on the lens aperture
+			//
+			move to <-1.55 0 -.5>;
+			rotate by -90 around <0 1 0>;
+			rotate by -90 around <0 0 1>;
+			color = light light blue;
+			render_mode is wireframe;
+			edges is silhouette;
+		end;
+	end;    // icon
+
+	objective shape frustum with
+		scalar length = 3;
+		scalar width = 2;
+		scalar height = 1;
+	is
+		scalar x = width / 2;
+		scalar y = height / 2;
+		scalar z = length;
+		vector point1 = <-x -y z>; 
+		vector point2 = <x -y z>;
+		vector point3 = <x y z>;
+		vector point4 = <-x y z>;
+		
+		triangle <0 0 -.01> point1 point2;
+		triangle <0 0 -.01> point2 point3;
+		triangle <0 0 -.01> point3 point4;
+		triangle <0 0 -.01> point4 point1;
+	end;    // frustum
+	
+	//
+	// rendering method
+	//
+
+	shape instance is
+		trans type trans;
+		vector eye = get_location;
+		vector direction = get_direction;
+		vector up_vector = get_up_vector;
+		vector right_vector = get_right_vector;
+		vector lookat = get_lookat;
+				
+		// compute camera transformation
+		// 
+		trans's origin = eye;
+		trans's z_axis = direction;
+		trans's y_axis = up_vector;
+		trans's x_axis = right_vector;
+		
+		if visible then
+			icon with
+				global trans = trans;
+				magnify the global trans by distance / 25 about global trans's origin;
+			end;
+			
+			line [(eye + (direction * .01)) lookat];
+			if not orthographic then  
+				scalar diagonal = sqrt (sqr global width + sqr global height);  
+					
+				frustum with
+					length = distance;
+					width = tan field_of_view * distance * global width / diagonal;
+					height = tan field_of_view * distance * global height / diagonal;
+					global trans = trans;
+					color = light light blue;
+					render_mode is wireframe;
+				end;
+			end;
+		end;
+	end;    // instance
+end;    // translated_3ds_camera

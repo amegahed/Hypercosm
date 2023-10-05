@@ -1,0 +1,256 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		   mesh_topology.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains generalized mesh topology definitions.     	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/mesh_geometry.ores";
+include "system/printing.ores";
+
+
+subject mesh_topology
+does
+	// constructor
+	//
+	verb new
+		of integer edges[,] is none;
+		from integer face_indices[] is none;
+	with
+		integer num_edges = 0;
+		integer num_face_indices = 0;
+	end;
+
+	// attributes setting methods
+	//
+	verb set
+		to integer edges[,] is none;
+		from integer face_indices[] is none;
+	with
+		integer num_edges = 0;
+		integer num_face_indices = 0;
+	end;
+		
+	// attributes querying methods
+	//
+	boolean question is_valid;
+	integer question get_num_faces;
+	integer[][] question get_faces_indices;
+	
+	// printable method
+	//
+	verb print;
+has
+    public integer edges[,] is none;
+    public integer face_indices[] is none;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of integer edges[,] is none;
+		from integer face_indices[] is none;
+	with
+		integer num_edges = 0;
+		integer num_face_indices = 0;
+	is
+		set to edges from face_indices with
+			num_edges = static num_edges;
+			num_face_indices = static num_face_indices;
+		end;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set
+		to integer edges[,] is none;
+		from integer face_indices[] is none;
+	with
+		integer num_edges = 0;
+		integer num_face_indices = 0;
+	is
+		// set or allocate edges
+		//
+		if some edges then
+			mesh_topology's edges is edges;
+		elseif num_edges <> 0 then
+			dim mesh_topology's edges[1 .. num_edges, 1..2];
+		end;
+
+		// set or allocate face indices
+		//
+		if some face_indices then
+			mesh_topology's face_indices is face_indices;
+		elseif num_face_indices <> 0 then
+			dim mesh_topology's face_indices[1 .. num_face_indices];
+		end;	
+	end;	// set
+	
+	
+	//
+	// attributes querying methods
+	//
+	
+
+	boolean question is_valid is
+    	answer some edges and some face_indices;
+	end;	// is_valid
+	
+		
+	integer question get_num_faces is
+		integer num_faces = 0;
+		
+		// count face index terminators (index = 0)
+		//
+		for each integer face_index in face_indices do
+			if face_index = 0 then
+				num_faces = itself + 1;
+			end;
+		end;
+		
+		answer num_faces;
+	end;	// get_num_faces
+	
+
+	integer question count_face_indices
+		at integer face_index;
+	is
+		integer counter = 0;
+		while face_indices[face_index] <> 0 do
+			counter = itself + 1;
+			face_index = itself + 1;
+		end;
+		answer counter;
+	end;	// count_face_indices
+	
+
+	integer[] question get_face_indices
+		at integer face_index;
+	is
+		integer face_indices[1 .. count_face_indices at face_index];
+		
+		for integer counter = 1 .. num face_indices do
+			face_indices[counter] = mesh_topology's face_indices[face_index];
+			face_index = itself + 1;
+		end;
+		
+		answer face_indices;
+	end;	// get_face_indices
+	
+			
+	integer[][] question get_faces_indices is
+		integer faces_indices[1 .. get_num_faces][];
+		integer face_index = min face_indices;
+
+		for integer counter = 1 .. num faces_indices do
+			faces_indices[counter] is get_face_indices at face_index;
+			face_index = itself + num faces_indices[counter + 1];
+		end;
+		
+		answer faces_indices;
+	end;	// get_faces_indices
+	
+	
+	//
+	// methods for printing topology components
+	//
+	
+	
+	verb print_edges is
+		for integer counter = 1 .. num edges do
+			write "edge[", counter, "] from vertex ", edges[counter, 1], " to vertex ", edges[counter, 2], ;
+		end;
+	end;	// print_edges
+	
+
+	verb print_faces is
+		for integer counter = 1 .. num face_indices do
+			write face_indices[counter];
+			if face_indices[counter] <> 0 then
+				write ", ";
+			else
+				write;
+			end;
+		end;
+	end;	// print_faces
+	
+
+	//
+	// printable method
+	//
+	
+				
+	verb print is
+		if not is_valid then
+			write "invalid ";
+		end;
+		write "mesh topology with:", ;
+	    write "num edges = ", num edges, ;
+	    print_edges;
+	    write "num face indices = ", num face_indices, ;
+	    print_faces;
+	end;	// print
+end;	// mesh_topology
+
+
+{***************************************************************}
+{					recycle whenever possible!					}
+{***************************************************************}
+
+
+subject recycleable_mesh_topology
+extends
+	recycleable mesh_topology
+does
+	// recycling methods
+	//
+	objective recycleable_mesh_topology type question get;
+	reference verb recycle;
+is
+    // recycling free list
+    //
+    singly_linked_list type free_list;
+
+
+	//	
+	// recycling methods
+	//
+	
+	
+	objective recycleable_mesh_topology type question get is
+		if free_list is_empty then
+			if verbose_recycling then
+				write "new recycleable mesh topology", ;
+			end;
+			answer new recycleable_mesh_topology;
+		else
+			answer recycleable_mesh_topology type free_list removed_first;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// free attributes
+		//
+	    edges is none;
+	    face_indices is none;
+	    
+	    // add to free list
+	    //
+	    free_list add_first recycleable_mesh_topology;
+	    recycleable_mesh_topology is none;
+	end;		// recycle    
+end;	// recycleable_mesh_topology

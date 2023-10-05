@@ -1,0 +1,131 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		  cross_section.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard definition of a cross section.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+type perimeter is vector[];
+
+
+subject cross_section
+extends
+    scalar[,]
+does
+	// methods
+	//
+    verb normalize;
+    
+    // query methods
+    //
+    vector[] question find_perimeter with
+        vector x_axis = <1 0 0>;
+        vector y_axis = <0 1 0>;
+    end;
+    cross_section type question normalized;
+is
+	//
+	// methods
+	//
+	
+	
+    verb normalize is
+        cross_section = normalized;
+    end;    // normalize
+
+
+	//    
+    // query methods
+    //
+    
+    
+    vector[] question find_perimeter with
+        vector x_axis = <1 0 0>;
+        vector y_axis = <0 1 0>;
+    is
+        vector points[min cross_section .. max cross_section];
+        
+        for integer counter = min points .. max points do
+            points[counter] = x_axis * cross_section[counter, 1] +
+                y_axis * cross_section[counter, 2];
+        end;
+        
+        answer points;
+    end;    // find_perimeter
+     
+    
+    cross_section type question normalized is
+        scalar x_min, x_max;
+        scalar y_min, y_max;
+        cross_section type normalized_section;
+        
+        // find bounds of cross section
+        //
+        x_min = cross_section[min cross_section, 1];
+        x_max = x_min;
+        y_min = cross_section[min cross_section, 2];
+        y_max = y_min;
+        for integer counter = min cross_section + 1 .. max cross_section do
+            scalar x = cross_section[counter, 1];
+            scalar y = cross_section[counter, 2];
+            
+            if x < x_min then
+                x_min = x;
+            end;
+            if x > x_max then
+                x_max = x;
+            end;
+            if y < y_min then
+                y_min = y;
+            end;
+            if y > y_max then
+                y_max = y;
+            end;
+        end;
+        
+        // rescale cross section
+        //
+        dim normalized_section[min cross_section .. max cross_section,
+            min cross_section[] .. max cross_section[]];
+        for integer counter = min cross_section .. max cross_section do
+            scalar x = cross_section[counter, 1];
+            scalar y = cross_section[counter, 2];
+            
+            normalized_section[counter, 1] = (x - x_min) / (x_max - x_min) * 2 - 1;
+            normalized_section[counter, 2] = (y - y_min) / (y_max - y_min) * 2 - 1;
+        end;
+        
+        answer normalized_section;
+    end;    // normalized
+end;    // cross_section
+
+
+cross_section type question round_cross_section
+    of integer sections;
+is
+    cross_section type cross_section;
+    
+    // cross section
+    //
+    dim cross_section[0..sections, 1..2];
+
+    // initialize round cross section
+    //
+    for integer counter = 0 .. sections - 1 do
+        scalar angle = (counter / sections) * -360;
+
+        cross_section[counter, 1] = sin angle;
+        cross_section[counter, 2] = cos angle;
+    end;
+    
+    cross_section[sections, 1] = cross_section[0, 1];
+    cross_section[sections, 2] = cross_section[0, 2];
+    
+    answer cross_section;
+end;    // round_cross_section

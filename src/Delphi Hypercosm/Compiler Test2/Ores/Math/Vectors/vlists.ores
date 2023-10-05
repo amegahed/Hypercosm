@@ -1,0 +1,169 @@
+{***************************************************************}
+{                            vlists.ores                        }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{																}
+{		Contains a class is used to manipulate collections 		}
+{		of vlist.												}
+{																}
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/varrays.ores";
+include "system/swapping.ores";
+include "system/volume_extents.ores";
+
+
+subject vlist
+extends
+	vector[]
+does
+	// construction methods
+	//
+	reference verb add
+		vector v;
+	end;
+	reference verb add_all
+		vlist type vlist;
+	end;
+	reference verb remove
+		integer index;
+	end;	// remove
+	reference verb remove_each
+		vector v;
+	end;
+	reference verb remove_all
+		vlist type vlist;
+	end;
+	
+	// reversing methods
+	//
+	verb reverse;
+	vlist type question reversed;
+			
+	// querying methods
+	//
+	volume_bounding type question get_bounds;
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// construction methods
+	//
+	
+	
+	reference verb add
+		vector v;
+	is
+		vlist type vlist2;
+		
+		if some vlist then
+			dim vlist2[min vlist .. max vlist + 1];
+			vlist2[min vlist .. max vlist] = vlist[min vlist .. max vlist];
+			vlist is vlist2;
+		else
+			dim vlist[1..1];
+		end;
+		vlist[max vlist] = v;
+	end;	// add
+	
+
+	reference verb add_all
+		vlist type vlist;
+	is
+		for each vector v in vlist do
+			add v;
+		end;
+	end;	// add_all
+	
+	
+	reference verb remove
+		integer index;
+	is
+		vlist type vlist2;
+		
+		if min vlist <= index <= max vlist then
+			dim vlist2[min vlist .. max vlist - 1];
+			vlist2[min vlist .. index - 1] = vlist[min vlist .. index - 1];
+			vlist2[index .. max vlist - 1] = vlist[index + 1 .. max vlist];
+			vlist is vlist2;
+		end;		
+	end;	// remove
+	
+		
+	reference verb remove_each
+		vector v;
+	is
+		integer index = min vlist;
+		while index <= max vlist do
+			if vlist[index] = v then
+				remove index;
+			else
+				index = itself + 1;
+			end;
+		end;
+	end;	// remove_each
+	
+
+	reference verb remove_all
+		vlist type vlist;
+	is
+		for each vector v in vlist do
+			remove_each v;
+		end;
+	end;	// remove_all
+	
+
+	//
+	// reversing methods
+	//
+	
+	
+	verb reverse is   
+		for integer counter = 1 .. num vlist div 2 do
+			swap_vectors vlist[min vlist + (counter - 1)]
+				and vlist[max vlist - (counter - 1)];
+		end;
+	end;	// reverse
+	
+	
+	vlist type question reversed is
+		vlist type reversed_vlist;
+		
+		dim reversed_vlist[min vlist .. max vlist];
+		for integer counter = 1 .. num vlist do
+			reversed_vlist[min vlist + (counter - 1)] = 
+				vlist[max vlist - (counter - 1)];
+		end;
+		
+		answer reversed_vlist;
+	end;	// reversed
+	
+	
+	//	
+	// querying methods
+	//
+	
+	
+	volume_bounding type question get_bounds is	
+		answer get_point_extents of vlist;
+	end;	// get_bounds
+	
+	
+	//
+	// printing methods
+	//	
+	
+	
+	verb print is
+		write "[", ;
+		for each vector v in vlist do
+			write v, ;
+		end;
+		write "]", ;
+	end;	// print
+end;	// vlist

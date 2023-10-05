@@ -1,0 +1,132 @@
+{***************************************************************}
+{                          shell2.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do interactive_shell;
+
+
+include "system/3d.ores";
+include "system/interactions.ores";
+include "system/shell.omar";
+include "system/button_meter.omar";
+
+
+// revolutions parameters
+//
+const scalar min_revs = 0, max_revs = 4;
+const scalar rev_step = (max_revs - min_revs) / 20;
+scalar revolutions = (max_revs + min_revs) / 2;
+
+// steps parameters
+//
+const integer min_steps = 4, max_steps = 50;
+integer steps = (max_steps + min_steps) div 2;
+
+// radius parameters
+//
+const scalar min_radius = .1, max_radius = .5;
+const scalar rad_step = (max_radius - min_radius) / 10;
+scalar radius = (max_radius + min_radius) / 2;
+
+vector orientation = <0 0 0>;
+
+
+picture interactive_shell_picture with
+    eye = <0 -12 4>;
+    lookat = <0 0 .6>;
+    background = dark violet;
+    edges is outline;
+    render_mode is wireframe;
+    window_name is "Spiral";
+is
+    distant_light from <.3 -.5 1>;
+    shell with
+        color = white;
+        steps = static steps;
+        revolutions = static revolutions;
+        minor_radius = radius;
+        rotate by (orientation dot <0 1 0>) * -180
+            around trans's x_axis about lookat;
+        rotate by (orientation dot <1 0 0>) * 180
+            around trans's z_axis about lookat;
+    end;
+end;    // interactive_shell_picture
+
+
+picture instruments_picture with
+    background = black;
+    render_mode is wireframe;
+    window_name is "Instruments";
+is
+    static scalar steps = global steps;
+    static button_meter type revolutions_meter labelled "Revolutions"
+        from min_revs to max_revs controls revolutions;
+    static button_meter type steps_meter labelled "Steps"
+        from min_steps to max_steps controls steps;
+    static button_meter type radius_meter labelled "Radius"
+        from min_radius to max_radius controls radius;
+    scalar aspect_ratio = height / width;
+
+    revolutions_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .65 0>;
+    end;
+    steps_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 0 0>;
+    end;
+    radius_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.65 0>;
+    end;
+
+    global steps = trunc steps;
+end;    // instruments_picture
+
+
+anim interactive_shell
+    args type args;
+with
+    double_buffer is on;
+    render_mode is wireframe;
+    args check;
+is
+    integer total_width = width;
+    boolean first_frame is true;
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging orientation);
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+        default_cursor is arrow;
+    end;
+
+    while true do
+        if mouse_down or first_frame or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+        interactive_shell_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((total_width -
+                width) div 2);
+        end;
+        interaction update;
+        first_frame is false;
+    end;
+end;    // interactive_shell

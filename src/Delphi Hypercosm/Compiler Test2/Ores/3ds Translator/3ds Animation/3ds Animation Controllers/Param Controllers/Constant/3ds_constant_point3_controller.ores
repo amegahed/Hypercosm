@@ -1,0 +1,83 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm   3ds_constant_point3_controller.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_point3_controlling.ores";
+include "system/arrow_shapes.ores";
+
+
+subject translated_3ds_constant_point3_controller 
+extends
+	translated_3ds_point3_controllable renderable object
+does
+    // constructor
+    //
+	verb new
+		of vector value;
+	end;
+	
+	// evaluation methods
+	//
+	vector question get_value
+		at translated_3ds_time type t;
+	end;
+	
+	// renderable method
+	//
+	shape instance;
+has
+	// constant point3 controller attributes
+	//
+	vector point3;
+is
+    //
+    // constructor
+    //
+    
+    
+	verb new
+		of vector value;
+	is
+		// set constant point3 controller attributes
+		//
+		translated_3ds_constant_point3_controller's point3 = value;
+	end;	// new
+	
+	
+	//
+	// evaluation methods
+	//
+	
+	
+	vector question get_value
+		at translated_3ds_time type time;
+	is
+		answer point3;
+	end;	// get_value
+	
+	
+	//
+	// renderable method
+	//
+	
+		
+	shape instance is
+		axes with
+			place at point3;
+		end;
+	end;	// instance
+end;	// translated_3ds_constant_point3_controller
+
+
+
+

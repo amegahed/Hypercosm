@@ -1,0 +1,257 @@
+{***************************************************************}
+{                          house.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do house_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/architect.omar";
+include "system/solids.ores";
+include "system/surfaces.ores";
+
+shape house is
+    shape roof is
+        triangle <-1 -1 0> <1 -1 0> <0 -1 .5>;
+        triangle <-1 1 0> <1 1 0> <0 1 .5>;
+
+        parallelogram with
+            material is stone;
+            vertex = <0 -1.1 .5>;
+            side1 = <0 2.2 0>;
+            side2 = <-1.1 0 -.55>;
+            rotate the shader_trans by 90 around <0 0 1>;
+            magnify the shader_trans by .5;
+        end;
+
+        parallelogram with
+            material is stone;
+            vertex = <0 -1.1 .5>;
+            side1 = <0 2.2 0>;
+            side2 = <1.1 0 -.55>;
+            rotate the shader_trans by 90 around <0 0 1>;
+            magnify the shader_trans by .5;
+        end;
+    end;    // roof
+
+
+    shape garage is
+        shape front_windows is
+            window with
+                move to <-.5 -1 .25>;
+            end;
+            bay_window with
+                move to <.0 -1 .25>;
+            end;
+            window with
+                move to <.5 -1 .25>;
+            end;
+        end;    // front_windows
+
+
+        cube with
+            scale by .5 along <0 0 1>;
+        end;
+        cube with
+            material is stone;
+            scale by .1 along <0 0 1>;
+            move to <0 0 -.6>;
+        end;    // foundation
+        roof with
+            move to <0 0 .5>;
+        end;
+        front_windows with
+            material is chalk colored white;
+        end;
+
+        garage_door with
+            material is chalk colored white;
+            magnify by .25;
+            move to <-.3 -1 -.45>;
+        end;
+        garage_door with
+            material is chalk colored white;
+            magnify by .25;
+            move to <.3 -1 -.45>;
+        end;
+
+        // rear windows
+        six_windows with
+            material is chalk colored white;
+            move to <0 1 0>;
+        end;
+
+        // side windows
+        six_windows with
+            material is chalk colored white;
+            rotate by 90 around <0 0 1>;
+            move to <-1 0 0>;
+        end;
+    end;    // garage
+
+
+    shape front_windows is
+        window with
+            move to <-.4 -.75 -.25>;
+        end;
+        bay_window with
+            move to <.1 -.75 -.25>;
+        end;
+        window with
+            move to <.6 -.75 -.25>;
+        end;
+        window with
+            move to <-.4 -.75 .25>;
+        end;
+        window with
+            move to <.1 -.75 .25>;
+        end;
+        window with
+            move to <.6 -.75 .25>;
+        end;
+    end;    // front_windows
+
+
+    shape side_windows is
+        window with
+            rotate by 90 around <0 0 1>;
+            move to <1 .25 .25>;
+        end;
+        window with
+            rotate by 90 around <0 0 1>;
+            move to <1 -.25 .25>;
+        end;
+        window with
+            rotate by 90 around <0 0 1>;
+            move to <1 .25 -.25>;
+        end;
+        window with
+            rotate by 90 around <0 0 1>;
+            move to <1 -.25 -.25>;
+        end;
+    end;    // side_windows
+
+
+    shape living_quarters is
+        cube with
+            scale by .5 along <0 0 1>;
+            scale by .75 along <0 1 0>;
+        end;    // cube
+        cube with
+            material is stone;
+            scale by .1 along <0 0 1>;
+            scale by .75 along <0 1 0>;
+            move to <0 0 -.6>;
+        end;    // foundation
+
+        {
+        roof with
+            rotate by 90 around 0 0 1;
+            scale by .5 along 0 0 1;
+            scale by .75 along 0 1 0;
+            scale by 2 along 1 0 0;
+            move to -1 0 .5;
+        end;    // roof
+        }
+
+        roof with
+            rotate by 90 around <0 0 1>;
+            scale by 1.5 along <1 0 0>;
+            scale by .75 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            move to <-.5 0 .5>;
+        end;    // roof
+
+        {
+        flat brown triangle (-1 0 .75) (-1.5 0 .75) (-1 .75 .5);
+        flat brown triangle (-1 0 .75) (-1.5 0 .75) (-1 -.75 .5);
+        }
+
+        // entrance
+        front_door with
+            magnify by .25;
+            move to <-.75 -.75 -.25>;
+        end;
+        roof with
+            material is chalk colored brown;
+            magnify by .25;
+            move to <-.75 -1 0>;
+        end;
+        cylinder with
+            end1 = <-.5 -1.25 0>;
+            end2 = <-.5 -1.25 -.7>;
+            radius = .02;
+        end;
+        stairs with
+            material is stone;
+            magnify by .2;
+            scale by 2 along <0 1 0>;
+            scale by 2.5 along <1 0 0>;
+            move to <-.75 -1.15 -.7>;
+        end;
+
+        // front windows
+        front_windows with
+            material is chalk colored white;
+        end;
+
+        // side windows
+        side_windows with
+            material is chalk colored white;
+        end;
+
+        // rear windows
+        six_windows with
+            material is chalk colored white;
+            move to <0 .75 0>;
+        end;
+    end;    // living_quarters
+
+    garage with
+        move to <-1 0 .7>;
+        color = light yellow;
+    end;
+    living_quarters with
+        move to <1 .25 .7>;
+        color = light yellow;
+    end;
+end;    // house
+
+
+picture house_picture with
+    eye = <1 -6 2>;
+    eye = <-4 -6 4>;
+    roll = 20;
+    lookat = <0 0 .5>;
+    render_mode is shaded;
+    shading is pixel;
+    background = sky_blue;
+    facets = 8;
+is
+    distant_light from <.3 -.5 1>;
+    flat bricked color light brown house with
+        magnify the shader_trans by .5;
+    end;
+    plane with
+        color = dark green;
+        magnify by 3;
+    end;
+end;    // house_picture
+
+
+anim house_anim
+    args type args;
+with
+    eye = <-4 -6 4>;
+    lookat = <0 0 .5>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape house;
+end;    // house_anim

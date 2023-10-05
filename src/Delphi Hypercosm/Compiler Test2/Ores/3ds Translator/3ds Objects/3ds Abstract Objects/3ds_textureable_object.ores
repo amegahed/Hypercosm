@@ -1,0 +1,89 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  3ds_textureable_object.ores		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains object definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_object.ores";
+
+
+abstract subject translated_3ds_texturable_object
+extends
+    translated_3ds_object
+does
+    // constructor
+    //
+    verb new with
+    
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+    end;
+    
+    // texturing methods
+    //
+    verb set_texturing
+        to boolean gen_mapping_coords;
+    end;
+    
+    // scribable method
+    //
+    string type question to_string;
+has
+    // texturing attributes
+    //
+    boolean gen_mapping_coords;
+is
+    //
+    // constructor
+    //
+    
+    
+    verb new with
+    
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+    is 
+        // set texturing attributes
+        //
+        translated_3ds_texturable_object's gen_mapping_coords is gen_mapping_coords;
+    end;    // new
+    
+
+    //    
+    // texturing methods
+    //
+    
+    
+    verb set_texturing
+        to boolean gen_mapping_coords;
+    is
+        translated_3ds_texturable_object's gen_mapping_coords is gen_mapping_coords;
+    end;    // set_texturing
+    
+
+	//    
+    // scribable method
+    //
+    
+    
+    string type question to_string is
+    	answer "translated 3ds texturable object";
+    end;	// to_string
+end;    // translated_3ds_texturable_object
+
+
+
+
+
+
+

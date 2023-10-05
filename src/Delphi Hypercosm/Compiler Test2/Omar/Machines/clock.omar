@@ -1,0 +1,399 @@
+{***************************************************************}
+{                          clock.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do clock_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+subject clock
+extends
+    step_actor
+does
+    objective shape form with
+        time type time = <0 0 0>;
+        integer steps = 0;
+    end;    // form
+
+    shape instance;
+is
+    objective shape hour_hand is
+        triangle <-.1 0 -.1> <.1 0 -.1> <0 0 .5> with
+            material is chalk colored white;
+        end;
+    end;    // hour_hand
+
+
+    objective shape minute_hand is
+        triangle <-.1 0 -.1> <.1 0 -.1> <0 0 .8> with
+            material is chalk colored white;
+        end;
+    end;    // minute_hand
+
+
+    objective shape second_hand is
+        triangle <-.05 0 -.1> <.05 0 -.1> <0 0 .7> with
+            material is chalk colored white;
+        end;
+    end;    // second_hand
+
+
+    objective shape tic_mark is
+        block with
+            vertex = <.6 0 -.05>;
+            side1 = <.2 0 0>;
+            side2 = <0 -.05 0>;
+            side3 = <0 0 .1>;
+        end;
+    end;    // tic_mark
+
+
+    objective shape small_tic_mark is
+        block with
+            vertex = <.65 0 -.05>;
+            side1 = <.1 0 0>;
+            side2 = <0 -.05 0>;
+            side3 = <0 0 .1>;
+        end;
+    end;    // small_tick_mark
+
+
+    objective shape clock_tics is
+        const integer steps = 12;
+
+        for integer counter = 1..steps do
+            scalar angle = 360 * counter / steps;
+
+            if (counter mod 3 = 0) then
+                tic_mark with
+                    material is chalk colored white;
+                    rotate by angle around <0 1 0>;
+                end;
+            else
+                small_tic_mark with
+                    material is aluminum;
+                    rotate by angle around <0 1 0>;
+                end;
+            end;
+        end;
+    end;    // clock_tics
+
+
+    objective shape clock_face with
+        time type time = <0 0 0>;
+    is
+        scalar hours = time dot <1 0 0>;
+        scalar minutes = time dot <0 1 0>;
+        scalar seconds = time dot <0 0 1>;
+
+        clock_tics with
+            move to <0 -.01 0>;
+        end;
+        ring with
+            material is plastic colored grey;
+            center = <0 -.05 0>;
+            normal = <0 1 0>;
+            inner_radius = .8;
+            outer_radius = .9;
+        end;
+        disk with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            radius = .9;
+        end;
+        hour_hand with
+            move to <0 -.1 0>;
+            rotate by (hours / 12) * 360 around <0 1 0>;
+        end;
+        minute_hand with
+            move to <0 -.15 0>;
+            rotate by (minutes / 60) * 360 around <0 1 0>;
+        end;
+        second_hand with
+            move to <0 -.2 0>;
+            rotate by (seconds / 60) * 360 around <0 1 0>;
+        end;
+        rod with
+            end1 = <0 0 0>;
+            end2 = <0 -.25 0>;
+            radius = .05;
+        end;
+    end;    // clock_face
+
+
+    objective shape glass_enclosure is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 2>;
+            radius = 1;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 2>;
+            radius = .95;
+        end;
+        sphere with
+            center = <0 0 2>;
+            radius = 1;
+            vmin = 0;
+            vmax = 90;
+        end;
+        sphere with
+            center = <0 0 2>;
+            radius = .95;
+            vmin = 0;
+            vmax = 90;
+        end;
+    end;    // glass_enclosure
+
+
+    objective shape pendulum is
+        sphere with
+            center = <.4 0 0>;
+            radius = .15;
+        end;
+        sphere with
+            center = <-.4 0 0>;
+            radius = .15;
+        end;
+        sphere with
+            center = <0 .4 0>;
+            radius = .15;
+        end;
+        sphere with
+            center = <0 -.4 0>;
+            radius = .15;
+        end;
+        cylinder with
+            end1 = <.4 0 0>;
+            end2 = <-.4 0 0>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <0 .4 0>;
+            end2 = <0 -.4 0>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <0 0 .5>;
+            end2 = <0 0 -.5>;
+            radius = .05;
+        end;
+        sphere with
+            center = <0 0 0>;
+            radius = .1;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 -.5>;
+            end2 = <0 0 -.3>;
+            radius1 = .2;
+            radius2 = .05;
+        end;
+    end;    // pendulum
+
+
+    objective shape design is
+        ring with
+            center = <.5 0 0>;
+            normal = <0 0 1>;
+            inner_radius = .4;
+            outer_radius = .5;
+        end;
+        ring with
+            center = <-.5 0 0>;
+            normal = <0 0 1>;
+            inner_radius = .4;
+            outer_radius = .5;
+        end;
+        ring with
+            center = <0 .5 0>;
+            normal = <0 0 1>;
+            inner_radius = .4;
+            outer_radius = .5;
+        end;
+        ring with
+            center = <0 -.5 0>;
+            normal = <0 0 1>;
+            inner_radius = .4;
+            outer_radius = .5;
+        end;
+    end;    // design
+
+
+    objective shape static_clock_works is
+        cylinder with
+            end1 = <.8 0 0>;
+            end2 = <.8 0 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-.8 0 0>;
+            end2 = <-.8 0 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 .8 0>;
+            end2 = <0 .8 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 -.8 0>;
+            end2 = <0 -.8 1>;
+            radius = .1;
+        end;
+        ring with
+            center = <0 0 1>;
+            normal = <0 0 1>;
+            inner_radius = .7;
+            outer_radius = .9;
+        end;
+        design with
+            magnify by .7;
+            move to <0 0 1>;
+        end;
+        design with
+            material is aluminum;
+            magnify by .5;
+            rotate by 90 around <1 0 0>;
+            move to <0 -.01 2>;
+        end;
+    end;    // static_clock_works
+
+
+    objective shape moving_clock_works with
+        time type time = <0 0 0>;
+        integer steps = 0;
+    is
+        scalar seconds = time dot <0 0 1>;
+
+        clock_face with
+            time = static time;
+            move to <0 0 2>;
+        end;
+        pendulum with
+            // rotate by (seconds * 10) around <0 0 1>;
+            rotate by steps * 10 around <0 0 1>;
+            move to <0 0 .5>;
+        end;
+    end;    // movign_clock_works
+
+
+    objective shape clock_stand is
+        sphere with
+            center = <1 0 .2>;
+            radius = .2;
+        end;
+        sphere with
+            center = <0 1 .2>;
+            radius = .2;
+        end;
+        sphere with
+            center = <-1 0 .2>;
+            radius = .2;
+        end;
+        sphere with
+            center = <0 -1 .2>;
+            radius = .2;
+        end;
+        disk with
+            center = <0 0 .4>;
+            normal = <0 0 1>;
+            radius = 1.2;
+        end;
+        disk with
+            center = <0 0 .8>;
+            normal = <0 0 1>;
+            radius = 1;
+        end;
+        cylinder with
+            end1 = <0 0 .4>;
+            end2 = <0 0 .6>;
+            radius = 1.2;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 .6>;
+            end2 = <0 0 .8>;
+            radius1 = 1.2;
+            radius2 = 1;
+        end;
+    end;    // clock_stand
+
+
+    objective shape form with
+        time type time = <0 0 0>;
+        integer steps = 0;
+    is
+        static_clock_works with
+            move to <0 0 .8>;
+        end;
+        moving_clock_works with
+            time = static time;
+            steps = static steps;
+            move to <0 0 .8>;
+        end;
+        transparent white glass_enclosure with
+            move to <0 0 .8>;
+        end;
+        clock_stand with
+            rotate by 45 around <0 0 1>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            time = get_time;
+            steps = clock's steps;
+            material is golden;
+        end;
+    end;    // instance
+end;    // clock
+
+
+picture clock_picture with
+    eye = <2 -4 3>;
+    lookat = <0 0 1.7>;
+    field_of_view = 80;
+    width = height;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    fog_factor = 50;
+is
+    distant_light from <1 -.5 1>;
+    distant_light from <1.5 -1 .25> with
+        brightness = .5;
+    end;
+    clock type's form with
+        material is golden;
+        time = <6 12 42>;
+    end;
+end;    // clock_picture
+
+
+anim clock_anim
+    args type args;
+with
+    eye = <2 -4 3>;
+    lookat = <0 0 1.7>;
+    field_of_view = 80;
+    double_buffer is on;
+    args check;
+is
+    clock type clock;
+
+    mouse_controlled_actor clock;
+end;    // clock_anim

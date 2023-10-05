@@ -1,0 +1,192 @@
+{***************************************************************}
+{                        timer_demo.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do timer_demo_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/view_alignments.ores";
+include "system/text.ores";
+include "system/multibutton.ores";
+
+// This applet demonstrates the use of the timer subject, and has a neat
+// little clock too.
+
+
+// timer control buttons
+//
+multibutton type timer_control with
+    //write_position_over is true;
+    //write_position_clicked is true;
+    //write_index_clicked is true;
+    draw_boundaries is true;
+    //write_index_over is true;
+    override_cursor is finger_point;
+    draw_parallelogram is false;
+    //auto_override_interaction is false;
+end;
+
+// timer object
+//
+timer type demo_timer with
+    ticks_per_second = 1;
+end;
+
+
+// control shapes
+//
+shape play_button
+is
+    triangle <-.2 0 .2> <.2 0 0> <-.2 0 -.2>;
+end;
+
+shape rew_button
+is
+    triangle <.15 0 .2> <-.25 0 0> <.15 0 -.2>;
+    triangle <.25 0 .2> <-.15 0 0> <.25 0 -.2>;
+end;
+
+shape pause_button
+is
+    polygon [<-.15 0 -.2> <-.05 0 -.2> <-.05 0 .2> <-.15 0 .2>];
+    polygon [<.15 0 -.2> <.05 0 -.2> <.05 0 .2> <.15 0 .2>];
+end;
+
+
+// clock face
+//
+shape clock_shape
+with
+    scalar time = 0;
+is
+    disk with
+        render_mode is wireframe;
+        edges is silhouette;
+        color = white;
+    end;
+    for integer i = 1..12 do
+        line [<0 -.8 0> <0 -1 0>] with
+            rotate by (i * 30) around <0 0 1>;
+        end;
+    end;
+    line [<0 0 0> <0 1 0>] with
+        rotate by (time * -6) around <0 0 1>;
+        color = red;
+    end;
+    line [<0 0 0> <0 1 0>] with
+        rotate by (time / -10) around <0 0 1>;
+    end;
+    line [<0 0 0> <0 .6 0>] with
+        rotate by (time / -120) around <0 0 1>;
+    end;
+end;    // clock_shape
+
+
+picture scene
+is
+    string type s;
+    
+    // actual interface
+    timer_control instance with
+        scale by .33 along <0 1 0>;
+        rotate by 90 around <1 0 0>;
+        place_on_view_ray at <-.5 -.75 0>;
+        color = red;
+    end;
+    
+    // shapes on top of multibutton object
+    play_button with
+        place_on_view_ray at <-.2 -.75 0>;
+        if demo_timer is_paused then
+            material is constant_color red;
+        else
+            material is constant_color green;
+        end;
+    end;
+    pause_button with
+        place_on_view_ray at <-.5 -.75 0>;
+        if demo_timer is_paused then
+            material is constant_color green;
+        else
+            material is constant_color red;
+        end;
+    end;
+    rew_button with
+        place_on_view_ray at <-.8 -.75 0>;
+        if timer_control's index_clicked_this_frame = 1 then
+            material is constant_color green;
+        else
+            material is constant_color red;
+        end;
+    end;
+    
+    // text feedback
+    s is "Timer position: ";
+    s add (scalar_to_string of (demo_timer position));
+    overlay_text s at <0 .9 0> with
+        size = 30;
+    end;
+    
+    if demo_timer is_paused then
+        overlay_text "(Paused)" at <0 .6 0> with
+            size = 20;
+        end;
+    end;
+    
+    s is integer_to_string of (trunc (demo_timer position) div 3600);
+    s add " hours, ";
+    s add integer_to_string of ((trunc (demo_timer position) div 60) mod 60);
+    s add " minutes, ";
+    s add integer_to_string of (trunc (demo_timer position) mod 60);
+    s add " seconds";
+    overlay_text s at <0 .75 0> with
+        size = 30;
+    end;
+    
+    // clock face, feed in elapsed seconds as an optional parameter
+    clock_shape with
+        time = demo_timer position;
+        rotate by 90 around <1 0 0>;
+    end;
+end;    // scene
+
+
+anim timer_demo_anim
+is
+    double_buffer is on;
+    
+    // initialize camera
+    eye = <0 -10 0>;
+    
+    // set clickable regions of multibutton object
+    timer_control add rectangle as 1 at [<-1 -1 0> <-.33 1 0>];
+    timer_control add rectangle as 2 at [<-.33 -1 0> <.33 1 0>];
+    timer_control add rectangle as 3 at [<.33 -1 0> <1 1 0>];
+    
+    while true do
+        // rewind
+        if timer_control's index_clicked_this_frame = 1 then
+            demo_timer reset;
+            
+        // pause
+        elseif timer_control's index_clicked_this_frame = 2 then
+            if not demo_timer is_paused then
+                demo_timer pause;
+            end;
+            
+        // play
+        elseif timer_control's index_clicked_this_frame = 3 then
+            if demo_timer is_paused then
+                demo_timer unpause;
+            end;
+        end;
+    
+        scene;
+    end;
+end;    // timer_demo_anim

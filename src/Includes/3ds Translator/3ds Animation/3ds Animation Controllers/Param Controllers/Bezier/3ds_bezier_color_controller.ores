@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    3ds_bezier_color_controller.ores    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_bezier_point3_controller.ores";
+
+subject translated_3ds_bezier_color_controller 
+extends
+	translated_3ds_bezier_point3_controller
+does
+	// constructor
+	//
+	verb new
+		of color type values[];
+		from color type in_tangents[];
+		to color type out_tangents[];
+		at translated_3ds_time type times[];
+	end;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of vector values[];
+		from vector in_tangents[];
+		to vector out_tangents[];
+		at translated_3ds_time type times[];
+	is
+		// call superclass constructor
+		//
+		translated_3ds_bezier_point3_controller new of values
+			from in_tangents to out_tangents at times;
+	end;    // new
+end;    // translated_3ds_bezier_color_controller

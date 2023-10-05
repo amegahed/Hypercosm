@@ -1,0 +1,40 @@
+{***************************************************************}
+{                          magnify.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do magnified_ant;
+
+
+include "system/magnifier.omar";
+include "system/ant.omar";
+
+
+shape scene is
+    magnifying_glass with
+        rotate by -80 around <1 0 0>;
+        rotate by 15 around <0 0 1>;
+        move to <.5 -1.5 .45>;
+    end;
+
+    ant with
+        magnify by .1;
+    end;
+    plane;
+end;    // scene
+
+
+anim magnified_ant
+    args type args;
+with
+    eye = <0 -1 4>;
+    render_mode is shaded;
+    refractions is on;
+    args check;
+is
+    mouse_controlled_shape scene;
+end;    // magnified_ant

@@ -1,0 +1,311 @@
+{***************************************************************}
+{                          atom_bomb.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do fission_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/vector_volumes.ores";
+include "system/random.ores";
+
+
+subject fission
+extends
+    actor
+does
+    verb new
+        at vector locations[];
+    with
+        scalar atomic_radius = .1;
+        scalar neutron_radius = .05;
+    end;    // new
+
+    verb add_neutron
+        at vector location;
+        moving at vector velocity = <0 0 0>;
+    end;    // add_neutron
+
+    shape instance;
+    verb act;
+has
+    struct atom has
+        vector location = <0 0 0>;
+        vector velocity = <0 0 0>;
+        atom type next is none;
+    end;    // atom
+
+    struct neutron has
+        vector location = <0 0 0>;
+        vector velocity = <0 0 0>;
+        integer age = 0;
+        neutron type next is none;
+    end;    // neutron
+
+    // attributes
+    //
+    atom type unfissioned_atoms is none;
+    atom type fissioned_atoms is none;
+    neutron type neutrons is none;
+    scalar atomic_radius, neutron_radius, factor;
+is
+    const integer neutron_lifespan = 8;
+    const scalar neutron_fission_speed = .25;
+
+
+    verb add_atom
+        at vector location;
+        moving at vector velocity = <0 0 0>;
+    is
+        atom type atom;
+
+        // initialize atom
+        //
+        atom's location = location;
+        atom's velocity = velocity;
+
+        // add atom to list
+        //
+        atom's next is unfissioned_atoms;
+        unfissioned_atoms is atom;
+    end;    // add_atom
+
+
+    verb new
+        at vector locations[];
+    with
+        scalar atomic_radius = .1;
+        scalar neutron_radius = .05;
+    is
+        // initialize atoms
+        //
+        for each vector location in locations do
+            add_atom at location;
+        end;
+
+        fission's atomic_radius = atomic_radius;
+        fission's neutron_radius = neutron_radius;
+        fission's factor = sqr (atomic_radius * 3 + neutron_radius);
+    end;    // new
+
+
+    objective shape whole_atom with
+        scalar radius = 1;
+    is
+        sphere with
+            radius = static radius;
+            color = blue;
+        end;
+    end;    // whole_atom
+
+
+    objective shape split_atom with
+        scalar radius = 1;
+    is
+        sphere with
+            radius = static radius;
+            color = red;
+        end;
+    end;    // split_atom
+
+
+    objective shape neutron_particle with
+        scalar radius = 1;
+    is
+        sphere with
+            radius = static radius;
+            color = white;
+        end;
+    end;    // neutron_particle
+
+
+    shape instance is
+        // show atoms
+        //
+        for each atom type atom and its next in unfissioned_atoms do
+            whole_atom with
+                radius = atomic_radius;
+                move to atom's location;
+            end;
+        end;
+        for each atom type atom and its next in fissioned_atoms do
+            split_atom with
+                radius = atomic_radius / 2;
+                move to atom's location;
+            end;
+        end;
+
+        // show neutrons
+        //
+        for each neutron type neutron and its next in neutrons do
+            neutron_particle with
+                radius = neutron_radius;
+                move to neutron's location;
+            end;
+        end;
+    end;    // instance
+
+
+    verb add_neutron
+        at vector location;
+        moving at vector velocity = <0 0 0>;
+    is
+        neutron type neutron;
+
+        // initialize neutron
+        //
+        neutron's location = location;
+        neutron's velocity = velocity;
+
+        // add neutron to list
+        //
+        neutron's next is neutrons;
+        neutrons is neutron;
+    end;    // add_neutron
+
+
+    objective vector question reflection
+        of vector direction;
+        about vector normal;
+    is
+        vector parallel_component = direction parallel normal;
+        vector perpendicular_component = direction - parallel_component;
+        answer parallel_component - perpendicular_component;
+    end;    // reflection
+
+
+    verb split
+        atom type atom;
+        using neutron type neutron;
+    is
+        vector normal = normalized (atom's location -
+            neutron's location);
+        vector new_velocity, new_direction;
+
+        atom's velocity = neutron's velocity / 2;
+        neutron's velocity = reflection of neutron's velocity
+            about normal;
+        neutron's age = 0;
+
+        // add new neutron to list
+        //
+        new_direction = vrandom <-1 -1 -1> to <1 1 1>;
+        new_velocity = new_direction * neutron_fission_speed;
+        new_direction = normalized new_velocity;
+        add_neutron at atom's location + new_direction *
+            (neutron_radius + atomic_radius) moving at new_velocity;
+
+    end;    // split
+
+
+    verb collide_neutron
+        neutron type neutron;
+    is
+        atom type atom is unfissioned_atoms, prev is none;
+
+        // find if neutron hits any atoms
+        //
+        while some atom do
+            vector d = atom's location - neutron's location;
+            if d dot d < factor then
+                atom type next is atom's next;
+
+                split atom using neutron;
+
+                // remove atom from unfissioned list
+                //
+                if prev is none then
+                    unfissioned_atoms is next;
+                else
+                    prev's next is next;
+                end;
+
+                // add atom to fissioned list
+                //
+                atom's next is fissioned_atoms;
+                fissioned_atoms is atom;
+                atom is next;
+            else
+                prev is atom;
+                atom is its next;
+            end;
+        end;
+    end;    // collide_neutron
+
+
+    verb collide_neutrons is
+        neutron type neutron is neutrons, prev is none;
+
+        // collide neutrons
+        //
+        while some neutron do
+            collide_neutron neutron;
+
+            if neutron's age > neutron_lifespan then
+                neutron type next is neutron's next;
+
+                // remove neutron from neutron list
+                //
+                if prev is none then
+                    neutrons is its next;
+                else
+                    prev's next is next;
+                end;
+
+                neutron is next;
+            else
+                prev is neutron;
+                neutron is its next;
+            end;
+        end;
+    end;    // collide_neutrons
+
+
+    verb act is
+
+        // move atoms
+        //
+        for each atom type atom and its next in fissioned_atoms do
+            atom's location = itself + atom's velocity;
+        end;
+
+        // move neutrons
+        //
+        for each neutron type neutron and its next in neutrons do
+            neutron's location = itself + neutron's velocity;
+            neutron's age = itself + 1;
+        end;
+
+        // check neutron collisions every other frame
+        //
+        collide_neutrons;
+    end;    // act
+end;    // fission
+
+
+anim fission_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    double_buffer is on;
+    facets = 4;
+    args check;
+is
+    vector_volume type vector_volume is cube_vector_volume 6 of 6 by 6;
+    fission type fission at vector_volume vectors;
+
+    // starting neutron
+    //
+    scalar neutron_speed = .25;
+    vector neutron_location = <1 2 3>;
+    vector neutron_direction = (-normalized neutron_location) * neutron_speed;
+
+    fission add_neutron at neutron_location moving at neutron_direction;
+    mouse_controlled_actor fission;
+end;    // fission_anim

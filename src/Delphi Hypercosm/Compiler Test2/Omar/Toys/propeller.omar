@@ -1,0 +1,113 @@
+{***************************************************************}
+{                          propeller.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do propeller_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+
+
+shape propeller_thingy with
+    scalar pitch = 30;
+is
+    scalar x = cos pitch;
+    scalar y = sin pitch;
+
+
+    static shape blade is
+
+        {
+                parallelogram with
+                        vertex = 0 -1 0;
+                        side1 = 0 2 0; side2 = 10 0 0;
+                end;
+                }
+        polygon [<0 0 0> <.5 1 0> <10 1 0> <10 -1 0> <.5 -1 0>];
+        disk with
+            umin = -90;
+            umax = 90;
+            move to <10 0 0>;
+        end;
+    end;    // blade
+
+
+    static shape handle is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 15>;
+            radius = .3;
+        end;
+        cylinder with
+            end1 = <0 0 15>;
+            end2 = <0 0 17.2>;
+            radius = .4;
+        end;
+        disk with
+            radius = .4;
+            move to <0 0 17.2>;
+        end;
+    end;    // handle
+
+    handle with material is plastic colored orange; end;
+    blade with
+        material is plastic colored lime_green;
+        rotate by pitch around <1 0 0>;
+        move to <0 0 17>;
+    end;
+    triangle <0 0 0> (<.5 x y>) (<-.5 x (-y)>) with
+        material is plastic colored lime_green;
+        move to <0 0 17>;
+    end;
+    blade with
+        material is plastic colored lime_green;
+        rotate by pitch around <1 0 0>;
+        rotate by 180 around <0 0 1>;
+        move to <0 0 17>;
+    end;
+    triangle <0 0 0> (<.5 x y>) (<-.5 x (-y)>) with
+        material is plastic colored lime_green;
+        rotate by 180 around <0 0 1>;
+        move to <0 0 17>;
+    end;
+end;    // propeller_thingy
+
+
+picture propeller_picture with
+    render_mode is wireframe;
+    eye = <10 -40 30>;
+    lookat = <0 0 10>;
+is
+    distant_light from <.3 -.5 1>;
+    propeller_thingy with
+        pitch = get_mouse dot <0 1 0> * 60;
+        rotate by get_mouse dot <1 0 0> * 360 around <0 0 1>;
+    end;
+end;    // propeller_picture
+
+
+anim propeller_anim
+    args type args;
+with
+    eye = <10 -40 30>;
+    lookat = <0 0 10>;
+    double_buffer is on;
+    args check;
+is
+    static shape thingy is
+        propeller_thingy;
+    end;    // thingy
+
+    spinning_shape type spinning_propeller in form of thingy with
+        rpm = 50;
+    end;
+
+    mouse_controlled_actor spinning_propeller;
+end;    // propeller_anim

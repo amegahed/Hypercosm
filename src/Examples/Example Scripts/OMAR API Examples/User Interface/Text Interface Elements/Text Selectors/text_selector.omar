@@ -1,0 +1,61 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          text_selector.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a text selector       }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do text_selector_anim;
+
+include "system/3d.ores";
+include "system/text_selector.ores";
+include "system/devices.ores";
+
+anim text_selector_anim with
+	double_buffer is on;
+is
+	verb selection_action is
+		write "selected!", ;
+	end;
+	verb deselection_action is
+		write "deselected!", ;
+	end;
+	
+	text_selector type text_selector of "text selector"
+		at <1 0 0> aligned to middle_right
+		selecting (new action of selection_action)
+		deselecting (new action of deselection_action)
+	with
+		selected is false;
+		selected_text is "pressed!";
+		
+		// set font and color
+		//
+		font_color set to white over uncolored;
+		font is (new screen_font sized 24);
+		
+		// set selected font and color
+		//
+		selected_color set to light orange over light blue;
+		selected_font is (font derived styled italic);
+	end;
+	
+	picture scene is
+		text_selector draw; 
+	end;    // scene
+	
+	while true do
+		scene;
+		text_selector update;
+		
+		if key_pressed char_to_key of " " then
+			write "deselecting", ;
+			text_selector toggle_selected;
+		end;
+	end;
+end;    // text_selector_anim

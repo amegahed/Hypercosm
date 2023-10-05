@@ -1,0 +1,115 @@
+{***************************************************************}
+{                       polynomials.ores                        }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{      Contains the subject "polynomial" which can be used      }
+{     to evaluate polynomial functions of arbitrary degree      }
+{                     (linear, cubic, etc.)                     }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/polynomial.ores";
+
+
+{***************************************************************}
+{					sequences of polynomials					}
+{***************************************************************}
+
+
+subject polynomials 
+extends
+    polynomial type[]
+does
+	// evaluation methods
+	//
+    scalar question get_value
+        at scalar t;
+    end;
+    scalar[] question get_values 
+        in integer steps;
+    end;
+    polynomials type question get_derivative;
+    
+    // printable methods
+    //
+    verb print;
+is
+    //
+	// evaluation methods
+	//
+	
+	
+    scalar question get_value
+        at scalar t;
+    is
+    	integer index = min polynomials + 
+    		iclamp (trunc num polynomials) 
+    		from 0 to (num polynomials - 1);
+    	scalar t2 = (t * num polynomials) - index;
+    	
+    	answer polynomials[index] get_value at t2;
+    end;	// get_value
+    
+    
+    scalar[] question get_values 
+        in integer steps;
+    is
+    	scalar get_values[0 .. num polynomials * steps];
+    	
+    	for integer counter = 1 .. num polynomials do
+    		polynomial type polynomial is polynomials[counter];
+       		scalar[] segment_get_values is polynomial get_values in steps;
+       		integer index = (counter - 1) * steps;
+    		get_values[index .. index + steps] = segment_get_values[..];
+    	end;
+    	
+    	answer get_values;
+    end;	// get_values
+    
+    
+    polynomials type question get_derivative is
+    	polynomial type polynomials2[min polynomials .. max polynomials];
+    	
+    	for integer counter = min polynomials .. max polynomials do
+    		polynomials2[counter] is polynomials[counter] get_derivative;
+    	end;
+    	
+    	answer polynomials;
+    end;	// get_derivative 
+    
+
+    //
+    // printable methods
+    //
+    
+        
+    verb print is
+    	{
+    	for each polynomial type polynomial in polynomials do
+    		polynomial print;
+    	end;
+    	}
+    	for integer counter = min polynomials .. max polynomials do
+    		polynomials[counter] print;
+    	end;
+    end;	// print
+end;    // polynomials
+
+
+polynomials type question new_polynomials
+	of scalar coefficients[][];
+is
+	polynomials type polynomials;
+	dim polynomials[min coefficients .. max coefficients];
+	for integer counter = min coefficients .. max coefficients do
+		polynomials[counter] is new_polynomial of coefficients[counter];
+	end;
+	answer polynomials;
+end;	// new_polynomials
+
+
+

@@ -1,0 +1,42 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         static_variables.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of static variables in the OMAR language.       }
+{                                                               }
+{       Static variables are variables that are declared        }
+{       inside the scope of a method, but are allocated         }
+{       in the global scope.  Because they are allocated        }
+{       in the global scope, the lifetime of a static           }
+{       variable does not end when the procedure exits.         }
+{       Instead, the static variable continues to exist         }
+{       and the next time the method is called, the static      }
+{       variable will contain the value from the previous       }
+{       time the method was executed.  Static varibles are      }
+{       useful any time that we need a global variable but      }
+{       don't want to clutter up the global namespace with      }
+{       additional variable names.                              }
+{                                                               }
+{       In the OMAR language, static variables are much         }
+{       the same as they are in languages such as C, C++        }
+{       and Java.                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do static_variable_example;
+
+verb count is
+	static integer a = 0;
+	a = itself + 1;
+	write "a = ", a, ;
+end;    // count
+
+verb static_variable_example is
+	for integer counter = 1 .. 10 do
+		count;
+	end;
+end;    // static_variable_example

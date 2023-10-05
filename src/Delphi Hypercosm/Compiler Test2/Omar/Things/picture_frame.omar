@@ -1,0 +1,171 @@
+{***************************************************************}
+{                          picture_frame.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do picture_frame_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape square_frame with
+    scalar width = 1;
+    scalar height = 1.5;
+    scalar thickness = .1;
+is
+    scalar half_width = width / 2 - thickness;
+    scalar half_height = height / 2;
+    scalar half_thickness = thickness / 2;
+    scalar width_offset = (width / 2) - half_thickness;
+    scalar height_offset = (height / 2) - half_thickness;
+
+
+    shape vertical_piece is
+        cube with
+            scale by half_thickness along <1 0 0>;
+            scale by half_thickness along <0 1 0>;
+            scale by half_height along <0 0 1>;
+        end;
+    end;    // vertical_piece
+
+    shape horizontal_piece is
+        cube with
+            scale by half_width along <1 0 0>;
+            scale by half_thickness along <0 1 0>;
+            scale by half_thickness along <0 0 1>;
+        end;
+    end;    // horizontal_piece
+
+
+    // vertical pieces
+    //
+    vertical_piece with
+        move to <width_offset 0 0>;
+    end;
+    vertical_piece with
+        move to <(-width_offset) 0 0>;
+    end;
+
+    // horizontal pieces
+    //
+    horizontal_piece with
+        move to <0 0 height_offset>;
+    end;
+    horizontal_piece with
+        move to <0 0 (-height_offset)>;
+    end;
+end;    // square_frame
+
+
+shape picture_frame with
+    scalar width = 1;
+    scalar height = 1.5;
+    scalar thickness = .1;
+is
+    material type picture_material is chalk textured new texture type
+        using new image type named "hyperlogo.jpg";
+
+
+    scalar middle_width = width - thickness * 2;
+    scalar middle_height = height - thickness * 2;
+    scalar inner_width = middle_width - thickness;
+    scalar inner_height = middle_height - thickness;
+
+
+    // outer_frame
+    //
+    square_frame with
+        material is wood;
+        width = static width;
+        height = static height;
+        thickness = static thickness;
+    end;
+
+    // inner_frame
+    //
+    square_frame with
+        material is chalk colored dark grey;
+        width = middle_width;
+        height = middle_height;
+        thickness = static thickness / 2;
+    end;
+
+    // canvas
+    //
+    parallelogram with
+        material is picture_material;
+        rotate by 90 around <1 0 0>;
+        scale by inner_width / 2 along <1 0 0>;
+        scale by inner_height / 2 along <0 0 1>;
+    end;
+end;    // picture_frame
+
+
+shape hanging_picture with
+    scalar width = 1;
+    scalar height = 1.5;
+    scalar thickness = .1;
+    scalar hang = .25;
+is
+    vector hang_point = <0 0 ((height / 2) + hang)>;
+
+    shape nail is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 -.2 0>;
+            radius = .01;
+        end;
+        disk with
+            center = <0 -.2 0>;
+            normal = <0 1 0>;
+            radius = .02;
+        end;
+    end;    // nail
+
+
+    shape string is
+        line [<(-width / 3) 0 (height / 2)> hang_point];
+        line [<(width / 3) 0 (height / 2)> hang_point];
+    end;    // string
+
+
+    picture_frame with
+        width = static width;
+        height = static height;
+        thickness = static thickness;
+    end;
+    string with
+        color = white;
+    end;
+    nail with
+        material is aluminum;
+        move to hang_point;
+    end;
+end;    // hanging_picture
+
+
+anim picture_frame_anim
+    args type args;
+with
+    eye = <-1 -2.5 .5>;
+    lookat = <0 0 .1>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        hanging_picture with
+            width = 1.5;
+            height = 1;
+        end;
+    end;    // scene
+
+
+    mouse_controlled_shape scene;
+end;    // picture_frame_anim

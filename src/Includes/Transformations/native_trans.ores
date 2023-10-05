@@ -1,0 +1,23 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          native_trans.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of the native transformations.     } 
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/trans.ores";
+
+{***************************************************************}
+{            current shape and shader transformations           }
+{***************************************************************}
+
+native trans type trans = unit_trans;
+native trans type shader_trans = unit_trans;

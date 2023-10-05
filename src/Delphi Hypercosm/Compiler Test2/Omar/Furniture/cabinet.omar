@@ -1,0 +1,125 @@
+{***************************************************************}
+{                          cabinet.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cabinet_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/solids.ores";
+include "system/surfaces.ores";
+
+
+shape cabinet with
+    scalar table_length = 20;
+    scalar table_width = 4;
+    scalar table_height = 4;
+    scalar top_width = 2;
+is
+    const scalar table_thickness = .2;
+    const scalar leg_offset = .5;
+    final scalar length = (table_length / 2) - leg_offset;
+    final scalar width = (table_width / 2) - leg_offset;
+
+
+    shape table_leg is
+        material is wood;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 table_height>;
+            radius1 = .2;
+            radius2 = .4;
+            magnify the shader_trans by 5;
+        end;
+    end;    // table_leg
+
+
+    block with
+        material is wood;
+        scale by (table_length / 2) along <1 0 0>;
+        scale by (table_width / 2) along <0 1 0>;
+        scale by (table_thickness / 2) along <0 0 1>;
+        move to <0 0 (table_height - (table_thickness / 2))>;
+    end;
+
+    // rear glass panels
+    //
+    transparent white parallelogram with
+        vertex = <(-table_length / 2) (table_width / 2)
+            table_height>;
+        side1 = <(table_length) 0 0>;
+        side2 = <0 0 6>;
+    end;
+    transparent white parallelogram with
+        vertex = <(-table_length / 2) (-table_width / 2)
+            table_height>;
+        side1 = <(table_length) 0 0>;
+        side2 = <0 (table_width - top_width) 6>;
+    end;
+
+    // top of cabinet
+    //
+    block with
+        material is wood;
+        vertex = <(-table_length / 2) (table_width / 2)
+            (table_height + 6)>;
+        side1 = <(table_length) 0 0>;
+        side2 = <0 (-top_width) 0>;
+        side3 = <0 0 .2>;
+        magnify the shader_trans by 5;
+    end;
+
+    // left table legs
+    //
+    table_leg with
+        move to <-length (-width) 0>;
+    end;
+    table_leg with
+        move to <-length width 0>;
+    end;
+
+    // center table legs
+    //
+    table_leg with
+        move to <0 (-width) 0>;
+    end;
+    table_leg with
+        move to <0 width 0>;
+    end;
+
+    // right table legs
+    //
+    table_leg with
+        move to <length (-width) 0>;
+    end;
+    table_leg with
+        move to <length width 0>;
+    end;
+end;    // cabinet
+
+
+anim cabinet_anim
+    args type args;
+with
+    double_buffer is on;
+    lookat = <0 0 5>;
+    args check;
+is
+    shape scene is
+        cabinet;
+    end;
+    shape environment is
+        plane with
+            magnify by 15;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_shape scene in environment;
+end;    // cabinet_anim

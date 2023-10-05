@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          spline_shapes.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard spline shapes, which can be used      }
+{       to create curved lines and hoses.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/cubic_curve.ores";
+include "system/bezier_curve.ores";
+include "system/cubic_spline_curve.ores";
+include "system/curved_extrusion.ores";
+include "system/hose.ores";

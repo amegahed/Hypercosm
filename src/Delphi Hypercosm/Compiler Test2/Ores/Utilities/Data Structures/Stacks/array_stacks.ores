@@ -1,0 +1,168 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	     array_stacks.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an implementation of an array based stack.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/stacks.ores";
+include "system/random_access_stacking.ores";
+
+
+subject array_stack
+extends
+    stack_random_accessable printable stack
+does
+    // methods
+    //
+    verb new
+        of integer size = 10;
+    end;    // new
+
+    // stack construction methods
+    //
+    verb push
+        object type element;
+    end;
+    verb pop;
+    object type question popped;
+    verb clear;
+ 
+    // stack querying methods
+    //
+    object type question peek;
+    integer question height;
+    boolean question is_empty;
+    
+    // random access stack methods
+    //
+    verb poke
+        object type element;
+        to integer level;
+    end;
+    object type question peer
+        at integer level;
+    end;
+    
+    // printable methods
+    //
+    verb print;
+has
+    // array stack attributes
+    //
+    integer num_items = 0;
+    object type items[];
+is
+	//
+    // constructor
+    //
+    
+    
+    verb new
+        of integer size = 10;
+    is
+        dim none items[1..size];
+    end;    // new
+
+
+	//
+    // stack construction methods
+    //
+    
+    
+    verb push
+        object type item;
+    is
+        num_items = itself + 1;
+        items[num_items] is item;
+    end;    // push
+
+
+    verb pop is
+        object type element is popped;
+    end;    // pop
+    
+    
+    verb clear is
+        num_items = 0;
+    end;    // clear
+    
+    
+    object type question popped is
+        if num_items >= min items then
+            object type item is items[num_items];
+
+            num_items = itself - 1;
+            answer item;
+        else
+            answer none;
+        end;
+    end;    // pop
+
+
+	//
+    // stack querying methods
+    //
+    
+    
+    object type question peek is
+        if num_items > 0 then
+            answer items[num_items];
+        else
+            answer none;
+        end;
+    end;    // peek
+       
+    
+    integer question height is
+        answer num_items;
+    end;    // height
+    
+    
+    boolean question is_empty is
+        answer num_items = 0;
+    end;    // is_empty
+    
+
+	//    
+    // random access stack methods
+    //
+    
+
+    verb poke
+        object type element;
+        to integer level;
+    is
+        items[level] is element;
+    end;    // poke
+    
+      
+    object type question peer         
+        at integer level;
+    is
+    	if 0 < level <= num_items then
+        	answer items[level];
+        else
+        	answer none;
+        end;
+    end;    // peek   
+    
+
+	//
+    // printable methods
+    //
+    
+    
+    verb print is
+    	for integer level = 1 .. num_items do
+    		global print items[level];
+    	end;
+    end;	// print
+end;    // array_stack
+

@@ -1,0 +1,118 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             stacks.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       stack utilities.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/array_stack.ores";
+
+abstract subject figure
+extends
+	printing object
+does
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	vector color;
+is
+	//
+	// printing method
+	//
+
+	verb print is
+		write "figure", ;
+	end;    // print
+end;    // figure
+
+subject circle
+extends
+	figure
+does
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	scalar radius = 1;
+is
+	//
+	// printing method
+	//
+
+	verb print is
+		write "circle with radius = ", radius, ;
+	end;    // print
+end;    // circle
+
+subject square
+extends
+	figure
+does
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	scalar size = 1;
+is
+	//
+	// printing method
+	//
+
+	verb print is
+		write "square with size = ", size, ;
+	end;    // print
+end;    // square
+
+verb example is
+	circle type circle, circle2;
+	square type square, square2;
+	array_stack type circle_stack;
+	array_stack type square_stack;
+	array_stack type shape_stack;
+
+	// create circle stack
+	//
+	circle_stack push circle, circle2;
+
+	// create square stack
+	//
+	square_stack push square, square2;
+
+	// create shape stack
+	//
+	shape_stack push circle, square, circle2, square2;
+
+	// pop items from circle stack
+	//
+	write "circle stack:", ;
+	write "circle stack height = ", circle_stack height, ;
+	circle_stack print;
+	write;
+
+	// pop items from square stack
+	//
+	write "square stack:", ;
+	write "square stack height = ", square_stack height, ;
+	square_stack print;
+	write;
+
+	// pop items from shape stack
+	//
+	write "shape stack:", ;
+	write "shape stack height = ", shape_stack height, ;
+	shape_stack print;
+end;    // example

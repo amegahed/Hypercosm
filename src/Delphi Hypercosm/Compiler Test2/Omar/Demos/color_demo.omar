@@ -1,0 +1,205 @@
+{***************************************************************}
+{                        color_demo.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do color_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/beveled_slider.ores";
+include "system/native_text.ores";
+
+
+// This animation demonstrates the combining of the colors red, green, and blue
+// to create any color.
+
+
+// variables that determine the red, green, and blue components of the current
+// sphere color
+//
+scalar sphere_red = .5;
+scalar sphere_green = .5;
+scalar sphere_blue = .5;
+scalar bg_red = 0;
+scalar bg_green = 0;
+scalar bg_blue = 0;
+
+
+// the user interface
+//
+beveled_slider type red_control controls sphere_red from 0 to 1 with
+    end1 = <-3 0 0>;
+    end2 = <3 0 0>;
+    radius = .4;
+    bar_material is chalk colored red;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type green_control controls sphere_green from 0 to 1 with
+    end1 = <-3 0 0>;
+    end2 = <3 0 0>;
+    radius = .4;
+    bar_material is chalk colored green;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type blue_control controls sphere_blue from 0 to 1 with
+    end1 = <-3 0 0>;
+    end2 = <3 0 0>;
+    radius = .4;
+    bar_material is chalk colored blue;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type bg_red_control controls bg_red from 0 to 1 with
+    end1 = <-3 0 0>;
+    end2 = <3 0 0>;
+    radius = .4;
+    bar_material is chalk colored red;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type bg_green_control controls bg_green from 0 to 1 with
+    end1 = <-3 0 0>;
+    end2 = <3 0 0>;
+    radius = .4;
+    bar_material is chalk colored green;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type bg_blue_control controls bg_blue from 0 to 1 with
+    end1 = <-3 0 0>;
+    end2 = <3 0 0>;
+    radius = .4;
+    bar_material is chalk colored blue;
+    knob_material is plastic colored grey;
+end;
+
+// label strings:
+//
+string type red_label is "red = ";
+string type green_label is "green = ";
+string type blue_label is "blue = ";
+
+
+picture scene is
+    default_lights; // lighting
+    
+    // sphere color label
+    //
+    overlay_text " SPHERE COLOR " at <0 -.6 0> with
+        size = height div 16;
+        transparent_background is off;
+        font_family is "arial";
+    end;
+    
+    // the three sphere color values and their slide controls:
+    //
+    overlay_text (red_label plus (scalar_to_string of sphere_red to 3))
+		at <-.6 -.9 0>
+    with
+        size = height div 16;
+        transparent_background is off;
+        background_color = <sphere_red 0 0>;
+        font_family is "arial";
+    end;
+    red_control instance with
+        move to <-6.5 2 -5.5>;
+    end;
+    
+    overlay_text (green_label plus (scalar_to_string of sphere_green to 3))
+		at <0 -.9 0>
+    with
+        size = height div 16;
+        transparent_background is off;
+        background_color = <0 sphere_green 0>;
+        font_family is "arial";
+    end;
+    green_control instance with
+        move to <0 2 -5.5>;
+    end;
+    
+    overlay_text (blue_label plus (scalar_to_string of sphere_blue to 3))
+		at <.6 -.9 0>
+    with
+        size = height div 16;
+        transparent_background is off;
+        background_color = <0 0 sphere_blue>;
+        font_family is "arial";
+    end;
+    blue_control instance with
+        move to <6.5 2 -5.5>;
+    end;
+    
+    // the sphere whose color is being altered
+    //
+    sphere with
+        radius = 3;
+        rotate by get_seconds * 50 around <0 0 1>;
+        //move to <0 0 2>;
+        material is chalk colored <sphere_red sphere_green sphere_blue>;
+    end;
+
+    // background color label
+    //
+    overlay_text " BACKGROUND COLOR " at <0 .9 0> with
+        size = height div 16;
+        transparent_background is off;
+        font_family is "arial";
+    end;
+    
+    // the three sphere color values and their labels:
+    //
+    overlay_text (red_label plus (scalar_to_string of bg_red to 3))
+		at <-.6 .6 0>
+    with
+        size = height div 16;
+        transparent_background is off;
+        background_color = <bg_red 0 0>;
+        font_family is "arial";
+    end;
+    bg_red_control instance with
+        move to <-6.5 2 5.5>;
+    end;
+    
+    overlay_text (green_label plus (scalar_to_string of bg_green to 3))
+		at <0 .6 0>
+    with
+        size = height div 16;
+        transparent_background is off;
+        background_color = <0 bg_green 0>;
+        font_family is "arial";
+    end;
+    bg_green_control instance with
+        move to <0 2 5.5>;
+    end;
+    
+    overlay_text (blue_label plus (scalar_to_string of bg_blue to 3))
+		at <.6 .6 0>
+    with
+        size = height div 16;
+        transparent_background is off;
+        background_color = <0 0 bg_blue>;
+        font_family is "arial";
+    end;
+    bg_blue_control instance with
+        move to <6.5 2 5.5>;
+    end;
+end;    // scene
+
+
+anim color_demo_anim with
+    eye = <0 -20 0>;
+    double_buffer is on;
+is    
+    while true do
+        background = <bg_red bg_green bg_blue>;
+        scene;
+    end;
+end;    // color_demo_anim

@@ -1,0 +1,888 @@
+{HCESettings::Do Not Edit::p 41 32::}
+{***************************************************************}
+{                          randall.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do randall_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/string_utils.ores";
+include "system/bleachers.omar";
+
+const color type cardinal = <.6 0 0>;
+
+scalar upper_sections[] = [121 117.75 111.25 104.75 101.5
+                           98.25 92.75 87.75 81.75 79.355
+                           76.96 72.17 67.38 56.06 50.4];
+scalar upper_radii[] = [221 221 221 214.5 208 201.5 201.5
+                        201.5 208 214.5 221 221 117 117];
+scalar upper_z[] = [50 50 50 46.33333 42.66667 39 39
+                    39 42.66667 46.33333 50 50 50 50];
+material type crowd is (chalk textured (new
+    texture type using new image type named "crowd.jpg")
+    with color = light grey);
+material type seating is crowd;
+
+
+shape goal_post
+is
+    cylinder with
+        radius = .3;
+        end1 = <0 1.5 0>;
+        end2 = <0 1.5 1.5>;
+        color = cardinal;
+    end;
+    torus with
+        normal = <1 0 0>;
+        center = <0 0 1.5>;
+        inner_radius = 1.35;
+        outer_radius = 1.65;
+        umin = 0;
+        umax = 90;
+        material is constant_color white;
+    end;
+    cylinder with
+        radius = .15;
+        end1 = <-3 0 3>;
+        end2 = <3 0 3>;
+        material is constant_color white;
+    end;
+    cylinder with
+        radius = .15;
+        end1 = <-3 0 3>;
+        end2 = <-3 0 10.5>;
+        material is constant_color white;
+    end;
+    cylinder with
+        radius = .15;
+        end1 = <3 0 3>;
+        end2 = <3 0 10.5>;
+        material is constant_color white;
+    end;
+end; // goal_post
+
+
+shape seat_section
+with
+    scalar xll=0, xul=0, xur=1, xlr=1;  //order: clockwise starting with lower left
+    scalar yll=0, yul=1, yur=1, ylr=0;
+    scalar minz = 1, maxz = 28.5;     //min and max z for the ^tops^ of seats
+    scalar height = 1;
+    boolean bottom is false;
+is
+    scalar factor = 10;
+
+    shape section is
+        polygon [<xll yll minz> <xul yul maxz> <xur yur maxz> <xlr ylr minz>];
+        polygon [<xll yll (minz-height)> <xll yll minz> <xul yul maxz>
+             <xul yul (maxz-height)>];
+        polygon [<xlr ylr (minz-height)> <xlr ylr minz> <xur yur maxz>
+             <xur yur (maxz-height)>];
+        polygon [<xll yll (minz-height)> <xll yll minz> <xlr ylr minz>
+             <xlr ylr (minz-height)>];
+        polygon [<xur yur (maxz-height)> <xur yur maxz> <xul yul maxz>
+             <xul yul (maxz-height)>];
+        if bottom then
+            polygon [<xll yll (minz-height)> <xul yul (maxz-height)>
+                 <xur yur (maxz-height)> <xlr ylr (minz-height)>];
+        end;
+    end;    // section
+
+    xll = itself / factor;
+    xul = itself / factor;
+    xur = itself / factor;
+    xlr = itself / factor;
+    yll = itself / factor;
+    yul = itself / factor;
+    yur = itself / factor;
+    ylr = itself / factor;
+    minz = itself / factor;
+    maxz = itself / factor;
+    height = itself / factor;
+
+    section with
+        magnify by factor;
+    end;
+end; // seat_section
+
+
+shape field_house_peak is
+    polygon [<-1 -40 2> <-1 0 14> <-1 40 2>];
+    polygon [<1 -40 2> <1 0 14> <1 40 2>];
+    parallelogram with
+        vertex = <-1 -40 2>;
+        side1 = <2 0 0>;
+        side2 = <0 40 12>;
+    end;
+    parallelogram with
+        vertex = <-1 40 2>;
+        side1 = <2 0 0>;
+        side2 = <0 -40 12>;
+    end;
+    block with
+        vertex = <-1 -40 0>;
+        side1 = <2 0 0>;
+        side2 = <0 80 0>;
+        side3 = <0 0 2>;
+    end;
+end;  // field_house_peak
+
+
+shape camp_randall is
+    const color type stone = <.75 .7 .6>;
+    const color type turf_color = <0 .4 .15>;
+
+    //turf:
+    parallelogram with
+        vertex = <-70 -35 0>;
+        side1 = <140 0 0>;
+        side2 = <0 70 0>;
+        color = turf_color;
+    end;
+    ring with
+        center = <0 -133 0>;
+        outer_radius = 182;
+        inner_radius = 150;
+        umin = 67.38;
+        umax = 112.62;
+        color = turf_color;
+    end;
+    ring with
+        center = <0 133 0>;
+        outer_radius = 182;
+        inner_radius = 150;
+        umax = -67.38;
+        umin = -112.62;
+        color = turf_color;
+    end;
+
+    //surrounding area:
+    sphere with
+        center = <-60 0 0>;
+        radius = 300;
+        scale by .1 along <0 0 1>;
+        color = dark charcoal;
+        vmax = 0;
+    end;
+    disk with center = <-60 0 -.5>;
+        radius = 240;
+        color = dark charcoal;
+    end;
+
+    //Playing Field:
+    //west sideline:
+    line [<-60.2 33 .2> <60.2 33 .2>];
+    parallelogram with
+        vertex = <-60.2 33 .2>;
+        side1 = <120.4 0 0>;
+        side2 = <0 .4 0>;
+        color = white;
+    end;
+    //east sideline:
+    line [<-60.2 -33 .2> <60.2 -33 .2>];
+    parallelogram with
+        vertex = <-60.2 -33 .2>;
+        side1 = <120.4 0 0>;
+        side2 = <0 -.4 0>;
+        color = white;
+    end;
+    // yardlines:
+    for integer counter = -1 .. 11 do
+        scalar yardline = counter*10 - 50;
+        line [<yardline -33 .2> <yardline 33 .2>];
+        parallelogram with
+            vertex = <(yardline - .2) -33 .2>;
+            side1 = <.4 0 0>;
+            side2 = <0 66 0>;
+            color = white;
+        end;
+    end;
+    // endzones:
+    parallelogram with
+        vertex = <-59.8 -33 .2>;
+        side1 = <9.6 0 0>;
+        side2 = <0 66 0>;
+        color = cardinal;
+    end;
+    parallelogram with
+        vertex = <59.8 -33 .2>;
+        side1 = <-9.6 0 0>;
+        side2 = <0 66 0>;
+        color = cardinal;
+    end;
+    // team areas:
+    parallelogram with
+        vertex = <-25 33 .2>;
+        side1 = <50 0 0>;
+        side2 = <0 2 0>;
+        color = white;
+    end;
+    parallelogram with
+        vertex = <-25 -33 .2>;
+        side1 = <50 0 0>;
+        side2 = <0 -2 0>;
+        color = white;
+    end;
+
+    // goal posts:
+    goal_post with
+        rotate by 90 around <0 0 1>;
+        move to <-60 0 0>;
+    end;
+    goal_post with
+        rotate by -90 around <0 0 1>;
+        move to <60 0 0>;
+    end;
+
+    //outer wall:
+    cylinder with
+        end1 = <0 -96 -1>;
+        end2 = <0 -96 30>;
+        radius = 208;
+        umin = 67.38;
+        umax = 120;
+        color = stone;
+    end;
+    cylinder with
+        end1 = <40 0 -1>;
+        end2 = <40 0 30>;
+        radius = 104;
+        umin = -67.38;
+        umax = 67.38;
+        color = stone;
+    end;
+    cylinder with
+        end1 = <0 96 -1>;
+        end2 = <0 96 30>;
+        radius = 208;
+        umax = -67.38;
+        umin = -120;
+        color = stone;
+    end;
+    //inner wall:
+    cylinder with
+        end1 = <0 -96 -1>;
+        end2 = <0 -96 1>;
+        radius = 156;
+        umin = 67.38;
+        umax = 120;
+        color = stone;
+    end;
+    cylinder with
+        end1 = <40 0 -1>;
+        end2 = <40 0 1>;
+        radius = 52;
+        umin = -67.38;
+        umax = 67.38;
+        color = grey;
+    end;
+    cylinder with
+        end1 = <0 96 -1>;
+        end2 = <0 96 1>;
+        radius = 156;
+        umax = -67.38;
+        umin = -120;
+        color = stone;
+    end;
+    // ends:
+    polygon [<-78 (156*cos(30) - 96) -1> <-104 (208*cos(30) - 96) -1>
+         <-104 (208*cos(30) - 96) 29> <-78 (156*cos(30) - 96) 1>]
+    with
+        color = stone;
+    end;
+
+    polygon [<-78 (-156*cos(30)+96) -1> <-104 (-208*cos(30)+96) -1>
+         <-104 (-208*cos(30)+96) 29> <-78 (-156*cos(30)+96) 1>]
+    with
+        color = stone;
+    end;
+
+    // concrete:
+    cone with
+        end1 = <0 -96 .5>;
+        end2 = <0 -96 28>;
+        radius1 = 156.1;
+        radius2 = 207.8;
+        umin = 67.38;
+        umax = 120;
+        color = grey;
+    end;
+    cone with
+        end1 = <40 0 .5>;
+        end2 = <40 0 28>;
+        radius1 = 52.1;
+        radius2 = 103.8;
+        umin = -67.38;
+        umax = 67.38;
+        color = grey;
+    end;
+    cone with
+        end1 = <0 96 .5>;
+        end2 = <0 96 28>;
+        radius1 = 156.1;
+        radius2 = 207.8;
+        umax = -67.38;
+        umin = -120;
+        color = grey;
+    end;
+
+    // main seating sections
+    for integer section = 0 .. 7 do
+        scalar theta1 = 22.62 - 52.62*section/8 - .3;
+        scalar theta2 = 22.62 - 52.62*(section+1)/8 + .3;
+        scalar theta3 = 67.38 - 134.76*section/8 - .65;
+        scalar theta4 = 67.38 - 134.76*(section+1)/8 + .65;
+        scalar x1 = 156.5 * sin theta1;
+        scalar x2 = 207.7 * sin theta1;
+        scalar x3 = 207.7 * sin theta2;
+        scalar x4 = 156.5 * sin theta2;
+        scalar y1 = 156.5 * (cos theta1) - 96;
+        scalar y2 = 207.7 * (cos theta1) - 96;
+        scalar y3 = 207.7 * (cos theta2) - 96;
+        scalar y4 = 156.5 * (cos theta2) - 96;
+
+        // sections A-H
+        seat_section with
+            xll = x1;
+            xul = x2;
+            xur = x3;
+            xlr = x4;
+            yll = y1;
+            yul = y2;
+            yur = y3;
+            ylr = y4;
+            material is seating;
+        end;
+
+        // sections I-P (student sections)
+        seat_section with
+            xll = 52.5 * (cos theta3) + 40;
+            xul = 103.7 * (cos theta3) + 40;
+            xur = 103.7 * (cos theta4) + 40;
+            xlr = 52.5 * (cos theta4) + 40;
+            yll = 52.5 * sin theta3;
+            yul = 103.7 * sin theta3;
+            yur = 103.7 * sin theta4;
+            ylr = 52.5 * sin theta4;
+            material is seating;
+        end;
+
+        // sections Q-X
+        seat_section with
+            xll = x1;
+            xul = x2;
+            xur = x3;
+            xlr = x4;
+            yll = -y1;
+            yul = -y2;
+            yur = -y3;
+            ylr = -y4;
+            material is seating;
+        end;
+    end;
+
+
+    //Upper Deck:
+    //concrete:
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[1]>;
+        radius1 = 182; radius2 = upper_radii[1];
+        umin = upper_sections[4]; umax = upper_sections[1];
+        color = grey; end;
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[4]>;
+        radius1 = 182; radius2 = upper_radii[4];
+        umin = upper_sections[5]; umax = upper_sections[4];
+        color = grey; end;
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[5]>;
+        radius1 = 182; radius2 = upper_radii[5];
+        umin = upper_sections[6]; umax = upper_sections[5];
+        color = grey; end;
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[6]>;
+        radius1 = 182; radius2 = upper_radii[6];
+        umin = upper_sections[9]; umax = upper_sections[6];
+        color = grey; end;
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[9]>;
+        radius1 = 182; radius2 = upper_radii[9];
+        umin = upper_sections[10]; umax = upper_sections[9];
+        color = grey; end;
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[10]>;
+        radius1 = 182; radius2 = upper_radii[10];
+        umin = upper_sections[11]; umax = upper_sections[10];
+        color = grey; end;
+    cone with end1 = <0 -96 28>; end2 = <0 -96 upper_z[11]>;
+        radius1 = 182; radius2 = upper_radii[11];
+        umin = upper_sections[13]; umax = upper_sections[11];
+        color = grey; end;
+    cone with end1 = <40 0 28>; end2 = <40 0 upper_z[13]>;
+        radius1 = 78; radius2 = upper_radii[13];
+        umin = upper_sections[15]; umax = upper_sections[13];
+        color = grey; end;
+    //underside:
+    cone with end1 = <0 -96 27>; end2 = <0 -96 (upper_z[5] - 1)>;
+        radius1 = 182; radius2 = upper_radii[5];
+        umin = upper_sections[13]; umax = upper_sections[1];
+        color = grey; end;
+    cone with end1 = <40 0 27>; end2 = <40 0 (upper_z[13] - 1)>;
+        radius1 = 78; radius2 = upper_radii[13];
+        umin = upper_sections[15]; umax = upper_sections[13];
+        color = grey; end;
+    //sides:
+    parallelogram with
+        vertex = <(182 * cos upper_sections[1])
+                  (182 * sin upper_sections[1] - 96) 27>;
+        side1 = <(39 * cos upper_sections[1])
+                 (39 * sin upper_sections[1]) 22>;
+        side2 = <0 0 3>;
+        color = stone;
+    end;
+    parallelogram with
+        vertex = <(78 * cos upper_sections[15] + 40)
+                  (78 * sin upper_sections[15]) 27>;
+        side1 = <(39 * cos upper_sections[15])
+                 (39 * sin upper_sections[15]) 22>;
+        side2 = <0 0 3>;
+        color = stone;
+    end;
+    //supports
+    for integer ctr = (min upper_sections + 1)..(max upper_sections - 2) do
+        if ctr mod 5 <> 0 then
+            block with
+                side2 = <(2*sin upper_sections[ctr]) (-2*cos upper_sections[ctr]) 0>;
+                vertex = <(207.5 * cos upper_sections[ctr])
+                          (207.5 * sin upper_sections[ctr] - 96) -1> - (side2/2);
+                side1 = <(5 * cos upper_sections[ctr])
+                         (5 * sin upper_sections[ctr]) 2.8>;
+                side3 = <0 0 (upper_z[5]+.5)>;
+                color = grey;
+            end;
+        end;
+    end;
+    block with
+        side2 = <(3*sin upper_sections[14]) (-3*cos upper_sections[14]) 0>;
+        vertex = <(103.5 * cos upper_sections[14] + 40)
+                  (103.5 * sin upper_sections[14]) -1> - (side2/2);
+        side1 = <(5 * cos upper_sections[14])
+                 (5 * sin upper_sections[14]) 2.8>;
+        side3 = <0 0 upper_z[5]>;
+        color = grey;
+    end;
+    //inner wall:
+    cylinder with
+        end1 = <0 -96 27>;
+        end2 = <0 -96 29>;
+        radius = 182;
+        umin = 67.38;
+        umax = 121;
+        color = stone;
+    end;
+    cylinder with
+        end1 = <40 0 27>;
+        end2 = <40 0 29>;
+        radius = 78;
+        umin = 50.6;
+        umax = 67.38;
+        color = stone;
+    end;
+    //outer wall:
+    cylinder with end1 = <0 -96 (upper_z[1] - 1)>; end2 = <0 -96 (upper_z[1]+2)>;
+        radius = upper_radii[1];
+        umin = upper_sections[4]; umax = upper_sections[1];
+        color = stone; end;
+    cylinder with end1 = <0 -96 (upper_z[4] - 1)>; end2 = <0 -96 (upper_z[4]+2)>;
+        radius = upper_radii[4];
+        umin = upper_sections[5]; umax = upper_sections[4];
+        color = stone; end;
+    cylinder with end1 = <0 -96 (upper_z[5] - 1)>; end2 = <0 -96 (upper_z[5]+2)>;
+        radius = upper_radii[5];
+        umin = upper_sections[6]; umax = upper_sections[5];
+        color = stone; end;
+    cylinder with end1 = <0 -96 (upper_z[9] - 1)>; end2 = <0 -96 (upper_z[9]+2)>;
+        radius = upper_radii[9];
+        umin = upper_sections[10]; umax = upper_sections[9];
+        color = stone; end;
+    cylinder with end1 = <0 -96 (upper_z[10] - 1)>; end2 = <0 -96 (upper_z[10]+2)>;
+        radius = upper_radii[10];
+        umin = upper_sections[11]; umax = upper_sections[10];
+        color = stone; end;
+    cylinder with end1 = <0 -96 (upper_z[11] - 1)>; end2 = <0 -96 (upper_z[11]+2)>;
+        radius = upper_radii[11];
+        umin = upper_sections[13]; umax = upper_sections[11];
+        color = stone; end;
+    cylinder with end1 = <40 0 (upper_z[13] - 1)>; end2 = <40 0 (upper_z[13]+2)>;
+        radius = upper_radii[13];
+        umin = upper_sections[15]; umax = upper_sections[13];
+        color = stone; end;
+    //seating sections:
+    for integer snum = 1..12 do
+        seat_section with
+            minz = 28.7;
+            maxz = upper_z[snum]+.4;
+            if snum mod 5 = 0 then
+                xll = 182.8 * cos upper_sections[snum];
+                xul = (upper_radii[snum] - .3) * cos upper_sections[snum];
+                yll = 182.8 * sin upper_sections[snum] - 96;
+                yul = (upper_radii[snum] - .3) * sin upper_sections[snum] - 96;
+            else
+                xll = 182.8 * cos (upper_sections[snum] - .25);
+                xul = (upper_radii[snum] - .3) * cos (upper_sections[snum] - .3);
+                yll = 182.8 * sin (upper_sections[snum] - .25) - 96;
+                yul = (upper_radii[snum] - .3) * sin (upper_sections[snum] - .3) - 96;
+            end;
+            if (snum + 1) mod 5 = 0 then
+                xlr = 182.8 * cos upper_sections[snum+1];
+                xur = (upper_radii[snum] - .3) * cos upper_sections[snum+1];
+                ylr = 182.8 * sin upper_sections[snum+1] - 96;
+                yur = (upper_radii[snum] - .3) * sin upper_sections[snum+1] - 96;
+            else
+                xlr = 182.8 * cos (upper_sections[snum+1] + .25);
+                xur = (upper_radii[snum] - .3) * cos (upper_sections[snum+1] + .3);
+                ylr = 182.8 * sin (upper_sections[snum+1] + .25) - 96;
+                yur = (upper_radii[snum] - .3) * sin (upper_sections[snum+1] + .3) - 96;
+            end;
+            material is seating;
+        end;
+    end;
+    for integer snum = 13..14 do
+        seat_section with
+            minz = 28.7;
+            maxz = upper_z[snum]+.4;
+            xll = 78.8 * cos (upper_sections[snum] - .55) + 40;
+            xul = (upper_radii[snum] - .3) * cos (upper_sections[snum] - .65) + 40;
+            yll = 78.8 * sin (upper_sections[snum] - .55);
+            yul = (upper_radii[snum] - .3) * sin (upper_sections[snum] - .65);
+            xlr = 78.8 * cos (upper_sections[snum+1] + .55) + 40;
+            xur = (upper_radii[snum] + .3) * cos (upper_sections[snum+1] + .65) + 40;
+            ylr = 78.8 * sin (upper_sections[snum+1] + .55);
+            yur = (upper_radii[snum] + .3) * sin (upper_sections[snum+1] + .65);
+            material is seating;
+        end;
+    end;
+    // press box:
+    for integer snum = 6..8 do
+        seat_section with
+            bottom is true;
+            minz = 56;
+            maxz = 56;
+            height = 56 - upper_z[snum];
+            xll = (upper_radii[snum]+1) * cos upper_sections[snum];
+            xul = upper_radii[4] * cos upper_sections[snum];
+            xur = upper_radii[4] * cos upper_sections[snum+1];
+            xlr = (upper_radii[snum]+1) * cos upper_sections[snum+1];
+            yll = (upper_radii[snum]+1) * sin upper_sections[snum] - 96;
+            yul = upper_radii[4] * sin upper_sections[snum] - 96;
+            yur = upper_radii[4] * sin upper_sections[snum+1] - 96;
+            ylr = (upper_radii[snum]+1) * sin upper_sections[snum+1] - 96;
+            material is plastic colored white;
+        end;
+    end;
+
+    // END of Upper Deck
+
+
+    //field house bleachers:
+{   bleachers with
+        length = 34.2;
+        depth = 60;
+        height = 21;
+        num_seats = 30;
+        front_foot_step is false;
+        material is plastic colored light grey;
+        rotate by 180 around <0 0 1>;
+        move to <-80 -.8 -1>;
+    end;
+    bleachers with
+        length = 34.2;
+        depth = 60;
+        height = 21;
+        num_seats = 30;
+        front_foot_step is false;
+        material is plastic colored light grey;
+        rotate by 180 around <0 0 1>;
+        move to <-80 35 -1>;
+    end;
+    //aisle:
+    parallelogram with
+        vertex = <-140 -.8 19.5>;
+        side1 = <60 0 -20>;
+        side2 = <0 1.6 0>;
+        color = grey;
+    end;
+}
+    //field house sections:
+    parallelogram with
+        vertex = <-140 -35 20>;
+        side1 = <60 0 -20>;
+        side2 = <0 70 0>;
+        color = grey;
+    end;
+    polygon [<-140 -35 -1> <-140 -35 21> <-80 -35 1> <-80 -35 -1>] with
+        color = grey;
+    end;
+    polygon [<-140 35 -1> <-140 35 21> <-80 35 1> <-80 35 -1>] with
+        color = grey;
+    end;
+    parallelogram with
+        vertex = <-79.98 -34 -1>;
+        side1 = <0 33.3 0>;
+        side2 = <0 0 2>;
+        color = stone;
+    end;
+    parallelogram with
+        vertex = <-79.98 34 -1>;
+        side1 = <0 -33.3 0>;
+        side2 = <0 0 2>;
+        color = stone;
+    end;
+    block with
+        vertex = <-81 -35 -.5>;
+        side1 = <1.6 0 0>;
+        side2 = <0 1 0>;
+        side3 = <0 0 .5>;
+        color = grey;
+    end;
+    block with
+        vertex = <-81 34 -.5>;
+        side1 = <1.6 0 0>;
+        side2 = <0 1 0>;
+        side3 = <0 0 .5>;
+        color = grey;
+    end;
+    block with
+        vertex = <-81 -.7 -.5>;
+        side1 = <1.6 0 0>;
+        side2 = <0 1.4 0>;
+        side3 = <0 0 .5>;
+        color = grey;
+    end;
+    seat_section with
+        minz = .8;
+        maxz = 20.5;
+        xll = -80.8; xlr = xll;
+        xul = -139.6; xur = xul;
+        yll = -34; yul = yll;
+        ylr = -.7; yur = ylr;
+        material is seating;
+    end;
+    seat_section with
+        minz = .8;
+        maxz = 20.5;
+        xll = -80.8; xlr = xll;
+        xul = -139.7; xur = xul;
+        ylr = 34; yur = ylr;
+        yll = .7; yul = yll;
+        material is seating;
+    end;
+
+    //field house:
+    block with
+        vertex = <-230 -40 -1>;
+        side1 = <90 0 0>;
+        side2 = <0 80 0>;
+        side3 = <0 0 31>;
+        color = stone;
+    end;
+    field_house_peak with
+        move to <-141 0 30>;
+        color = stone;
+    end;
+    field_house_peak with
+        move to <-229 0 30>;
+        color = stone;
+    end;
+    parallelogram with
+        color = <.55 .25 .2>;
+        vertex = <-228 -40.5 30>;
+        side1 = <86 0 0>;
+        side2 = <0 40.5 12>;
+    end;
+    parallelogram with
+        color = <.55 .25 .2>;
+        vertex = <-228 40.5 30>;
+        side1 = <86 0 0>;
+        side2 = <0 -40.5 12>;
+    end;
+
+    //scoreboard:
+    block with
+        color = cardinal;
+        vertex = <-140 -18 21>;
+        side1 = <.6 0 0>;
+        side2 = <0 36 0>;
+        side3 = <0 0 13>;
+    end;
+    parallelogram with
+        vertex = <-139 -15 25>;
+        side1 = <0 12 0>;
+        side2 = <0 0 7>;
+        color = charcoal;
+    end;
+end;  // camp_randall
+
+
+verb find_seat
+    using args type args;
+is
+    const integer max_row = 60;
+    const integer max_seat = 40;
+    string type section = args[1];
+    scalar row_num = string_to_integer args[2];
+    scalar seat_num = string_to_integer args[3];
+
+    scalar eye_x = -200;
+    scalar eye_y = -50;
+    scalar eye_z = 150;
+    scalar xl=10, xr=20, yl=10, yr=20;
+    integer snum;
+
+    if (row_num < 1 or > max_row) or (seat_num < 1 or > max_seat) or
+                    (num section < 1 or > 2) then
+        write "exiting", ;
+        return;
+    end;
+
+    section = args[1];
+
+    section = section to_lower;
+    write section, ;
+    if num section = 1 then
+        scalar theta1, theta2;
+
+        eye_z = 26.7*row_num/max_row + 3.5;
+
+        if ord section[1] <= ord "h" then
+            snum = ord section[1] - 97;
+            seat_num = itself/max_seat;
+            row_num = 48.5*itself/max_row + 157;
+            theta1 = 30 - snum*52.62/8 - .4;
+            theta2 = 30 - (snum+1)*52.62/8 + .4;
+            xl = row_num * -sin (theta1);
+            xr = row_num * -sin (theta2);
+            yl = row_num * (cos theta1) - 96;
+            yr = row_num * (cos theta2) - 96;
+        elseif ord section[1] <= ord "p" then
+            snum = ord section[1] - 105;
+            seat_num = itself/max_seat;
+            row_num = 48.8*itself/max_row + 53;
+            theta1 = 67.38 - snum*134.76/8 - .85;
+            theta2 = 67.38 - (snum+1)*134.76/8 + .85;
+            xl = row_num * cos theta1 + 40;
+            xr = row_num * cos theta2 + 40;
+            yl = row_num * sin theta1;
+            yr = row_num * sin theta2;
+        elseif ord section[1] <= ord "x" then
+            snum = 120 - ord section[1];
+            seat_num = (max_seat + 1 - seat_num)/max_seat;
+            row_num = 48.5*itself/max_row + 157;
+            theta1 = 30 - snum*52.62/8 - .4;
+            theta2 = 30 - (snum+1)*52.62/8 + .4;
+            xl = row_num * -sin (theta1);
+            xr = row_num * -sin (theta2);
+            yl = row_num * -(cos theta1) + 96;
+            yr = row_num * -(cos theta2) + 96;
+        elseif ord section[1] <= ord "z" then
+            snum = ord section[1] - 121;
+            seat_num = itself/max_seat;
+            eye_z = 20*row_num/max_row + 3;
+            xl = -81 - 56*row_num/max_row;
+            xr = xl;
+            yl = -35*(1 - snum) + 1.2;
+            yr = 35*snum - 1.2;
+        end;
+    else
+        if (ord section[1] <> ord section[2]) or (ord section[1] > ord "l") then
+            write "bad seat section, using default",;
+            return;
+        else
+            integer n = 1;
+            { ***** UPPER DECK SEAT NUMBERS RANGE FROM 1 TO MAX_SEAT EXCEPT IN
+              *     AA and LL where they range from 1 to max_seat/2.  ROW numbers
+              *     range from 1 to max_row except in:
+              *     DD: rows 1 to (max_row*5/6) in seats 1 to (max_seat/2),
+              *         rows 1 to (max_row*4/6) in seats (1+max_seat/2) to max_seat
+              *     EE,FF,GG: rows 1 to (max_row*3/6)
+              *     HH: rows 1 to (max_row*4/6) in seats 1 to (max_seat/2),
+              *         rows 1 to (max_row*5/6) in seats (1+max_seat/2) to max_seat
+              *}
+            snum = ord section[1];
+            if  ((snum = ord "a" or = ord "l") and seat_num > round(max_seat/2)) or
+                ((snum = ord "e" or snum = ord "f" or snum = ord "g") and row_num > round(max_row/2)) or
+                (snum = ord "d" and ((seat_num <= round(max_seat/2) and row_num > round(max_row*5/6)) or
+                 (seat_num > round(max_seat/2) and row_num > round(max_row*4/6)))) or
+                (snum = ord "h" and ((seat_num <= round(max_seat/2) and row_num > round(max_row*4/6)) or
+                 (seat_num > round(max_seat/2) and row_num > round(max_row*5/6)))) then
+                 write "bad seat location, using default",;
+                 return;
+            end;
+
+            eye_z = 21*row_num/max_row + 31;
+
+            if snum = ord "a" or snum = ord "l" then
+                seat_num = 2*itself/max_seat;
+            else
+                seat_num = itself/max_seat;
+            end;
+
+            if snum = ord "d" or = ord "h" then n = 2; end;
+
+            snum = ord section[1] - 96;
+            if snum > 4 then snum = itself + 1; end;
+            if snum > 9 then snum = itself + 1; end;
+
+            if snum < 13 then
+                row_num = 36*itself/max_row + 182.5;
+                xl = row_num * cos (upper_sections[snum] - .4);
+                xr = row_num * cos (upper_sections[snum+n] + .4);
+                yl = row_num * sin (upper_sections[snum] - .4) - 96;
+                yr = row_num * sin (upper_sections[snum+n] + .4) - 96;
+            else
+                row_num = 36*itself/max_row + 79;
+                xl = row_num * cos (upper_sections[snum] - .85) + 40;
+                xr = row_num * cos (upper_sections[snum+n] + .85) + 40;
+                yl = row_num * sin (upper_sections[snum] - .85);
+                yr = row_num * sin (upper_sections[snum+n] + .85);
+            end;
+        end;
+    end;
+
+    eye_x = seat_num*(xr-xl) + xl;
+    eye_y = seat_num*(yr-yl) + yl;
+
+    eye = <eye_x eye_y eye_z>;
+    write eye,;
+end;  // find_seat
+
+
+anim randall_anim
+    args type args;
+with
+    facets = 6;
+    eye = <-140 -70 20>;
+    lookat = <0 0 0>;
+    //background = <.3 .3 .2>; //night fog
+    //fog_factor = 150;
+    background = <.5 .6 1>;  //sky blue
+    double_buffer is on;
+    height = 360;
+    width = 660;
+    if num args = 3 then
+        find_seat using args;
+    end;
+is
+    picture stadium_view is
+        camp_randall;
+        distant_light from <1 -2 3>;
+    end;
+
+    mouse_controlled_picture stadium_view
+    with
+        button1_behavior is new pan_behavior;
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+    end;
+
+end;  // randall_anim

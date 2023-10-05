@@ -1,0 +1,337 @@
+{***************************************************************}
+{                         ball_bounce.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// This code demonstrates how to do a reliable real-time based simulation
+// of collisions between a ball and walls.  The basic per-frame algorithm
+// is identical to the one in ball_intersections.omar, with one difference.
+// Because this example includes acceleration due to gravity, the ball
+// motions are not linear with time.  We handle this by subdividing each
+// frame to a number of fixed time slices, and approximating the ball as
+// moving linearly within each time slice.
+//
+// To guarantee reproducible results when running the simulation several
+// times, the simulation is always run to an integral number of time slices
+// (with the caveat that a time slice ends at the instance of a collision).
+// Any additional time remaining in a frame that is less than the length of
+// a time slice is carried over to the next frame.
+//
+// The ever present "zero time collision" problem, as described in
+// ball_intersections.ores, is handled here by simply ending the simulation
+// when it occurs.  This is not a very good way to deal with it, so the
+// interested content developer who uses this code will want to add something
+// better.  In other words, it's left as an exercise for the developer :)
+
+do bounce_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/path_intersections.ores";
+include "system/conversions.ores";
+include "system/random.ores";
+
+
+subject bouncing_ball_simulation
+does
+    verb new
+    with
+        scalar ball_radius = 1;
+        scalar time_subdivision_slice = 0.005;
+        scalar gravity = global gravity; // default is in meters/second^2
+    end;
+    
+    verb initialize
+    with
+        vector ball_position = <0 0 2>;
+        vector ball_velocity = <0 0 0>;
+        trans type rectangles[] is none;
+    end;
+    
+    verb advance
+        by scalar time_step;
+    end;
+    
+    boolean question is_done;
+    
+    vector question get_ball_position;
+has
+    scalar ball_radius;
+    scalar time_subdivision_slice;
+    scalar gravity;
+    
+    vector ball_position;
+    vector ball_velocity;
+    
+    boolean done is true;
+    
+    scalar time_carried_over;
+    
+    trans type rectangles[] is none;
+is
+    verb new
+    with
+        scalar ball_radius = 1;
+        scalar time_subdivision_slice = 0.005;
+        scalar gravity = global gravity; // default is in meters/second^2
+    is
+        bouncing_ball_simulation's ball_radius = ball_radius;
+        bouncing_ball_simulation's time_subdivision_slice =
+            time_subdivision_slice;
+        bouncing_ball_simulation's gravity = gravity;
+    end;    // new
+    
+    verb initialize
+    with
+        vector ball_position = <0 0 2>;
+        vector ball_velocity = <0 0 0>;
+        trans type rectangles[] is none;
+    is
+        bouncing_ball_simulation's ball_position = ball_position;
+        bouncing_ball_simulation's ball_velocity = ball_velocity;
+        
+        bouncing_ball_simulation's rectangles is rectangles;
+        
+        time_carried_over = 0;
+        
+        if      (some rectangles) and
+                (time_subdivision_slice > 0) and
+                (ball_radius >= 0) then
+            done is false;
+        end;
+    end;    // initialize
+    
+    verb advance
+        by scalar time_step;
+    is
+        vector new_ball_position;
+    	scalar min_time;
+    	scalar pt;
+    	boolean hit;
+    	boolean ground_hit;
+    	vector plane_position_hit;
+    	integer rect_index;
+        
+        time_step = itself + time_carried_over;
+        
+        if done then
+            return;
+        end;
+        
+        while time_step >= time_subdivision_slice do
+            // compute the new ball position assuming no collision
+            //
+            new_ball_position = ball_position +
+                (ball_velocity * time_subdivision_slice);
+            
+            // reset the collision time to be larger than 1, to
+            // indicate no collision detected yet
+            //
+            min_time = 2;
+            ground_hit is false;
+            
+    		// test intersection with ground plane
+    		//
+    		hit is (sphere_path_intersects_plane
+    			ball_position new_ball_position <0 0 0> <0 0 1> at pt
+    		with
+    			overlapping_objects_collide is true;
+    			radius = ball_radius;);
+    		
+    		if hit and pt < min_time then
+    			min_time = pt;
+    			ground_hit is true;
+    		end;
+    		
+    		// test intersection with rectangles
+    		//
+    		for integer i = min rectangles .. max rectangles do
+        		hit is (sphere_path_intersects_parallelogram
+        			ball_position new_ball_position
+        			rectangles[i]'s origin
+        			rectangles[i]'s x_axis
+        			rectangles[i]'s y_axis
+        			at pt
+        		with
+        			overlapping_objects_collide is true;
+        			plane_intersect refers to plane_position_hit;
+        			radius = ball_radius;);
+        		
+        		if hit and pt < min_time then
+        			min_time = pt;
+        			ground_hit is false;
+        			rect_index = i;
+        		end;
+    		end;
+    		
+    		if ground_hit then
+    		    done is true;
+    		    return;
+    		else
+    		    scalar actual_elapsed_time = time_subdivision_slice;
+    		    vector hit_normal;
+    		    
+    		    if min_time <= 1 then
+    		        actual_elapsed_time = itself * min_time * 0.95;
+    		        
+    		        // compute the ball position at the time of the collision
+    		        //
+        		    ball_position = itself +
+        		        (ball_velocity * actual_elapsed_time);
+        		    
+        		    // compute the new ball velocity after the collision
+        		    //
+        		    if (-1 < plane_position_hit.x < 1) and
+        		       (-1 < plane_position_hit.y < 1) then
+        		        // simple reflection off the rectangle's interior
+        		        //
+        		        hit_normal = rectangles[rect_index]'s z_axis;
+            		else
+            		    // reflection off an edge or corner
+            		    //
+            		    vector plane_hit_location =
+            		        rectangles[rect_index]'s origin +
+            		        (rectangles[rect_index]'s x_axis *
+            		         plane_position_hit.x) +
+            		        (rectangles[rect_index]'s y_axis *
+            		         plane_position_hit.y);
+            		    
+            		    hit_normal = ball_position - plane_hit_location;
+            		end;
+        		    
+        		    ball_velocity = vreflect ball_velocity across hit_normal;
+        		    
+        		    if min_time <= 0 then
+        		        write "resetting after time 0 collision:",;
+        		        done is true;
+        		        return;
+        		    end;
+    		    else
+    		        ball_position = new_ball_position;
+    		    end;
+    		    
+    		    // apply accelleration
+    		    //
+    		    ball_velocity = itself +
+    		        <0 0 -(gravity * actual_elapsed_time)>;
+    		    
+                time_step = itself - actual_elapsed_time;
+    		end;
+        end;
+        
+        time_carried_over = time_step;
+    end;    // advance
+    
+    boolean question is_done
+    is
+        answer done;
+    end;    // is_done
+    
+    vector question get_ball_position
+    is
+        answer ball_position;
+    end;    // get_ball_position
+end;    // bouncing_ball_simulation
+
+
+
+anim bounce_anim
+is
+    const boolean test_mode is false;
+    
+    
+    const scalar my_ball_radius = 0.5;
+    
+    bouncing_ball_simulation type simulation with
+        // all physical dimensions are in feet
+        gravity = meters_to_feet global gravity;
+        ball_radius = my_ball_radius;
+        time_subdivision_slice = 1/60;
+    end;
+    
+    trans type realrect[1..20];
+    trans type testrect[1..1];
+    trans type rects_to_use[] is none;
+    
+    picture bounce_picture
+    is
+        boolean initialize is false;
+        
+        when key_to_char get_key is
+            "r":
+                initialize is true;
+            end;
+        end;
+        
+        if initialize or simulation is_done then
+            if test_mode then
+            else
+                for integer i = min realrect .. max realrect do
+                    scalar theta = random 0 to 360;
+                    scalar phi = random 5 to 90;
+                    scalar roll = random 0 to 360;
+                    
+                    realrect[i] init;
+                    magnify the realrect[i] by 2;
+                    move the realrect[i] to <0 0 3>;
+                    rotate the realrect[i] by roll around <0 0 1>;
+                    rotate the realrect[i] by phi around <1 0 0>
+                        about <0 0 10>;
+                    rotate the realrect[i] by theta around <0 0 1>
+                        about <0 0 10>;
+                end;
+            end;
+            
+            simulation initialize with
+                ball_position = <0 0 10>;
+                ball_velocity = <0 0 0>;
+                rectangles is rects_to_use;
+            end;
+        end;
+        
+        simulation advance by (get_clamped_frame_duration to 0.2);
+        
+        default_lights;
+        
+        plane with
+            magnify by 30;
+            render_mode is wireframe;
+        end;
+        
+        for integer i = min rects_to_use .. max rects_to_use do
+            parallelogram with
+                trans = rects_to_use[i];
+                color = blue;
+            end;
+            
+            parallelogram with
+                trans = rects_to_use[i];
+                move to <0 0 -0.25>;
+                color = yellow;
+            end;
+        end;
+        
+        sphere with
+            center = simulation get_ball_position;
+            radius = my_ball_radius;
+        end;
+    end;    // bounce_picture
+    
+    if test_mode then
+        rects_to_use is testrect;
+        
+        testrect[1] init;
+        magnify the testrect[1] by 3;
+        move the testrect[1] to <0 0 1>;
+    else
+        rects_to_use is realrect;
+    end;
+    
+	mouse_controlled_picture bounce_picture;
+end;    // bounce_anim

@@ -1,0 +1,97 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           args_parser.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a few subjects intended to aid       }
+{       in the "parsing" of program arguments (also called      }
+{       "command line arguments").                              }
+{                                                               }
+{       "Parsing" is the process of "sorting out" the words     }
+{       in a set of words. The utilities below perform this     }
+{       process.                                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/strings.ores";
+include "system/string_utils.ores";
+
+subject arg extends string type;
+
+subject args_parser
+does
+	// constructor
+	//
+	verb new
+		parsing strings type args;
+	end;
+
+	verb reset;
+	verb next_arg;
+	boolean question boolean_arg;
+	integer question integer_arg;
+	scalar question scalar_arg;
+	vector question vector_arg;
+has
+	// attributes
+	//
+	public arg type arg;
+	integer index;
+	strings type args;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		parsing strings type args;
+	is
+		args_parser's args is args;
+		reset;
+	end;    // new
+
+	verb reset is
+		if some args then
+			index = min args;
+			arg is args[index];
+		else
+			arg is none;
+		end;
+	end;    // reset
+
+	verb next_arg is
+		if (some args) and (index < max args) then
+			index = itself + 1;
+			arg is args[index];
+		else
+			arg is none;
+		end;
+	end;    // next_arg
+
+	boolean question boolean_arg is
+		next_arg;
+		if arg matches "true" or arg matches "on" or arg matches "yes" then
+			answer yes;
+		else
+			answer no;
+		end;
+	end;    // boolean_arg
+
+	integer question integer_arg is
+		next_arg;
+		answer string_to_integer of arg;
+	end;    // integer_arg
+
+	scalar question scalar_arg is
+		next_arg;
+		answer string_to_scalar of arg;
+	end;    // scalar_arg
+
+	vector question vector_arg is
+		answer <scalar_arg scalar_arg scalar_arg>;
+	end;    // vector_arg
+end;    // args_parser

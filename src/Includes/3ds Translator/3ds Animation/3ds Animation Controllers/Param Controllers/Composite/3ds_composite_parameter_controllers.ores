@@ -1,0 +1,15 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm  3ds_composite_parameter_controllers   3d      }
+{ |/  \|                        .ores                   To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_xyz_controller.ores";
+include "system/3ds_rgb_controller.ores";

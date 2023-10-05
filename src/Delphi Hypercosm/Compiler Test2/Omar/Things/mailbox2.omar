@@ -1,0 +1,113 @@
+{***************************************************************}
+{                          mailbox2.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do mailbox_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape mailbox is
+    shape body is
+        extrude [[-1 1] [-1 0] [1 0] [1 1] [.9 1] [.9 .1]
+            [-.9 .1] [-.9 1]] along <1 0 0> with
+            height = 2;
+        end;
+        tube with
+            umin = -90;
+            umax = 90;
+            inner_radius = .9;
+            outer_radius = 1;
+            rotate by 90 around <0 1 0>;
+            rotate by 180 around <1 0 0>;
+            move to <0 0 1>;
+        end;
+    end;    // body
+
+    shape cross_section is
+        disk with
+            umin = -90;
+            umax = 90;
+            rotate by 90 around <0 1 0>;
+            rotate by 180 around <1 0 0>;
+            move to <0 0 1>;
+        end;
+        parallelogram with
+            rotate by 90 around <0 1 0>;
+            scale by .5 along <0 0 1>;
+            move to <0 0 .5>;
+        end;
+    end;    // cross_section
+
+    shape door is
+        body with
+            scale by .1 along <1 0 0>;
+        end;
+        cross_section with
+            move to <-.1 0 0>;
+        end;
+    end;
+
+
+    color = grey;
+    body with
+        scale by 2 along <1 0 0>;
+    end;
+    door with
+        rotate by -120 around <0 1 0>;
+        move to <-2 0 0>;
+    end;
+    cross_section with
+        move to <2.01 0 0>;
+    end;
+end;    // mailbox
+
+
+shape mailbox_post with
+    scalar height = 5;
+is
+    // post
+    //
+    cylinder with
+        material is wood;
+        end1 = <0 0 0>;
+        end2 = <0 0 height>;
+        radius = .5;
+    end;
+    mailbox with
+        material is chalk colored blue;
+        move to <0 0 height>;
+    end;
+end;    // mailbox_post
+
+
+anim mailbox_anim
+    args type args;
+with
+    eye = <-10 -6 8>;
+    lookat = <0 0 3.5>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        mailbox_post;
+    end;    // scene
+
+    shape environment is
+        plane with
+            magnify by 5;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+
+    mouse_controlled_shape scene in environment;
+end;    // mailbox_anim

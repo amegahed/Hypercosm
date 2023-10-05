@@ -1,0 +1,118 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  3ds_sliceable_object.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains object definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_textureable_object.ores";
+
+
+abstract subject translated_3ds_sliceable_object
+extends
+    translated_3ds_texturable_object
+does
+    // constructor
+    //
+    verb new with
+
+    	// slicing parameters
+    	//
+        boolean slice_on is false;
+        scalar slice_from = 0;
+        scalar slice_to = 0;
+            
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+    end;
+    
+    // slicing methods
+    //
+    verb slice
+        from scalar slice_from;
+        to scalar slice_to;
+    end;
+    
+    // scribable method
+    //
+    string type question to_string;
+has
+	// slicing attributes
+	//
+    boolean slice_on;
+    scalar slice_from;
+    scalar slice_to;
+is
+    //
+    // constructor
+    //
+    
+    
+    verb new with
+
+    	// slicing parameters
+    	//
+        boolean slice_on is false;
+        scalar slice_from = 0;
+        scalar slice_to = 0;
+            
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+    is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+	    
+		with translated_3ds_sliceable_object do
+        	
+        	// set slicing attributes
+        	//
+            its slice_on is slice_on;
+            its slice_from = slice_from;
+            its slice_to = slice_to;
+	    end;
+    end;
+    
+
+    //    
+    // slicing methods
+    //
+    
+    
+    verb slice
+        from scalar slice_from;
+        to scalar slice_to;
+    is
+        with translated_3ds_sliceable_object do
+            its slice_on is true;
+            its slice_from = slice_from;
+            its slice_to = slice_to;
+        end;
+    end;    // slice
+    
+
+	//    
+    // scribable method
+    //
+    
+    
+    string type question to_string is
+    	answer "translated 3ds sliceable object";
+    end;	// to_string
+end;    // translated_3ds_sliceable_object
+
+
+
+

@@ -1,0 +1,41 @@
+{***************************************************************}
+{                      camera_constraint.ores                   }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the camera subject and other utilities         }
+{       useful for controlling how a scene is viewed.  Used     }
+{       in "behaviors.ores" and for keyframed animations.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+// The camera_constraint interface is used to keep the camera from being
+// moved outside of specified regions.  Subjects that implement this
+// interface can be found in camera_constraints.ores.
+//
+abstract subject camera_constraint
+does
+	// query methods
+	//
+    abstract boolean question is_valid
+        trans type trans;
+        scalar fov;
+    end;
+
+	// constraint methods
+	//    
+    abstract verb constrain_movement
+	    from
+	        trans type start_trans;
+	        scalar start_fov;
+	    to
+	        trans type end_trans;
+	        scalar end_fov;
+    return
+        trans type new_trans;
+        scalar new_fov;
+    end;
+end;	// camera_constraint

@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	   cubic_spline_curve.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		bezier curve.  											}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/segmented_spline.ores";
+include "system/cubic_splines.ores";
+include "system/native_shapes.ores";
+
+
+shape cubic_spline_curve
+    from segmented_spline type segmented_spline;
+with
+    integer steps = 10;
+is
+	vcubic_spline type vcubic_spline is get_piecewise_vcubic_spline
+		through segmented_spline;
+    line (vcubic_spline get_values in steps);
+end;    // cubic_spline_curve

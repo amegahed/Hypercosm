@@ -1,0 +1,32 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           coloring.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an definition for a generalized user           }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/color.ores";
+
+adjective colored
+does
+	// color querying methods
+	//
+	color type question get_color;
+end;    // colored
+
+adjective colorable
+extends
+	colored
+does
+	// color setting methods
+	//
+	verb set_color
+		to color type color;
+	end;
+end;    // colorable

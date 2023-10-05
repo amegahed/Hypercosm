@@ -1,0 +1,68 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           check_keys.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the standard keyboard checking routines.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+
+include "native_keyboard.ores";
+include "native_rendering.ores";
+include "native_viewing.ores";
+
+boolean question char_down 
+	char ch;
+is
+	if is_lower ch then
+		answer key_down char_to_key ch or key_down char_to_key to_upper ch;
+	elseif is_upper ch then
+		answer key_down char_to_key ch or key_down char_to_key to_lower ch;
+	else
+		answer key_down char_to_key ch;
+	end;
+end;    // char_down
+
+verb check_keys is
+
+	// render mode keys
+	//
+	if char_down "w" then
+		render_mode is wireframe;
+	elseif char_down "s" then
+		render_mode is shaded;
+	elseif char_down "p" then
+		render_mode is pointplot;
+	elseif char_down "h" then
+		render_mode is hidden_line;
+	end;
+
+	// edge mode keys
+	//
+	if char_down "a" then
+		edges is all;
+	elseif char_down "o" then
+		edges is outline;
+	elseif char_down "l" then
+		edges is silhouette;
+	end;
+
+	// shading keys
+	//
+	if char_down "f" then
+		shading is face;
+	elseif char_down "v" then
+		shading is vertex;
+	end;
+
+	// feature abstraction keys
+	//
+	if char_down "t" then
+		min_feature_size = itself / 2;
+	elseif char_down "y" then
+		min_feature_size = itself * 2;
+	end;
+end;    // check_keys

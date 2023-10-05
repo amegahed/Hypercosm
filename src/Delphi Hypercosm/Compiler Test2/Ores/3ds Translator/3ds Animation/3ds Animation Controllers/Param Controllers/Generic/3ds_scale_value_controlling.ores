@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	3ds_scale_value_controlling.ores 	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_scale_value.ores";
+include "system/3ds_time.ores";
+
+
+adjective translated_3ds_scale_value_controllable
+does
+	// evaluation method
+	//
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type time;
+	end;
+end;	// translated_3ds_scale_value_controllable 
+
+

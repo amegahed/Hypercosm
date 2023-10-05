@@ -1,0 +1,206 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             marks.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard shapes that are useful           }
+{       for annotation and marking points.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+
+enum mark_shape is point, x, square, diamond, circle;
+enum mark_style is drawn, filled, shaded;
+enum mark_dimensions is two_d, three_d;
+
+mark_shape type mark_shape is circle;
+mark_style type mark_style is filled;
+mark_dimensions type mark_dimensions is three_d;
+scalar mark_size = .015;
+
+{***************************************************************}
+{                   some example mark shapes                    }
+{***************************************************************}
+
+shape x_mark is
+	line [<-1 1 0> <1 -1 0>];
+	line [<-1 -1 0> <1 1 0>];
+end;    // x2d
+
+shape star_mark is
+	line [<-1 0 0> <1 0 0>];
+	line [<0 -1 0> <0 1 0>];
+	line [<0 0 -1> <0 0 1>];
+end;    // star_mark
+	
+{***************************************************************}
+{                   generalized mark primitive                  }
+{***************************************************************}
+
+shape mark2d
+	at vector location;
+	of mark_shape type mark_shape is global mark_shape;
+	as mark_style type mark_style is global mark_style;
+with
+	scalar size = mark_size;
+	color type color = white;
+is
+	global color = color;
+
+	// set rendering style
+	//    
+	when mark_style is
+		drawn:
+			render_mode is wireframe;
+			edges is silhouette;
+		end;
+		
+		filled:
+			render_mode is shaded;
+			material is constant_color color;
+		end;
+		
+		shaded:
+			render_mode is shaded;
+			material is chalk colored color;
+		end;
+	end;
+	
+	// rendering shape
+	//
+	when mark_shape is
+	
+		point:
+			points [location];
+		end;
+		
+		x:
+			x_mark with
+				magnify by size;
+				move to location;
+			end;
+		end;
+		
+		square:
+			parallelogram with
+				magnify by size;
+				move to location;
+			end;
+		end;
+		
+		diamond: 
+			parallelogram with
+				rotate by 45 around <0 0 1>;
+				magnify by size;
+				move to location;
+			end;
+		end;
+		
+		circle:
+			disk with
+				magnify by size;
+				move to location;
+			end;
+		end;
+		 
+	end;
+end;    // mark2d
+
+shape mark3d
+	at vector location;
+	of mark_shape type mark_shape is global mark_shape;
+	as mark_style type mark_style is global mark_style;
+with
+	scalar size = mark_size;
+	color type color = white;
+is
+	global color = color;
+
+	// set rendering style
+	//    
+	when mark_style is
+		drawn:
+			render_mode is wireframe;
+			edges is silhouette;
+		end;
+		
+		filled:
+			render_mode is shaded;
+			material is constant_color color;
+		end;
+		
+		shaded:
+			render_mode is shaded;
+			material is chalk colored color;
+		end;
+	end;
+	
+	// rendering shape
+	//
+	when mark_shape is
+	
+		point:
+			points [location];
+		end;
+		
+		x:
+			star_mark with
+				magnify by size;
+				move to location;
+			end;
+		end;
+		
+		square:
+			block with
+				magnify by size;
+				move to location;
+			end;                
+		end;
+		
+		diamond:
+			block with
+				direct from <1 1 1> to <0 0 1>;
+				magnify by size;
+				move to location;
+			end;
+		end;
+		
+		circle:     
+			sphere with
+				magnify by size;
+				move to location;
+			end;
+		end;
+		
+	end;
+end;    // mark3d
+
+shape mark 
+	at vector location;
+	of mark_shape type mark_shape is global mark_shape;
+	as mark_style type mark_style is global mark_style;
+	in mark_dimensions type mark_dimensions is global mark_dimensions;
+with
+	scalar size = mark_size;
+	color type color = white;
+is
+	when mark_dimensions is
+		two_d:
+			mark2d at location of mark_shape as mark_style with
+				size = static size;
+				color = static color;
+			end;
+		end;
+		
+		three_d:
+			mark3d at location of mark_shape as mark_style with
+				size = static size;
+				color = static color;
+			end;
+		end;
+	end;
+end;    // mark

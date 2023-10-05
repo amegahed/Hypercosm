@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              hose.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       hose with a circular cross section.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/segmented_spline.ores";
+include "system/curved_extrusion.ores";
+
+shape hose
+	through segmented_spline type segmented_spline;
+with
+	scalar radius = 1;
+	integer steps = 8, spline_steps = 8;
+is
+	vector cross_section[0 .. steps];
+
+	for integer counter = 0..steps do
+		scalar degrees = 360 * (counter / steps);
+		scalar x = (cos degrees) * radius;
+		scalar y = (sin degrees) * radius;
+		cross_section[counter] = <x y 0>;
+	end;
+
+	curved_extrusion along segmented_spline in spline_steps of cross_section with
+		smoothing is true;
+		mending is true;
+	end;
+end;    // hose

@@ -1,0 +1,28 @@
+do donut_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_donut.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim donut_anim is
+	shape scene with
+		scalar time = 0;
+	is	
+		translated_3ds_donut with
+		    radius1 = 25;
+		    radius2 = 50 + sin(time * 90) * 25;
+		    steps = 8;
+    	end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Donut" with
+		auto_camera is on;
+	end;
+end;	// donut_anim

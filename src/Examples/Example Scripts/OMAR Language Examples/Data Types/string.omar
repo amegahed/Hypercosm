@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             string.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of usage of        }
+{       the char data type in the OMAR language.                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do string_example;
+
+include "system/native_string.ores";
+
+string type name is "Barney Squidsnorker";          // A single string
+string type names[] is ["Bob" "Mary" "Joe" ];       // An array of strings 
+
+verb string_example is
+	write "This example declares, assigns, and prints", ;
+	write "values for a series of string variables:", ;
+	write;
+	
+	write "name is ", name, ;
+	for each string type name in names do
+		write "name is ", name, ;
+	end;
+end;    // string_example

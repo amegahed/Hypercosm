@@ -1,0 +1,65 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "..\\Web\\applet\\navy_ships.hcvm";
+	WebOutputDir "..\\Web\\applet";
+	Alignment;
+	CommandLine;
+	Width "800";
+	Height "600";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+		}
+	}
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar "navy_destroyer\\navy_destroyer.omar";
+			omar "navy_escort\\navy_escort.omar";
+			omar_main "navy_ships.omar";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "..\\Web\\applet\\translate_arrow.gif";
+			resource "..\\Web\\applet\\background.jpg";
+			resource "..\\Web\\applet\\environment.jpg";
+			resource "..\\Web\\applet\\gulf.jpg";
+			resource "..\\Web\\applet\\rotate_arrow.gif";
+		}
+	}
+}

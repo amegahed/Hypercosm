@@ -1,0 +1,38 @@
+do tactile_torus_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+
+
+anim tactile_torus_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape torus_shape is
+        write "making torus", ;
+        torus with
+            inner_radius = 2;
+            outer_radius = 4;
+            move to <0 0 1>;
+            material is wood;
+        end;
+    end;    // torus_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape torus_shape titled "Tactile Torus" in floor;
+end;    // tactile_torus_anim

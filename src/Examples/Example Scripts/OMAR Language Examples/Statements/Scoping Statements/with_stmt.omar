@@ -1,0 +1,40 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            with_stmt.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of the         }
+{       "with" statement in the OMAR language.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do with_example;
+
+struct pixel has
+	integer h = 0, v = 0;
+end;    // pixel
+
+struct button has
+	char label[] is "untitled";
+	pixel type center, size;
+end;    // button
+
+button type button;
+
+verb with_example is
+	write "Example using a 'with' statement to assign and ", ;
+	write "write out values to the fields of a structure:", ;
+	write;
+	
+	with button do
+		its label is "quit";
+	
+		with its center do
+			its h = 512;
+			its v = 384;
+			write "button's center = ", its h, ", ", its v, ;
+		end;    // with
+	end;    // with
+end;    // with_example

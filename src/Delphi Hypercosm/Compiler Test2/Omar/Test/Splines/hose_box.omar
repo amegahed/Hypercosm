@@ -1,0 +1,110 @@
+{***************************************************************}
+{                          hose_box.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bouncing_hose_box;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/spline_shapes.ores";
+
+
+subject hose_box
+extends
+    timed_actor
+does
+    // methods
+    //
+    verb new with
+        integer number = 3;
+        scalar speed = 2;
+        scalar radius = .25;
+    end;    // new
+
+    verb advance
+    	by scalar time_step;
+    end;
+    shape instance;
+has
+private
+    spline type locations, velocities;
+    scalar radius;
+is
+    // implementation
+    //
+    verb new with
+        integer number = 3;
+        scalar speed = 2;
+        scalar radius = .25;
+    is
+        dim locations[1..number];
+        dim velocities[1..number];
+
+        for each vector location in locations do
+            location = vrandom <-1 -1 -1> to <1 1 1>;
+        end;
+        for each vector velocity in velocities do
+            velocity = (vrandom <-1 -1 -1> to <1 1 1>) * speed;
+        end;
+
+        hose_box's radius = radius;
+    end;    // new
+
+
+    verb advance
+    	by scalar time_step;
+    is
+        for integer counter = min locations .. max locations do
+            scalar x = locations[counter] dot <1 0 0>;
+            scalar y = locations[counter] dot <0 1 0>;
+            scalar z = locations[counter] dot <0 0 1>;
+
+            if abs x > 1 then
+                velocities[counter] = itself * <-1 1 1>;
+                x = sign x;
+            end;
+            if abs y > 1 then
+                velocities[counter] = itself * <1 -1 1>;
+                y = sign y;
+            end;
+            if abs z > 1 then
+                velocities[counter] = itself * <1 1 -1>;
+                z = sign z;
+            end;
+
+            locations[counter] = <x y z> + velocities[counter]
+                * time_step;
+        end;
+    end;    // step
+
+
+    shape instance is
+        hose through locations with
+            radius = static radius;
+            steps = 8;
+        end;
+        block with
+            render_mode is wireframe;
+        end;
+    end;    // instance
+end;    // hose_box;
+
+
+anim bouncing_hose_box with
+    eye = <4 -4 3>;
+    double_buffer is on;
+is
+    hose_box type hose_box with
+        number = 4;
+    end;
+
+    mouse_controlled_actor hose_box;
+end;    // bouncing_hose_box

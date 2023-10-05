@@ -1,0 +1,198 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    phsyics_primitives.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of simple        }
+{       physics primitives: sphere, box, cylinder, capsule      }
+{       and plane.                                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_primitives_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the 's' key to launch projectiles to get the      }
+{       shape to move.                                          }
+{                                                               }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "physics_test_projectile.ores";
+
+// box shape definition
+//
+scalar box_height = 4;
+scalar box_length = 8;
+scalar box_width = 2;
+
+shape box_shape is
+	block with
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+	end;
+end;
+
+renderable type box_renderable is new static_shape of box_shape;
+
+// sphere shape definition
+//
+scalar sphere_radius = 2;
+
+shape sphere_shape is
+	sphere with
+		radius = sphere_radius;
+	end;
+end;
+
+renderable type sphere_renderable is new static_shape of sphere_shape;
+
+// cylinder shape definition
+//
+scalar cylinder_radius = 1;
+scalar cylinder_length = 3;
+
+shape cylinder_shape is
+	cylinder with
+		radius = cylinder_radius;
+		end1 = <0 -(cylinder_length/2) 0>;
+		end2 = <0 (cylinder_length/2) 0>;
+	end;
+end;
+
+renderable type cylinder_renderable is new static_shape of cylinder_shape;
+
+// capsule shape definition
+//
+scalar capsule_radius = 1;
+scalar capsule_length = 3;
+
+shape capsule_shape is
+	cylinder with
+		radius = capsule_radius;
+		end1 = <0 -(capsule_length/2) 0>;
+		end2 = <0 (capsule_length/2) 0>;
+	end;
+	sphere with
+		radius = capsule_radius;
+		center = <0 -(capsule_length/2) 0>;
+	end;
+	sphere with
+		radius = capsule_radius;
+		center = <0 (capsule_length/2) 0>;
+	end;
+end;
+
+renderable type capsule_renderable is new static_shape of capsule_shape;
+
+anim physics_primitives_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+is
+	renderable_physics_scene type physics;
+
+	verb draw is
+	
+		// display on screen instructions
+		//
+		overlay_text "Press 's' to shoot a projectile." at <0 .9 0>;
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+   
+		// fire a projectile, only if we just pressed the key this frame
+		//
+		if key_down char_to_key of "s" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to physics;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+	end;    // check_keys
+	
+		
+	verb update is
+		draw;
+		check_keys;
+	end;    // update
+	
+	shape instance with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+				
+		physics instance;
+		
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // instance
+	
+	
+	// add the box shape
+	//
+	physics add_physics_actor (new renderable_physics_box_actor rendering box_renderable with
+		trans's origin = <-5 0 (box_height/2)>;
+		mass = 10;
+		friction = .95;
+		restitution = .05;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	); 
+	
+	// add the sphere shape
+	//
+	physics add_physics_actor (new renderable_physics_sphere_actor rendering sphere_renderable with
+		trans's origin = <-1 0 (sphere_radius)>;
+		mass = 8;
+		radius = sphere_radius
+	);
+	
+	// add the cylinder shape
+	//
+	physics add_physics_actor (new renderable_physics_cylinder_actor rendering cylinder_renderable with
+		trans's origin = <2 0 (cylinder_radius)>;
+		mass = 8;
+		radius = cylinder_radius;
+		height = cylinder_length
+	);   
+	
+	// add the capsule shape
+	//
+	physics add_physics_actor (new renderable_physics_capsule_actor rendering capsule_renderable with
+		trans's origin = <5 0 (capsule_radius)>;
+		mass = 8;
+		radius = capsule_radius;
+		height = capsule_length
+	);
+	
+	// add the plane shape
+	//
+	physics add_physics_actor (new physics_plane_actor with
+		friction = .95;
+		restitution = .05
+	);
+	// turn on/off proxy rendering aka debug mode
+	//                        
+	physics set_render_proxies to true; 
+	// run!
+	//
+	mouse_controlled_animated_shape instance doing update;
+end;    // physics_primitives_anim

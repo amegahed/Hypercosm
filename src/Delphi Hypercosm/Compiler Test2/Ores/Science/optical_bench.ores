@@ -1,0 +1,242 @@
+{***************************************************************}
+{                         optical_bench.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for simulating         }
+{       optical experiments.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_sensing.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/actors.ores";
+include "system/manipulation.ores";
+include "system/optics.ores";
+include "system/common_materials.ores";
+include "system/anims.ores";
+
+
+subject optical_bench
+extends
+    touchable_actor
+does
+    verb new
+        tracing color type colors[] is spectrum;
+        of scalar indices_of_refraction[] is spectrum_indices;
+    with
+        scalar length = 10, width = 10, height = .5;
+        vector lamp_location = <0 0 0>;
+        scalar lamp_size = .25;
+    end;
+    
+    // construction methods
+    //
+    verb add_element
+        shape form;
+        at vector location;
+    with
+        vector base = location - <0 0 1>;
+    end;
+    
+    // actor methods
+    //
+    shape instance;
+    
+    // touchable methods
+    //
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;    // touch
+has
+    struct element has
+        vector base;
+        element type next is none;
+    end;    // element
+
+    public vector lamp_location;
+    public scalar lamp_size;
+    public scalar length, width, height;
+private
+    optics type optics is none;
+    element type elements is none;
+    boolean touched is false;
+    vector touched_point, first_point;
+is
+    verb new
+        tracing color type colors[] is spectrum;
+        of scalar indices_of_refraction[] is spectrum_indices;
+    with
+        scalar length = 10, width = 10, height = .5;
+        vector lamp_location = <0 0 0>;
+        scalar lamp_size = .25;
+    is
+        new optics tracing colors of indices_of_refraction;
+        with optical_bench do
+            its length = length;
+            its width = width;
+            its height = height;
+            its lamp_location = lamp_location;
+            its lamp_size = lamp_size;
+        end;
+    end;    // new
+
+
+    // construction methods
+    //
+    
+    
+    verb add_element
+        shape form;
+        at vector location;
+    with
+        vector base = location - <0 0 1>;
+    is
+        element type element;
+        element's base = base;
+
+        // add element to list
+        //
+        element's next is elements;
+        elements is element;
+        
+        // add element to optics
+        //
+        optics add_element form at location + <0 0 height>;
+    end;    // add_element
+
+
+    shape optical_base
+        to vector location;
+    is
+        scalar x = location dot <1 0 0>;
+        scalar y = location dot <0 1 0>;
+
+        cylinder with
+            material is silver;
+            end1 = <x y height>;
+            end2 = location + <0 0 height>;
+            radius = .1;
+        end;
+    end;    // optical_base
+
+
+    objective shader luminous
+        color type color;
+    with
+        global color = color;
+    is
+        scalar opacity = abs (direction dot normal) ^ 4;
+        answer blend background to color by opacity;
+    end;    // luminous
+
+
+    shape lamp is
+        luminous yellow sphere with
+            radius = .9;
+        end;
+        transparent white sphere with
+            radius = 1;
+        end;
+    end;    // lamp
+
+
+    shape rays is
+        vector ray_origin = lamp_location;
+        vector ray_direction = first_point - lamp_location;
+
+        // source ray
+        //
+        arrow from ray_origin to first_point;
+        
+        // traced rays
+        // 
+        optics tracing_rays from ray_origin towards ray_direction;
+    end;    // tracing_rays
+
+
+    // actor methods
+    //
+    
+    
+    shape instance is
+        static material type glassy_material is glass;
+        
+        // base of optical bench
+        //
+        block with
+            material is wood_veneer;
+            scale by (length / 2) along <1 0 0>;
+            scale by (width / 2) along <0 1 0>;
+            scale by (height / 2) along <0 0 1>;
+            move to <0 0 (height / 2)>;
+        end;
+
+        // optical bases
+        //
+        for each element type element and its next in elements do
+            optical_base to element's base;
+        end;
+
+        // light source
+        //
+        lamp with
+            magnify by lamp_size;
+            move to lamp_location + <0 0 height>;
+        end;
+        optical_base to lamp_location - <0 0 lamp_size>;
+
+        // optical elements
+        //        
+        optics instance;
+
+        // show light rays if touched
+        //
+        if touched then
+            rays;
+        end;
+    end;    // instance
+
+
+    // touchable methods
+    //
+    
+    
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        vector normal;
+
+        objective shape target is
+            optics instance;
+        end;
+
+        touched is ray_hits_shape location direction target
+            return at touched_point towards normal;
+
+        // trace first ray to intersection
+        //
+        if touched then
+            touched is ray_hits_shape lamp_location
+                (touched_point - lamp_location)
+                target return at first_point towards normal;
+        end;
+
+        // set the cursor if the user is not interacting with the scene
+        //
+        {
+        if touched then
+            if not ((some current_interaction) and
+                (current_interaction is_tracking)) then
+                set_cursor to arrow;
+            end;
+        end;
+        }
+    end;    // touch
+end;    // optical_bench

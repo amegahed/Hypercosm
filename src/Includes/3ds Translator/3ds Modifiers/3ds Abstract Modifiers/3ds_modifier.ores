@@ -1,0 +1,37 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          3ds_modifier.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains modifier stack definitions that correspond     }
+{       to entities from Discreet's 3D Studio Max software.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/3ds_modifier_behaviors.ores";
+include "system/recycling.ores";
+include "system/printing.ores";
+
+//
+// modifier base class
+//
+
+abstract subject translated_3ds_modifier
+extends
+	translated_3ds_stackable recycleable object
+does
+	// introspective methods
+	//
+	object type question get_self;
+is
+	//
+	// introspective methods
+	//
+	
+	object type question get_self is
+		answer translated_3ds_modifier;
+	end;    // get_self
+end;    // translated_3ds_modifier

@@ -1,0 +1,81 @@
+{***************************************************************}
+{                          crayon.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do crayon_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape crayon with
+    color type color = yellow;
+is
+    shape body is
+        cylinder with
+            end1 = <-.8 0 0>;
+            end2 = <1 0 0>;
+            radius = .1;
+        end;    // body
+        cone with
+            end1 = <-.8 0 0>;
+            end2 = <-.81 0 0>;
+            radius1 = .1;
+            radius2 = .08;
+        end;
+        cone with
+            end1 = <-.81 0 0>;
+            end2 = <-1.05 0 0>;
+            radius1 = .08;
+            radius2 = .025;
+        end;    // top
+        disk with
+            center = <-1.05 0 0>;
+            normal = <1 0 0>;
+            radius = .025;
+        end;    // front end
+        disk with
+            center = <1 0 0>;
+            normal = <1 0 0>;
+            radius = .1;
+        end;    // back end
+    end;    // body
+
+
+    shape wrapper is
+        cylinder with
+            end1 = <-.7 0 0>;
+            end2 = <.9 0 0>;
+            radius = .105;
+        end;
+    end;    // wrapper
+
+    body with
+        material is plastic colored color;
+    end;
+    wrapper with
+        material is chalk textured new texture type
+            using new image type named "crayon.jpg";
+    end;
+end;    // crayon
+
+
+anim crayon_anim
+    args type args;
+with
+    eye = <-1.5 -2 1>;
+    double_buffer is on;
+    facets = 8;
+    args check;
+is
+    shape scene is
+        crayon;
+    end;
+    mouse_controlled_shape scene;
+end;    // crayon_anim

@@ -1,0 +1,87 @@
+{***************************************************************}
+{                          cube_faces.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cube_faces_picture;
+
+
+include "system/3d.ores";
+include "system/futura_l.omar";
+include "system/figures.ores";
+include "system/cube_mesh.omar";
+
+
+shape cube_mesh_faces is
+    cube_mesh;
+
+    // numbers on faces
+    //
+        futura_l_1 with move to <-.1 -.3 -1>; end;
+        futura_l_2 with move to <-.1 -.3 1>; end;
+        futura_l_3 with
+        rotate by 90 around <1 0 0>;
+        move to <-.1 -1 -.3>;
+    end;
+        futura_l_4 with
+        rotate by 90 around <1 0 0>;
+        rotate by 90 around <0 0 1>;
+            move to <1 -.1 -.3>;
+    end;
+        futura_l_5 with
+        rotate by 90 around <1 0 0>;
+        move to <-.1 1 -.3>;
+    end;
+        futura_l_6 with
+        rotate by 90 around <1 0 0>;
+        rotate by 90 around <0 0 1>;
+            move to <-1 -.1 -.3>;
+    end;
+
+    // arcs on faces
+    //
+        arrow_arc to -320 with
+        radius = .3;
+        move to <0 0 -1>;
+    end;
+        arrow_arc to 320 with
+        radius = .3;
+        move to <0 0 1>;
+    end;
+        arrow_arc to -320 with
+        radius = .3;
+        rotate by -90 around <1 0 0>;
+        move to <0 -1 0>;
+    end;
+        arrow_arc to 320 with
+        radius = .3;
+        rotate by -90 around <1 0 0>;
+        move to <0 1 0>;
+    end;
+        arrow_arc to 320 with
+        radius = .3;
+        rotate by 90 around <0 1 0>;
+        move to <1 0 0>;
+    end;
+        arrow_arc to -320 with
+        radius = .3;
+        rotate by 90 around <0 1 0>;
+        move to <-1 0 0>;
+    end;
+end;    // cube_mesh_faces
+
+
+picture cube_faces_picture with
+    eye = <2 -8 4>;
+    lookat = <0 0 0>;
+    render_mode is wireframe;
+    edges is all;
+    field_of_view = 40;
+is
+    distant_light from <.3 -.5 1>;
+    cube_mesh_faces;
+end;    // cube_faces_picture

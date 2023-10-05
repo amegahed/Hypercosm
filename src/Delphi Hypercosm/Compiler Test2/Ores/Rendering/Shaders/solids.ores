@@ -1,0 +1,256 @@
+{***************************************************************}
+{                          solids.ores                          }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{          Contains some standard solid texture shaders.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_shading.ores";
+include "system/native_rendering.ores";
+include "system/math.ores";
+include "system/standard_colors.ores";
+include "system/vectors.ores";
+include "system/turbulence.ores";
+
+
+
+shader granite
+    color type color;
+with
+    global color = color;
+is
+    vector v = location in local * 10;
+
+    answer color * turbulence v;
+end;    // granite
+
+
+shader wooden with
+    global color = brown;
+is
+    vector v = location in local;
+    scalar x, y, z;
+    scalar r, s;
+    scalar ringscale = 4;
+
+    // add noise to perturb point
+    v = v + vnoise (v);
+    x = v dot <1 0 0>;
+    y = v dot <0 1 0>;
+    z = v dot <0 0 1>;
+
+    // find radial distance to center of 'tree'
+    r = sqrt (y * y + z * z);
+    r = (r + x * 8) * ringscale;
+    s = noise1 (r);
+
+    // add higher frequency noise
+    s = s - trunc s;
+    s = s + (noise1 (r * 4) - .5);
+    s = clamp s from 0 to 1;
+
+        answer blend brown to light orange by s;
+end;    // wooden
+
+
+shader marble
+    color type color;
+with
+    global color = color;
+is
+    vector v = location in local * 5;
+    scalar s = 0;
+    scalar factor = 1;
+    color type color_shift;
+
+    // add noise to perturb point
+    v = v + vnoise (v);
+
+    // add higher frequency noise
+    for integer counter = 1..6 do
+        s = s + noise (v * factor) / factor;
+        factor = factor * 2;
+    end;
+    color_shift = vnoise1 (s * 10) * .15;
+    color = (color * s) + color_shift;
+
+    answer vclamp color from black to white;
+end;    // marble_color
+
+
+shader dirty
+    color type color;
+is
+    const integer levels = 6;
+    vector v = location in local * 10;
+    scalar s = 0;
+    scalar factor = .75;
+
+    for integer counter = 1..levels do
+        s = s + noise (v * counter) * factor;
+        factor = factor * .5;
+    end;
+
+    answer color * s;
+end;    // dirty
+
+
+shader soap_bubble with
+    render_mode is wireframe;
+    edges is silhouette;
+    global color = white;
+is
+    vector illumination = <0 0 0>;
+    vector highlight = <0 0 0>;
+    vector diffuse = <0 0 0>;
+    vector specular = <0 0 0>;
+    vector transmitted = <0 0 0>;
+    vector direction, reflection;
+    color type light, soapy_color1, soapy_color2;
+    scalar theta, alpha;
+
+    // sum up illumination from light sources
+    for integer counter = 1..light_number do
+        direction = light_direction of counter;
+        theta = normal dot direction;
+
+        // is light on correct side
+        if (theta > 0) then
+            light = light_intensity of counter;
+
+            // is light blocked
+            if (light <> black) then
+                illumination = illumination + (light *
+                    theta);
+                reflection = ((direction parallel normal)
+                    * 2) - direction;
+                alpha = reflection dot direction;
+
+                // does light cast highlight
+                if alpha > 0 then
+                    highlight = highlight + (light *
+                        alpha ^ 40);
+                end;
+            end;
+        end;
+    end;
+    if shadow_ray then
+        answer refract 1 (color * .9);
+    else
+        soapy_color1 = vnoise (location in local * 10);
+                soapy_color2 = blend soapy_color1 to white by .7;
+        diffuse = (illumination + ambient) * white * .1;
+        highlight = highlight * soapy_color1;
+        specular = reflect (soapy_color2 * .1);
+        transmitted = refract 1 soapy_color2;
+        answer diffuse + specular + transmitted + highlight;
+    end;
+end;    // soap_bubble
+
+
+shader cloudy
+is
+    vector v = location in local * 5;
+    scalar sum = 0;
+    scalar factor = 1;
+    scalar lower_threshold = .05;
+    scalar upper_threshold = .25;
+    vector transmitted;
+    vector scattered;
+
+    for integer counter = 1..4 do
+        factor = factor * 2;
+        sum = itself + noise (v * factor) / factor;
+    end;
+
+    sum = itself * itself * itself;
+    if sum < lower_threshold then
+        sum = 0;
+    else
+        sum = (itself - lower_threshold) /
+            (upper_threshold - lower_threshold);
+    end;
+
+    scattered = white * sum * 1;
+
+    transmitted = refract 1 (white * (1 - sum));
+    answer scattered + transmitted;
+end;    // cloudy
+
+
+shader bricked
+    color color type brick_color = brick;
+    mortar color type mortar_color = white;
+with
+    global color = brick_color;
+is
+    const scalar brick_height = .1;
+    const scalar brick_width = .2;
+    const scalar mortar_height = .1;
+    const scalar mortar_width = .05;
+    vector v = location in local;
+    scalar x = abs (v dot <1 0 0> / brick_width);
+    scalar y = abs (v dot <0 1 0> / brick_height);
+    scalar z = abs (v dot <0 0 1> / brick_height);
+
+    x = x + mortar_width * 1.5;
+    y = y + mortar_height * 1.5;
+    z = z + mortar_height * 1.5;
+
+    // horizontal stripes
+    if abs (z - round z) < mortar_height then
+        answer mortar_color;
+    else
+        // vertical stripes
+        if (z < 0) then
+            x = x + .5;
+            z = -z;
+        end;
+        if odd trunc z then
+            x = x + .5;
+        end;
+        if (y < 0) then
+            x = x + .5;
+            y = -y;
+        end;
+        if odd trunc y then
+            x = x + .5;
+        end;
+
+        if abs (y - round y) < mortar_height then
+            answer mortar_color;
+        elseif abs (x - round x) < mortar_width then
+            answer mortar_color;
+        else
+            answer brick_color;
+        end;
+    end;
+end;    // bricked
+
+
+shader camoflage with
+    global color = dark green;
+is
+    vector v = location in local;
+    color type color;
+
+    if (noise v) < .5 then
+        color = brown;
+    else
+        color = dark green;
+    end;
+
+    // add offset for other pattern
+    //
+    v = itself + vnoise(v);
+
+    if (noise v) < .33 then
+        color = (green + yellow) / 4;
+    end;
+
+    answer color;
+end;    // camoflage_color

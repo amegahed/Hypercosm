@@ -1,0 +1,81 @@
+do textured_standard_material_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_teapot.ores";
+include "system/3ds_standard_material.ores";
+include "system/arrow_shapes.ores";
+
+shape textured_standard_material_scene with
+    scalar time = 0;
+    scalar tessellation = 1;
+is
+	static translated_3ds_standard_material type material with
+	
+		// color component parameters
+		//
+	    ambient_color = black;
+	    diffuse_color = orange;
+	    specular_color = white;
+	    self_illum_color = black;
+	
+		// scalar parameters
+		//        
+	    specular_level = 5;
+	    glossiness = .5;
+	    soften = .1;
+	    opacity = 1;
+	    
+	    // mapping parameters
+	    //
+	    new maps with
+	        // diffuse_color's map is new texture using new image named "hyper.jpg";
+	        
+	        with diffuse_color do
+	            its map is new texture using new image named "hyper.jpg";
+	            its amount = 1;
+	            its enabled is true;
+	        end;
+	    end;
+	end;
+	
+	static shape thing with
+	    scalar tessellation = 1;
+	is
+		translated_3ds_teapot with		
+		    radius = 25;
+            segments = trunc (segments * tessellation);
+		    smooth is true;
+		    body is true;
+		    handle is true;
+		    spout is true;
+		    lid is true;
+		    gen_mapping_coords is true;
+		end;
+	end;	// thing	
+	
+	thing with		
+        tessellation = static tessellation;
+		material apply;
+	end;
+end;	// textured_standard_material_scene
+	
+	
+anim textured_standard_material_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+		
+	mouse_controlled_animated_tessellated_shape textured_standard_material_scene
+		within new static_shape of environment
+	    titled "3DS Textured Standard Material" 
+	with
+		auto_camera is on;
+	end;
+end;	// textured_standard_material_anim

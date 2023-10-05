@@ -1,0 +1,85 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         cylinder_parser.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a parser for parsing cylinder        }
+{       instances from an XML stream.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2007 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/xml_reading.ores";
+include "cylinder_instance.ores";
+include "trans_parser.ores";
+include "material_parser.ores";
+
+cylinder_instance type question parse_cylinder
+	from xml_reading type xml_reader;
+is
+	// 3ds cylinder attributes
+	//
+	vector end1 = <0 0 1>;
+	vector end2 = <0 0 -1>;
+	scalar radius = 0;
+	scalar height = 0;
+	trans type trans;
+	material type material is none;
+	
+	// parse start element
+	//      
+	xml_reader require start_element named "cylinder";
+		
+	// parse attributes
+	//
+	for integer counter = 1 .. xml_reader get_attribute_count do
+		string type name is xml_reader get_attribute_name of counter;
+		string type value is xml_reader get_attribute_value of counter;
+		
+		if name matches "end1" then
+			end1 = value to_vector;
+		elseif name matches "end2" then
+			end2 = value to_vector;
+		elseif name matches "radius" then
+			radius = value to_scalar;
+		elseif name matches "height" then
+			height = value to_scalar;
+		end;
+	end;
+	xml_reader skip_element;
+		
+	// parse nested elements
+	//
+	while xml_reader is_ok and not xml_reader is_next end_element named "cylinder" do
+		// parse transformation
+		//      
+		if xml_reader is_next start_element named "trans" then
+			parse_trans trans from xml_reader;
+			
+		// parse material
+		//
+		elseif xml_reader is_next start_element named "material" then
+			material is parse_material from xml_reader;
+			
+		// skip unknown elements
+		//
+		else
+			xml_reader skip_element;    
+		end;
+	end;
+	// parse end element
+	//          
+	xml_reader require end_element named "cylinder";
+	xml_reader skip_element;
+	// create and return cylinder
+	//      
+	answer (new cylinder_instance with
+		end1 = <0 0 (height/2)>;
+		end2 = <0 0 -(height/2)>;
+		radius = static radius;
+		trans = static trans;
+		material is static material;
+	);
+end;    // parse_cylinder

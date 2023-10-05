@@ -1,0 +1,311 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		      meshes.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains generalized mesh geometry definitions.     	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/mesh.ores";
+
+
+subject meshes
+extends
+	mesh type[]
+does
+    // transformable methods
+    //
+    verb transform
+        from trans type trans;
+    end;
+    
+	// texturable methods
+	//
+	verb apply
+	    texture_mapping type texture_mapping;
+	end;    // apply
+		
+	// renderable methods
+	//
+	shape instance;
+
+	// boundable methods
+	//
+	volume_bounding type question get_bounds;
+
+	// mesh concatenation method
+	//
+	mesh type question to_mesh with
+	
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	end;
+			
+	// printable methods
+	//
+	verb print;
+is
+	//
+    // transformable methods
+    //
+    
+    
+    verb transform
+        from trans type trans;
+    is
+    	for each mesh type mesh in meshes do
+    		mesh transform from trans;
+    	end;
+    end;	// transform
+    
+
+	//    
+	// texturable methods
+	//
+	
+	
+	verb apply
+	    texture_mapping type texture_mapping;
+	is
+		for each mesh type mesh in meshes do
+			mesh apply texture_mapping;
+		end;
+	end;    // apply
+	
+
+	//		
+	// renderable methods
+	//
+	
+	
+	shape instance is
+		for each mesh type mesh in meshes do
+			mesh instance;
+		end;
+	end;	// instance
+	
+
+	//
+	// boundable methods
+	//
+
+
+	volume_bounding type question get_bounds is
+		volume_extents type extents;
+		for each mesh type mesh in meshes do
+			extents expand to mesh get_bounds;
+		end;
+		answer extents;
+	end;	// get_bounds
+
+
+	//		
+	// mesh concatenation method
+	//
+	
+
+	mesh_geometry type question get_mesh_geometry is
+		mesh_geometry type mesh_geometry is none;
+				
+		// mesh geometry components
+		//
+		integer num_vertices = 0;
+		integer num_normals = 0;
+		integer num_texcoords = 0;
+		vectors type vertices is none;
+		vectors type normals is none;
+		vectors type texcoords is none;
+		
+		// sum mesh geometry components
+		//
+		for each mesh type mesh in meshes do
+			if some mesh then
+				if some mesh's geometry then
+					num_vertices = itself + num mesh's geometry's vertices;
+					num_normals = itself + num mesh's geometry's normals;
+					num_texcoords = itself + num mesh's geometry's texcoords;
+				end;
+			end;
+		end;
+		
+		// allocate mesh geometry components
+		//
+		if num_vertices <> 0 then
+			dim vertices[1 .. num_vertices];
+		end;
+		if num_normals <> 0 then
+			dim normals[1 .. num_normals];
+		end;
+		if num_texcoords <> 0 then
+			dim texcoords[1 .. num_texcoords];
+		end;
+		
+		// copy mesh geometry components
+		//
+		num_vertices = 1;
+		num_normals = 1;
+		num_texcoords = 1;
+		for each mesh type mesh in meshes do
+			if some mesh then
+				if some mesh's geometry then
+							
+					// copy vertices
+					//
+					if some vertices then
+						vertices[num_vertices .. num_vertices + num mesh's geometry's vertices - 1] = 
+							mesh's geometry's vertices[..];
+						num_vertices = itself + num mesh's geometry's vertices;
+					end;
+					
+					// copy normals
+					//
+					if some normals then
+						normals[num_normals .. num_normals + num mesh's geometry's normals - 1] =
+							mesh's geometry's normals[..];
+						num_normals = itself + num mesh's geometry's normals;
+					end;
+		
+					// copy texcoords
+					//
+					if some texcoords then
+						texcoords[num_texcoords .. num_texcoords + num mesh's geometry's texcoords - 1] = 
+							mesh's geometry's texcoords[..];			
+						num_texcoords = itself + num mesh's geometry's texcoords;
+					end;
+				end;
+			end;
+		end;
+		
+		// initialize mesh geometry
+		//
+		mesh_geometry is recycleable_mesh_geometry type's get;
+		mesh_geometry set to vertices oriented to normals textured by texcoords;
+			
+		answer mesh_geometry;
+	end;	// get_mesh_geometry
+	
+
+	mesh_topology type question get_mesh_topology is
+		mesh_topology type mesh_topology is none;
+		
+		integer num_edges = 0;
+		integer num_face_indices = 0;
+	    integer edges[,] is none;
+	    integer face_indices[] is none;
+	    integer vertex_offset = 0;
+	    integer edge_offset = 0;
+	
+		// sum mesh topology components
+		//
+		for each mesh type mesh in meshes do
+			if some mesh then
+				if some mesh's topology then
+					num_edges = itself + num mesh's topology's edges;
+					num_face_indices = itself + num mesh's topology's face_indices;
+				end;
+			end;
+		end;
+		
+		// allocate mesh topology components
+		//
+		dim edges[1 .. num_edges, 1 .. 2];
+		dim face_indices[1 .. num_face_indices];
+		
+		// copy mesh topology components
+		//
+		num_edges = 0;
+		num_face_indices = 0;
+		for each mesh type mesh in meshes do
+			if some mesh then
+				if some mesh's topology then
+				
+					// copy edges
+					//
+					for integer counter = 1 .. num mesh's topology's edges do
+						edges[num_edges + counter, 1] = mesh's topology's edges[counter, 1] + vertex_offset;
+						edges[num_edges + counter, 2] = mesh's topology's edges[counter, 2] + vertex_offset;
+					end;
+					num_edges = itself + num mesh's topology's edges;
+					vertex_offset = itself + num mesh's geometry's vertices;
+					
+					// copy face indices
+					//
+					for integer counter = 1 .. num mesh's topology's face_indices do
+						if mesh's topology's face_indices[counter] < 0 then
+						
+							// reversed edges
+							//
+							face_indices[num_face_indices + counter] = mesh's topology's face_indices[counter] 
+								- edge_offset;
+						elseif mesh's topology's face_indices[counter] = 0 then
+							// final edges
+							//
+							face_indices[num_face_indices + counter] = 0;
+						else
+							// forward edges
+							//
+							face_indices[num_face_indices + counter] = mesh's topology's face_indices[counter] 
+								+ edge_offset;
+						end;
+					end;
+					
+					num_face_indices = itself + num mesh's topology's face_indices;
+					edge_offset = itself + num mesh's topology's edges;
+				end;
+			end;
+		end;
+		
+		// initialize mesh topology
+		//
+		mesh_topology is recycleable_mesh_topology type's get;
+		mesh_topology set to edges from face_indices;
+		
+		answer mesh_topology;
+	end;	// get_mesh_topology
+	
+			
+	mesh type question to_mesh with
+	
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	is
+		recycleable_mesh type mesh is recycleable_mesh type's get;
+		
+		mesh set with
+			geometry is get_mesh_geometry;
+			topology is get_mesh_topology;
+
+			// rendering flag parameters
+			//
+			smoothing is static smoothing;
+			mending is static mending;
+			closed is static closed;		
+		end;
+		
+		answer mesh;
+	end;	// to_mesh
+	
+	
+	//		
+	// printable methods
+	//
+	
+	
+	verb print is
+	    write "meshes:", ;
+		for each mesh type mesh in meshes do
+			mesh print;
+		end;
+	end;	// print
+end;	// meshes

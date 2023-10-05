@@ -1,0 +1,58 @@
+{***************************************************************}
+{                          rotate.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rotate_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/snowman.omar";
+
+
+anim rotate_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <.5 0 .85>;
+    args check;
+is
+	shape scene is
+        scalar h = 3.6 * .5;
+
+        snowman with
+            magnify by .5;
+            color = white;
+            render_mode is wireframe;
+        end;
+        snowman with
+            rotate by 60 around <0 1 0>;
+            magnify by .5;
+            color = red;
+            render_mode is wireframe;
+        end;
+        arrow_arc to 60 with
+            radius = h;
+            rotate by (90 - h) around <0 0 1>;
+            rotate by 90 around <1 0 0>;
+            scale by -1 along <1 0 0>;
+        end;
+        futura_l_word "ROTATE" with
+            rotate by 90 around <1 0 0>;
+            move to <0 0 (h + .1)>;
+            rotate by 30 around <0 1 0>;
+        end;
+        axes;
+	end;
+	
+    mouse_controlled_shape scene titled "The Rotate Transformation";
+end;    // rotate_anim

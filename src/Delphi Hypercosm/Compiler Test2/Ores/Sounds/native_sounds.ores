@@ -1,0 +1,141 @@
+{***************************************************************}
+{                        native_sounds.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{               Contains the native sound utilities.            }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "downloadable.ores";
+include "strings.ores";
+
+
+// *** beep ***
+// Plays the standard system beep.
+//
+native verb beep;
+
+
+enum sound_status is invalid, unloaded, stopped, playing;
+
+
+subject sound
+extends
+    downloadable object
+does
+    // constructor
+    // The sound's name should be the name of a WAVE format sound file.
+    // Caution:  not all WAVE compression formats are supported on all
+    // types of computer platforms.
+    //
+    native verb new
+        named string type name;
+    with
+        boolean looping is off;
+        string type fingerprints[] is none;
+        boolean bad_fingerprint_is_fatal is true;
+    end;    // new
+
+    // methods
+    //
+
+    // *** play ***
+    // Starts playback from the specified offset from the start of the
+    // sound.
+    //
+    native verb play
+        from scalar seconds = 0;
+    end;
+
+    // *** stop ***
+    // Stops playback.  The sound's position is left where the sound was
+    // playing at the time stop was called.  Has no effect if the sound
+    // is not playing.
+    //
+    native verb stop;
+
+    // *** resume ***
+    // Starts playback at the sound's current position.  Has no effect if
+    // the sound is already playing.
+    //
+    verb resume;
+
+    // *** set_looping ***
+    // *** looping ***
+    // Sets and gets the looping state of the sound.  If a sound is set to
+    // loop it will automatically play from the beginning when playback
+    // reaches the end of the sound.
+    //
+    native verb set_looping
+        to boolean state is on;
+    end;
+    native boolean question looping;
+
+    // *** set_volume ***
+    // *** volume ***
+    // Sets and gets the volume level of the sound.  Between 0 and 1.
+    // 0 indicates silence.
+    // 1 indicates the original recorded volume of the sound.
+    //
+    native verb set_volume
+        to scalar level;
+    end;
+    native scalar question volume;
+
+    // *** skip ***
+    // *** rewind ***
+    // *** fast_forward ***
+    // *** position ***
+    // Sets the current position of a sound as an offset from the beginning
+    // of the sound, rewinds or advances some number of seconds from the
+    // current position, and gets the current position, respectively.
+    // Skipping or rewinding past the beginning of a sound sets the position
+    // to the beginning of the sound.  Skipping or advancing past the end
+    // of a sound sets the position to the end of the sound, and ends
+    // playback if the sound is playing and looping is not set.
+    //
+    native verb skip
+        to scalar seconds;
+    end;
+    native verb rewind
+        by scalar seconds = 1;
+    end;
+    native verb fast_forward
+        by scalar seconds = 1;
+    end;
+    native scalar question position;
+
+    // *** status ***
+    // Returns the sound's current status.
+    //
+    native sound_status type question status;
+
+    // *** download status ***
+    native download_status type question download_status;
+
+    // *** finish_loading ***
+    // Pauses program until the sound is fully loaded.
+    //
+    native verb finish_loading;
+
+    // destructor
+    //
+    native verb free;
+has
+    private long id;
+is
+    verb resume
+    is
+        if status is stopped then
+            play from position;
+        end;
+    end;
+end;    // sound

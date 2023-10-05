@@ -1,0 +1,63 @@
+{***************************************************************}
+{                          tangent.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test_anim;
+
+
+include "system/3d.ores";
+include "system/figures.ores";
+
+
+picture test with
+    eye = <0 -10 0>;
+is
+    scalar h = (get_mouse dot <0 1 0>) * 4;
+    scalar r = abs (get_mouse dot <1 0 0>) * 2;
+    scalar x, y;
+    scalar r_squared;
+
+    circle with
+        facets = 12;
+        radius = r;
+        rotate by 90 around <1 0 0>;
+        color = red;
+    end;
+    circle with
+        facets = 6;
+        radius = .1;
+        rotate by 90 around <1 0 0>;
+        move to <0 0 h>;
+    end;
+    if abs (h) > r then
+        r_squared = r * r;
+        y = r_squared / h;
+        x = sqrt (r_squared - sqr (y));
+
+        // draw tangent
+        //
+        line [(<0 0 h>) (<x 0 y>)] with
+            color = blue;
+        end;
+        line [(<0 0 h>) (<-x 0 y>)] with
+            color = blue;
+        end;
+    end;
+end;    // test
+
+
+anim test_anim
+    args type args;
+with
+    double_buffer is on;
+    args check;
+is
+    while true do
+        test;
+    end;
+end;    // test_anim

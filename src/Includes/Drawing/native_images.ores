@@ -1,0 +1,43 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          native_images.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native image utilities.                    }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/standard_colors.ores";
+include "system/booleans.ores";
+include "system/strings.ores";
+
+subject image
+does
+	// constructor
+	//
+	native verb new
+		named string type name;
+	end;    // new
+
+	native color type question get_color
+		enum units is pixel_units, image_units;
+		at scalar x, y;
+		in units type units is pixel_units;
+	with
+		boolean interpolation is on;
+	end;    // get_color
+
+	// destructor
+	//
+	native verb free;
+has
+	// attributes
+	//
+	private long id;
+end;    // image

@@ -1,0 +1,40 @@
+do translated_3ds_circle_anim;
+
+include "system/3d.ores";
+include "system/3ds_circle.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape translated_3ds_circle_scene with
+    scalar time = 0;
+    scalar tessellation = 1;
+is	
+	translated_3ds_circle with
+	    radius = 25 + sin(time * 90) * 20;
+	    steps = round (8 * tessellation); 
+	    
+	    renderable is true;
+	    thickness = 1;
+	    sides = 6;
+	end;
+end;    // translated_3ds_circle_scene
+	
+	
+anim translated_3ds_circle_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+    	
+	mouse_controlled_animated_tessellated_shape translated_3ds_circle_scene
+		within new static_shape of environment
+	    titled "3DS Circle"
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_circle_anim

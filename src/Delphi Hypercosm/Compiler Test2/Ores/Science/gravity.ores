@@ -1,0 +1,317 @@
+{***************************************************************}
+{                          gravity.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains standard gravitational functions and a         }
+{       subject which can be used to model systems.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/actors.ores";
+include "system/standard_colors.ores";
+
+
+const scalar g_constant = 6.617E-31;
+
+{***************************************************************}
+{                  OMAR gravitational functions                 }
+{***************************************************************}
+// find the magnitude of the gravitational force which is
+// exerted between two bodies
+//
+scalar question g_force_strength
+    of scalar mass1, mass2;
+    at scalar distance;
+with
+    scalar g = 1;
+is
+    answer g * mass1 * mass2 / (distance * distance);
+end;    // g_force_strength
+
+
+// find the magnitude of the gravitational acceleration
+// which is experienced by a body in response to another
+//
+scalar question g_acceleration_strength
+    of scalar mass;
+    at scalar distance;
+with
+    scalar g = 1;
+is
+    answer g * mass / (distance * distance);
+end;    // g_acceleration_strength
+
+
+// find the gravitational vector force which is exerted
+// between two bodies
+//
+vector question g_force
+    of scalar mass1, mass2;
+    at vector point1, point2;
+with
+    scalar g = 1;
+is
+    vector v = point2 - point1;
+    scalar d_squared = v dot v;
+    scalar d = sqrt d_squared;
+
+    answer (v / d) * (g * mass1 * mass2) / d_squared;
+end;    // g_force
+
+
+// find the gravitational vector acceleration which
+// is experienced by a body in response to another
+//
+vector question g_acceleration
+    of scalar mass;
+    in vector direction;
+with
+    scalar g = 1;
+is
+    scalar d_squared = direction dot direction;
+    scalar d = sqrt d_squared;
+
+    answer (direction / d) * (g * mass) / d_squared;
+end;    // g_acceleration
+
+
+{***************************************************************}
+{                    OMAR gravitational systems                 }
+{***************************************************************}
+subject g_system
+extends
+    timed_actor
+does
+    // interface
+    //
+    verb orbit
+        actable type reference actor;
+        at vector location = <0 0 0>;
+    with
+        scalar size = 1;
+        scalar mass = 1;
+        color type color = white;
+    end;    // orbit
+
+    verb init;
+    verb print;
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    // attributes
+    //
+    struct planet has
+        actable type actor is none;
+        vector location, velocity;
+        scalar size, mass;
+        color type color;
+        planet type next is none;
+    end;    // planet
+
+
+    planet type planets is none;
+    public vector center_of_mass = <0 0 0>;
+    public scalar total_mass = 0;
+is
+    // implementation
+    //
+    const scalar g = .01;
+
+
+    verb orbit
+        actable type reference actor;
+        at vector location = <0 0 0>;
+    with
+        scalar size = 1;
+        scalar mass = 1;
+        color type color = white;
+    is
+        planet type planet;
+
+        // init planet
+        //
+        with planet do
+            its actor is actor;
+            its location = location;
+            its size = size;
+            its mass = mass;
+            its color = color;
+        end;
+        total_mass = itself + mass;
+
+        // add to list of planets
+        //
+        planet's next is planets;
+        planets is planet;
+
+        // nuke original reference
+        //
+        actor is none;
+    end;    // orbit
+
+
+    shape instance is
+        // create geometric representation of planets
+        //
+        for each planet type planet and its next in planets do
+            planet's actor instance with
+                magnify by planet's size;
+                move to planet's location;
+                color = planet's color;
+            end;
+        end;
+    end;    // instance
+
+
+    vector question attraction
+        from planet type planet1;
+        to planet type planet2;
+    is
+        if planet1's location <> planet2's location then
+            vector v = planet2's location - planet1's location;
+            scalar d_squared = v dot itself;
+            scalar d = sqrt d_squared;
+            scalar r = planet1's size + planet2's size;
+
+            if (d > r / 2) then
+                answer (v / d) * (g * planet2's mass) /
+                    d_squared;
+            else
+                // planets are intersecting!
+                //
+                answer <0 0 0>;
+            end;
+        else
+            // planets are coincident
+            //
+            answer <0 0 0>;
+        end;
+    end;    // attraction
+
+
+    vector question sum_attraction
+        of planet type planet;
+    is
+        // sum attraction from environment
+        //
+        vector sum = <0 0 0>;
+
+        for each planet type planet2 and its next in planets do
+            if planet2 isn't planet then
+                sum = itself + attraction from planet to
+                    planet2;
+            end;
+        end;
+
+        answer sum;
+    end;    // sum_attraction
+
+
+    verb advance
+        by scalar time_step;
+    is
+        for each planet type planet and its next in planets do
+
+            // accelerate planet
+            //
+            planet's velocity = itself + sum_attraction of planet;
+            planet's location = itself + planet's velocity;
+
+            // animate planet
+            //
+            planet's actor act;
+        end;
+    end;    // step
+
+
+    verb print is
+        write "total mass = ", total_mass, ;
+        write "center of mass = ", center_of_mass, ;
+
+        for each planet type planet and its next in planets do
+            write "planet with, ";
+            write "	location = ", planet's location, ;
+            write "	size = ", planet's size, ;
+            write "	color = ", planet's color, ;
+            write "end;", ;
+        end;
+    end;    // print
+
+
+    verb find_center is
+        // find center of mass of system
+        //
+        for each planet type planet and its next in planets do
+            center_of_mass = itself + planet's location *
+                planet's mass;
+        end;
+        center_of_mass = itself / total_mass;
+    end;    // find_center
+
+
+    verb init_velocities is
+        // give all planets tangential
+        // orbital velocity to start
+        //
+        for each planet type planet and its next in planets do
+            // compute orbital speed
+            //
+            vector attraction = sum_attraction of planet;
+            scalar acceleration = sqrt (attraction dot itself);
+
+            if acceleration <> 0 then
+                vector direction = planet's location -
+                    center_of_mass;
+                scalar r_squared = direction dot itself;
+                scalar r = sqrt (r_squared);
+                scalar speed = sqrt (acceleration * r);
+
+                // compute velocity vector
+                //
+                if direction <> <0 0 0> then
+                    vector v = <0 0 1> cross direction;
+                    r_squared = v dot itself;
+                    v = itself / sqrt r_squared;
+                    planet's velocity = v * speed;
+                else
+                    planet's velocity = <0 0 0>;
+                end;
+            else
+                planet's velocity = <0 0 0>;
+            end;
+        end;
+    end;    // init_velocities
+
+
+    verb average_momentums is
+        vector total_momentum = <0 0 0>;
+        vector average_velocity;
+
+        // calculate average momentum
+        //
+        for each planet type planet and its next in planets do
+            vector momentum = planet's velocity * planet's mass;
+            total_momentum = itself + momentum;
+        end;
+        average_velocity = total_momentum / total_mass;
+
+        // subtract average velocity
+        //
+        for each planet type planet and its next in planets do
+            planet's velocity = itself - average_velocity;
+        end;
+    end;    // average_momentums
+
+
+    verb init is
+        find_center;
+        init_velocities;
+        average_momentums;
+    end;    // init
+end;    // g_system

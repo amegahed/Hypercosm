@@ -1,0 +1,124 @@
+do picking_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/common_materials.ores";
+include "system/native_picking.ores";
+include "fish.omar";
+
+boolean sphere_touched is false;
+boolean paraboloid_touched is false;
+boolean torus_touched is false;
+boolean fish_touched is false;
+
+material type highlight_material is (plastic colored yellow with override is true);
+
+shape sphere_shape is
+	sphere with
+		//move to <2 -2 1>;
+		material is plastic colored red;
+		selection_set = 1;
+	end;
+end;    // sphere_shape
+
+shape paraboloid_shape is 
+	paraboloid with
+		material is plastic poster "Panels.jpg";
+		scale by 2 along <0 0 1>;
+		move to <-2 2 2>;
+		selection_set = 2;
+	end;
+end;    // paraboloid_shape
+
+shape torus_shape is
+	torus with
+		outer_radius = 1.5;
+		inner_radius = .5;
+		move to <2 2 1>;
+		material is wood;
+		selection_set = 3;
+	end;
+end;    // torus_shape
+
+shape fish_shape is
+	static fish type fish;
+	fish instance with
+		magnify by .1;
+		rotate by 90 around <0 0 1>;
+		move to <-2 -2 1>;
+		selection_set = 4;
+	end;
+end;    // fish_shape
+
+shape targets with
+	scalar time = 0;
+is
+	sphere_shape with
+		if sphere_touched then
+			material is highlight_material;
+		end;
+	end;
+	paraboloid_shape with
+		if paraboloid_touched then
+			material is highlight_material;
+		end;
+	end;
+	torus_shape with
+		if torus_touched then
+			material is highlight_material;
+		end;
+	end;
+	fish_shape with
+		if fish_touched then
+			material is highlight_material;
+		end;
+	end;
+end;    // targets
+	
+verb picking is
+	if is_shape_touched using 1 then
+		overlay_text "sphere hit";
+		sphere_touched is true;
+	else
+		sphere_touched is false;
+	end;    
+	
+	if is_shape_touched using 2 then
+		overlay_text "parabolid hit";
+		paraboloid_touched is true;
+	else
+		paraboloid_touched is false;
+	end;  
+	
+	if is_shape_touched using 3 then
+		overlay_text "torus hit";
+		torus_touched is true;
+	else
+		torus_touched is false;
+	end;  
+	
+	if is_shape_touched using 4 then
+		overlay_text "fish hit";
+		fish_touched is true;
+	else
+		fish_touched is false;
+	end;  
+end;    // picking
+	
+anim picking_anim with
+	eye = <-10 -10 10>;
+	lookat = <0 0 1>;
+is
+	shape scene is
+		plane with
+			magnify by 10;
+			material is glass;
+			//material is wood;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape targets
+		within (new static_shape of scene)
+		titled "Picking"
+		doing picking;
+end;    // picking_anim

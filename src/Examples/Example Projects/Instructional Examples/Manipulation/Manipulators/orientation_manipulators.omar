@@ -1,0 +1,39 @@
+do orientation_manipulator_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/reporting_orientation_manipulator.ores";
+include "system/common_materials.ores";
+include "system/fish.omar";
+
+anim orientation_manipulator_anim
+	args type args;
+with
+	eye = <-10 -10 10>;
+	lookat = <0 0 1>;
+	show_manipulation_control is true;
+	args check;
+is
+	shape thing is
+		static fish type fish;
+		fish instance with
+			magnify by .1;
+			rotate by 90 around <0 0 1>;
+		end;
+	end;    // thing;
+	reporting_orientation_manipulator type orientation_manipulator controlling thing
+		reporting "Fish" with
+		handle_size = .5;
+	end;
+	
+	shape scene is
+		plane with
+			magnify by 10;
+			material is glass;
+		end;
+	end;
+	
+	mouse_controlled_actor orientation_manipulator within scene 
+		titled "Orientation Manipulator";
+end;    // orientation_manipulator_anim

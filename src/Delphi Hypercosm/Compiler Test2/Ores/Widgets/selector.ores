@@ -1,0 +1,178 @@
+{***************************************************************}
+{                        selector.ores                          }
+{         Object-Oriented Modelling and Rendering (OMAR)        }
+{***************************************************************}
+{                                                               }
+{      Contains a subject definition for a selector widget.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "interactions.ores";
+include "futura_l.ores";
+include "picking.ores";
+
+
+subject selector
+extends
+    mouse_state_filter object
+does
+    verb new
+        labelled string type label is none;
+        controls integer reference selection refers to none;
+    end;
+    verb add
+        shape thing;
+        as integer index;
+    end;
+    shape instance;
+
+    // mouse_state_filter interface methods
+    boolean question accept_click at vector location; end;
+    boolean question in_region at vector location; end;
+has
+    struct choice has
+        shape thing;
+        integer index;
+        choice type next is none;
+    end;
+
+    public integer reference selection;
+    public boolean mouse_is_over is false;
+
+    public mouse_state type mouse_state is none;    // allocated in new
+
+    // private attributes
+    //
+    string type label;
+    integer internal_selection = 0;
+    choice type choices is none, current_choice is none;
+is
+    verb new
+        labelled string type label is none;
+        controls integer reference selection refers to none;
+    is
+        selector's label is label;
+        if selection refers to none then
+            selector's selection refers to internal_selection;
+        else
+            selector's selection refers to selection;
+        end;
+
+        mouse_state is (new mouse_state type with filter is selector;);
+    end;    // new
+
+
+    verb advance is
+        if some current_choice then
+            current_choice is its next;
+            if current_choice is none then
+                current_choice is choices;
+            end;
+
+            if not (selection refers to none) then
+                selection = current_choice's index;
+            end;
+        end;
+    end;    // advance
+
+
+    verb add
+        shape thing;
+        as integer index;
+    is
+        choice type choice;
+
+        // initialize new choice
+        //
+        choice's thing does thing;
+        choice's index = index;
+
+        // add choice to list
+        //
+        choice's next is choices;
+        choices is choice;
+
+        // set current choice
+        //
+        current_choice is choice;
+
+        if not (selection refers to none) then
+            selection = index;
+        end;
+    end;    // add
+
+
+    shape face is
+        parallelogram with
+            color = white;
+            magnify by .999;
+        end;
+        parallelogram with
+            scale by .9 along <1 0 0>;
+            scale by .15 along <0 1 0>;
+            move to <0 -.75 .1>;
+            color = light grey;
+        end;
+        parallelogram with
+            scale by .9 along <1 0 0>;
+            scale by .7 along <0 1 0>;
+            move to <0 .2 .1>;
+        end;
+    end;    // face
+
+
+    boolean question accept_click
+        at vector location;
+    is
+        answer in_region at location;
+    end;    // accept_click
+
+
+    boolean question in_region
+        at vector location;
+    is
+        if mouse_state's down then
+            answer yes;
+        else
+            answer (xy_plane_touched at location with
+                restrict_to_bounds is true;
+                min_bounds = <(-1) (-1) 0>;
+                max_bounds = <1 1 0>;);
+        end;
+    end;    // in_region
+
+
+    shape instance is
+        if some mouse_state then
+            integer clicks;
+
+            mouse_state update;
+
+            clicks = mouse_state's clicks;
+            if mouse_state's pressed then
+                clicks = itself + 1;
+            end;
+
+            while clicks > 0 do
+                advance;
+                clicks = itself - 1;
+            end;
+        end;
+
+        mouse_is_over is in_region at get_mouse;
+
+        face;
+
+        if some current_choice then
+            current_choice's thing with
+                magnify by .4;
+                move to <0 .2 .1>;
+            end;
+        end;
+        futura_l_word label with
+            move to <0 -.75 .2>;
+        end;
+    end;    // instance
+end;    // selector

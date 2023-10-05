@@ -1,0 +1,86 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       bounding_rectangle.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of a class for storing             }
+{       and manipulating integer pixel coordinates.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/rectangle.ores";
+include "system/region_bounding.ores";
+
+subject bounding_rectangle
+extends
+	region_bounding rectangle
+does
+	// constructor
+	//
+	verb new
+		of pixel type size;
+		at pixel type location;
+	end;
+
+	// region bounding methods
+	//  
+	boolean question contains
+		pixel type pixel;
+	end;
+	pixel type question get_min;
+	pixel type question get_max;
+		
+	// converting method
+	//
+	string type question to_string;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of pixel type size;
+		at pixel type location;
+	is
+		// call superclass constructor
+		//
+		rectangle new of size at location;
+	end;    // new
+	
+	//
+	// region bounding methods
+	//  
+	
+	boolean question contains
+		pixel type pixel;
+	is
+		answer location's h <= pixel's h <= location's h + size's h and
+			location's v <= pixel's v <= location's v + size's v; 
+	end;    // contains
+	
+	pixel type question get_min is
+		answer location;
+	end;    // get_min
+	
+	pixel type question get_max is
+		answer new pixel of
+			location's h + size's h by
+			location's v + size's v;
+	end;    // get_max
+				
+	//
+	// converting method
+	//
+	
+	string type question to_string is
+		string type string is "bounding rectangle";
+		string add " of size ";
+		string add size to_string;
+		string add " at ";
+		string add location to_string;
+		answer string;
+	end;    // to_string
+end;    // rectangle

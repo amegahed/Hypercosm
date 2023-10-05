@@ -1,0 +1,66 @@
+do standard_animated_material_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_teapot.ores";
+include "system/3ds_standard_animated_material.ores";
+include "system/3ds_linear_color_controller.ores";
+include "system/3ds_constant_color_controller.ores";
+include "system/3ds_time_conversion.ores";
+include "system/arrow_shapes.ores";
+
+shape standard_animated_material_scene with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+	static translated_3ds_linear_point3_controller type spectrum_color_controller of [
+		red orange yellow green blue violet red
+	] at converted_3ds_ticks_array_from_seconds_array of [
+		1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0
+	];
+	
+	static translated_3ds_standard_animated_material type material with
+	    diffuse_color_controller is spectrum_color_controller;
+	    specular_color_controller is new translated_3ds_constant_color_controller of white;
+	end;
+	
+	static shape thing with
+	    scalar tessellation = 1;
+	is
+		translated_3ds_teapot with		
+		    radius = 25;
+            segments = trunc (segments * tessellation);
+		    smooth is true;
+		    body is true;
+		    handle is true;
+		    spout is true;
+		    lid is true;
+		    gen_mapping_coords is false;
+		end;
+	end;	// thing
+	
+	thing with
+	    tessellation = static tessellation;
+		material apply at (converted_3ds_ticks_from_seconds of (smod time to 8));
+	end;
+end;	// standard_animated_material_scene
+	
+	
+anim standard_animated_material_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape standard_animated_material_scene
+		within new static_shape of environment 
+	    titled "3DS Standard Animated Material" 
+	with
+		auto_camera is on;
+	end;
+end;	// standard_animated_material_anim

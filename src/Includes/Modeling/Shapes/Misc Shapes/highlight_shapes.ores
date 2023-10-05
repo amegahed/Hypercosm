@@ -1,0 +1,30 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         highlight_shape.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a highlight shape which        }
+{       be used to add emphasis to a shape.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+	   
+shape highlight_shape
+	colored color type highlight_color = red;
+with
+	scalar buffer = .1;
+is
+	scalar scale_factor = (1 + buffer);
+	
+	block with
+		magnify by scale_factor;
+		material is glass colored highlight_color;
+	end;
+	block with
+		magnify by scale_factor;
+		material is glass colored highlight_color;
+		render_mode is wireframe;
+	end;
+end;    // highlight_shape

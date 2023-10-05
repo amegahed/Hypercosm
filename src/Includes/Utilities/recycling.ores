@@ -1,0 +1,52 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           recycling.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard interface for recycling             }
+{       behavior.  An object that implements this behavior      }
+{       uses explicit allocation and deallocation to            }
+{       manage objects without resorting to using system        }
+{       garbage collection.                                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***************************************************************}
+{                            recycling                          }
+{***************************************************************}
+{       As in the "real" world, garbage collection is           }
+{       resource intensive and expensive and so if we           }
+{       can avoid it by using a simpler alternative,            }
+{       then that is the right thing to do.                     }
+{                                                               }
+{       In many cases, if an object is used and discarded       }
+{       in a simple manner, then we can determine when          }
+{       the object is no longer being used and we can           }
+{       choose to recycle the object instead of relying on      }
+{       the system to perform expensive garbage collection      }
+{       at some undetermined later date.                        }
+{                                                               }
+{       The important criteria for determining if an object     }
+{       is a candidate for recycling is the ability to          }
+{       determine when that object is no longer being used.     }
+{       If that object is referenced by only one user, then     }
+{       that object can be recycled after that user is          }
+{       finished with it.   This is done by calling the         }
+{       recycle method call. If the object is being used by     }
+{       multiple users, then we may need to use a reference     }
+{       counting scheme to determine when the object is no      }
+{       longer being used.                                      }             
+{***************************************************************}
+
+adjective recycleable
+does
+	reference verb recycle;
+end;    // recycleable
+
+// this flag is used to report when objects are allocated in 
+// order to make sure that recycling code is doing its job.
+//
+boolean verbose_recycling is false;

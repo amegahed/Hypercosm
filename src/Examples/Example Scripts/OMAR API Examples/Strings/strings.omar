@@ -1,0 +1,71 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             strings.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       string handling utilities.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/strings.ores";
+include "system/string_utils.ores";
+include "system/string_conversions.ores";
+
+verb compare_strings is
+	string type string1 = "hello";
+	string type string2 = "hello world";
+	write "string1 = ", get_quotated string1, ;
+	write "string2 = ", get_quotated string2, ;
+	write "string1 matches string2 is ", boolean_to_string of string1 matches string2, ;
+	write "string2 matches string1 is ", boolean_to_string of string2 matches string1, ;
+	write "string1 matches 'hello' is ", boolean_to_string of string1 matches "hello", ;
+	write "string2 matches 'hello' is ", boolean_to_string of string2 matches "hello", ;
+end;    // compare_strings
+
+verb concat_strings is
+	string type string1 = "hello";
+	string type string2 = "hello world";
+	write "string1 = ", get_quotated string1, ;
+	write "string2 = ", get_quotated string2, ;
+	write "string1 concat string2 = ", get_quotated string1 concat string2, ;
+	write "string2 added to string1 = ";
+	string1 add string2;
+	write get_quotated string1, ;
+end;    // concat_strings
+
+verb trim_strings is
+	string type string1 = " hello ";
+	write "string1 = ", get_quotated string1, ;
+	write "string1 trim  = ", get_quotated string1 trim, ;
+	write "string1 trim_start = ", get_quotated string1 trim_start, ;
+	write "string1 trim_end = ", get_quotated string1 trim_end, ;
+end;    // trim_strings
+
+verb replace_strings is
+	string type string1 = "the quick brown fox jumped over the lazy dogs!";
+	write "string1 = ", get_quotated string1, ;
+	write "string1 replace 'dogs' by 'cats' = ", get_quotated (string1 replace "dogs" by "cats"), ;
+	write "string1 replace 'the' by 'my' = ", get_quotated (string1 replace "the" by "my"), ;
+end;    // replace_strings
+
+verb example is
+	write "--- comparing strings ---", ;
+	compare_strings;
+	write;
+	
+	write "--- concatenating strings ---", ;
+	concat_strings;
+	write;
+	
+	write "--- trimming strings ---", ;
+	trim_strings;
+	write;
+	write "--- replacing strings ---", ;
+	replace_strings;
+	write;
+end;    // example

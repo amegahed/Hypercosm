@@ -1,0 +1,135 @@
+{***************************************************************}
+{                          fireplace.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do fireplace_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/candles.omar";
+
+
+shape fireplace with
+    boolean candles is false;
+is
+    shape firewood is
+        shape log is
+            cylinder with
+                end1 = <-4 0 0>;
+                end2 = <4 0 0>;
+            end;
+            disk with
+                center = <-4 0 0>;
+                normal = <1 0 0>;
+            end;
+            disk with
+                center = <4 0 0>;
+                normal = <1 0 0>;
+            end;
+        end;    // log
+
+        shape logs is
+            log with
+                move to <0 -1 1>;
+            end;
+            log with
+                move to <0 1 1>;
+            end;
+            log with
+                move to <0 0 2.8>;
+            end;
+        end;
+
+        logs with
+            material is wood;
+        end;
+    end;    // firewood
+
+    extrude [[1 0] [2 0] [2 4.5] [1 4.5] [1 8] [-1 8] [-1 4.5]
+        [-2 4.5] [-2 0] [-1 0] [-1 3] [1 3]]
+    with
+        color = dark brick;
+        scale by 2 along <1 0 0>;
+        scale by 2 along <0 1 0>;
+        magnify the shader_trans by 5;
+        rotate the shader_trans by 90 around <1 0 0>;
+    end;
+
+    // back of fireplace
+    //
+    polygon [<2 1 0> <2 1 4> <-2 1 4> <-2 1 0>] with
+        material is chalk colored dark grey;
+        move to <0 .1 0>;
+        rotate the shader_trans by 90 around <1 0 0>;
+        scale the shader_trans by 4 along <1 0 0>;
+        scale the shader_trans by 2.5 along <0 0 1>;
+        move the shader_trans to <-2 0 .5>;
+    end;
+
+    // hearth of fireplace
+    //
+    block with
+        material is chalk colored dark grey;
+        vertex = <-3 0 0>;
+        side1 = <6 0 0>;
+        side2 = <0 -3 0>;
+        side3 = <0 0 .5>;
+        move to <0 1 0>;
+    end;
+    firewood with
+        magnify by .25;
+        move to <0 0 .5>;
+    end;
+
+    {
+    point_light with
+        move to 0 0 3;
+        color = orange;
+        brightness = 3;
+    end;
+    }
+
+    // candles on the mantle
+    //
+    if candles then
+        candle with
+            material is golden;
+            magnify by .02;
+            move to <3 -.5 4.5>;
+        end;
+        candle with
+            material is golden;
+            magnify by .02;
+            move to <-3 -.5 4.5>;
+        end;
+    end;
+end;    // fireplace
+
+
+anim fireplace_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <10 -20 15>;
+    lookat = <0 0 3>;
+    args check;
+is
+    shape scene is
+        fireplace with
+            material is stone;
+        end;
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // fireplace_anim

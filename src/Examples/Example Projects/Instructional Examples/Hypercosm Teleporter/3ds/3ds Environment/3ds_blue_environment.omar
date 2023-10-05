@@ -1,0 +1,34 @@
+do blue_environment_anim;
+
+include "system/3d.ores";
+include "system/3ds_translator.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "3ds_objects.omar";
+
+translated_3ds_environment type blue_environment with
+	background_color = blue;
+	background_name is "blue_background.jpg";
+	use_map is true;
+	
+	// lighting parameters
+	//
+	ambient_color = blue;
+	
+	// default light parameters
+	//
+	light_tint = white;
+	light_level = 1;
+end;    // blue_environment
+
+anim blue_environment_anim 
+	args type args;
+with
+	blue_environment activate;
+	lookat = <0 0 -2>;
+	args check;
+is
+	mouse_controlled_tessellated_shape objects titled "blue Environment" with
+		auto_zoom is on;
+	end;
+end;    // blue_environment_anim

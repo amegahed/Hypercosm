@@ -1,0 +1,46 @@
+do test;
+
+
+subject thing
+does
+	verb new with
+		integer value = 0;
+	end;
+	verb clear;
+	reference verb recycle;
+	verb print;
+has
+	integer value;
+is
+	verb new with
+		integer value = 0;
+	is
+		thing's value = value;
+	end;
+	
+	
+	verb clear is
+		value = 0;
+	end;	// clear
+	
+	
+	reference verb recycle is
+		clear;
+		thing is none;
+	end;	// recycle
+	
+	
+	verb print is
+		write "thing with value = ", value, ;
+	end;	// print
+end;	// thing
+
+
+verb test is
+	thing type thing with
+		value = 10;
+	end;
+	
+	thing print;
+	thing recycle;
+end;	// test

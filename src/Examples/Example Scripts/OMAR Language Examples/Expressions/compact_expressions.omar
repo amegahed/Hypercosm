@@ -1,0 +1,43 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        compact_expressions.omar        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a an example of the use of           }
+{       compact expressions in the OMAR language.               }
+{                                                               }
+{       Compact expressions are a shorthand way of              }
+{       avoiding restating the left hand side operand           }
+{       in a series of expressions where the left hand          }
+{       side operand is the same.                               }
+{                                                               }
+{       There is no direct analogy for this language            }
+{       feature in languages such as C, C++, and Pascal.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do compact_expressions_example;
+
+integer a = 1, b = 2, c = 3;
+object type thing is none, last is none;
+	
+verb compact_expressions_example 
+is
+	if a > b and a < c then
+	end;
+	
+	while thing isn't none and thing isn't last do
+	end;
+	
+	// Can be replaced by the following
+	//
+	if a > b and < c then
+	end;
+	
+	while thing isn't none and isn't last do
+	end;
+	
+	write "ok!", ;
+end;    // compact_expressions_example

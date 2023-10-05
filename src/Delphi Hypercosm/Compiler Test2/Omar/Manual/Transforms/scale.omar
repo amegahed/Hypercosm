@@ -1,0 +1,57 @@
+{***************************************************************}
+{                          scale.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do scale_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+include "system/snowman.omar";
+
+
+anim scale_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <0 0 .85>;
+    args check;
+is
+	shape scene is
+        scalar h1 = 3.6 * .5;
+        scalar h2 = 3.6 * .5 * .25;
+
+        snowman with
+            magnify by .5;
+            color = white;
+            render_mode is wireframe;
+        end;
+        snowman with
+            magnify by .5;
+            scale by .25 along <0 0 1>;
+            color = red;
+            render_mode is wireframe;
+        end;
+        line [(<0 0 h1>) (<.8 0 h1>)];
+        line [(<0 0 h2>) (<.6 0 h2>)];
+        double_arrow from <.6 0 0> to (<.6 0 h2>) with
+            arrow_head_length = itself * 2;
+        end;
+        double_arrow from <.8 0 0> to (<.8 0 h1>);
+        futura_l_word "SCALE" with
+            rotate by 90 around <1 0 0>;
+            move to <-.85 0 1>;
+        end;
+        axes;
+	end;
+	
+    mouse_controlled_shape scene titled "The Scale Transformation";
+end;    // scale_anim

@@ -1,0 +1,37 @@
+do test;
+
+
+adjective drawable 
+does
+	verb draw;
+end;	// drawable
+
+
+subject thing
+extends
+	drawable object
+does
+	verb draw;
+has
+	const integer i = 10;
+is
+	verb draw is
+		write "draw!", ;
+	end;
+end;
+
+
+verb test 
+is
+	thing type event is none;
+	
+	if some event then
+		if drawable type event then
+			write "blah", ;
+		else
+			write "blah2", ;
+		end;
+	else
+		write "no thing!", ;
+	end;
+end;	// icon_group_anim

@@ -1,0 +1,100 @@
+{***************************************************************}
+{                         button_list.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+do button_list_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/button_list.ores";
+include "system/views.ores";
+
+
+picture button_list_picture is
+    static button_list type button1 labelled "rotation control";
+    static boolean firsttime is true;
+    
+    static boolean rotating[1..3];
+    static scalar rotations[1..3];
+    
+    if firsttime then
+        button1 add_item labelled "sphere" as 1;
+        button1 add_item labelled "block" as 2;
+        button1 add_item labelled "cylinder" as 3;
+        scale the button1's label_trans by 4 along <0 1 0>;
+        
+        for integer i = 1 .. 3 do
+            rotating[i] is false;
+            rotations[i] = 0;
+        end;
+        
+        firsttime is false;
+    end;
+
+    button1 instance with
+        magnify by .4;
+        move to <-.5 .5 0>;
+    end;
+    
+    if button1's just_selected then
+        rotating[button1's selection] is not itself;
+    end;
+    
+    for integer i = 1 .. 3 do
+        if rotating[i] then
+            rotations[i] = itself + 3;
+        end;
+    end;
+    
+    sphere with
+        rotate by rotations[1] around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        magnify by .4;
+        move to <.5 .5 0>;
+    end;
+
+    block with
+        rotate by rotations[2] around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        magnify by .4;
+        move to <.5 -.5 0>;
+    end;
+
+    cylinder with
+        rotate by rotations[3] around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        magnify by .4;
+        move to <-.5 -.5 0>;
+    end;
+
+    set_cursor to arrow;
+    if button1's mouse_is_over then
+        set_cursor to finger_point;
+    end;
+end;    // button_list_picture
+
+
+anim button_list_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Button List Demo";
+    render_mode is wireframe;
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        button_list_picture with
+            ortho_view;
+        end;
+    end;
+end;    // button_list_anim 
+
+

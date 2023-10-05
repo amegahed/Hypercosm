@@ -1,0 +1,236 @@
+{***************************************************************}
+{                          extractor.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do extractor_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/surfaces.ores";
+
+
+subject extractor
+extends
+    actor
+does
+    verb new with
+        scalar rpm = 60;
+    end;    // new
+
+    shape instance;
+    verb act;
+has
+    spinning_shape type spinning_stirrer is none;
+is
+    objective shape stirrer is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .5>;
+            radius = .1;
+        end;
+        disk with
+            radius = .2;
+            rotate by 90 around <1 0 0>;
+            move to <.2 0 .5>;
+        end;
+        disk with
+            radius = .2;
+            rotate by 90 around <1 0 0>;
+            move to <-.2 0 .5>;
+        end;
+    end;    // stirrer
+
+
+    verb new with
+        scalar rpm = 60;
+    is
+        new spinning_stirrer in form of stirrer with
+            rpm = static rpm;
+        end;
+    end;    // new
+
+
+    objective shape stand is
+        shape wheel is
+            sphere with
+                material is chalk colored red;
+                rotate by 90 around <1 0 0>;
+                scale by .4 along <0 1 0>;
+                move to <0 0 1>;
+            end;
+            tube with
+                inner_radius = 0;
+                outer_radius = 1.2;
+                umin = 0;
+                umax = 180;
+                rotate by 90 around <1 0 0>;
+                move to <0 0 1>;
+            end;
+        end;    // wheel
+
+
+        shape arm is
+            block with
+                scale by .2 along <1 0 0>;
+                scale by .1 along <0 0 1>;
+                scale by .5 along <0 1 0>;
+                move to <0 .5 0>;
+            end;
+
+            {
+            tube with
+                    inner_radius = 0; outer_radius = .2;
+                    umin = 0; umax = 180;
+                    scale by .1 along 0 0 1;
+                    move to 0 1 0;
+            end;
+            }
+        end;    // arm
+
+        // arms of stand connected to wheels
+        //
+        arm with
+            move to <0 0 .45>;
+        end;
+        arm with
+            rotate by 90 around <0 0 1>;
+            move to <0 0 .45>;
+        end;
+        arm with
+            rotate by 180 around <0 0 1>;
+            move to <0 0 .45>;
+        end;
+        arm with
+            rotate by 270 around <0 0 1>;
+            move to <0 0 .45>;
+        end;
+        cone with
+            end1 = <0 0 .5>;
+            end2 = <0 0 1>;
+            radius1 = .5;
+            radius2 = .15;
+        end;
+
+        // stand coaster wheels
+        //
+        wheel with
+            magnify by .15;
+            rotate by 20 around <0 0 1>;
+            move to <1 0 0>;
+        end;
+        wheel with
+            magnify by .15;
+            rotate by 80 around <0 0 1>;
+            move to <-1 0 0>;
+        end;
+        wheel with
+            magnify by .15;
+            rotate by 120 around <0 0 1>;
+            move to <0 1 0>;
+        end;
+        wheel with
+            magnify by .15;
+            rotate by 30 around <0 0 1>;
+            move to <0 -1 0>;
+        end;
+    end;    // stand
+
+
+    objective shape extraction_vessel with
+        scalar radius = 1;
+    is
+
+        // sides of unit
+        //
+        transparent white cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 2>;
+            radius = static radius;
+        end;
+
+        // bottom of unit
+        //
+        torus with
+            center = <0 0 0>;
+            inner_radius = static radius - .1;
+            outer_radius = static radius + .1;
+        end;
+        disk with
+            radius = static radius;
+        end;
+
+        // top (lid) of unit
+        //
+        torus with
+            center = <0 0 2>;
+            inner_radius = static radius - .1;
+            outer_radius = static radius + .1;
+        end;
+        paraboloid with
+            top = <0 0 2.5>;
+            base = <0 0 2>;
+            radius = static radius;
+        end;
+
+        // handle of unit
+        //
+        block with
+            scale by .5 along <1 0 0>;
+            scale by .05 along <0 1 0>;
+            scale by .05 along <0 0 1>;
+            move to <0 0 2.65>;
+        end;
+        sphere with
+            radius = .125;
+            move to <0 0 2.5>;
+        end;
+    end;    // extraction_vessel
+
+
+    shape instance is
+        stand with material is chalk colored white; end;
+        extraction_vessel with
+            radius = .75;
+            move to <0 0 1>;
+            color = grey;
+        end;
+        spinning_stirrer instance with
+            material is chalk colored red;
+            move to <0 0 1>;
+        end;
+    end;    // extractor
+
+
+    verb act is
+        spinning_stirrer act;
+    end;    // act
+end;    // extractor
+
+
+anim extractor_anim
+    args type args;
+with
+    eye = <-2 -8 4>;
+    lookat = <0 0 1.5>;
+    double_buffer is on;
+    window_name is "Extractor";
+    args check;
+is
+    extractor type extractor;
+
+    shape environment is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_actor extractor in environment;
+end;    // extractor_anim

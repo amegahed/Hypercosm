@@ -1,0 +1,54 @@
+do bicubic_patch_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_bicubic_patch.ores";
+include "system/anims.ores";
+include "system/bicubic_patches.ores";
+
+
+anim bicubic_patch_anim with
+is
+	material type hyper_material is plastic poster "hyper.jpg";
+	material type tie_dye_material is plastic poster "tie_dye.jpg";
+	material type flag_material is plastic textured (new texture
+		using (new image named "flag.gif") with
+		interpolation is off; wraparound is on);
+		
+    shape scene is
+        vector vertices[0..1, 0..1];
+        vector h_tangents[0..1, 0..1];
+        vector v_tangents[0..1, 0..1];
+    
+        for each vector h_tangent in h_tangents do
+            scalar y = (random -1 to 1) * 4;
+            scalar z = (random -1 to 1) * 4;
+            h_tangent = <1 y z>;
+        end;
+        for each vector v_tangent in v_tangents do
+            scalar x = (random -1 to 1) * 4;
+            scalar z = (random -1 to 1) * 4;
+            v_tangent = <x 1 z>;
+        end;
+    
+        vertices[0, 0] = <-1 -1 0>;
+        vertices[1, 0] = <1 -1 0>;
+        vertices[0, 1] = <-1 1 0>;
+        vertices[1, 1] = <1 1 0>;
+    
+        translated_3ds_bicubic_patch of (ferguson_bicubic through
+            vertices towards h_tangents v_tangents)
+        with
+            length_segments = 8;
+        	width_segments = 8;            
+		    material is hyper_material; 
+        end;
+    end;    // scene
+    
+	mouse_controlled_shape scene titled "3DS Bicubic Patch" with
+		auto_camera is on;
+	end;
+end;    // bicubic_patch_anim
+
+
+

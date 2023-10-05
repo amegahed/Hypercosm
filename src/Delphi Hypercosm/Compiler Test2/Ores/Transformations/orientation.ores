@@ -1,0 +1,192 @@
+{***************************************************************}
+{                          orientation.ores                    	}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{		Contains some standard camera control definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/rendering.ores";
+include "system/quaternions.ores";
+include "system/marks.ores";
+include "system/arrows.ores";
+include "system/futura_l.ores";
+
+
+subject orientation
+extends
+	renderable quat
+does
+	// constructor
+	//
+	verb new
+		towards vector direction = <0 1 0>;
+		oriented by vector up_vector = <0 0 1>;
+	end;
+
+	// attributes setting methods
+	//
+	verb set_orientation
+		to orientation type orientation;
+	end;
+	verb set_orientation_vectors
+		towards vector direction = <0 1 0>;
+		oriented by vector up_vector = <0 0 1>;
+	end;
+	
+	// attributes querying methods
+	//
+	vector question get_direction;
+	vector question get_up_vector;
+	vector question get_right_vector;
+	
+	// renderable methods
+	//
+	shape instance;
+	
+	// printable methods
+	//
+	verb print;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		towards vector direction = <0 1 0>;
+		oriented by vector up_vector = <0 0 1>;
+	is
+		// call superclass constructor
+		//
+		quat new;
+		
+		// orient using vectors
+		//
+		set_orientation_vectors towards direction oriented by up_vector;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+
+	verb set_orientation
+		to orientation type orientation;
+	is
+		quat = orientation;
+	end;	// set_orientation
+	
+	
+	verb set_orientation_vectors
+		towards vector direction = <0 1 0>;
+		oriented by vector up_vector = <0 0 1>;
+	is
+		axes type axes;
+		
+		// normalize direction vectors
+		//
+		direction = global normalized direction;
+		up_vector = global normalized (up_vector perpendicular direction);
+		
+		// initialize axes vectors
+		//
+		axes's x_axis = direction cross up_vector;
+		axes's y_axis = direction;
+		axes's z_axis = up_vector;
+		
+		// set orientation using axes
+		//
+		set_axes to axes;
+	end;	// set_orientation_vectors
+	
+	
+	//
+	// attributes querying methods
+	//
+	
+	
+	vector question get_direction is
+		axes type axes;
+		get_axes axes;
+		answer axes's y_axis;
+	end;	// get_direction
+	
+	
+	vector question get_up_vector is
+		axes type axes;
+		get_axes axes;
+		answer axes's z_axis;
+	end;	// get_up_vector
+	
+	
+	vector question get_right_vector is
+		axes type axes;
+		get_axes axes;
+		answer axes's x_axis;
+	end;	// get_right_vector
+	
+	
+	//
+	// renderable methods
+	//
+	
+
+	shape icon with
+		boolean labelled is true;
+	is
+		mark at <0 0 0>;
+		
+		arrow from <0 -1 0> to <0 1 0> with
+			color = white;
+		end;
+		arrow from <-1 0 0> to <1 0 0> with
+			color = red;
+		end;
+		arrow from <0 0 -1> to <0 0 1> with
+			color = blue;
+		end;
+		
+	    if labelled then
+		    futura_l_word "UP" with
+		        rotate by 90 around <1 0 0>;
+		        move to <.2 0 .9>;
+		        color = blue;
+		    end;
+		    futura_l_word "RIGHT" with
+		        rotate by 90 around <1 0 0>;
+		        move to <.9 0 .2>;
+		        color = red;
+		    end;
+	    end;
+	end;	// icon
+	
+		
+	shape instance is
+		trans type trans;	
+		get_axes trans;
+		
+		icon with
+			global trans = trans;
+		end;
+	end;	// instance
+	
+		
+	//	
+	// printable methods
+	//
+	
+	
+	verb print is
+		write "orientation towards ", get_direction, 
+			" oriented by ", get_up_vector, ;
+	end;	// print
+end;	// orientation
+
+
+const orientation type unit_orientation;

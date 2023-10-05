@@ -1,0 +1,42 @@
+do interface_test;
+
+
+interface mouse_queryable
+does
+    boolean question mouse_touching;
+end;    // mouse_queryable
+
+
+
+subject gunk
+implements
+    mouse_queryable
+does
+    boolean question mouse_touching;
+is
+    boolean question mouse_touching is
+        answer false;
+    end;
+end;    // gunk
+
+
+// main mouse handling method
+//
+
+
+subject thing
+has
+    public integer i;
+is
+end;    // thing
+
+
+verb interface_test
+is
+    thing type object;
+    //gunk type gunk;
+    
+    if mouse_queryable type object then
+        write "ok!", ;
+    end;
+end;    // check_mouse

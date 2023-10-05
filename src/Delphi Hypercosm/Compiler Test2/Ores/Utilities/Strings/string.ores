@@ -1,0 +1,324 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		    string.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the standard string type definition  			}
+{		which can be used to represent sequences of 			}
+{		characters such as names or text messages.				}
+{																}
+{		The string type also provides methods for common		}
+{		string manipulation operations such as comparing 		}
+{		strings or finding substrings. 							}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+include "system/booleans.ores";
+include "system/chars.ores";
+include "system/icomparisons.ores";
+
+
+subject string
+extends
+    char[]
+does
+    // construction methods
+    //
+    reference verb add
+        string type string2;
+    end; 
+    reference verb addchar
+        char char2;
+    end;
+    
+    // querying methods
+    //
+    boolean question matches
+        string type string2;
+    end; 
+    integer question length;
+    boolean question is_lower;
+    boolean question is_upper;
+            
+    // operator methods
+    //
+    string type question plus
+        string type string2;
+    end;
+    string type question left
+        integer chars;
+    end;
+    string type question right
+        integer chars;
+    end;
+    
+    // conversion methods
+    //
+    string type question to_lower;
+    string type question to_upper;
+    string type question to_echo_string
+    	using char echo_char is "*";
+    end;
+is
+	//
+    // construction methods
+    //
+    
+    
+    reference verb add
+        string type string2;
+    is
+        char string3[];
+        
+        // if we get an empty string, there's nothing to do
+        //
+        if string2 is none then
+            return;
+        end;
+        
+        if string is none then
+            string is string2;
+            return;
+        end;
+        
+        dim string3[1..num string + num string2];
+
+        string3[1 .. num string] = string;
+        string3[num string + 1 ..] = string2;
+        string is string3;
+    end;    // add
+
+
+    reference verb addchar
+        char char2;
+    is
+        char string3[];
+        
+        if string is none then
+            char newstring[1..1];
+            newstring[1] is char2;
+            string is newstring;
+            return;
+        end;
+            
+        dim string3[1..num string + 1];
+
+        string3[1 .. num string] = string;
+        string3[num string + 1] is char2;
+        string is string3;
+    end;    // addchar
+
+
+	//
+	// querying methods
+	//
+	
+	
+    boolean question matches
+        string type string2;
+    is
+        integer index1, index2;
+        
+        if string is none then
+            if string2 is none then
+                answer yes;
+            else
+                answer no;
+            end;
+        end;
+        
+        if string2 is none then
+            answer no;
+        end;
+
+        if num string = num string2 then
+            index1 = min string;
+            index2 = min string2;
+            while index1 <= max string do
+                if string[index1] isn't string2[index2] then
+                    answer no;
+                else
+                    index1 = itself + 1;
+                    index2 = itself + 1;
+                end;
+            end;
+            answer yes;
+        else
+            answer no;
+        end;
+    end;    // equal
+
+
+    integer question length is
+        if string is none then
+            answer 0;
+        end;
+        
+        answer num string;
+    end;    // length
+    
+
+    boolean question is_lower is
+        if string is none then
+            answer no;
+        end;
+        
+        for each char ch in string do
+            if not global is_lower ch then
+                answer no;
+            end;
+        end;
+        answer yes;
+    end;    // is_lower
+
+
+    boolean question is_upper is
+        if string is none then
+            answer no;
+        end;
+        
+        for each char ch in string do
+            if not global is_upper ch then
+                answer no;
+            end;
+        end;
+        answer yes;
+    end;    // is_upper
+    
+
+	//
+    // operator methods
+    //
+    
+            
+    string type question plus
+        string type string2;
+    is
+        char string3[];
+        integer string_len = 0;
+        integer string2_len = 0;
+        integer total_len = 0;
+        
+        if string isn't none then
+        	string_len = num string;
+        end;
+        
+        if string2 isn't none then
+        	string2_len = num string2;
+        end;
+        
+        total_len = string2_len + string_len;
+        if total_len = 0 then
+        	string type s;// = "l";
+        	answer s;
+        end;
+        
+        dim string3[1 .. total_len];
+
+		if string isn't none then
+        	string3[1 .. string_len] = string;
+        end;
+        
+        if string2 isn't none then
+        	string3[string_len + 1 ..] = string2;
+        end;
+        answer string3;
+    end;    // plus
+
+
+    string type question left
+        integer chars;
+    is 
+        if some string then
+        	if num string >= chars then
+        		string type string = string[min string .. min string + chars - 1];
+        		answer string;
+        	else
+        		answer none;
+        	end;     	
+        else
+            answer none;
+        end;
+    end;    // left
+
+
+    string type question right
+        integer chars;
+    is
+    	if some string then
+    		if num string >= chars then
+    			string type string = string[max string - chars + 1 .. max string];
+    			answer string;
+    		else
+    			answer none;
+    		end;
+    	else
+    		answer none;
+    	end;
+    end;    // right
+
+
+	//
+    // conversion methods
+    //
+
+
+
+    string type question to_lower is
+        string type string2;
+        
+        if string is none then
+            answer none;
+        end;
+        
+        string2 = string;
+
+        for each char ch in string2 do
+            ch is global to_lower ch;
+        end;
+
+        answer string2;
+    end;    // to_lower
+
+
+    string type question to_upper is
+        string type string2;
+        
+        if string is none then
+            answer none;            
+        end;
+        
+        string2 = string;
+
+        for each char ch in string2 do
+            ch is global to_upper ch;
+        end;
+
+        answer string2;
+    end;    // to_upper
+    
+   
+    string type question to_echo_string
+    	using char echo_char is "*";
+   	is
+   		string type echo_string;
+   		
+   		dim echo_string[1 .. num string];
+   		for each char ch in echo_string do
+   			ch is echo_char;
+   		end;
+   		
+        answer echo_string;
+    end;	// to_echo_string
+end;    // string
+
+
+{***************************************************************}
+{						  string constants						}
+{***************************************************************}
+const string type empty_string is none;

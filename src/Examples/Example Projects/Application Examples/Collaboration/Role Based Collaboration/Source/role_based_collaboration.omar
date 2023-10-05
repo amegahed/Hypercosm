@@ -1,0 +1,195 @@
+do role_based_collaboration_anim; 
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/udp_broadcaster.ores";
+include "system/multiline_overlay_text.ores";
+include "system/collaboration_manager.ores";
+include "rgb_manipulators_actor.ores";
+
+anim role_based_collaboration_anim
+	args type args;
+with
+	show_controls is false;
+	args check;
+is
+	enum role is red, green, blue;
+	
+	role type role;
+	rgb_manipulators_actor type actor is none;
+	collaboration type red_collaboration is none;
+	collaboration type green_collaboration is none;
+	collaboration type blue_collaboration is none;
+	collaboration type current_collaboration is none;
+	network_connectable type connection is none;
+	collaboration_manager type collaboration_manager is none;
+	targeted_camera type camera is none;
+	
+	verb init
+	is
+		// init role
+		//
+		role is red;
+		
+		// init collaborations
+		//
+		new red_collaboration;
+		new green_collaboration;
+		new blue_collaboration;
+		current_collaboration is red_collaboration;
+		
+		// init actor
+		//
+		new actor red_collaboration green_collaboration blue_collaboration;
+		
+		// init connection
+		//
+		connection is (new udp_broadcaster with verbose is true;);
+		
+		// init collaboration manager
+		//
+		collaboration_manager is new collaboration_manager using connection;
+		collaboration_manager add_collaboration red_collaboration;
+		collaboration_manager add_collaboration green_collaboration;
+		collaboration_manager add_collaboration blue_collaboration;
+		
+		// init camera
+		//
+		new camera from <0 -50 75>;
+		camera activate;
+	end;
+	verb draw_instructions
+		at screen_coords type location;
+	is
+		strings type strings is none;
+		
+		dim strings[1 .. 2];
+		strings[1] add "Select the role (color) that you wish to affect by pressing 'r' for red, 'g' for green, and 'b' for blue.";
+		strings[2] add "To change the collaboration state for the selected role, press 'm' for master, 's' for slave, or 'l' for local.";
+		
+		multiline_overlay_text strings at location with
+			vertical_alignment is top;
+		end;
+	end;
+	
+	verb draw_info_labels
+		at screen_coords type location;
+	is
+		strings type strings is none;
+		
+		dim strings[1 .. 2];
+		strings[1] add "role:";
+		strings[2] add "state:";
+		
+		multiline_overlay_text strings at location with
+			horizontal_alignment is left;
+			vertical_alignment is bottom;
+		end;
+	end;
+	
+	verb draw_info_values
+		at screen_coords type location;
+	is
+		strings type strings is none;
+		
+		dim strings[1 .. 2];
+		
+		when role is
+			red:
+				strings[1] add "red";
+			end;
+			green:
+				strings[1] add "green";
+			end;
+			blue:
+				strings[1] add "blue";
+			end;
+		end;
+		
+		strings[2] add collaboration_state_to_string of current_collaboration get_state;
+		multiline_overlay_text strings at location with
+			horizontal_alignment is left;
+			vertical_alignment is bottom;
+		end;
+	end;
+	
+	verb draw_network_endpoint
+		at screen_coords type location;
+	is
+		string type string;
+		
+		if connection get_connection_state is connected then
+			ip_address type local_ip is connection get_local_ip_address;
+			port type local_port = connection get_local_port;
+			
+			string add local_ip get_ip_string;
+			string add ":";
+			string add integer_to_string of local_port;
+		else
+			string add "disconnected";
+		end;
+		
+		overlay_text string at location with
+			horizontal_alignment is left;
+			vertical_alignment is bottom;
+		end;
+	end;
+	
+	verb draw
+	is
+		draw_instructions at <0 .95 0>;
+		draw_info_labels at <-.95 -.9 0>;
+		draw_info_values at <-.75 -.9 0>;
+		draw_network_endpoint at <-.95 -.95 0>;
+	end;
+	
+	verb check_keys
+	is
+		integer key;
+		
+		reset_frame_events;
+		
+		key = get_key;
+		
+		// role changing keys
+		//
+		if key = char_to_key of "r" then
+			role is red;
+			current_collaboration is red_collaboration;
+		elseif key = char_to_key of "g" then
+			role is green;
+			current_collaboration is green_collaboration;
+		elseif key = char_to_key of "b" then
+			role is blue;
+			current_collaboration is blue_collaboration;
+		
+		// collaboration state changing keys
+		//
+		elseif key = char_to_key of "m" then
+			current_collaboration set_state to master;
+		elseif key = char_to_key of "s" then
+			current_collaboration set_state to slave;
+		elseif key = char_to_key of "l" then
+			current_collaboration set_state to local;
+		end;
+	end;
+	verb update
+	is
+		// update actor
+		//
+		actor update;
+		
+		// update collaboration manager
+		//
+		collaboration_manager update;
+		check_keys;
+		draw;
+	end;
+	// init!
+	//
+	init;
+	
+	// run!
+	//
+	mouse_controlled_actor actor doing update;
+end; // role_based_collaboration_anim

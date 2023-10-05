@@ -1,0 +1,98 @@
+{***************************************************************}
+{                     turbulence_demo.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do turbulence_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/turbulence.ores";
+include "system/random.ores";
+include "system/text.ores";
+
+
+picture scene
+is  
+    // a constantly changing vector to pass to turbulence
+    //
+    vector v = <1 1 1> * (get_seconds);
+    
+    // lighting
+    //
+    default_lights;
+    
+    // each meter measures a certain chaos level and turbulence level
+    //
+    block with
+        move to <-3 -3 0>;
+        side3 = <0 0 (turbulence v chaos 0 level 1)> * 30;
+        material is chalk colored light red;
+    end;
+    block with
+        move to <0 -3 0>;
+        side3 = <0 0 (turbulence v chaos .5 level 1)> * 30;
+        material is chalk colored red;
+    end;
+    block with
+        move to <3 -3 0>;
+        side3 = <0 0 (turbulence v chaos 1 level 1)> * 30;
+        material is chalk colored dark red;
+    end;
+    
+    block with
+        move to <-3 0 0>;
+        side3 = <0 0 (turbulence v chaos 0 level 2)> * 30;
+        material is chalk colored light green;
+    end;
+    block with
+        side3 = <0 0 (turbulence v chaos .5 level 2)> * 30;
+        material is chalk colored green;
+    end;
+    block with
+        move to <3 0 0>;
+        side3 = <0 0 (turbulence v chaos 1 level 2)> * 30;
+        material is chalk colored dark green;
+    end;
+    
+    block with
+        move to <-3 3 0>;
+        side3 = <0 0 (turbulence v chaos 0 level 4)> * 30;
+        material is chalk colored light blue;
+    end;
+    block with
+        move to <0 3 0>;
+        side3 = <0 0 (turbulence v chaos .5 level 4)> * 30;
+        material is chalk colored blue;
+    end;
+    block with
+        move to <3 3 0>;
+        side3 = <0 0 (turbulence v chaos 1 level 4)> * 30;
+        material is chalk colored dark blue;
+    end;
+    
+    // labels
+    //
+    text "-CHAOS->" with
+        rotate by -90 around <1 0 0>;
+        move to <0 -5.5 -1>;
+    end;
+    text "-LEVEL->" with
+        rotate by -90 around <1 0 0>;
+        rotate by 90 around <0 0 1>;
+        move to <5.5 0 -1>;
+    end;
+end;    // scene
+
+
+anim turbulence_anim with
+    eye = <10 -25 15>;
+    lookat = <0 0 5>;
+is
+    mouse_controlled_picture scene;
+end;    // turbulence_anim

@@ -1,0 +1,69 @@
+do Cable_Test_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/tube.ores";
+include "system/transformation_manipulator.ores";
+include "system/manipulator_group.ores";
+include "system/hose_segment.ores";
+
+shape connector1
+is
+    tube with
+        end1 = <-5 0 0>;
+        end2 = <-5 0 1>;
+        inner_radius = .25;
+        outer_radius = .5;
+    end;
+end;    // connector1
+
+shape connector2
+is
+    tube with
+        end1 = <5 0 0>;
+        end2 = <5 0 1>;
+        inner_radius = .25;
+        outer_radius = .5;
+    end;
+end;    // connector2
+
+transformation_manipulator type manipulator1
+	controlling connector1
+with
+    handle_size = .25;
+end;
+
+transformation_manipulator type manipulator2
+	controlling connector2
+with
+    handle_size = .25;
+end;
+
+manipulator type manipulators[] is [manipulator1 manipulator2];
+manipulator_group type manipulator_group using manipulators;
+
+anim Cable_Test_anim
+is
+    shape scene with
+        scalar t = 0;
+    is
+        vector point1 = manipulator1's actual_trans get_transformed_point <-5 0 1>;
+        vector tangent1 = manipulator1's actual_trans get_transformed_direction <0 0 20>;
+        vector point2 = manipulator2's actual_trans get_transformed_point <5 0 1>;
+        vector tangent2 = manipulator2's actual_trans get_transformed_direction <0 0 -20>;
+                        
+        manipulator_group instance;
+        
+        hose_segment from point1 tangent1 to point2 tangent2 with
+            radius = .25;
+            cross_section_steps = 8;
+            spline_steps = 16;
+        end;
+    end;    // scene
+    
+    verb update is
+        manipulator_group update;
+    end;
+    
+    mouse_controlled_animated_shape scene doing update;
+end; // Cable_Test_anim

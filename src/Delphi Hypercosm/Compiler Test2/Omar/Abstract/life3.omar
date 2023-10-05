@@ -1,0 +1,165 @@
+{***************************************************************}
+{                          life3.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do motion;
+
+
+include "system/3d.ores";
+include "system/devices.ores";
+
+
+vector axis_x = <1 0 0>;
+vector axis_y = <0 1 0>;
+vector axis_z = <0 0 1>;
+
+
+integer work[-4..4, -4..4] = [
+   [0 0 0 0 0 0 0 0 0]
+   [0 0 0 0 0 0 0 0 0]
+   [0 0 0 0 0 0 0 0 0]
+   [0 0 0 1 0 1 0 0 0]
+   [0 0 0 1 1 0 0 0 0]
+   [0 0 0 0 1 0 0 0 0]
+   [0 0 0 0 0 0 0 0 0]
+   [0 0 0 0 0 0 0 0 0]
+   [0 0 0 0 0 0 0 0 0]
+];
+integer hold[,] = work;
+
+
+integer question scan
+   integer row, col;
+is
+   integer r, c;
+   integer row_min = min work;
+   integer row_max = max work;
+   integer col_min = min work[];
+   integer col_max = max work[];
+   integer friends = 0;
+
+   for integer x = -1 .. 1 do
+      for integer y = -1 .. 1 do
+         if x = 0 and y = 0 then
+         else
+            r = row + y; c = col + x;
+
+            if r < row_min then r = row_max;
+        elseif r > row_max then r = row_min; end;
+            if c < col_min then c = col_max;
+            elseif c > col_max then c = col_min; end;
+
+            friends = itself + hold[r, c];
+         end;
+      end;
+   end;
+   answer friends;
+end;    // scan
+
+
+verb norn
+   integer row, col;
+is
+   integer occupant = hold[row, col];
+   integer friends = scan row col;
+
+   if friends = 2 then
+   elseif friends = 3 then occupant = 1;
+   else occupant = 0; end;
+
+   work[row, col] = occupant;
+end;    // norn
+
+
+verb cell_dump is
+   for integer row = min work .. max work do
+      for integer col = min work[] .. max work[] do
+         write work[row, col], " ";
+      end;
+      write;
+   end;
+end;    // cell_dump
+
+
+verb generate is
+   hold = work;
+   for integer row = min work .. max work do
+      for integer col = min work[] .. max work[] do
+         norn row col;
+      end;
+   end;
+end;    // generate
+
+
+shape cell with
+   vector position = <0 0 0>;
+   scalar size = .75;
+is
+   scalar size_half = size / 2;
+   vector reposition = position - <size_half size_half size_half>;
+
+   block with
+      vertex = reposition;
+      side1 = <size 0 0>;
+      side2 = <0 size 0>;
+      side3 = <0 0 size>;
+   end;
+end;    // cell
+
+
+shape mark with
+   vector center = <0 0 0>;
+   scalar size = .5;
+is
+   scalar x = center dot axis_x;
+   scalar y = center dot axis_y;
+   scalar z = center dot axis_z;
+
+   line [<(x + size) y z> <(x - size) y z>];
+   line [<x (y + size) z> <x (y - size) z>];
+   line [<x y (z + size)> <x y (z - size)>];
+end;    // mark
+
+
+picture still with
+   { antialiasing = true; }
+   eye = <5 5 10>;
+   lookat = <0 0 .5>;
+   field_of_view = 90;
+   render_mode is shaded;
+is
+   distant_light from <.3 -.5 1>;
+   mark with center = <0 0 0>; end;
+
+   for integer row = min work .. max work do
+      for integer col = min work[] .. max work[] do
+         if work[row, col] = 1 then
+            cell with position = <col row 0>; end;
+         end;
+      end;
+   end;
+end;    // still
+
+
+anim motion with
+   double_buffer is on;
+is
+   while true do
+      still;
+{
+      reset_frame_events;
+      if get_key <> 0 then
+        write "Generating...", ;
+        generate;
+      end;
+      flush_keys;
+}
+      generate;
+      rotate by 1 around <0 0 1>;
+  end;
+end;    // motion

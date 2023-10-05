@@ -1,0 +1,77 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "airhockey.hcvm";
+	WebOutputDir "Website";
+	Alignment;
+	CommandLine;
+	Width "800";
+	Height "600";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "airhockey.html";
+		}
+	}
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar_main "airhockey.omar";
+			omar "paddle.omar";
+			omar "puck.omar";
+			omar "scoreboard.omar";
+			omar "room.omar";
+			omar "arena.omar";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+			resource "Sounds\\oh.wav";
+			resource "Sounds\\applause.wav";
+			resource "Sounds\\puck_hit.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\show.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\deselect.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\select.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\hide.wav";
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "..\\..\\..\\..\\..\\Textures\\Logos\\hyper_small.jpg";
+			resource "..\\..\\..\\..\\..\\Textures\\Materials\\wood.jpg";
+			resource "..\\..\\..\\..\\..\\Textures\\Logos\\hyperlogo.jpg";
+			resource "Textures\\rink_surface.gif";
+			resource "Textures\\rent.gif";
+			resource "..\\..\\..\\..\\..\\Textures\\Materials\\stone.jpg";
+		}
+	}
+}

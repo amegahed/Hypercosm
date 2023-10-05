@@ -1,0 +1,37 @@
+{***************************************************************}
+{                       simple_font.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   Displays the simple_font glyph set, the default font for    }
+{   Hypercosm's standard text.                                  }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+do simple_font_anim;
+
+include "system/anims.ores";
+include "system/text.ores";
+
+
+shape simple_glyphs is
+    string type line3 is "asdfghjkl;'ASDFGHJKL:";
+    line3 add [double_quote];
+    
+    move to <0 0 3>;
+    text "`1234567890-=~!@#$%^&*()_+";
+    move to <0 0 -2>;
+    text "qwertyuiop[]\QWERTYUIOP{}|";
+    move to <0 0 -2>;
+    text line3;
+    move to <0 0 -2>;
+    text "zxcvbnm,./ZXCVBNM<>?";
+end;    // simple_glyphs
+
+
+anim simple_font_anim with
+    eye = <0 -20 0>;
+is
+    mouse_controlled_shape simple_glyphs;
+end;    // simple_font_anim

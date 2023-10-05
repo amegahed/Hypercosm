@@ -1,0 +1,82 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        native_rendering.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native rendering variables.                }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_materials.ores";
+
+{***************************************************************}
+{                      shape / scene attributes                 }
+{***************************************************************}
+
+enum render_mode is pointplot, wireframe, hidden_line, shaded, shaded_line;
+enum shading is face, vertex, pixel;
+enum edges is silhouette, outline, all;
+enum edge_orientation is front, all;
+enum outline is subtle, bold;
+
+//
+// surface attributes
+//
+
+native color type color;
+native material type material is none;
+
+//
+// rendering attributes
+//
+
+native render_mode type render_mode is shaded;
+native shading type shading is vertex;
+
+//
+// wireframe attributes
+//
+
+native edges type edges is outline;
+native edge_orientation type edge_orientation is front;
+native outline type outline is bold;
+
+//
+// ray tracing attributes
+//
+
+native boolean shadows is false;
+native boolean reflections is false;
+native boolean refractions is false;
+
+{***************************************************************}
+{                      rendering attributes                     }
+{***************************************************************}
+
+native integer facets = 4;
+native boolean antialiasing is false;
+native integer supersampling = 16;
+native vector ambient = white * .3;
+native vector background = grey;
+native scalar fog_factor = 0;
+native scalar min_feature_size = 0;
+native scalar stereo = 0;
+native color type left_color = cyan;
+native color type right_color = red;
+native boolean double_buffer is false;
+
+{***************************************************************}
+{                      ray tracing attributes                   }
+{***************************************************************}
+
+enum scanning is linear, ordered, random;
+native scanning type scanning is ordered;
+native integer max_reflections = 5;
+native integer max_refractions = 5;
+native scalar min_ray_weight = .01;

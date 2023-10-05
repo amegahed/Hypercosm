@@ -1,0 +1,112 @@
+do stopwatch_timer_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/stopwatch_timer.ores";
+include "stopwatch.omar";
+
+subject stopwatch_timer_actor
+extends
+	renderable stopwatch_timer
+does
+	// constructor
+	//
+	verb new;
+	
+	// rendnering method
+	//
+	shape instance;
+	
+	// updating method
+	//
+	verb update;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new is
+		// call superclass constructor
+		//
+		stopwatch_timer new;
+	end;    // new
+	
+	//  
+	// rendnering method
+	//
+	
+	
+	shape instance is
+		stopwatch with
+			time = stopwatch_timer get_time;
+			paused is stopwatch_timer is_paused;
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // instance
+	
+	//  
+	// updating method
+	//
+	
+	
+	verb check_keys is
+		integer key;
+		
+		reset_frame_events;
+		key = get_key;
+		
+		if key = char_to_key of " " then
+			reset;
+		elseif key = char_to_key of "p" then
+			pause;
+		elseif key = char_to_key of "u" then
+			resume;
+		elseif key = char_to_key of "t" then
+			toggle;
+		end;
+	end;    // check_keys
+	
+	
+	verb draw_instructions
+		at scalar x = -.9, y = .8; 
+	is
+		verb draw_line
+			string type line;
+		is
+			overlay_text line at <x y 0> with
+				horizontal_alignment is left;
+			end;
+			
+			// go to next line
+			//
+			y = itself - .1;
+		end;    // draw_line
+		
+		draw_line "Press 'space' to Reset";
+		draw_line "Press 'P' to Pause";
+		draw_line "Press 'U' to Unpause";
+		draw_line "Press 'T' to Toggle";
+	end;    // draw_instructions
+	
+		
+	verb update is
+		check_keys;
+		draw_instructions;
+		
+		// call superclass method
+		//
+		stopwatch_timer static update;
+	end;    // update
+end;    // stopwatch_timer_actor
+	
+anim stopwatch_timer_anim with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+	show_animation_control is false;
+is
+	stopwatch_timer_actor type stopwatch_timer_actor;
+	
+	mouse_controlled_actor stopwatch_timer_actor titled "Stopwatch Timer";
+end;    // stopwatch_timer_anim

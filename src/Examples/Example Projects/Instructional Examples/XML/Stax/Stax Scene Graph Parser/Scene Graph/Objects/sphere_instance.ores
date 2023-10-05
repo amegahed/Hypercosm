@@ -1,0 +1,121 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           sphere_instance.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of sphere instances in the        }
+{       scene graph.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "object_instance.ores";
+
+subject sphere_instance
+extends 
+	object_instance
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+	with
+		scalar radius = 1;
+		trans type trans = unit_trans;
+		material type material is none;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from sphere_instance type source;
+	end;
+	sphere_instance type question clone;
+	
+	// printable methods
+	//
+	string type question to_string;
+has
+	// attributes 
+	//
+	scalar radius;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		named string type name is none;
+	with
+		scalar radius = 1;
+		trans type trans = unit_trans;
+		material type material is none;
+	is
+		// call superclass constructor
+		//
+		object_instance new named name with
+			trans = static trans;
+			material is static material;
+		end;
+		
+		// set attributes
+		//
+		with sphere_instance do
+			its radius = radius;
+		end;
+	end;    // new
+	
+	//    
+	// rendering methods
+	//
+	
+	
+	shape instance is
+		global sphere with
+			radius = static radius;
+			global trans = trans;
+			global material is material;
+		end;
+	end;    // instance
+	
+	//   
+	// copying and cloning methods
+	//
+	
+	 
+	verb copy 
+		from sphere_instance type source;
+	is
+		// call superclass method
+		//
+		object_instance static copy from source;
+			
+		// copy attributes of source
+		//
+		radius = source's radius;       
+	end;    // copy
+	
+	
+	sphere_instance type question clone is
+		sphere_instance type sphere2;
+		sphere2 copy from sphere_instance;
+		answer sphere2;
+	end;    // clone
+	
+	//    
+	// printable methods
+	//
+	
+	
+	string type question to_string is
+		answer "sphere instance";
+	end;    // to_string
+end;    // sphere_instance
+

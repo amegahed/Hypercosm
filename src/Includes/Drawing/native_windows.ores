@@ -1,0 +1,66 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         native_windows.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native display utilities.                  }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/strings.ores";
+include "system/color.ores";
+
+{***************************************************************}
+{                     native window primitives                  }
+{***************************************************************}
+
+native integer question screen_width; 
+native integer question screen_height; 
+
+subject window
+does
+	// constructor
+	//
+	native verb new
+		named string type name;
+		of integer width = screen_width div 2, height = screen_height div 2;
+		at integer hcenter = screen_width div 2, vcenter = screen_height div 2;
+	end;    // new
+
+	// window managing methods
+	//
+	native verb close;
+	native verb clear;
+	native verb update;
+	
+	// setting methods
+	//
+	native verb set_color
+		to color type color;
+	end;
+
+	// drawing methods
+	//
+	native verb line
+		from integer h1, v1;
+		to integer h2, v2;
+	end;
+	native verb rect
+		from integer h1, v1;
+		to integer h2, v2;
+	end;
+has
+	// attributes
+	//
+	string type name;
+	integer width, height;
+	integer hcenter, vcenter;
+private
+	integer id;
+end;    // window

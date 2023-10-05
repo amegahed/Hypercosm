@@ -1,0 +1,58 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      multiline_text_selector.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a multiline text      }
+{       selector user interface component.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do multiline_text_selector_anim;
+
+include "system/3d.ores";
+include "system/multiline_text_selector.ores";
+include "system/devices.ores";
+
+anim multiline_text_selector_anim with
+	double_buffer is on;
+is
+	verb selection_action is
+		write "selected!", ;
+	end;
+	verb deselection_action is
+		write "deselected!", ;
+	end;
+	
+	strings type unselected_text is ["multiline" "text" "selector"];
+	strings type selected_text is ["pressed" "multiline" "text" "selector"];
+	
+	multiline_text_selector type text_selector 
+		of unselected_text at <.75 0 0>
+		selecting (new action of selection_action)
+		deselecting (new action of deselection_action)
+	with
+		selected is false;
+		selected_text is static selected_text;
+		font is (new screen_font styled bold sized 24);
+		font_color set to white over dark green;
+		highlighted_font is (new screen_font sized 24 styled italic);
+		highlighted_color set to red over white;
+	end;
+	
+	picture scene is
+	   text_selector draw;
+	end;    // scene
+	
+	while true do
+		scene;
+		text_selector update;
+		
+		if key_pressed char_to_key of " " then
+			write "deselecting", ;
+			text_selector toggle_selected;
+		end;
+	end;
+end;    // multiline_text_selector_anim

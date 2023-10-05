@@ -1,0 +1,27 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		mutable_containing.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of a behavior for mutable		    }
+{		("read-write") objects which contain other objects.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/containing.ores";
+
+
+adjective mutable_containable
+extends
+    containable
+does
+    // data modifier methods
+    // 
+    verb set
+        to object type item;
+    end;
+end;    // mutable_containable

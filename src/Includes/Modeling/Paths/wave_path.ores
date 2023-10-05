@@ -1,0 +1,149 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           wave_path.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard subject for creating a path         }
+{       behind a moving point in the form of concentric         }
+{       expanding spheres.                                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/path.ores";
+include "system/random.ores";
+
+subject wave_path
+extends
+	path
+does
+	// constructor
+	//
+	verb new
+		at vector location = <0 0 0>;
+	with
+		integer steps = 10;
+		scalar expansion_speed = 1;
+		integer spacing = 5;
+		boolean continuous is false;
+	end;    // new
+
+	// animation method
+	//
+	verb step
+		enum mode is absolute, relative;
+		to vector location;
+		in mode type mode is absolute;
+	end;    // step
+
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	scalar expansion_speed;
+	integer spacing;
+	boolean continuous;
+	integer step_counter = 0;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at vector location = <0 0 0>;
+	with
+		integer steps = 10;
+		scalar expansion_speed = 1;
+		integer spacing = 5;
+		boolean continuous is false;
+	is
+		// call superclass constructor
+		//
+		path new at location with
+			steps = static steps;
+		end;
+
+		// init wave path
+		//
+		with wave_path do
+			its expansion_speed = expansion_speed;
+			its spacing = spacing;
+			its continuous is continuous;
+		end;
+	end;    // new
+
+	//
+	// animation method
+	//
+	
+	verb advance
+		to vector location;
+	is
+		integer counter = steps;
+		while counter > 0 do
+			path_points[counter] = path_points[counter - 1];
+			counter = itself - 1;
+		end;
+		path_points[0] = location;
+	end;    // advance
+
+	verb step
+		enum mode is absolute, relative;
+		to vector location;
+		in mode type mode is absolute;
+	is
+		// advance path
+		//
+		if mode is relative then
+			for integer counter = 0..steps do
+				path_points[counter] = itself - location;
+			end;
+			location = <0 0 0>;
+		end;
+
+		// every n steps, a new wave is emitted
+		//
+		step_counter = itself + 1;
+		if step_counter = spacing then
+			advance to location;
+			step_counter = 0;
+		end;
+	end;    // step
+
+	//
+	// rendering method
+	//
+	
+	shape instance is
+		vector point1, point2;
+		scalar radius = 0;
+		edges is silhouette;
+		render_mode is wireframe;
+		color = white;
+		radius = step_counter * expansion_speed;
+		for integer counter = 0..steps do
+			sphere with
+				center = path_points[counter];
+				radius = static radius;
+			end;
+			if continuous and counter < steps then
+				point1 = path_points[counter];
+				point2 = path_points[counter + 1];
+				if point1 <> point2 then
+					cone with
+						end1 = point1;
+						end2 = point2;
+						radius1 = radius;
+						radius2 = radius + (
+						expansion_speed * spacing);
+					end;
+				end;
+			end;
+			radius = itself + (expansion_speed * spacing);
+		end;
+	end;    // instance
+end;    // wave_path

@@ -1,0 +1,44 @@
+{***************************************************************}
+{                     region_bounding.ores                      }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{   	Contains an abstract definition of bounding types.		}
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/region_sizeing.ores";
+
+
+adjective region_containing
+does
+    boolean question contains
+    	pixel type pixel;
+    end;
+end;	// region_containing
+
+
+adjective region_bounding
+extends
+	region_containing
+does
+	pixel type question get_min;
+	pixel type question get_max;
+end;	// region_bounding
+
+
+adjective region_boundable
+does
+	region_bounding type question get_bounds;
+end;	// region_boundable
+
+
+adjective region_reboundable
+does
+	verb set_bounds
+		to region_bounding type bounds;
+	end;
+end;	// region_reboundable

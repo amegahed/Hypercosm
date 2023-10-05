@@ -1,0 +1,75 @@
+{***************************************************************}
+{                          waves.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do waves_picture;
+
+
+include "system/3d.ores";
+include "system/wave.omar";
+
+
+shape waves with
+    integer level = 3;
+is
+    shape unit_wave with
+        scalar length = 1;
+        scalar height = .5;
+        integer steps = 10;
+    is
+        wave type's form with
+            length = static length;
+            height = static height;
+            steps = static steps;
+        end;
+    end;    // unit_wave
+
+
+    scalar offset;
+
+    if (level = 0) then
+        unit_wave;
+    else
+        offset = (2 ^ (level - 1)) / 2;
+        waves with
+            level = static level - 1;
+            move to <offset offset 0>;
+        end;
+        waves with
+            level = static level - 1;
+            move to <-offset offset 0>;
+        end;
+        waves with
+            level = static level - 1;
+            move to <offset (-offset) 0>;
+        end;
+        waves with
+            level = static level - 1;
+            move to <-offset (-offset) 0>;
+        end;
+    end;
+end;    // waves
+
+
+picture waves_picture with
+    scalar h = 0;
+
+    eye = <2 -3 2>;
+    lookat = <0 3 0>;
+    facets = 0;
+    background = charcoal;
+    fog_factor = 10;
+    reflections is on;
+    shadows is on;
+is
+    distant_light from <.2 -.5 1>;
+    waves with
+        level = 6;
+        material is metal colored light aqua;
+    end;
+end;    // waves_picture

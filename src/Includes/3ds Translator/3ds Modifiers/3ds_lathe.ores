@@ -1,0 +1,645 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           3ds_lathe.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains lathe definitions that correspond to           }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_modifier.ores";
+include "system/3ds_editable_spline.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_planar_mapping.ores";
+include "system/grid_meshes.ores";
+include "system/triangle_fan_meshes.ores";
+include "system/vectors.ores";
+
+enum translated_3ds_lathe_output_kind is patch, mesh, nurbs;
+enum translated_3ds_lathe_capping_kind is morph, grid;
+
+subject translated_3ds_lathe
+extends
+	translated_3ds_collapsable2 translated_3ds_activatable translated_3ds_modifier
+does
+	// constructor
+	//
+	verb new with
+	
+		// lathe parameters
+		//
+		scalar degrees = 360;
+		integer segments = 16;
+		boolean weld_core is true;
+		translated_3ds_lathe_output_kind type output_kind is mesh;
+		boolean smooth is true;
+		trans type trans;
+						
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_lathe_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is false;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// activatable parameters
+		//
+		boolean active is true;
+	end;
+	
+	// setting method
+	//
+	verb set with
+	
+		// lathe parameters
+		//
+		scalar degrees = 360;
+		integer segments = 16;
+		boolean weld_core is true;
+		translated_3ds_lathe_output_kind type output_kind is mesh;
+		boolean smooth is true;
+		trans type trans;
+						
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_lathe_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is false;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// activatable parameters
+		//
+		boolean active is true;
+	end;
+	
+	// collapsing methods
+	//    
+	translated_3ds_stackable type question get_collapsed
+		translated_3ds_stackable type argument;
+	end;
+
+	// activating methods
+	//  
+	verb activate;
+	verb deactivate;
+	boolean question is_activated;
+	boolean question is_deactivated;
+	
+	// recycling methods
+	//
+	objective translated_3ds_lathe type question get;
+	reference verb recycle;
+has
+	// attributes
+	//
+	scalar degrees;
+	integer segments;
+	boolean weld_core;
+	translated_3ds_lathe_output_kind type output_kind;
+	boolean smooth;
+	trans type trans;
+					
+	// capping attributes
+	//
+	boolean cap_start;
+	boolean cap_end;
+	translated_3ds_lathe_capping_kind type capping_kind;
+	
+	// mapping attributes
+	//
+	boolean gen_mapping_coords;
+	boolean gen_mat_IDs;
+	boolean use_shape_IDs;
+	
+	// activatable attributes
+	//
+	boolean active;
+	
+private
+	// recycling attributes
+	//
+	translated_3ds_lathe type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_lathe type free_list is none;
+	
+	// collapsing parameters
+	//
+	const scalar weld_tolerance = .01;
+	const boolean do_end_capping is false;    
+		
+	//
+	// constructor
+	//
+	
+	verb new with
+	
+		// lathe parameters
+		//
+		scalar degrees = 360;
+		integer segments = 16;
+		boolean weld_core is true;
+		translated_3ds_lathe_output_kind type output_kind is mesh;
+		boolean smooth is true;
+		trans type trans;
+						
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_lathe_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is false;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// activatable parameters
+		//
+		boolean active is true;
+	is
+		if verbose_recycling then
+			write "new 3ds lathe", ;
+		end;
+		
+		with translated_3ds_lathe do
+		
+			// set lathe attributes
+			//
+			its degrees = degrees;
+			its segments = segments;
+			its weld_core is weld_core;
+			its output_kind is output_kind;
+			its smooth is smooth;
+			its trans = trans;
+							
+			// set capping attributes
+			//
+			its cap_start is cap_start;
+			its cap_end is cap_end;
+			its capping_kind is capping_kind;
+			
+			// set mapping attributes
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+			its gen_mat_IDs is gen_mat_IDs;
+			its use_shape_IDs is use_shape_IDs;
+	
+			// set activatable attributes
+			//
+			its active is active;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set with
+	
+		// lathe parameters
+		//
+		scalar degrees = 360;
+		integer segments = 16;
+		boolean weld_core is true;
+		translated_3ds_lathe_output_kind type output_kind is mesh;
+		boolean smooth is true;
+		trans type trans;
+						
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_lathe_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is false;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// activatable parameters
+		//
+		boolean active is true;
+	is
+		with translated_3ds_lathe do
+		
+			// set lathe attributes
+			//
+			its degrees = degrees;
+			its segments = segments;
+			its weld_core is weld_core;
+			its output_kind is output_kind;
+			its smooth is smooth;
+			its trans = trans;
+							
+			// set capping attributes
+			//
+			its cap_start is cap_start;
+			its cap_end is cap_end;
+			its capping_kind is capping_kind;
+			
+			// set mapping attributes
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+			its gen_mat_IDs is gen_mat_IDs;
+			its use_shape_IDs is use_shape_IDs;
+	
+			// set activatable attributes
+			//
+			its active is active;
+		end;    
+	end;    // set
+	
+	
+	//
+	// tessellating methods
+	//
+	
+	translated_3ds_editable_mesh_element type question get_lathed_polyline
+		polyline type polyline;
+	is
+		vector_grid type vertex_grid, normal_grid;
+		integer rows = num polyline;
+		integer columns = segments;
+		
+		dim vertex_grid[1 .. rows, 0 .. columns];
+		dim normal_grid[1 .. rows, 0 .. columns];
+		
+		for integer row = 1 .. rows do
+			vector point = polyline[row];
+			vector tangent = polyline get_vertex_tangent of row;
+			vector radial = (point - trans's origin) perpendicular trans's z_axis;
+			vector normal = tangent cross (radial cross trans's z_axis);
+			boolean snapped_to_core is false;
+			
+			// snap to core
+			//
+			if weld_core then
+				if vlength of radial < weld_tolerance then
+					point = trans's origin + (point - trans's origin) parallel trans's z_axis;
+					normal = trans's z_axis;
+					snapped_to_core is true;
+				end;
+			end;
+			
+			for integer column = 0 .. columns do
+				scalar t = column / columns;
+				scalar angle = degrees * t;
+				
+				if snapped_to_core then
+					vertex_grid[row, column] = point;
+					normal_grid[row, column] = normal;
+				else
+					vertex_grid[row, column] = rotated_point point
+						by angle around (trans's z_axis) about (trans's origin);
+					normal_grid[row, column] = (rotated_vector normal
+						by angle around (trans's z_axis));
+				end;
+			end;
+		end;
+		
+		answer (get_grid_mesh of vertex_grid oriented to normal_grid with
+			textured is gen_mapping_coords);
+	end;    // get_lathed_polyline
+	
+	translated_3ds_editable_mesh_element type question get_lathed_line_segment
+		translated_3ds_spline_segment type segment;
+	is
+		vector vertex1 = segment's vertex1's point;
+		vector vertex2 = segment's vertex2's point;
+		answer (get_lathed_polyline [vertex1 vertex2]);
+	end;    // get_lathed_line_segment
+	
+	translated_3ds_editable_mesh_element type question get_lathed_curve_segment
+		translated_3ds_spline_segment type segment;
+	with
+		integer steps = 4;
+	is
+		vpolynomial type cubic_spline is segment get_cubic_spline;
+		vpolynomial type tangent_spline is cubic_spline get_derivative;
+		vector_grid type vertex_grid, normal_grid;
+		integer rows = steps + 1;
+		integer columns = segments;
+		
+		dim vertex_grid[0 .. rows, 0 .. columns];
+		dim normal_grid[0 .. rows, 0 .. columns];
+		
+		for integer row = 0 .. rows do
+			scalar s = row / rows;
+			vector point = cubic_spline get_value at s;
+			vector tangent = tangent_spline get_value at s;
+			vector radial = (point - trans's origin) perpendicular trans's z_axis;
+			vector normal = radial perpendicular tangent;
+			boolean snapped_to_core is false;
+			
+			// snap to core
+			//
+			if weld_core then
+				if vlength of radial < weld_tolerance then
+					point = trans's origin + (point - trans's origin) parallel trans's z_axis;
+					normal = trans's z_axis;
+				end;
+			end;
+						
+			for integer column = 0 .. columns do
+				scalar t = column / columns;
+				scalar angle = degrees * t;
+				
+				if snapped_to_core then
+					vertex_grid[row, column] = point;
+					normal_grid[row, column] = normal;
+				else
+					vertex_grid[row, column] = rotated_point point
+						by angle around (trans's z_axis) about (trans's origin);
+					normal_grid[row, column] = (rotated_vector normal
+						by angle around (trans's z_axis));
+				end;
+			end;
+		end;
+		
+		answer (get_grid_mesh of vertex_grid oriented to normal_grid with
+			textured is gen_mapping_coords);
+	end;    // get_lathed_curve_segment
+	
+	translated_3ds_editable_mesh_element type question get_lathed_segment
+		translated_3ds_spline_segment type segment;
+	with
+		integer steps = 4;
+	is
+		if segment is_line then
+			answer get_lathed_line_segment segment;
+		else
+			answer (get_lathed_curve_segment segment with steps = static steps);
+		end;
+	end;    // get_lathed_segment
+	
+	verb add_lathed_segmented_spline
+		translated_3ds_spline type spline;
+		to translated_3ds_editable_mesh type editable_mesh; 
+	with
+		integer steps = 4;
+	is
+		iterator type iterator is spline's segment_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			editable_mesh add_element (get_lathed_segment segment with steps = static steps);
+		end;
+	end;    // add_lathed_segmented_polyline
+	
+	verb add_lathed_spline
+		translated_3ds_spline type spline;
+		to translated_3ds_editable_mesh type editable_mesh;
+	with
+		integer steps = 4;
+	is
+		if spline is_curve then
+			editable_mesh add_element (get_lathed_polyline spline to_polyline with
+				steps = static steps);
+		else
+			add_lathed_segmented_spline spline to editable_mesh with
+				steps = static steps;
+			end;
+		end;
+	end;    // add_lathed_spline
+	
+	translated_3ds_editable_mesh_element type question cap
+		of vector point;
+	with
+		boolean reversed is false;
+	is
+		vector vertices[0 .. segments + 1];
+		
+		vertices[0] = trans's origin + (point - trans's origin) parallel trans's z_axis;
+		for integer segment = 0 .. segments do
+			scalar t = segment / segments;
+			scalar angle = degrees * t;
+			
+			// snap to core
+			//
+			if weld_core then
+				if vlength of (point - trans's origin) < weld_tolerance then
+					answer none;
+				end;
+			end;
+			
+			vertices[segment + 1] = rotated_point point
+				by angle around (trans's z_axis) about (trans's origin);
+		end;
+		
+		answer (get_triangle_fan_mesh of vertices with
+			open is true;
+			reversed is static reversed;
+			textured is gen_mapping_coords;
+		);
+	end;    // cap
+	
+	verb add_lathed_editable_spline
+		translated_3ds_editable_spline type editable_spline;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		if editable_spline get_num_splines <> 0 then
+			iterator type iterator is editable_spline's spline_list get_iterator;
+			translated_3ds_spline type spline is translated_3ds_spline type iterator next;
+			
+			// add lathed sides
+			//
+			if spline is_closed then
+				spline set_orientation to counter_clockwise;
+			end;       
+			add_lathed_spline spline to editable_mesh with
+				steps = editable_spline's steps;
+			end;
+			
+			// add lathed hole sides
+			//
+			while iterator is_iterating do
+				spline is translated_3ds_spline type iterator next;
+				if spline is_closed then
+					spline set_orientation to clockwise;
+				end;
+				add_lathed_spline spline to editable_mesh with
+					steps = editable_spline's steps;
+				end;
+			end;
+			
+			// add extrude end capping faces
+			//
+			if (cap_start or cap_end) and do_end_capping then
+				spline is translated_3ds_spline type editable_spline's spline_list get_first;
+					
+				if cap_start then
+					translated_3ds_spline_segment type first_segment is 
+						translated_3ds_spline_segment type spline's segment_list get_first;
+					translated_3ds_spline_vertex type first_vertex is first_segment's vertex1;  
+					editable_mesh add_element (cap of first_vertex's point with reversed is false);
+				end;
+				
+				if cap_end then
+					translated_3ds_spline_segment type last_segment is 
+						translated_3ds_spline_segment type spline's segment_list get_last;
+					translated_3ds_spline_vertex type last_vertex is last_segment's vertex2;
+					editable_mesh add_element (cap of last_vertex's point with reversed is true);
+				end;
+			end;
+		end;
+	end;    // add_lathed_editable_spline
+	
+	//       
+	// collapsing methods
+	//
+			
+	translated_3ds_stackable type question get_collapsed
+		translated_3ds_stackable type argument;
+	is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;
+		
+		if translated_3ds_editable_spline type argument then
+			translated_3ds_editable_spline type editable_spline is 
+				translated_3ds_editable_spline type argument;
+				
+			// create lathed mesh
+			//  
+			add_lathed_editable_spline editable_spline to editable_mesh;
+		end;
+		
+		if recycleable type argument then
+			recycleable type recycleable is recycleable type argument;
+			recycleable recycle;
+		end;
+		recycle;
+		
+		answer editable_mesh;
+	end;    // get_collapsed
+	
+	//  
+	// activating methods
+	//
+	
+	verb activate is
+		active is true;
+	end;    // activate
+	
+	verb deactivate is
+		active is false;
+	end;    // deactivate
+	
+	boolean question is_activated is
+		answer active;
+	end;    // is_activated
+	
+	boolean question is_deactivated is
+		answer not active;
+	end;    // is_deactivated
+	
+	//  
+	// recycling methods
+	//
+
+	objective translated_3ds_lathe type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_lathe type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_lathe;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_lathe;
+		
+		translated_3ds_lathe is none;
+	end;        // recycle
+end;    // translated_3ds_lathe
+
+//
+// procedural interface
+//
+
+verb translated_3ds_lathe with
+	
+	// lathe parameters
+	//
+	scalar degrees = 360;
+	integer segments = 16;
+	boolean weld_core is true;
+	translated_3ds_lathe_output_kind type output_kind is mesh;
+	boolean smooth is true;
+	trans type trans;
+					
+	// capping parameters
+	//
+	boolean cap_start is true;
+	boolean cap_end is true;
+	translated_3ds_lathe_capping_kind type capping_kind is morph;
+	
+	// mapping parameters
+	//
+	boolean gen_mapping_coords is false;
+	boolean gen_mat_IDs is true;
+	boolean use_shape_IDs is false;
+	
+	// activatable parameters
+	//
+	boolean active is true;
+is
+	translated_3ds_lathe type translated_3ds_lathe is translated_3ds_lathe type's get;
+	
+	translated_3ds_lathe set with
+	
+		// lathe parameters
+		//
+		degrees = static degrees;
+		segments = static segments;
+		weld_core is static weld_core;
+		output_kind is static output_kind;
+		smooth is static smooth;
+		trans = static trans;
+						
+		// capping parameters
+		//
+		cap_start is static cap_start;
+		cap_end is static cap_end;
+		capping_kind is static capping_kind;
+		
+		// mapping parameters
+		//
+		gen_mapping_coords is static gen_mapping_coords;
+		gen_mat_IDs is static gen_mat_IDs;
+		use_shape_IDs is static use_shape_IDs;
+	
+		// activatable parameters
+		//
+		active is static active;
+	end;
+	
+	modifier_stack push translated_3ds_stackable type translated_3ds_lathe;
+end;    // translated_3ds_lathe

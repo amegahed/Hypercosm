@@ -1,0 +1,53 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           timed_actor.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/acting.ores";
+include "system/printing.ores";
+include "system/timers.ores";
+
+//
+// timed actors that advance in real time based upon a clock
+//
+
+abstract subject timed_actor
+extends
+	actable printable stopwatch_timer
+does
+	// acting methods
+	//
+	verb act;
+	
+	// rendering methods
+	//
+	abstract shape instance;
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// acting methods
+	//
+	
+	verb act is
+		update;
+	end;    // act
+	
+	//
+	// printing methods
+	// 
+			
+	verb print is
+		write "timed actor with time = ", time, ;
+	end;    // print
+end;    // timed_actor

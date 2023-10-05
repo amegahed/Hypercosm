@@ -1,0 +1,110 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 bounding_volumes.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{        Contains several a class for creating and              }
+{        comparing arbitrarilly sized bounding volumes.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/volume_bounding.ores";
+
+
+subject bounding_volume
+extends
+	volume_containing volume_boundable printable object
+does
+	// constructor
+	//
+	verb new
+		of volume_bounding type bounds_array[];
+	end;
+    
+    // volume containing methods
+    //
+    boolean question contains
+        vector point;
+    end;
+    
+    // volume boundable methods
+    //
+	volume_bounding type question get_bounds;
+    
+    // printable methods
+    //
+    verb print;
+has
+	// bounding volume attributes
+	//
+	volume_bounding type bounds_array[];
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of volume_bounding type bounds_array[];
+	is
+		bounding_volume's bounds_array is bounds_array;
+	end;	// new
+    
+    
+    //
+    // volume containing methods
+    //
+    
+    
+    boolean question contains
+        vector point;
+    is
+    	for each volume_bounding type bounds in bounds_array do
+    		if some bounds then
+	    		if bounds contains point then
+	    			answer true;
+	    		end;
+    		end;
+    	end;
+    	answer false;
+    end;	// contains
+    
+
+	//
+	// volume boundable methods
+	//
+
+
+	volume_bounding type question get_bounds is
+		volume_extents type extents;
+		for each volume_bounding type bounds in bounds_array do
+			extents extend to bounds get_min;
+			extents extend to bounds get_max;
+		end;
+		answer extents;
+	end;	// get_bounds	
+
+		    
+    //
+    // printable methods
+    //
+    
+    
+    verb print is
+    	write "bounding volume containing:", ;
+    	for each volume_bounding type bounds in bounds_array do
+    		if printable type bounds then
+    			(printable type bounds) print;
+    		else
+    			write "?", ;
+    		end;
+    	end;
+    end;	// print
+end;    // bounding_volume
+
+
+type bounding_volumes is bounding_volume type[];

@@ -1,0 +1,28 @@
+do test;
+
+
+subject thing 
+does
+	verb new
+		of integer value = 0;
+	end;
+	verb print;
+has
+	integer value;
+is
+	verb new
+		of integer value = 0;
+	is
+		thing's value = value;
+	end;
+	
+	verb print is
+		write "thing with value = ", value, ;
+	end;
+end;	// thing
+
+
+verb test is
+	thing type thing is new thing of 10;
+	thing print;
+end;	// test

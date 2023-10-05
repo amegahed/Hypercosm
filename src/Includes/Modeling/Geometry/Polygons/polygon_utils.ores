@@ -1,0 +1,182 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           polygon_utils.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some useful polygon related utilities.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/vectors.ores";
+
+enum turn_orientation is clockwise, counter_clockwise;
+
+vector question get_polygon_normal
+	of vector vertices[];
+is
+	vector directions[min vertices .. max vertices];
+	vector normal = <0 0 0>;
+	
+	// compute directions around vertices
+	//
+	for integer counter = min vertices .. max vertices - 1 do
+		directions[counter] = vertices[counter + 1] - vertices[counter];
+	end;
+	directions[max vertices] = vertices[min vertices] - vertices[max vertices];
+	
+	// normalize direction vectors
+	//
+	for each vector direction in directions do
+		if direction <> <0 0 0> then
+			direction = normalized direction;
+		end;
+	end;
+	
+	for integer counter = min directions .. max directions - 1 do
+		normal = itself + directions[counter] cross directions[counter + 1];
+	end;
+	normal = itself + directions[max vertices] cross directions[min vertices];
+	
+	answer normal;
+end;    // get_polygon_normal
+
+boolean question is_convex_polygon
+	of vector vertices[];
+is
+	vector prev, current, next;
+	vector prev_direction, next_direction;
+	vector normal = axis_vector of principal_axis of get_polygon_normal of vertices;
+	integer prev_turn_sign = 0;
+	
+	// compute state for last vertex
+	//
+	current = vertices[max vertices];
+	next = vertices[min vertices];
+	next_direction = next - current;
+	
+	for integer counter = min vertices .. max vertices do
+
+		// find prev neighbors
+		//
+		prev_direction = next_direction;
+		prev = current;
+		current = next;
+			
+		// find next neighbors
+		//
+		if counter = max vertices then
+			next = vertices[min vertices];
+		else
+			next = vertices[counter + 1];
+		end;
+		next_direction = next - current;
+
+		// find angle of turn at vertex
+		//
+		if prev_direction <> <0 0 0> and next_direction <> <0 0 0> then
+			integer turn_sign = sign signed_vangle from prev_direction to next_direction around normal;
+			if prev_turn_sign <> 0 then
+				if prev_turn_sign <> turn_sign then
+					answer false;
+				end;
+			end;
+			prev_turn_sign = turn_sign;
+		end;
+	end;
+	
+	answer true;
+end;    // is_convex_polygon
+
+turn_orientation type question get_polygon_orientation
+	of vector vertices[];
+is
+	vector prev, current, next;
+	vector prev_direction, next_direction;
+	scalar angle = 0;
+	vector normal = axis_vector of principal_axis of get_polygon_normal of vertices;
+ 
+	// compute state for last vertex
+	//
+	current = vertices[max vertices];
+	next = vertices[min vertices];
+	next_direction = next - current;
+	
+	for integer counter = min vertices .. max vertices do
+
+		// find prev neighbors
+		//
+		prev_direction = next_direction;
+		prev = current;
+		current = next;
+			
+		// find next neighbors
+		//
+		if counter = max vertices then
+			next = vertices[min vertices];
+		else
+			next = vertices[counter + 1];
+		end;
+		next_direction = next - current;
+
+		// add angle of turn at vertex
+		//
+		if prev_direction <> <0 0 0> and next_direction <> <0 0 0> then
+			scalar turn = signed_vangle from prev_direction to next_direction around normal;
+			angle = itself + turn;
+		end;
+	end;
+	
+	if angle > 0 then
+		answer counter_clockwise;
+	else
+		answer clockwise;
+	end;
+end;    // get_polygon_orientation
+
+turn_orientation type question get_vertex_orientation
+	of vector vertex;
+	from vector prev_vertex;
+	to vector next_vertex;
+	around vector normal;
+is
+	vector prev_direction = vertex - prev_vertex;
+	vector next_direction = next_vertex - vertex;
+	
+	if (prev_direction cross next_direction) dot normal > 0 then
+		answer counter_clockwise;
+	else
+		answer clockwise;
+	end;
+end;    // get_vertex_orientation
+
+turn_orientation type[] question get_vertex_orientations
+	of vector vertices[];
+	around vector normal;
+is
+	turn_orientation type orientations[min vertices .. max vertices];
+	
+	for integer counter = min vertices .. max vertices do
+		vector prev, next, current;
+		
+		// find current, prev, and next vertices
+		//
+		current = vertices[counter];
+		if counter = min vertices then
+			prev = vertices[max vertices];
+			next = vertices[counter + 1];
+		elseif counter = max vertices then
+			prev = vertices[counter - 1];
+			next = vertices[min vertices];
+		else
+			prev = vertices[counter - 1];
+			next = vertices[counter + 1];
+		end;
+		orientations[counter] is get_vertex_orientation of current
+			from prev to next around normal;
+	end;
+	
+	answer orientations;
+end;    // get_vertex_orientations

@@ -1,0 +1,252 @@
+{***************************************************************}
+{                        native_shapes.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains specifications for the primitive shapes.       }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/common_colors.ores";
+include "system/texture_coordinates.ores";
+include "system/native_trans.ores";
+
+
+{***************************************************************}
+{                        quadric primitives                     }
+{***************************************************************}
+
+
+native shape sphere with
+    vector center = <0 0 0>;
+    scalar radius = 1;
+    scalar umin = 0, umax = 360;
+    scalar vmin = -90, vmax = 90;
+end;    // sphere
+
+
+native shape cylinder with
+    vector end1 = <0 0 1>;
+    vector end2 = <0 0 -1>;
+    scalar radius = 1;
+    scalar umin = 0, umax = 360;
+end;    // cylinder
+
+
+native shape cone with
+    vector end1 = <0 0 1>;
+    vector end2 = <0 0 -1>;
+    scalar radius1 = 0;
+    scalar radius2 = 1;
+    scalar umin = 0, umax = 360;
+end;    // cone
+
+
+native shape paraboloid with
+    vector top = <0 0 1>;
+    vector base = <0 0 -1>;
+    scalar radius = 1;
+    scalar umin = 0, umax = 360;
+end;    // paraboloid
+
+
+native shape hyperboloid1 with
+    vector end1 = <0 0 1>;
+    vector end2 = <0 0 -1>;
+    scalar radius1 = .5;
+    scalar radius2 = 1;
+    scalar umin = 0, umax = 360;
+end;    // hyperboloid1
+
+
+native shape hyperboloid2 with
+    vector top = <0 0 1>;
+    vector base = <0 0 -1>;
+    scalar radius = 1;
+    scalar eccentricity = .5;
+    scalar umin = 0, umax = 360;
+end;    // hyperbolid2
+
+
+{***************************************************************}
+{                        planar primitives                      }
+{***************************************************************}
+
+
+native shape plane with
+    vector origin = <0 0 0>;
+    vector normal = <0 0 1>;
+end;    // plane
+
+
+native shape disk with
+    vector center = <0 0 0>;
+    vector normal = <0 0 1>;
+    scalar radius = 1;
+    scalar umin = 0, umax = 360;
+end;    // disk
+
+
+native shape ring with
+    vector center = <0 0 0>;
+    vector normal = <0 0 1>;
+    scalar inner_radius = .5;
+    scalar outer_radius = 1;
+    scalar umin = 0, umax = 360;
+end;    // ring
+
+
+native shape triangle
+    vector vertex1;
+    vector vertex2;
+    vector vertex3;
+end;    // triangle
+
+
+native shape parallelogram with
+    vector vertex = <-1 -1 0>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+end;    // parallelogram
+
+
+native shape polygon
+    vector vertices[];
+with
+    texcoord type texcoords[];
+end;    // polygon
+
+
+{***************************************************************}
+{                      non-planar primitives                    }
+{***************************************************************}
+
+
+native shape torus with
+    vector center = <0 0 0>;
+    vector normal = <0 0 1>;
+    scalar inner_radius = .5;
+    scalar outer_radius = 1;
+    scalar umin = 0, umax = 360;
+    scalar vmin = 0, vmax = 360;
+end;    // torus
+
+
+native shape block with
+    vector vertex = <-1 -1 -1>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+    vector side3 = <0 0 2>;
+end;    // block
+
+
+native shape shaded_triangle
+    vector vertex1;
+    vector vertex2;
+    vector vertex3;
+    vector normal1;
+    vector normal2;
+    vector normal3;
+end;    // shaded_triangle
+
+
+native shape shaded_polygon
+    vector vertices[];
+    vector normals[];
+with
+    texcoord type texcoords[];
+end;    // shaded_polygon
+
+
+native shape mesh
+    vector vertices[];
+    integer edges[, ];
+    integer faces[];
+with
+    vector normals[];
+    texcoord type texcoords[];
+    boolean smoothing is true;
+    boolean mending is false;
+    boolean closed is false;
+end;    // mesh
+
+
+native shape blob
+    vector centers[];
+with
+    scalar radii[];
+    scalar strengths[];
+    scalar threshold = .5;
+end;    // blob
+
+
+{***************************************************************}
+{                      non-surface primitives                   }
+{***************************************************************}
+
+
+native shape points
+    vector vertices[];
+end;    // points
+
+
+native shape line
+    vector vertices[];
+end;    // line
+
+
+native shape volume
+    scalar densities[, , ];
+    in form of vector vertices[, , ] is none;
+with
+    scalar threshold = .5;
+    boolean capping is true;
+    boolean smoothing is true;
+end;    // volume
+
+
+{***************************************************************}
+{                       clipping primitives                     }
+{***************************************************************}
+
+
+native shape clipping_plane with
+    vector origin = <0 0 0>;
+    vector normal = <0 0 1>;
+end;    // clipping_plane
+
+
+{***************************************************************}
+{                    default primitive colors                   }
+{***************************************************************}
+
+
+native color type sphere_color = red;
+native color type cylinder_color = sky_blue;
+native color type cone_color = green;
+native color type paraboloid_color = yellow;
+native color type hyperboloid1_color = raspberry;
+native color type hyperboloid2_color = evergreen;
+native color type plane_color = grey;
+native color type disk_color = pink;
+native color type ring_color = orange;
+native color type triangle_color = blue;
+native color type parallelogram_color = aqua;
+native color type polygon_color = cyan;
+native color type torus_color = maize;
+native color type block_color = lavender;
+native color type shaded_triangle_color = brick;
+native color type shaded_polygon_color = magenta;
+native color type mesh_color = violet;
+native color type blob_color = brown;
+native color type point_color = white;
+native color type line_color = white;
+native color type volume_color = white;

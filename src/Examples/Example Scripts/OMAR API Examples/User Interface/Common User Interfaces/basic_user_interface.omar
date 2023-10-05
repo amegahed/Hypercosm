@@ -1,0 +1,64 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         basic_user_interface.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a basic user          }
+{       interface.                                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/3d.ores";
+include "system/basic_user_interface.ores";
+include "system/dock.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/object_navigation_mode_control.ores";
+include "system/mouse_mode_control.ores";
+include "system/overlay_component_group.ores";
+include "system/standard_behaviors.ores";
+
+anim example 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	basic_user_interface type user_interface;
+	dock type dock;
+	mouse_interaction type interaction with
+		behaviors is get_default_object_navigation_behaviors;
+	end;
+	navigation_mode_control type navigation_mode_control is 
+		new object_navigation_mode_control of dock;
+	mouse_mode_control type mouse_mode_control using navigation_mode_control;
+	
+	picture scene is
+		sphere with
+			interaction apply;
+		end;
+		default_lights;
+		default_background at 100;
+		user_interface overlay at 1;
+		set_manual_near_far_planes on from .5 to 150;
+	end;    // scene
+	dock add navigation_mode_control;
+	dock add mouse_mode_control;
+	user_interface add dock;
+		
+	while true do
+		scene with
+			interaction apply;
+		end;
+		user_interface update;
+		
+		if not user_interface is_mouse_over then
+			reset_frame_events;
+			interaction update;
+		end;
+	end;
+end;    // example

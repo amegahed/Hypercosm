@@ -1,0 +1,33 @@
+{***************************************************************}
+{                       standard_colors.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of OMAR's standard colors and      }
+{       color modification procedures.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/color.ores";
+
+
+// monochrome primary colors
+//
+const color type white = <1 1 1>;
+const color type black = <0 0 0>;
+const color type grey = <.5 .5 .5>;
+
+// addative primaries
+//
+const color type red = <1 0 0>;
+const color type green = <0 1 0>;
+const color type blue = <0 0 1>;
+
+// subtractive primaries
+//
+const color type cyan = <0 1 1>;
+const color type magenta = <1 0 1>;
+const color type yellow = <1 1 0>;

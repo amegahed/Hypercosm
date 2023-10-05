@@ -1,0 +1,111 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "timers.hcvm";
+	WebOutputDir "Website";
+	Alignment;
+	CommandLine;
+	Width "800";
+	Height "600";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar "clock_timer.omar";
+			omar "interval_timer.omar";
+			omar "stopwatch.omar";
+			omar "stopwatch_timer.omar";
+			omar "cycle_timer.omar";
+			omar_main "timers.omar";
+			omar "timer.omar";
+		}
+	}
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "index.html";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "..\\..\\..\\..\\Textures\\Interface\\Cameras\\camera_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Performance\\dial_arrow.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Dock\\dock_texture.png";
+			resource "..\\..\\..\\..\\Textures\\Interface\\About\\about_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Transparency\\transparent80.png";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Dock\\back_arrow_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Hide\\hide_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Detail\\dial_labels.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Detail\\dial_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\rotate_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\zoom_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\pan_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\object_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\scene_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Mouse Mode Icons\\two_button_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Mouse Mode Icons\\one_button_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\mouse_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\upright_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\graphics_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Mouse\\Navigation\\spin_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\x_ray_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\outline_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\cartoon_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\monochrome_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\smooth_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\flat_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\hidden_line_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\wireframe_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\edges_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\pointplot_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Rendering\\render_modes_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Detail\\detail_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Lighting\\lighting_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Lighting\\shadow_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Lighting\\red_dial_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Lighting\\green_dial_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Lighting\\blue_dial_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Lighting\\color_wheel_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Graphics\\Performance\\gauge_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Collaboration\\collaboration_icon.gif";
+			resource "..\\..\\..\\..\\Textures\\Background\\background.jpg";
+			resource "..\\..\\..\\..\\Textures\\Interface\\Help\\help_icon.gif";
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+			resource "..\\..\\..\\..\\Sounds\\System Sounds\\show.wav";
+			resource "..\\..\\..\\..\\Sounds\\System Sounds\\select.wav";
+			resource "..\\..\\..\\..\\Sounds\\System Sounds\\deselect.wav";
+			resource "..\\..\\..\\..\\Sounds\\System Sounds\\hide.wav";
+		}
+	}
+}

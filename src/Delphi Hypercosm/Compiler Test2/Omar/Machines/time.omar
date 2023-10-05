@@ -1,0 +1,96 @@
+{***************************************************************}
+{                          time.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do clock_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape clock with
+    time type time = <0 0 0>;
+is
+    shape clock_face is
+        disk with
+            normal = <0 1 0>;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 -.4 0>;
+            radius = .05;
+        end;
+        for integer count = 1..12 do
+            block with
+                material is chalk colored grey;
+                magnify by .1;
+                scale by .5 along <0 0 1>;
+                move to <.8 -.01 0>;
+                rotate by count * 360 / 12 around
+                    <0 1 0>;
+            end;
+        end;
+    end;    // clock_face
+
+
+    scalar hours = time dot <1 0 0>;
+    scalar minutes = time dot <0 1 0>;
+    scalar seconds = time dot <0 0 1>;
+
+    // clock_body
+    //
+    torus with
+        material is golden;
+        inner_radius = .95;
+        outer_radius = 1.2;
+        normal = <0 1 0>;
+    end;
+    clock_face with material is plastic colored white; end;
+
+    // hands
+    //
+    triangle <-.1 0 0> <.1 0 0> <0 0 .6> with
+        rotate by hours / 12 * 360 around <0 1 0>;
+        move to <0 -.2 0>;
+        color = magenta;
+    end;    // hour hand
+    triangle <-.05 0 0> <.05 0 0> <0 0 .8> with
+        rotate by minutes / 60 * 360 around <0 1 0>;
+        move to <0 -.25 0>;
+        color = blue;
+    end;    // minute hand
+    triangle <-.025 0 0> <.025 0 0> <0 0 .6> with
+        rotate by seconds / 60 * 360 around <0 1 0>;
+        move to <0 -.3 0>;
+        color = red;
+    end;    // second hand
+end;    // clock
+
+
+picture clock_picture with
+    eye = <1 -4 1>;
+    render_mode is wireframe;
+is
+    distant_light from <.3 -1 .5>;
+    clock with
+        time = get_time;
+    end;
+end;    // clock_picture
+
+
+anim clock_anim
+    args type args;
+with
+    eye = <1 -4 1>;
+    facets = 15;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture clock_picture;
+end;    // clock_anim

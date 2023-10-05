@@ -1,0 +1,459 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       grid_mesh_topologies.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains grid mesh topology definitions of common       }
+{       topologically rectangular grids.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/vector_grid.ores";
+include "system/grid_tables.ores";
+include "system/mesh_topology.ores";
+
+mesh_topology type question get_tri_grid_mesh_topology with
+	integer h_vertices = 8;
+	integer v_vertices = 8;
+is
+	static grid_table type cache of 25 by 25;
+	
+	// tessellate a grid of points    o---o---o---o---o
+	// in the following pattern:      |  /|  /|  /|  /|
+	//                                | / | / | / | / |
+	//                                |/  |/  |/  |/  |
+	//                                o---o---o---o---o
+	//                                |  /|  /|  /|  /|
+	//                                | / | / | / | / |
+	//                                |/  |/  |/  |/  |
+	//                                o---o---o---o---o
+	//
+	integer grid_width = h_vertices - 1;
+	integer grid_height = v_vertices - 1;
+	
+	// find total number of edges and faces
+	//
+	integer h_edges = grid_width * v_vertices;
+	integer v_edges = h_vertices * grid_height;
+	integer d_edges = grid_width * grid_height;
+	integer g_edges = h_edges + v_edges;
+	integer edges = g_edges + d_edges;
+	integer faces = grid_width * grid_height * 2;
+	
+	// mesh topology
+	//
+	mesh_topology type mesh_topology is none;
+	
+	// local vars
+	//
+	integer edge_counter = 1;
+	integer face_counter = 1;
+	
+	// check for previously created mesh topology
+	//
+	if some cache lookup of v_vertices by h_vertices then
+		answer mesh_topology type cache lookup of v_vertices by h_vertices;
+	else
+		new mesh_topology with
+			num_edges = static edges;
+			num_face_indices = static faces * 4;
+		end;
+	end;
+
+	// initialize horizontal edges
+	//
+	for integer v = 1..v_vertices do
+		for integer h = 1..grid_width do
+			
+			// find left and right vertices
+			//
+			integer left = (v - 1) * h_vertices + h;
+			integer right = (v - 1) * h_vertices + h + 1;
+
+			// initialize horizontal edge
+			//
+			mesh_topology's edges[edge_counter, 1] = left;
+			mesh_topology's edges[edge_counter, 2] = right;
+			edge_counter = itself + 1;
+		end;
+	end;
+
+	// initialize vertical edges
+	//
+	for integer h = 1..h_vertices do
+		for integer v = 1..grid_height do
+
+			// find lower and upper vertices
+			//
+			integer lower = (v - 1) * h_vertices + h;
+			integer upper = v * h_vertices + h;
+
+			// initialize vertical edge
+			//
+			mesh_topology's edges[edge_counter, 1] = lower;
+			mesh_topology's edges[edge_counter, 2] = upper;
+			edge_counter = itself + 1;
+		end;
+	end;
+
+	// initialize diagonal edges
+	//
+	for integer v = 1..grid_height do
+		for integer h = 1..grid_width do
+
+			// find lower left and upper right vertices
+			//
+			integer lower_left = (v - 1) * h_vertices + h;
+			integer upper_right = v * h_vertices + h + 1;
+
+			// initialize diagonal edge
+			//
+			mesh_topology's edges[edge_counter, 1] = lower_left;
+			mesh_topology's edges[edge_counter, 2] = upper_right;
+			edge_counter = itself + 1;
+		end;
+	end;
+
+	// initialize faces
+	//
+	for integer v = 1..grid_height do
+		for integer h = 1..grid_width do
+
+			// find face edge indices
+			//
+			integer left = h_edges + (h - 1) * grid_height + v;
+			integer right = h_edges + (h * grid_height) + v;
+			integer lower = (v - 1) * grid_width + h;
+			integer upper = v * grid_width + h;
+			integer diagonal = g_edges + ((v - 1) * grid_width) + h;
+
+			// initialize triangle #1
+			//
+			mesh_topology's face_indices[face_counter + 0] = lower;
+			mesh_topology's face_indices[face_counter + 1] = right;
+			mesh_topology's face_indices[face_counter + 2] = -diagonal;
+			mesh_topology's face_indices[face_counter + 3] = 0;
+
+			// initialize triangle #2
+			//
+			mesh_topology's face_indices[face_counter + 4] = diagonal;
+			mesh_topology's face_indices[face_counter + 5] = -upper;
+			mesh_topology's face_indices[face_counter + 6] = -left;
+			mesh_topology's face_indices[face_counter + 7] = 0;
+			face_counter = itself + 8;
+		end;
+	end;    
+	
+	// enter topology into cache grid
+	//
+	cache enter mesh_topology of v_vertices by h_vertices;
+	
+	answer mesh_topology;
+end;    // get_tri_grid_mesh_topology
+
+mesh_topology type question get_alt_tri_grid_mesh_topology with
+	integer h_vertices = 8;
+	integer v_vertices = 8;
+is
+	static grid_table type cache of 25 by 25;
+	
+	// tessellate a grid of points    o---o---o---o---o
+	// in the following pattern:      |  /|\  |  /|\  |
+	//                                | / | \ | / | \ |
+	//                                |/  |  \|/  |  \|
+	//                                o---o---o---o---o
+	//                                |\  |  /|\  |  /|
+	//                                | \ | / | \ | / |
+	//                                |  \|/  |  \|/  |
+	//                                o---o---o---o---o
+	//
+	integer grid_width = h_vertices - 1;
+	integer grid_height = v_vertices - 1;
+
+	// find total number of edges and faces
+	//
+	integer h_edges = grid_width * v_vertices;
+	integer v_edges = h_vertices * grid_height;
+	integer d_edges = grid_width * grid_height;
+	integer g_edges = h_edges + v_edges;
+	integer edges = g_edges + d_edges;
+	integer faces = grid_width * grid_height * 2;
+
+	// mesh topology
+	//
+	mesh_topology type mesh_topology is none;
+	
+	// local vars
+	//
+	integer edge_counter = 1;
+	integer face_counter = 1;
+	
+	// check for previously created mesh topology
+	//
+	if some cache lookup of v_vertices by h_vertices then
+		answer mesh_topology type cache lookup of v_vertices by h_vertices;
+	else
+		new mesh_topology with
+			num_edges = static edges;
+			num_face_indices = static faces * 4;
+		end;        
+	end;
+
+	// initialize horizontal edges
+	//
+	for integer v = 1..v_vertices do
+		for integer h = 1..grid_width do
+
+			// find left and right vertices
+			//
+			integer left = (v - 1) * h_vertices + h;
+			integer right = (v - 1) * h_vertices + h + 1;
+
+			// initialize horizontal edge
+			//
+			mesh_topology's edges[edge_counter, 1] = left;
+			mesh_topology's edges[edge_counter, 2] = right;
+			edge_counter = itself + 1;
+		end;
+	end;
+
+	// initialize vertical edges
+	//
+	for integer h = 1..h_vertices do
+		for integer v = 1..grid_height do
+
+			// find lower and upper vertices
+			//
+			integer lower = (v - 1) * h_vertices + h;
+			integer upper = v * h_vertices + h;
+
+			// initialize vertical edge
+			//
+			mesh_topology's edges[edge_counter, 1] = lower;
+			mesh_topology's edges[edge_counter, 2] = upper;
+			edge_counter = itself + 1;
+		end;
+	end;
+
+	// initialize diagonal edges
+	//
+	for integer v = 1..grid_height do
+		for integer h = 1..grid_width do
+			if odd (h + v) then
+
+				// find lower left and
+				// upper right vertices
+				//
+				integer lower_left = (v - 1) * h_vertices + h;
+				integer upper_right = v * h_vertices + h + 1;
+
+				// initialize diagonal edge
+				//
+				mesh_topology's edges[edge_counter, 1] = lower_left;
+				mesh_topology's edges[edge_counter, 2] = upper_right;
+				edge_counter = itself + 1;
+			else
+				// find lower right and
+				// upper left vertices
+				//
+				integer lower_right = (v - 1) * h_vertices + h + 1;
+				integer upper_left = v * h_vertices + h;
+
+				// initialize diagonal edge
+				//
+				mesh_topology's edges[edge_counter, 1] = lower_right;
+				mesh_topology's edges[edge_counter, 2] = upper_left;
+				edge_counter = itself + 1;
+			end;
+		end;
+	end;
+
+	// initialize faces
+	//
+	for integer v = 1..grid_height do
+		for integer h = 1..grid_width do
+
+			// find face edge indices
+			//
+			integer left = h_edges + (h - 1) * grid_height + v;
+			integer right = h_edges + (h * grid_height) + v;
+			integer lower = (v - 1) * grid_width + h;
+			integer upper = v * grid_width + h;
+			integer diagonal = g_edges + ((v - 1) * grid_width) + h;
+			if odd (h + v) then
+
+				// initialize triangle #1
+				//
+				mesh_topology's face_indices[face_counter + 0] = lower;
+				mesh_topology's face_indices[face_counter + 1] = right;
+				mesh_topology's face_indices[face_counter + 2] = -diagonal;
+				mesh_topology's face_indices[face_counter + 3] = 0;
+
+				// initialize triangle #2
+				//
+				mesh_topology's face_indices[face_counter + 4] = diagonal;
+				mesh_topology's face_indices[face_counter + 5] = -upper;
+				mesh_topology's face_indices[face_counter + 6] = -left;
+				mesh_topology's face_indices[face_counter + 7] = 0;
+				face_counter = itself + 8;
+			else
+				// initialize triangle #1
+				//
+				mesh_topology's face_indices[face_counter + 0] = lower;
+				mesh_topology's face_indices[face_counter + 1] = diagonal;
+				mesh_topology's face_indices[face_counter + 2] = -left;
+				mesh_topology's face_indices[face_counter + 3] = 0;
+
+				// initialize triangle #2
+				//
+				mesh_topology's face_indices[face_counter + 4] = right;
+				mesh_topology's face_indices[face_counter + 5] = -upper;
+				mesh_topology's face_indices[face_counter + 6] = -diagonal;
+				mesh_topology's face_indices[face_counter + 7] = 0;
+				face_counter = itself + 8;
+			end;
+		end;
+	end;
+	
+	// enter topology into cache grid
+	//
+	cache enter mesh_topology of v_vertices by h_vertices;
+	
+	answer mesh_topology;
+end;    // get_alt_tri_grid_mesh_topology
+
+mesh_topology type question get_quad_grid_mesh_topology with
+	integer h_vertices = 8;
+	integer v_vertices = 8;
+	boolean reversed is false;
+is
+	static grid_table type cache of 25 by 25;
+	static grid_table type reversed_cache of 25 by 25;
+		
+	// tessellate a grid of points    o---o---o---o---o
+	// in the following pattern:      |   |   |   |   |
+	//                                |   |   |   |   |
+	//                                |   |   |   |   |
+	//                                o---o---o---o---o
+	//                                |   |   |   |   |
+	//                                |   |   |   |   |
+	//                                |   |   |   |   |
+	//                                o---o---o---o---o
+	//  
+	integer grid_width = h_vertices - 1;
+	integer grid_height = v_vertices - 1;
+
+	// find total number of edges and faces
+	//
+	integer h_edges = grid_width * v_vertices;
+	integer v_edges = h_vertices * grid_height;
+	integer edges = h_edges + v_edges;
+	integer faces = grid_width * grid_height;
+
+	// mesh topology
+	//
+	mesh_topology type mesh_topology is none;
+	
+	// local vars
+	//
+	integer edge_counter = 1;
+	integer face_counter = 1;
+	
+	// check for previously created mesh topology
+	//
+	if not reversed then
+		if some cache lookup of v_vertices by h_vertices then
+			answer mesh_topology type cache lookup of v_vertices by h_vertices;
+		end;
+	else
+		if some reversed_cache lookup of v_vertices by h_vertices then
+			answer mesh_topology type reversed_cache lookup of v_vertices by h_vertices;
+		end;
+	end;  
+	
+	new mesh_topology with
+		num_edges = static edges;
+		num_face_indices = static faces * 5;
+	end;
+	
+	// initialize horizontal edges
+	//
+	for integer v = 1..v_vertices do
+		for integer h = 1..grid_width do
+
+			// find left and right vertices
+			//
+			integer left = (v - 1) * h_vertices + h;
+			integer right = (v - 1) * h_vertices + h + 1;
+
+			// initialize horizontal edge
+			//
+			mesh_topology's edges[edge_counter, 1] = left;
+			mesh_topology's edges[edge_counter, 2] = right;
+			edge_counter = itself + 1;
+		end;
+	end;
+
+	// initialize vertical edges
+	//
+	for integer h = 1..h_vertices do
+		for integer v = 1..grid_height do
+
+			// find lower and upper vertices
+			//
+			integer lower = (v - 1) * h_vertices + h;
+			integer upper = v * h_vertices + h;
+
+			// initialize vertical edge
+			//
+			mesh_topology's edges[edge_counter, 1] = lower;
+			mesh_topology's edges[edge_counter, 2] = upper;
+			edge_counter = itself + 1;
+		end;
+	end;
+	
+	// initialize faces
+	//
+	for integer v = 1..grid_height do
+		for integer h = 1..grid_width do
+
+			// find perimeter edges
+			//
+			integer left = h_edges + (h - 1) * grid_height + v;
+			integer right = h_edges + h * grid_height + v;
+			integer lower = (v - 1) * grid_width + h;
+			integer upper = v * grid_width + h;
+
+			// initialize face
+			//
+			if not reversed then
+				mesh_topology's face_indices[face_counter] = lower;
+				mesh_topology's face_indices[face_counter + 1] = right;
+				mesh_topology's face_indices[face_counter + 2] = -upper;
+				mesh_topology's face_indices[face_counter + 3] = -left;
+				mesh_topology's face_indices[face_counter + 4] = 0;
+				face_counter = itself + 5;
+			else
+				mesh_topology's face_indices[face_counter] = left;
+				mesh_topology's face_indices[face_counter + 1] = upper;
+				mesh_topology's face_indices[face_counter + 2] = -right;
+				mesh_topology's face_indices[face_counter + 3] = -lower;
+				mesh_topology's face_indices[face_counter + 4] = 0;
+				face_counter = itself + 5;
+			end;
+		end;
+	end;
+	
+	// enter topology into cache grid
+	//
+	if not reversed then
+		cache enter mesh_topology of v_vertices by h_vertices;
+	else
+		reversed_cache enter mesh_topology of v_vertices by h_vertices;
+	end;
+	
+	answer mesh_topology;
+end;    // get_quad_grid_mesh_topology

@@ -1,0 +1,81 @@
+do example;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_translator.ores";
+include "system/3ds_animation.ores";
+include "system/native_messages.ores";
+include "system/native_scripting.ores";
+//include "message_queue.ores";
+
+material type current_material is plastic colored grey;
+
+shape scene with
+    scalar time = 0;
+is
+	sphere with
+		material is current_material;
+	end;
+end; // scene
+
+verb check_messages is 
+    if not message_queue is_empty then
+    	strings type messages is message_queue get_messages;
+    	
+    	for each string type message in messages do
+	        string type words[] is message split by whitespace;
+	    	        
+	        if words[1] matches "-color" then
+	    		string type out_message; 
+	    		      
+		        out_message add "receiveMessage('changing color to ";
+		        out_message add words[2];
+		        out_message add "');";
+		       
+		        if words[2] matches "red" then      
+		            current_material is plastic colored red;
+		            exec_script out_message;
+		        elseif words[2] matches "green" then
+		            current_material is plastic colored green;
+		            exec_script out_message;
+		        elseif words[2] matches "blue" then
+		            current_material is plastic colored blue;
+		            exec_script out_message;            
+		        elseif words[2] matches "orange" then
+		            current_material is plastic colored orange;
+		            exec_script out_message;         
+		        end;
+	        end;
+        end;
+    end;
+end;    // check_messages
+
+anim example
+	args type args;
+with
+	show_controls is true;
+	show_about_control is true;
+	show_popup_control is true;
+	show_camera_control is true;
+	show_fov_control is true;
+	show_mouse_control is true;
+	show_navigation_control is true;
+	show_upright_control is true;
+	show_spin_control is true;
+	auto_rotation is true;
+	show_animation_control is false;
+	show_graphics_control is true;
+	show_detail_control is false;
+	show_lighting_control is true;
+	show_help_control is true;
+	show_fps_control is true;
+	auto_upright is true;
+	facets = 16;
+	args check;
+is
+	mouse_controlled_animated_shape scene
+        doing check_messages
+	with
+		auto_camera is on;
+	end;
+end;

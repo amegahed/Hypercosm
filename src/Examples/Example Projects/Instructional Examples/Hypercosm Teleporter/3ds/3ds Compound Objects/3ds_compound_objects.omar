@@ -1,0 +1,56 @@
+do translated_3ds_compound_objects_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/rectangular_grid.ores";
+include "system/message_listening_multi_actor.ores";
+// 3ds compound objects
+//
+include "3ds_extruded_arc.omar";
+include "3ds_extruded_circle.omar";
+include "3ds_extruded_donut.omar";
+include "3ds_extruded_line.omar";
+include "3ds_lathed_line.omar";
+include "3ds_lathed_spline.omar";
+include "3ds_loft.omar";
+
+anim translated_3ds_compound_objects_anim 
+	args type args;
+with
+	eye = <5 -10 5> * 25;
+	lookat = <0 0 12.5>;
+	field_of_view = 32;
+	background_name is none;
+	background = light grey;
+	animation_paused is true;
+	args check;
+is
+	shape environment is
+		rectangular_grid with
+			h_steps = 25;
+			v_steps = 25;
+			magnify by 50;
+			render_mode is wireframe;
+			color = grey;
+		end;
+	end;    // environment
+	
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_extruded_arc_scene) 
+		named "3ds_extruded_arc";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_extruded_circle_scene) 
+		named "3ds_extruded_circle";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_extruded_donut_scene) 
+		named "3ds_extruded_donut";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_extruded_line_scene) 
+		named "3ds_extruded_line";        
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_lathed_line_scene) 
+		named "3ds_lathed_line";   
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_lathed_spline_scene) 
+		named "3ds_lathed_spline";  
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_loft_scene) 
+		named "3ds_loft";    
+		
+	mouse_controlled_actor multi_actor within new static_shape of environment;
+end;    // translated_3ds_compound_objects_anim

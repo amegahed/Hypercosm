@@ -1,0 +1,72 @@
+{***************************************************************}
+{                          invasion.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do deadly_alien_invasion;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/saucer.omar";
+include "system/city.omar";
+
+
+shape smoke_trail with
+    integer puffs = 30;
+is
+    for integer counter = 1..puffs do
+        scalar r = counter / puffs;
+
+        sphere with
+            radius = r;
+        end;
+        move to <(r * 2) random (r * -2) to (r * 2) random (r * -2)
+            to (r * 2)>;
+    end;
+end;    // smoke_trail
+
+
+shape speeding_saucer is
+    saucer;
+    fuzzy white smoke_trail with
+        move to <1 0 0>;
+        magnify by .5;
+    end;
+end;    // speeding_saucer
+
+
+picture deadly_alien_invasion with
+    facets = 0;
+    eye = <-60 -60 60>;
+    lookat = <5 0 -10>;
+    field_of_view = 45;
+    roll = 20;
+    background = sky_blue;
+is
+    distant_light from <.3 -.5 1>;
+    metallic bumpy white speeding_saucer with
+        rotate by 10 around <1 0 0>;
+        magnify by 10;
+    end;
+    metallic bumpy white speeding_saucer with
+        magnify by 10;
+        move to <-10 20 -5>;
+    end;
+    metallic bumpy white speeding_saucer with
+        magnify by 10;
+        move to <-15 -15 -2>;
+    end;
+    city_block with
+        magnify by 10;
+        move to <0 0 -30>;
+    end;
+    flat speckled dark green plane with
+        magnify by 50;
+        move to <0 0 -30.1>;
+    end;
+end;    // deadly_alien_invasion

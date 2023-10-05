@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              row.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       row of other shapes.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/transformations.ores";
+
+shape row
+	of integer i;
+	shape thing;
+	along vector direction = <1 0 0>;
+with
+	scalar spacing = 1;
+is
+	move to -direction * ((i - 1) * spacing / 2);
+	for integer counter = 1..i do
+		thing;
+		move to (direction * spacing);
+	end;
+end;    // row

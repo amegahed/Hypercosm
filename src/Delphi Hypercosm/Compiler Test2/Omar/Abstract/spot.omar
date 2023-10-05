@@ -1,0 +1,63 @@
+{***************************************************************}
+{                          spot.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do spot_anim;
+
+
+include "system/3d.ores";
+include "system/time.ores";
+
+picture spot_picture with
+    scalar time = 0;
+    facets = 15;
+    eye = <0 -15 10>;
+is
+    scalar s = cos (time * 20) * 5; // swing light back and forth
+    vector spot_location = <0 0 2>;
+    vector spot_direction = <s 0 -1>;
+
+    // overhead light
+    distant_light from <.3 -.5 1> with
+        brightness = .5;
+    end;
+
+    // spot light inside of cone
+    spot_light towards spot_direction with
+        move to spot_location;
+        brightness = 6;
+    end;
+
+    // shade for spot light
+    cone with
+        color = yellow;
+        end1 = spot_location - (normalized spot_direction) * .5;
+        end2 = spot_location + (normalized spot_direction) * .5;
+        radius1 = 0;
+        radius2 = .5;
+    end;
+
+    // ground
+    plane with
+        color = white;
+        magnify by 5;
+    end;
+end;    // spot_picture
+
+
+anim spot_anim with
+    double_buffer is on;
+is
+    while true do
+        rotate by (20 * get_clamped_frame_duration) around <0 0 1>;
+
+        spot_picture with
+            time = get_seconds * 10;
+        end;
+    end;
+end;    // spot_anim

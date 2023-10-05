@@ -1,0 +1,63 @@
+{***************************************************************}
+{                         multibutton.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do multibutton_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/multibutton.ores";
+
+
+multibutton type multibutton with
+    //write_position_over is true;
+    write_position_clicked is true;
+    write_index_clicked is true;
+    draw_boundaries is true;
+    //write_index_over is true;
+    override_cursor is finger_point;
+end;
+
+material type m is constant_color white poster "grid.jpg";
+
+picture multibutton_picture is
+    if not some current_interaction then
+        set_cursor to arrow;
+    end;
+    
+    multibutton instance with
+        magnify by 7;
+        material is m;
+    end;
+end;    // multibutton_picture
+
+
+anim multibutton_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Multibutton Demo";
+    background = black;
+    args check;
+is
+    multibutton add rectangle as 1 at [<-.5 .5 0> <.5 .75 0>];
+    multibutton add ellipse as 2 at [<-1 -1 0> <1 0 0>];
+    multibutton add ellipse as 0 at [<-.25 -1 0> <.5 -.25 0>];
+    multibutton add triangle as 3 at [<.75 .5 0> <1 0 0> <.25 .25 0>];
+    multibutton add triangle as 3 at [<1 0 0> <.25 .25 0> <.5 0 0>];
+
+    mouse_controlled_picture multibutton_picture;
+{
+    while true do
+        multibutton_picture with
+            ortho_view;
+        end;
+    end;
+}
+end;    // multibutton_anim

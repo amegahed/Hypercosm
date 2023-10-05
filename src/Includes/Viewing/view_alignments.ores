@@ -1,0 +1,177 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        view_alignments.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains transformations for aligning a shape with the  }
+{       camera view (i.e. the window) so it appears stationary  }
+{       or always follows the mouse cursor.                     }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/picking.ores";
+include "system/native_shapes.ores";
+include "system/viewing.ores";
+
+// The transformation verbs in this file work similarly to the other
+// transformations such as move and rotate.  Typically you call them from
+// the 'with' block when calling a shape.  The 'align_with_' verbs set the
+// coordinate space so that the x_axis points to the right in the window,
+// the y_axis points forward, and the z_axis points up.  The 'place_on_'
+// verbs do the same, but also move the shape to be at the provided window
+// coordinates, at the requested distance from the eye.
+//
+// For example, if you want a block that is centered on the mouse cursor,
+// is half the size of a default block, and is rotating clockwise at 30
+// degrees per second, use the following code:
+//
+//    block with
+//        magnify by 1 / 2;
+//        rotate by (get_seconds * 30) around <0 1 0>;
+//        place_on_view_ray at get_mouse;
+//    end;
+//
+// As another example, suppose you want a torus that is always facing the
+// viewpoint, but remains at the location <1 2 3>.  Use the following code:
+//
+//    torus with
+//        rotate by 90 around <1 0 0>;
+//        align_with_view_plane;
+//        move to <1 2 3>;
+//    end;
+//
+// For each of the 'align_with_' and 'place_on_' verbs, there is one that
+// is for the 'view_plane' and one for the 'view_ray'.  The 'view_plane'
+// verbs orient a shape so that the y axis is exactly perpendicular to the
+// plane of the window.  This means that if the shape is off to the edge of
+// the window, you will be able to see its sides.  The 'view_ray' verbs
+// skew the y axis so that it is lined up with the ray from the eye through
+// the provided window coordinates.  This has the effect of "hiding" the
+// sides of the shape so it always looks the same at any location in the
+// window.
+//
+verb align_with_view_plane
+	about vector point = <0 0 0>;
+is
+	trans type camera_trans;
+	trans type save_trans = trans;
+	
+	trans init;
+	
+	get_view_trans into camera_trans;
+	transform_trans camera_trans;
+	
+	camera_trans's origin = <0 0 0>;
+	
+	save_trans translate by -point;
+	save_trans transform from camera_trans;
+	save_trans translate by point;
+	trans = save_trans;
+end;    // align_with_view_plane
+
+verb align_with_view_ray
+	at vector location;
+	about vector point = <0 0 0>;
+is
+	vector ray_location, ray_direction;
+	trans type camera_trans;
+	trans type save_trans = trans;
+	
+	trans init;
+	
+	get_view_trans into camera_trans;
+	transform_trans camera_trans;
+	
+	get_eye_ray through location at ray_location towards ray_direction with
+		normalize_world_direction is true;
+	end;
+	
+	camera_trans's y_axis = ray_direction;
+	camera_trans's origin = <0 0 0>;
+	
+	save_trans translate by -point;
+	save_trans transform from camera_trans;
+	save_trans translate by point;
+	trans = save_trans;
+end;    // align_with_view_ray
+
+verb place_on_view_plane
+	at vector location;
+	distance scalar distance = (vlength of (lookat - eye)) / 2;
+is
+	vector ray_location, ray_direction;
+	trans type camera_trans;
+	trans type save_trans = trans;
+	
+	trans init;
+	get_view_trans into camera_trans;
+	transform_trans camera_trans;
+	
+	get_eye_ray through location at ray_location towards ray_direction with
+		normalize_world_direction is true;
+	end;
+	
+	camera_trans's origin = ray_location + (ray_direction * distance);
+	save_trans transform from camera_trans;
+	trans = save_trans;
+end;    // place_on_view_plane
+
+verb place_on_view_ray
+	at vector location;
+	distance scalar distance = (vlength of (lookat - eye)) / 2;
+is
+	vector ray_location, ray_direction;
+	trans type camera_trans;
+	trans type save_trans = trans;
+	
+	trans init;
+	
+	get_view_trans into camera_trans;
+	transform_trans camera_trans;
+	
+	get_eye_ray through location at ray_location towards ray_direction with
+		normalize_world_direction is true;
+	end;
+	
+	camera_trans's y_axis = ray_direction;
+	camera_trans's origin = ray_location + (ray_direction * distance);
+	
+	save_trans transform from camera_trans;
+	trans = save_trans;
+end;    // place_on_view_ray
+
+scalar question get_angular_size
+	of scalar size;
+	at scalar distance;
+is
+	answer 2 * atan (size / 2) / distance;
+end;    // get_angular_size
+
+scalar question get_eye_distance
+	of scalar size = get_diagonal;
+	subtending scalar angle = field_of_view;
+is
+	answer (size / 2) / tan (angle / 2);
+end;    // get_eye_distance
+
+verb align_with_view
+	at scalar distance;
+is
+	scale by (width / 2) along <1 0 0>;
+	scale by (height / 2) along <0 1 0>;
+	rotate by 90 around <1 0 0>;
+	magnify by (distance / get_eye_distance);
+	move to <0 distance 0>;
+end;    // align_with_view
+
+verb overlay
+	at scalar distance;
+is
+	trans type trans;
+	get_view_trans into trans;
+	align_with_view at distance;
+	global trans transform from trans;
+end;    // overlay

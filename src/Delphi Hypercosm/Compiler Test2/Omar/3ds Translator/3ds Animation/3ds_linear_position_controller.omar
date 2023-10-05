@@ -1,0 +1,52 @@
+do linear_position_controller_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+
+
+shape Sphere01 is
+	translated_3ds_sphere with
+		radius = 10;
+		segs = 16;
+		color = dark red;
+	end;
+end;	// Sphere01
+
+
+translated_3ds_linear_position_controller type Sphere01_Controller of [
+	<0 0 0> <25 0 25> <-25 0 25> <0 0 0>
+] at converted_3ds_ticks_array_from_frames_array of [
+	0 25 50 75
+];	// Sphere01_Controller
+
+
+shape Scene with
+	scalar time = 0;
+is
+	Sphere01_Controller instance;
+	Sphere01 with
+		Sphere01_Controller apply to trans at (converted_3ds_ticks_from_seconds of time);
+	end;
+end;	// Scene
+
+
+anim linear_position_controller_anim with
+	eye = <0 -200 50>;
+	lookat = <0 0 0>;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_animated_shape Scene in environment 
+		titled "3DS Linear Position Controller"
+	with
+		duration = converted_3ds_seconds_from_frames of 100;
+	end;
+end;	// linear_position_controller_anim

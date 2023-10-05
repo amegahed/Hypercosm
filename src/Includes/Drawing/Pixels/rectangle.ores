@@ -1,0 +1,161 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           rectangle.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of a class for storing             }
+{       and manipulating integer pixel coordinates.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/pixel_locating.ores";
+include "system/region_sizeing.ores";
+include "system/printing.ores";
+include "system/classification.ores";
+
+subject rectangle
+extends
+	region_resizeable pixel_relocateable region_reshapeable 
+	scribable classifiable object
+does
+	// constructor
+	//
+	verb new
+		of pixel type size;
+		at pixel type location;
+	end;
+	
+	// setting methods
+	//
+	verb set_size
+		to pixel type size;
+	end;
+	verb set_width
+		to integer width;
+	end;
+	verb set_height
+		to integer height;
+	end;
+	verb set_location
+		to pixel type location;
+	end;
+	verb reshape
+		from pixel type low;
+		to pixel type high;
+	end;
+				
+	// querying methods
+	//
+	pixel type question get_size;
+	integer question get_width;
+	integer question get_height;
+	pixel type question get_location;
+		
+	// converting method
+	//
+	string type question to_string;
+	
+	// classifiing method
+	//
+	class type question get_class;
+has
+	// attributes
+	//
+	pixel type size is none;
+	pixel type location is none;
+	static class type class named "rectangle";
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of pixel type size;
+		at pixel type location;
+	is
+		with rectangle do
+			its size is size;
+			its location is location;
+		end;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+	
+	verb set_size
+		to pixel type size;
+	is
+		rectangle's size is size;
+	end;    // set_size
+	
+	verb set_width
+		to integer width;
+	is
+		rectangle's size's h = width;
+	end;    // set_width
+	
+	verb set_height
+		to integer height;
+	is
+		rectangle's size's v = height;
+	end;    // set_height
+		
+	verb set_location
+		to pixel type location;
+	is
+		rectangle's location is location;
+	end;    // set_location
+	
+	verb reshape
+		from pixel type low;
+		to pixel type high;
+	is
+		rectangle's location is low;
+		rectangle's size is high minus low;
+	end;    // reshape
+	
+	//              
+	// querying methods
+	//
+	
+	pixel type question get_size is
+		answer size;
+	end;    // get_size
+	
+	integer question get_width is
+		answer size's h;
+	end;    // get_width
+	
+	integer question get_height is
+		answer size's v;
+	end;    // get_height
+	
+	pixel type question get_location is
+		answer location;
+	end;    // get_location
+				
+	//
+	// converting method
+	//
+	
+	string type question to_string is
+		string type string is class get_name;
+		string add " of size ";
+		string add size to_string;
+		string add " at ";
+		string add location to_string;
+		answer string;
+	end;    // to_string
+	
+	//    
+	// classifiing method
+	//
+	
+	class type question get_class is
+		answer class;
+	end;    // get_class
+end;    // rectangle

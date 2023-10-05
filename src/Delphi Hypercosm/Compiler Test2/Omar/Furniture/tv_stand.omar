@@ -1,0 +1,48 @@
+{***************************************************************}
+{                          tv_stand.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tv_stand_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/stand.omar";
+include "system/monitor.omar";
+
+
+shape tv_stand is
+    stand;
+
+    monitor_crt with
+        material is plastic colored light beige;
+        move to <0 0 4>;
+    end;
+end;    // tv_stand
+
+
+anim tv_stand_anim
+    args type args;
+with
+    eye = <5 -20 15>;
+    double_buffer is on;
+    lookat = <0 0 5>;
+    args check;
+is
+    shape scene is
+        tv_stand;
+    end;
+    shape environment is
+        plane with
+            magnify by 15;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_shape scene in environment;
+end;    // tv_stand_anim

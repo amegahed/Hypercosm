@@ -1,0 +1,106 @@
+{***************************************************************}
+{                        spotlight.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do spot_light_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/arrow_shapes.ores";
+include "system/common_materials.ores";
+include "system/square_grid.ores";
+include "system/futura_l.ores";
+
+shape angle_marker
+	scalar angle;
+is
+	scalar a = tan (angle / 2);
+	line [<0 0 0> (<a 0 1>)];
+	line [<0 0 0> (<(-a) 0 1>)];
+	arrow_arc to angle with
+		rotate by -angle / 2 around <0 0 1>;
+		rotate by 90 around <0 0 1>;
+		rotate by 90 around <1 0 0>;
+	end;
+	futura_l_word "ANGLE" with
+		rotate by -90 around <1 0 0>;
+		move to <0 0 .85>;
+	end;
+end;    // angle_marker
+
+shape annotated_spot_light with
+	vector direction = <0 0 -1>;
+	scalar size = .5;
+	scalar angle = 90;
+is
+	scalar a = tan (angle / 2);
+	spot_light towards direction with
+		brightness = 2;
+		angle = static angle;
+	end;
+	cone with
+		material is constant_color white;
+		color = black;
+		end1 = <0 0 .01>;
+		end2 = (normalized direction) * size;
+		radius1 = 0;
+		radius2 = size * a;
+	end;
+	arrow from <0 0 0> to direction * .5;
+	angle_marker angle with
+		direct from <0 0 1> to direction;
+	end;
+end;    // annotated_spot_light
+
+shape spot_light_scene with
+	scalar time = 0;
+is
+	vector v = <.25 0 .5>;
+	scalar x = sin (time * 90) * 2;
+	annotated_spot_light with
+		size = .1;
+		move to <0 0 1>;
+		direction = <x 0 -1>;
+		rotate by 90 around direction about <0 0 1>;
+	end;
+	futura_l_word "SPOT LIGHT" with
+		rotate by 90 around <1 0 0>;
+		move to <0 0 1.1>;
+	end;
+	square_grid with
+		steps = 16;
+		material is wood;
+		scale by -1 along <0 0 1>;
+	end;
+	sphere with
+		material is plastic colored red;
+		center = <0 0 .25>;
+		radius = .25;
+	end;
+	
+	{
+	block with
+		material is plastic colored red;
+		magnify by .25;
+		move to <0 0 .25>;
+	end;
+	}
+end;    // spot_light_scene
+	
+	
+anim spot_light_anim with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .25>;
+	render_mode is shaded;
+	shading is vertex;
+	facets = 16;
+is
+	mouse_controlled_animated_shape spot_light_scene lit by none;
+end;    // spot_light_anim

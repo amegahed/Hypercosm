@@ -1,0 +1,179 @@
+{***************************************************************}
+{                          monitor.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do monitor_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shaders.ores";
+
+
+shape monitor_crt is
+    shape logo is
+        block with
+            material is metal colored blue;
+            vertex = <0 0 0>;
+            side1 = <.1 0 0>;
+            side2 = <0 0 .2>;
+            side3 = <0 .2 0>;
+            rotate by -45 around <1 0 0>;
+        end;
+    end;    // logo
+
+    block with
+        material is plastic colored grey;
+        vertex = <-1 0 0>;
+        side1 = <0 3 0>;
+        side2 = <0 0 .4>;
+        side3 = <2 0 0>;
+    end;
+    block with
+        material is plastic colored grey;
+        vertex = <-1 0 .4>;
+        side1 = <0 1 0>;
+        side2 = <0 0 .4>;
+        side3 = <2 0 0>;
+    end;
+
+    // frame of crt
+    //
+    // width of border = .3; height = 3; width = 4; depth = 3
+    //
+    block with
+        vertex = <-2 -1.5 .8>;
+        side1 = <4 0 0>;
+        side2 = <0 3 0>;
+        side3 = <0 0 .3>;
+    end;
+    block with
+        vertex = <-2 -1.5 3.8>;
+        side1 = <4 0 0>;
+        side2 = <0 3 0>;
+        side3 = <0 0 -.3>;
+    end;
+    block with
+        vertex = <-2 -1.5 .8>;
+        side1 = <0 0 3>;
+        side2 = <0 3 0>;
+        side3 = <.3 0 0>;
+    end;
+    block with
+        vertex = <2 -1.5 .8>;
+        side1 = <0 0 3>;
+        side2 = <0 3 0>;
+        side3 = <-.3 0 0>;
+    end;
+
+    // rear portion of crt
+    //
+    block with
+        material is plastic colored grey;
+        vertex = <-1 1.5 1.1>;
+        side1 = <0 0 2.4>;
+        side2 = <2 0 0>;
+        side3 = <0 2 0>;
+    end;
+    block with
+        vertex = <-1.9 1 .8>;
+        side1 = <3.8 0 0>;
+        side2 = <0 0 2.8>;
+        side3 = <0 .1 0>;
+    end;
+
+    // screen
+    //
+    // unshaded show_image screen_image
+    // unshaded show_texture
+    // tie_dye block with
+    speckled light light blue block with
+        vertex = <-1.9 -1 1>;
+        side1 = <3.8 0 0>;
+        side2 = <0 .1 0>;
+        side3 = <0 0 2.6>;
+    end;
+
+    logo with
+        move to <.15 -1.55 .92>;
+        rotate by 90 around <0 0 1> about <.15 -1.55 .92>;
+    end;
+end;    // monitor_crt
+
+
+shape monitor_base is
+    cylinder with
+        end1 = <-1.75 .1 .2>;
+        end2 = <1.75 .1 .2>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <-1.8 .1 .2>;
+        end2 = <-1.125 .1 .2>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1.8 .1 .2>;
+        end2 = <1.125 .1 .2>;
+        radius = .2;
+    end;
+    disk with
+        center = <1.8 .1 .2>;
+        normal = <1 0 0>;
+        radius = .2;
+    end;
+    disk with
+        center = <-1.8 .1 .2>;
+        normal = <1 0 0>;
+        radius = .2;
+    end;
+    block with
+        material is plastic colored grey;
+        vertex = <-1 0 0>;
+        side1 = <0 4 0>;
+        side2 = <0 0 .4>;
+        side3 = <2 0 0>;
+    end;
+end;    // monitor_base
+
+
+shape monitor is
+    monitor_base with
+        material is plastic colored grey;
+    end;
+    monitor_crt with
+        move to <0 1 .4>;
+
+        // tilt of monitor
+        //
+        rotate by -5 around <1 0 0> about <0 4 .4>;
+    end;
+end;    // monitor
+
+
+anim monitor_anim
+    args type args;
+with
+    eye = <5 -10 8>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        monitor with
+            material is plastic colored light beige;
+        end;
+        plane with
+            magnify by 5;
+            render_mode is wireframe;
+        end;
+    end;    // scene
+
+
+    mouse_controlled_shape scene;
+end;    // next_anim

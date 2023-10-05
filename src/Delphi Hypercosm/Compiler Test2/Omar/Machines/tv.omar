@@ -1,0 +1,144 @@
+{***************************************************************}
+{                          tv.omar                              }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tv_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shaders.ores";
+
+
+shape tv is
+    shape logo is
+        block with
+            material is metal colored blue;
+            vertex = <0 0 0>;
+            side1 = <.1 0 0>;
+            side2 = <0 0 .2>;
+            side3 = <0 .2 0>;
+            rotate by -45 around <1 0 0>;
+        end;
+    end;    // logo
+
+    shape antenna with
+        scalar length = 2;
+    is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 length>;
+            radius = .025;
+        end;
+        sphere with
+            center = <0 0 length>;
+            radius = .1;
+        end;
+    end;    // antenna
+
+
+    shape antennas is
+        sphere with
+            radius = .5;
+            vmin = 0;
+        end;
+        antenna with
+            length = 3;
+            rotate by 45 around <0 1 0>;
+        end;
+        antenna with
+            length = 3;
+            rotate by -60 around <0 1 0>;
+        end;
+    end;    // antennas
+
+    // frame of crt
+    //
+    // width of border = .3; height = 3; width = 4; depth = 3
+    //
+    block with
+        vertex = <-2 -1.5 0>;
+        side1 = <4 0 0>;
+        side2 = <0 3 0>;
+        side3 = <0 0 .3>;
+    end;
+    block with
+        vertex = <-2 -1.5 3>;
+        side1 = <4 0 0>;
+        side2 = <0 3 0>;
+        side3 = <0 0 -.3>;
+    end;
+    block with
+        vertex = <-2 -1.5 0>;
+        side1 = <0 0 3>;
+        side2 = <0 3 0>;
+        side3 = <.3 0 0>;
+    end;
+    block with
+        vertex = <2 -1.5 0>;
+        side1 = <0 0 3>;
+        side2 = <0 3 0>;
+        side3 = <-.3 0 0>;
+    end;
+
+    // rear portion of crt
+    //
+    block with
+        material is plastic colored grey;
+        vertex = <-1 1.5 .3>;
+        side1 = <0 0 2.4>;
+        side2 = <2 0 0>;
+        side3 = <0 2 0>;
+    end;
+    block with
+        vertex = <-1.9 1 0>;
+        side1 = <3.8 0 0>;
+        side2 = <0 0 2.8>;
+        side3 = <0 .1 0>;
+    end;
+
+    // screen
+    //
+    // unshaded show_image screen_image
+    // unshaded show_texture
+    // tie_dye block with
+    speckled light light blue block with
+        vertex = <-1.9 -1 .2>;
+        side1 = <3.8 0 0>;
+        side2 = <0 .1 0>;
+        side3 = <0 0 2.6>;
+    end;
+
+    antennas with
+        move to <0 0 3>;
+    end;
+
+    logo with
+        move to <.15 -1.55 .12>;
+        rotate by 90 around <0 0 1> about <.15 -1.55 .92>;
+    end;
+end;    // tv
+
+
+anim tv_anim
+    args type args;
+with
+    eye = <5 -10 8>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        tv with
+            material is plastic colored grey;
+        end;
+    end;    // scene
+
+
+    mouse_controlled_shape scene;
+end;    // next_anim

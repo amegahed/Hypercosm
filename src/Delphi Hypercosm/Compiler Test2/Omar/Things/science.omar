@@ -1,0 +1,72 @@
+{***************************************************************}
+{                          science.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do science_picture;
+
+
+include "system/3d.ores";
+include "system/shaders.ores";
+include "system/candles.omar";
+include "system/imagine.omar";
+include "system/microscope.omar";
+include "system/beaker.omar";
+
+
+image type plank_image named "plank.tga";
+
+
+picture science_picture with
+    field_of_view = 40;
+    eye = <0 -20 15>;
+    lookat = <0 0 4.4>;
+    projection is perspective;
+    width = 480;
+    height = 640;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    shadows is on;
+    refractions is on;
+is
+    ambient = black;
+
+    spot_light towards <-30 10 -20> with
+        move to <30 -10 20>;
+        angle = 30;
+        brightness = 30;
+        color = light orange;
+    end;
+    beaker_and_stand with
+
+        {move to -3 -3 0;}
+        move to <1 7 0>;
+    end;
+    microscope with
+        material is metal colored light gold;
+        rotate by 50 around <0 0 1>;
+        move to <2 0 0>;
+    end;
+    specs with
+        material is metal colored light gold;
+        magnify by .04;
+        rotate by -30 around <0 0 1>;
+        move to <-2 2 0>;
+    end;
+    candle with
+        material is metal colored light gold;
+        rotate by 35 around <0 0 1>;
+        magnify by .1;
+        move to <-2.5 7 0>;
+    end;
+    {flat show_image in local plank_image} plane with
+        magnify by 20;
+        rotate the shader_trans by 60 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+end;    // science_picture

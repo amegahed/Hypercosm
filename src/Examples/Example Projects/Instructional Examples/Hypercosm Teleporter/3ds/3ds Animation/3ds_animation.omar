@@ -1,0 +1,79 @@
+do translated_3ds_controllers_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/rectangular_grid.ores";
+include "system/message_listening_multi_actor.ores";
+// 3ds position controllers
+//
+include "3ds_linear_position_controller.omar";
+include "3ds_smooth_position_controller.omar";
+include "3ds_bezier_position_controller.omar";
+include "3ds_xyz_position_controller.omar";
+// 3ds rotation controllers
+//
+include "3ds_linear_rotation_controller.omar";
+include "3ds_smooth_rotation_controller.omar";
+include "3ds_xyz_rotation_controller.omar";
+// 3ds scale controllers
+//
+include "3ds_smooth_scale_controller.omar";
+include "3ds_xyz_scale_controller.omar";
+// 3ds combination controllers
+//
+include "3ds_prs_controller.omar";
+
+anim translated_3ds_controllers_anim 
+	args type args;
+with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+	args check;
+is
+	shape environment is
+		rectangular_grid with
+			h_steps = 25;
+			v_steps = 25;
+			magnify by 100;
+			render_mode is wireframe;
+			color = grey;
+		end;
+	end;    // environment
+	
+	message_listening_multi_actor type multi_actor;
+	
+	// position controllers
+	//
+	multi_actor add_actor (new animated_shape of linear_position_controller_scene) 
+		named "3ds_linear_position_controller";
+	multi_actor add_actor (new animated_shape of smooth_position_controller_scene) 
+		named "3ds_smooth_position_controller";    
+	multi_actor add_actor (new animated_shape of bezier_position_controller_scene) 
+		named "3ds_bezier_position_controller";      
+	multi_actor add_actor (new animated_shape of xyz_position_controller_scene) 
+		named "3ds_xyz_position_controller";   
+	// rotation controllers
+	//
+	multi_actor add_actor (new animated_shape of linear_rotation_controller_scene) 
+		named "3ds_linear_rotation_controller";   
+	multi_actor add_actor (new animated_shape of smooth_rotation_controller_scene) 
+		named "3ds_smooth_rotation_controller";           
+	multi_actor add_actor (new animated_shape of xyz_rotation_controller_scene) 
+		named "3ds_xyz_rotation_controller";  
+	// scale controllers
+	//
+	multi_actor add_actor (new animated_shape of smooth_scale_controller_scene) 
+		named "3ds_smooth_scale_controller";      
+	multi_actor add_actor (new animated_shape of xyz_scale_controller_scene) 
+		named "3ds_xyz_scale_controller";  
+		
+	// combination controllers
+	//          
+	multi_actor add_actor (new animated_shape of prs_controller_scene) 
+		named "3ds_prs_controller";    
+		
+	mouse_controlled_actor multi_actor within new static_shape of environment;
+end;    // translated_3ds_controllers_anim

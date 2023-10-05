@@ -1,0 +1,92 @@
+{***************************************************************}
+{                          prims2.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do prims_anim;
+
+
+include "system/3d.ores";
+include "system/wave.omar";
+
+
+picture prims_picture with
+    eye = <0 -100 0>;
+    field_of_view = 6;
+    background = white;
+    facets = 16;
+
+is
+    scalar theta = -90;
+    scalar umin = 45;
+    scalar umax = 360;
+    scalar vmin = -90;
+    scalar vmax = 90;
+
+
+    distant_light from <.3 -.5 1>;
+
+    // show_image image1
+    parallelogram with
+        rotate by 45 around <1 0 0>;
+        rotate by 45 around <1 0 0>;
+        move to <-2.5 0 1.25>;
+    end;
+
+    // show_image image1
+    disk with
+        rotate by -90 around <1 0 0>;
+        move to <0 0 1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+
+    // show_image image1
+    wave type's form with
+        steps = 8;
+        rotate by theta around <0 0 1>;
+        rotate by 30 around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <2.5 0 1.25>;
+    end;
+
+    // show_image image1
+    triangle <-1 -1 0> <1 -1 0> <-1 1 0> with
+        rotate by 90 around <1 0 0>;
+        move to <-2.5 0 -1.25>;
+    end;
+
+    // show_image image1
+    block with
+        rotate by theta around <0 0 1>;
+        rotate by 30 around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <0 0 -1.25>;
+    end;
+
+    // show_image image1
+    torus with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <2.5 0 -1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+end;    // prim_picture
+
+
+anim prims_anim
+    args type args;
+with
+    eye = <0 -100 0>;
+    field_of_view = 6;
+    double_buffer is on;
+    args check;
+    facets = 16;
+is
+    mouse_controlled_picture prims_picture;
+end;    // prims_anim

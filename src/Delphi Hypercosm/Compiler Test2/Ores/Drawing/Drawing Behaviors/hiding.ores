@@ -1,0 +1,20 @@
+{***************************************************************}
+{                           hiding.ores                  		}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{        Contains interface definitions for drawing             }
+{        behaviors.                                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+adjective hideable
+does
+    verb set_visible
+    	to boolean visible is true;
+    end;
+	boolean question is_visible;
+end;    // hideable

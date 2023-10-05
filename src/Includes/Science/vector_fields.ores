@@ -1,0 +1,73 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         vector_fields.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard shapes for representing          }
+{       vector fields.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/arrows.ores";
+
+shape vector_field
+	enum marker is lines, arrows;
+	of marker type marker is lines;
+	in vector directions[,,];
+	at vector locations[,,];
+with
+	scalar length = 1;
+is
+	integer i_min = min locations, i_max = max locations;
+	integer j_min = min locations[], j_max = max locations[];
+	integer k_min = min locations[,], k_max = max locations[,];
+
+	for integer i = i_min .. i_max do
+		for integer j = j_min.. j_max do
+			for integer k = k_min .. k_max do
+				vector p1 = locations[i, j, k];
+				vector p2 = p1 + directions[i, j, k] * length;
+
+				when marker is
+					lines:
+						line [p1 p2];
+					end;
+					arrows:
+						arrow from p1 to p2;
+					end;
+				end;    // when
+			end;
+		end;
+	end;
+end;    // vector_field
+
+shape vector_field2
+	enum marker is lines, arrows;
+	of marker type marker is lines;
+	in vector directions[,];
+	at vector locations[,];
+with
+	scalar length = 1;
+is
+	integer i_min = min locations, i_max = max locations;
+	integer j_min = min locations[], j_max = max locations[];
+
+	for integer i = i_min .. i_max do
+		for integer j = j_min.. j_max do
+			vector p1 = locations[i, j];
+			vector p2 = p1 + directions[i, j] * length;
+			
+			when marker is
+				lines:
+					line [p1 p2];
+				end;
+				arrows:
+					arrow from p1 to p2;
+				end;
+			end;    // when
+		end;
+	end;
+end;    // vector_field2

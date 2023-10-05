@@ -1,0 +1,121 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 tri_grid_mesh.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		mesh which is a grid of triangles.						}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+include "system/vector_grid.ores";
+include "system/grid_tables.ores";
+include "system/grid_mesh_topologies.ores";
+include "system/texture_mapping.ores";
+
+
+shape tri_grid_mesh
+    of vector_grid type vertex_grid;
+    oriented to vector_grid type normal_grid is none;
+with
+	// rendering parameters
+	//
+    boolean smoothing is true;
+    boolean mending is false;
+    boolean closed is false;
+
+	// texturing parameters
+	//
+	boolean textured is true;   
+	texture_mapping type mapping is unit_parametric_mapping;
+is 
+    // tessellate a grid of points    o---o---o---o---o
+    // in the following pattern:      |  /|  /|  /|  /|
+    //                                | / | / | / | / |
+    //                                |/  |/  |/  |/  |
+    //                                o---o---o---o---o
+    //                                |  /|  /|  /|  /|
+    //                                | / | / | / | / |
+    //                                |/  |/  |/  |/  |
+    //                                o---o---o---o---o
+    
+    // create topology
+    //
+	mesh_topology type mesh_topology is (get_tri_grid_mesh_topology with
+		h_vertices = num vertex_grid[];
+		v_vertices = num vertex_grid;
+	);
+    
+    // create mesh
+    //
+    mesh (vertex_grid vectors) (mesh_topology's edges) (mesh_topology's face_indices) with
+    	if some normal_grid then
+        	normals is normal_grid vectors;
+        end;
+        if textured then
+        	if mapping is none then
+        		mapping is unit_parametric_mapping;
+        	end;
+        	texcoords is mapping get_grid_texcoords at vertex_grid towards normal_grid;
+        end;
+        smoothing is static smoothing;
+        mending is static mending;
+        closed is static closed;
+    end;
+end;    // tri_grid_mesh
+
+
+shape alt_tri_grid_mesh
+    of vector_grid type vertex_grid;
+    oriented to vector_grid type normal_grid is none;
+with
+	// rendering parameters
+	//
+    boolean smoothing is true;
+    boolean mending is false;
+    boolean closed is false;
+
+	// texturing parameters
+	//
+	boolean textured is true;   
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+    // tessellate a grid of points    o---o---o---o---o
+    // in the following pattern:      |  /|\  |  /|\  |
+    //                                | / | \ | / | \ |
+    //                                |/  |  \|/  |  \|
+    //                                o---o---o---o---o
+    //                                |\  |  /|\  |  /|
+    //                                | \ | / | \ | / |
+    //                                |  \|/  |  \|/  |
+    //                                o---o---o---o---o
+     
+    // create topology
+    //
+	mesh_topology type mesh_topology is (get_alt_tri_grid_mesh_topology with
+		h_vertices = num vertex_grid[];
+		v_vertices = num vertex_grid;
+	);
+    
+    // create mesh
+    //
+    mesh (vertex_grid vectors) (mesh_topology's edges) (mesh_topology's face_indices) with
+    	if some normal_grid then
+        	normals is normal_grid vectors;
+        end;
+        if textured then
+        	if mapping is none then
+        		mapping is unit_parametric_mapping;
+        	end;
+        	texcoords is mapping get_grid_texcoords at vertex_grid towards normal_grid;
+        end;
+        smoothing is static smoothing;
+        mending is static mending;
+        closed is static closed;
+    end;
+end;    // alt_tri_grid_mesh

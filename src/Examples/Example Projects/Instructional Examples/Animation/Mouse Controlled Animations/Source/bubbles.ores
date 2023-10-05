@@ -1,0 +1,15 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            bubbles.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard subjects for creating bubble          }
+{       paths or trails behind moving shapes.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "bubble.ores";
+include "bubble_stream.ores";

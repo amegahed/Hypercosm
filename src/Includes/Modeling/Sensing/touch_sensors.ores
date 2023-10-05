@@ -1,0 +1,439 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         touch_sensors.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a sensor object which can      }
+{       be used to determine if an object is "touched" by       }
+{       the cursor.                                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/native_sensing.ores";
+include "system/manipulations.ores";
+include "system/sensors.ores";
+include "system/messages.ores";
+include "system/printing.ores";
+
+subject touch_sensor
+extends
+	touchable pressable sensor
+does
+	// constructor
+	//
+	verb new
+		belonging to sensor_group type sensor_group is none;
+	end;
+	
+	// user methods
+	//
+	verb place
+		on shape target does none;
+	end;
+	verb transform;
+	verb update;
+	verb respond with
+		verb mouse_over_response;
+		verb mouse_away_response;
+		verb mouse_down_response;
+		verb mouse_up_response;
+	end;
+
+	// sensor methods
+	//
+	boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;
+	verb set_touched
+		to boolean touched is true;
+	end;
+				  
+	// touching methods
+	//
+	verb touch
+		from vector location;
+		towards vector direction;
+	end;    // touch
+
+	// pressing methods
+	//
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	end;    // press
+	
+	verb release
+		from vector location;
+		towards vector direction;
+	end;    // release
+
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public boolean prev_touched is false;
+	public boolean pressed is false;
+	public boolean clicked is false;
+	public boolean double_clicked is false;
+	public boolean released is false;
+			
+	// protected attributes
+	//
+	shape target;
+	trans_stack type trans_stack;
+	sensor_group type sensor_group is none;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		belonging to sensor_group type sensor_group is none;
+	is
+		touch_sensor's sensor_group is sensor_group;
+		if some sensor_group then
+			sensor_group add touch_sensor;
+		end;
+	end;    // new
+	
+	//
+	// user methods
+	//
+
+	verb place 
+		on shape target does none;
+	is
+		touch_sensor's target does target;
+		trans_stack is none;
+		dim trans_stack[1 .. trans_level + 1];
+		for integer level = 1 .. trans_level do
+			trans_stack[level] = global trans_stack[level];
+		end;
+		trans_stack[trans_level + 1] = trans;
+	end;    // place
+	
+	verb transform is
+		if some trans_stack then
+			trans_stack[trans_level + 1] = trans;
+		end;
+	end;    // transform
+	
+	verb update is
+		touch_actor touch_sensor;
+		press_actor touch_sensor;
+	end;    // update
+		
+	verb respond with
+		verb mouse_over_response;
+		verb mouse_away_response;
+		verb mouse_down_response;
+		verb mouse_up_response;
+	is
+		// handle mouse over and mouse away responses
+		//
+		if not touched and prev_touched then
+			if some mouse_away_response then
+				mouse_away_response;
+			end;
+			prev_touched is false;
+		elseif touched and not prev_touched then
+			if some mouse_over_response then
+				mouse_over_response;
+			end;
+			prev_touched is true;
+		end;
+		
+		// handle mouse down and mouse up responses
+		//
+		if pressed then
+			if some mouse_down_response then
+				mouse_down_response;
+			end;
+			pressed is false;
+			clicked is false;
+			double_clicked is false;
+		elseif released then
+			if some mouse_up_response then
+				mouse_up_response;
+			end;
+			released is false;
+		end;
+	end;    // respond 
+
+	//
+	// touching methods
+	//
+
+	boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	is
+		if some trans_stack then
+			trans type trans;
+			
+			trans_stack inverse_transform_trans trans from trans_level to trans_stack levels;
+			location = trans transformed location;
+			direction = trans oriented direction;
+			
+			if some target then
+				answer ray_hits_target target from location towards direction closer than min_t;
+			else
+				answer ray_hits_cube from location towards direction closer than min_t;
+			end;
+		else
+			answer false;
+		end;      
+	end;    // is_touched
+   
+	verb set_touched
+		to boolean touched is true;
+	is
+		touch_sensor's touched is touched;
+	end;    // set_touched
+
+	verb touch
+		from vector location;
+		towards vector direction;
+	is
+		touched is is_touched from location towards direction;
+	end;    // touch
+	
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	is
+		if not double_click then
+			pressed is is_touched from location towards direction;
+			clicked is true;
+			double_clicked is false;
+			released is false;
+		else
+			pressed is is_touched from location towards direction;
+			clicked is false;
+			double_clicked is true;
+			released is false;
+		end;
+	end;    // press
+	
+	verb release
+		from vector location;
+		towards vector direction;
+	is
+		clicked is false;
+		double_clicked is false;
+		pressed is false;
+		released is is_touched from location towards direction;
+	end;    // release
+
+	//
+	// printing methods
+	//
+
+	verb print is
+		trans_stack print;
+	end;    // print
+end;    // touch_sensor
+
+subject highlighted_touch_sensor
+extends
+	renderable touch_sensor
+does
+	// constructor
+	//
+	verb new
+		belonging to sensor_group type sensor_group is none;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+has
+	// attributes
+	//
+	material type highlighted_material is glass colored red;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		belonging to sensor_group type sensor_group is none;
+	is
+		touch_sensor new belonging to sensor_group;
+	end;    // new
+   
+	//
+	// rendering methods
+	//
+
+	shape instance is
+		if some trans_stack then
+			trans_stack transform_trans global trans from trans_stack levels to trans_level;
+			render_mode is wireframe;
+			material is highlighted_material;
+			
+			if some target then
+				target;
+			else
+				block;
+			end;
+		end;
+	end;    // instance 
+end;    // highlighted_touch_sensor
+
+subject hot_spot 
+extends
+	addressable highlighted_touch_sensor
+does
+	// constructor
+	//
+	verb new
+		belonging to sensor_group type sensor_group is none;
+	with
+		message type mouse_over_message is none;
+		message type mouse_away_message is none;
+		message type mouse_down_message is none;
+		message type mouse_up_message is none;
+	end;
+	
+	// addressing method
+	//
+	verb address
+		receivable type recipient;
+	end;
+		
+	// response method
+	//
+	verb respond with
+		verb mouse_over_response;
+		verb mouse_away_response;
+		verb mouse_down_response;
+		verb mouse_up_response;
+	end;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	receivable type recipient is none;
+	
+	// message attributes
+	//
+	public message type mouse_over_message is none;
+	public message type mouse_away_message is none;
+	public message type mouse_down_message is none;
+	public message type mouse_up_message is none;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		belonging to sensor_group type sensor_group is none;
+	with
+		message type mouse_over_message is none;
+		message type mouse_away_message is none;
+		message type mouse_down_message is none;
+		message type mouse_up_message is none;
+	is
+		highlighted_touch_sensor new belonging to sensor_group;
+		hot_spot's mouse_over_message is mouse_over_message;
+		hot_spot's mouse_away_message is mouse_away_message;
+		hot_spot's mouse_down_message is mouse_down_message;
+		hot_spot's mouse_up_message is mouse_up_message;
+	end;    // new
+	
+	//
+	// addressing method
+	//
+
+	verb address
+		receivable type recipient;
+	is
+		hot_spot's recipient is recipient;
+	end;    // address
+	
+	//
+	// response method
+	//
+
+	verb respond with
+		verb mouse_over_response;
+		verb mouse_away_response;
+		verb mouse_down_response;
+		verb mouse_up_response;
+	is
+		// handle mouse over and mouse away responses
+		//
+		if not touched and prev_touched then
+			if some recipient then
+				for each message type message and its next in mouse_away_message do
+					recipient receive message;
+				end;
+			end;
+			if some mouse_away_response then
+				mouse_away_response;
+			end;
+			prev_touched is false;
+		elseif touched and not prev_touched then
+			if some recipient then
+				for each message type message and its next in mouse_over_message do
+					recipient receive message;
+				end;
+			end;
+			if some mouse_over_response then
+				mouse_over_response;
+			end;
+			prev_touched is true;
+		end;
+   
+		// handle mouse down and mouse up responses
+		//
+		if pressed then
+			if some recipient then
+				for each message type message and its next in mouse_down_message do
+					recipient receive message;
+				end;
+			end;
+			if some mouse_down_response then
+				mouse_down_response;
+			end;
+			pressed is false;
+			clicked is false;
+			double_clicked is false;
+		elseif released then
+			if some recipient then
+				for each message type message and its next in mouse_up_message do
+					recipient receive message;
+				end;
+			end;
+			if some mouse_up_response then
+				mouse_up_response;
+			end;
+			released is false;
+		end;
+	end;    // respond
+	
+	//
+	// printing method
+	//
+
+	verb print is
+		write "hot spot", ;
+	end;    // print
+end;    // hot_spot

@@ -1,0 +1,180 @@
+{***************************************************************}
+{                          dcx.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do dcx_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape dcx with
+    scalar thrust = 0;
+    vector thrust_direction = <0 0 0>;
+is
+    scalar height = 15;
+    scalar base_height = 3;
+    scalar rocket_height = base_height - .5;
+    scalar nozzle_width = 1;
+    scalar nozzle_length = 1.5;
+    scalar width = 6;
+    scalar base = width / 2 - 1;
+    scalar half_base = base / 2;
+    scalar x_thrust, y_thrust, z_thrust;
+
+
+    shape landing_gear is
+        cylinder with
+            material is chalk colored white;
+            end1 = <0 0 .2>;
+            end2 = <0 0 2>;
+            radius = .1;
+        end;
+        cone with
+            material is chalk colored white;
+            end1 = <0 0 0>;
+            end2 = <0 0 .1>;
+            radius1 = .1;
+            radius2 = .5;
+        end;
+        cone with
+            material is chalk colored white;
+            end1 = <0 0 .1>;
+            end2 = <0 0 .2>;
+            radius1 = .5;
+            radius2 = .1;
+        end;
+    end;    // landing_gear
+
+
+    shape side is
+        color = white;
+
+        // side piece
+        cylinder with
+            end1 = <0 0 height>;
+            end2 = <base base base_height>;
+            umin = 0;
+            umax = 90;
+        end;
+
+        // corner sphere
+        sphere with
+            move to <base base base_height>;
+            umin = 0;
+            umax = 90;
+            vmin = -90;
+            vmax = 15;
+        end;
+
+        // botton side piece
+        cylinder with
+            end1 = <base base base_height>;
+            end2 = <-base base base_height>;
+            umin = -90;
+            umax = 0;
+        end;
+        triangle (<base (base + 1) base_height>) (<-base (base + 1)
+            base_height>) (<0 1 height>);
+
+        // landing gear
+        landing_gear with
+            rotate by -15 around <0 1 0>;
+            rotate by 45 around <0 0 1>;
+            move to <(base + .5) (base + .5) 0>;
+        end;
+    end;    // side
+
+
+    shape rocket with
+        scalar thrust = 0;
+    is
+        paraboloid with
+            material is chalk colored red;
+            top = <0 0 0>;
+            base = <0 0 (-nozzle_length)>;
+            radius = nozzle_width / 2;
+        end;
+
+        // direct thrust downward
+        //
+        cone with
+            material is constant_color yellow;
+            end1 = <0 0 (-nozzle_length)>;
+            end2 = end1 + <0 0 -5> * thrust;
+            radius1 = nozzle_width / 2;
+            radius2 = 0;
+        end;
+    end;    // rocket
+
+    side;
+    side with
+        rotate by 90 around <0 0 1>;
+    end;
+    side with
+        rotate by 180 around <0 0 1>;
+    end;
+    side with
+        rotate by 270 around <0 0 1>;
+    end;
+
+    // nose
+    sphere with
+        color = white;
+        move to <0 0 height>;
+        vmin = 15;
+        vmax = 90;
+    end;
+    thrust_direction = (thrust_direction + <0 0 1>) * thrust;
+    x_thrust = thrust_direction dot <1 0 0>;
+    y_thrust = thrust_direction dot <0 1 0>;
+    z_thrust = thrust_direction dot <0 0 1>;
+
+    // rockets
+    rocket with
+        thrust = z_thrust + x_thrust;
+        move to <half_base half_base rocket_height>;
+        rotate by -45 around <0 0 1>;
+    end;
+    rocket with
+        thrust = z_thrust + y_thrust;
+        move to <half_base half_base rocket_height>;
+        rotate by -45 around <0 0 1>;
+        rotate by 90 around <0 0 1>;
+    end;
+    rocket with
+        thrust = z_thrust - x_thrust;
+        move to <half_base half_base rocket_height>;
+        rotate by -45 around <0 0 1>;
+        rotate by 180 around <0 0 1>;
+    end;
+    rocket with
+        thrust = z_thrust - y_thrust;
+        move to <half_base half_base rocket_height>;
+        rotate by -45 around <0 0 1>;
+        rotate by 270 around <0 0 1>;
+    end;
+end;    // dcx
+
+
+anim dcx_anim
+    args type args;
+with
+    eye = <10 -35 20>;
+    lookat = <0 0 8>;
+    double_buffer is on;
+    background = dark violet;
+    args check;
+is
+    shape scene is
+        dcx;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // dcx_anim

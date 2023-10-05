@@ -1,0 +1,68 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        native_viewing.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native viewing variables and utilities.    }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "vectors.ores";
+
+{***************************************************************}
+{                 viewing orientation variables                 }
+{***************************************************************}
+
+enum coord_system is left_handed, right_handed;
+native vector eye = <10 -30 20>;
+native vector lookat = <0 0 0>;
+native scalar roll = 0;
+native scalar yaw = 0;
+native scalar pitch = 0;
+native coord_system type coord_system is right_handed;
+
+{***************************************************************}
+{                       camera attributes                       }
+{***************************************************************}
+
+enum projection is orthographic, perspective, fisheye, panoramic;
+native scalar field_of_view = 60;
+native projection type projection is perspective;
+
+// *** set_manual_near_far_planes ***
+// This procedure can be used to set explicit distances for the
+// near and far clipping planes.  Set the "use_manual_near_far"
+// parameter to true in order to enable manually-set near-far
+// planes.  Set "use_manual_near_far" to false in order to disable
+// manually-set near-far planes and turn on automatically-
+// determined near-far planes.  (By default, the Hypercosm system
+// determines near-far planes automatically.)
+//
+// NOTE: If you set the near distance to be greater than the far
+// distance, strange effects may occur, depending on what rasterizer
+// and video card your system uses.
+//
+{
+native verb set_manual_near_far_planes
+	boolean use_manual_near_far;
+with
+	scalar near = 0.01 * vlength of (lookat - eye);
+	scalar far = 10 * vlength of (lookat - eye);
+end;    // set_manual_near_far_planes
+}
+
+{***************************************************************}
+{              screen-into-scene projection utility             }
+{***************************************************************}
+
+native vector question project
+	vector v;
+	enum coords is raster, screen;
+	in coords type coords is screen;
+end;    // project

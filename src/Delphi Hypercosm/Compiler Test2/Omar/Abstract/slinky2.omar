@@ -1,0 +1,84 @@
+{***************************************************************}
+{                          slinky2.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do slinky_anim;
+
+
+include "system/3d.ores";
+include "system/time.ores";
+
+
+shape slinky with
+    scalar radius1 = 2;
+    scalar radius2 = 10;
+    integer number = 36;
+is
+    vector location[0..number];
+
+    for integer counter = 0..number do
+        scalar angle = counter / number * 360;
+        scalar x = sin (angle * radius1 / radius2) * radius1;
+        scalar y = cos (angle * radius2 / radius1) * radius2;
+        scalar z = (sin angle + cos angle) * radius1;
+        scalar r = abs sin (angle);
+        scalar g = abs cos (angle);
+        scalar b = .5;
+
+        location[counter] = <x y z>;
+        disk with
+            color = <r g b>;
+            center = <x y z>;
+            normal = <x g y>;
+        end;
+
+        {
+                cylinder with
+                        end1 = x y z; end2 = z y x;
+                        radius = .25;
+                end;
+                }
+    end;
+    line location;
+end;    // slinky
+
+
+picture slinky_picture with
+    scalar t1 = 1;
+    scalar t2 = 1;
+is
+    distant_light from <.3 -.5 1>;
+    slinky with
+        radius1 = t1;
+        radius2 = t2;
+        rotate by t1 * 4 around <t2 1 0>;
+    end;
+end;    // slinky_picture
+
+
+anim slinky_anim with
+    eye = <10 -50 30>;
+    facets = 2;
+    render_mode is wireframe;
+    double_buffer is on;
+is
+    timer type timer with
+        ticks_per_second = 60;
+    end;
+
+    while true do
+        eye = <(40 * cos timer position)
+               (50 * sin timer position)
+               (30 * cos (.8 * timer position))>;
+
+        slinky_picture with
+            t1 = (sin timer position) + 8;
+            t2 = (cos timer position) * 6 + 4;
+        end;
+    end;
+end;    // slinky_anim

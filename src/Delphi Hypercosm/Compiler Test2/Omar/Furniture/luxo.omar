@@ -1,0 +1,214 @@
+{***************************************************************}
+{                          luxo.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do luxo_anim;
+//do luxo_picture;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape luxo with
+    scalar angle = 0;
+    boolean light is off;
+is
+    static shape luxo_head with
+        boolean light is off;
+    is
+        cone with
+            end1 = <0 0 3>;
+            end2 = <-4 0 3>;
+            radius1 = 2.9;
+            radius2 = 7;
+        end;
+        cone with
+            end1 = <0 0 3>;
+            end2 = <6 0 3>;
+            radius1 = 3;
+            radius2 = 2;
+        end;
+        if light is on then
+            sphere with
+                material is constant_color white;
+                center = <-2 0 3>;
+                radius = 2;
+            end;
+
+            {bulb}
+            point_light with
+                brightness = 10;
+                move to <-5 0 3>;
+            end;
+            spot_light towards <-1 0 0> with
+                angle = 90;
+                brightness = 40;
+                move to <-5 0 3>;
+            end;
+        else
+            sphere with
+                material is constant_color white;
+                center = <-2 0 3>;
+                radius = 2;
+            end;
+        end;
+        disk with
+            center = <-1 0 3>;
+            normal = <1 0 0>;
+            radius = 3;
+        end;
+        cone with
+            end1 = <-4 0 3>;
+            end2 = <-1 0 3>;
+            radius1 = 7;
+            radius2 = 2.9;
+        end;
+        cylinder with
+            end1 = <0 -2 0>;
+            end2 = <0 2 0>;
+            radius = 1;
+        end;
+        disk with
+            center = <0 -2 0>;
+            normal = <0 1 0>;
+            radius = 1;
+        end;
+        disk with
+            center = <0 2 0>;
+            normal = <0 1 0>;
+            radius = 1;
+        end;
+    end;    // luxo_head
+
+
+    static shape luxo_neck with
+        boolean light is off;
+    is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 15>;
+            radius = 1;
+        end;
+        luxo_head with
+            light is static light;
+            rotate by -10 around <0 1 0>;
+            move to <0 0 15>;
+        end;
+    end;    // luxo_neck
+
+
+    static shape luxo_base is
+
+        // stand
+        //
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = 7;
+            radius2 = 6;
+        end;
+        ring with
+            center = <0 0 1>;
+            normal = <0 0 -1>;
+            inner_radius = 3;
+            outer_radius = 6;
+        end;
+        sphere with
+            center = <0 0 1>;
+            radius = 3;
+            vmin = 0;
+        end;
+
+        // lower neck
+        //
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <15 0 15>;
+            radius = 1;
+        end;
+        cylinder with
+            end1 = <15 -2 15>;
+            end2 = <15 2 15>;
+            radius = 2;
+        end;
+        disk with
+            center = <15 -2 15>;
+            normal = <0 1 0>;
+            radius = 2;
+        end;
+        disk with
+            center = <15 2 15>;
+            normal = <0 1 0>;
+            radius = 2;
+        end;
+    end;    // luxo_base
+
+    luxo_base;
+    luxo_neck with
+        light is static light;
+        rotate by (angle - 40) around <0 1 0>;
+        move to <15 0 15>;
+    end;
+end;    // luxo
+
+
+picture luxo_picture with
+    field_of_view = 75;
+    eye = <0 -60 40>;
+    lookat = <0 0 14>;
+    facets = 12;
+    render_mode is shaded;
+    shading is pixel;
+
+    {
+        facets = 0;
+        shadows = on;
+        reflections = on;
+        }
+is
+    scalar t = frame_number / 20;
+
+    luxo with
+        material is golden;
+        light is on;
+        angle = sin (t * 360) * 30;
+        rotate by 45 around <0 0 1>;
+        move to <5 0 0>;
+    end;
+    luxo with
+        material is metal colored white;
+        light is on;
+        angle = sin (t * 360) * 30;
+        magnify by .8;
+        rotate by 120 around <0 0 1>;
+        move to <-8 8 0>;
+    end;
+    sphere with
+        material is plastic colored dark blue;
+        center = <-5 -15 6>;
+        radius = 6;
+    end;
+    plane with
+        material is plastic colored brown;
+        magnify by 30;
+    end;
+end;    // luxo_picture
+
+
+anim luxo_anim
+    args type args;
+with
+    field_of_view = 75;
+    eye = <0 -60 40>;
+    lookat = <0 0 14>;
+    facets = 8;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture luxo_picture;
+end;    // luxo_anim

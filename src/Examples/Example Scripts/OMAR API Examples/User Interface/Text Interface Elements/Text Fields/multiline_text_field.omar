@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      multiline_text_field.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a text field          }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do multiline_text_field_anim;
+
+include "system/3d.ores";
+include "system/multiline_text_field.ores";
+
+anim multiline_text_field_anim with
+	double_buffer is on;
+is
+	verb mouse_down_action is
+		write "pressed!", ;
+	end;
+	verb mouse_up_action is
+		write "released!", ;
+	end;
+		
+	multiline_text_field type multiline_text_field of ["multiline" "text field"]
+		at <0 0 0> aligned to middle_center
+	with
+		font is (new screen_font sized 24 styled bold);
+		mouse_down_action is (new action of static mouse_down_action);
+		mouse_up_action is (new action of static mouse_up_action);
+	end;
+	
+	picture scene is
+		multiline_text_field draw;
+	end;    // scene
+		
+	while true do
+		scene;
+		multiline_text_field update;
+	end;
+end;    // multiline_text_field_anim

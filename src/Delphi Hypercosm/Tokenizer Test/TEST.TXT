@@ -1,0 +1,8 @@
+do test;
+
+
+verb test is
+	for integer counter = 1..10 do
+		write "blah", ;
+	end;
+end;	// test

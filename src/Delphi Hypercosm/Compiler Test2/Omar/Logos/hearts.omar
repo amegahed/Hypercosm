@@ -1,0 +1,169 @@
+{***************************************************************}
+{                          hearts.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do heart_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/bumps.ores";
+include "system/alpha.omar";
+
+
+shape love is
+    letter_l with
+        scale by .1666 along <0 0 1>;
+        scale by .125 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        move to <-.75 0 0>;
+    end;
+    letter_o with
+        scale by .1666 along <0 0 1>;
+        scale by .125 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        move to <-.25 0 0>;
+    end;
+    letter_v with
+        scale by .1666 along <0 0 1>;
+        scale by .125 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        move to <.25 0 0>;
+    end;
+    letter_e with
+        scale by .1666 along <0 0 1>;
+        scale by .125 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        move to <.75 0 0>;
+    end;
+end;    // love
+
+
+shape teardrop_shape is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 1.414>;
+        radius1 = 0;
+        radius2 = .5;
+    end;
+    sphere with
+        center = <0 0 1.5>;
+        radius = .5;
+    end;
+end;    // teardrop_shape
+
+
+shape heart_shape is
+    teardrop_shape with
+        rotate by 19 around <0 10 0>;
+    end;
+    teardrop_shape with
+        rotate by -19 around <0 10 0>;
+    end;
+
+    {
+        sphere with center = 0 0 1; radius = .5; end;
+        cone with end1 = 0 0 0; end2 = 0 0 .75;
+                radius1 = 0; radius2 = .433;
+        end;
+        }
+end;    // heart_shape
+
+
+shape heart_shape2 is
+    cylinder with
+        end1 = <-.5 -.3 1.5>;
+        end2 = <-.5 .3 1.5>;
+        radius = .5;
+    end;
+    cylinder with
+        end1 = <.5 -.3 1.5>;
+        end2 = <.5 .3 1.5>;
+        radius = .5;
+    end;
+    cylinder with
+        end1 = <0 -.3 1>;
+        end2 = <0 .3 1>;
+        radius = .5;
+    end;
+    extrude [[.85355 1.14645] [0 0] [-.85355 1.14645]] with
+        scale by .6 along <0 1 0>;
+    end;
+end;    // heart_shape2
+
+
+shape heart_icon is
+    heart_shape2;
+    love with
+        move to <0 0 2.5>;
+    end;
+end;    // heart_icon
+
+
+shape hearts with
+    integer level = 6;
+is
+    color type heart_color;
+
+    // heart_color = (1 (1 - 1/level) (1 - 1/level));
+    heart_color = (<1 (1 / level) (1 / level)>);
+    semi_glossy heart_color heart_icon;
+    if (level > 1) then
+        hearts with
+            level = static level - 1;
+            magnify by .56;
+            rotate by -90 around <0 1 0>;
+            move to <-1 0 1.5>;
+        end;
+        hearts with
+            level = static level - 1;
+            magnify by .56;
+            rotate by 90 around <0 1 0>;
+            move to <1 0 1.5>;
+        end;
+    end;
+end;    // hearts
+
+
+picture heart_picture
+    args type args;
+with
+    field_of_view = 40;
+    eye = <4 -8 4>;
+    lookat = <.3 0 1.4>;
+    render_mode is shaded;
+    background = black;
+    ambient = white * .5;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    save_pictures is on;
+    args check;
+is
+    distant_light from <.2 -1 .5>;
+    hearts with
+        level = 7;
+    end;
+end;    // heart_picture
+
+
+anim heart_anim
+    args type args;
+with
+    double_buffer is on;
+    args check;
+is
+    while true do
+        heart_picture [] with
+            projection is orthographic;
+            lookat = <0 0 1.4>;
+            field_of_view = 7;
+        end;
+        rotate by 5 around <0 0 1>;
+    end;
+end;    // heart_anim

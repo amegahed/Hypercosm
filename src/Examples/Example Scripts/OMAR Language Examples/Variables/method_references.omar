@@ -1,0 +1,45 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         method_references.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of method references in the OMAR language.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do method_references_example;
+
+verb action1 is
+	write "performing action 1", ;
+end;    // action1
+verb action2 is
+	write "performing action 2", ;
+end;    // action2
+	
+	
+verb method_references_example 
+is
+	// procedural method variable declaration and initializer   
+	//
+	verb action does none;          
+	for integer counter = 1 .. 2 do
+	
+		// assign method variable, action, to action1 or action2    
+		// depending upon whether it has been previously assigned
+		//
+		if action does none then    
+			action does action1;            
+		else
+			action does action2;
+		end;
+	
+		// call whatever method action refers to - the first time
+		// through, this will refer to action1, the second time 
+		// through, this will refer to action2
+		//  
+		action;     
+	end;                        
+end;    // method_references_example

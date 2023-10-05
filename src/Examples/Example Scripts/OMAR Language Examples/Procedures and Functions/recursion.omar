@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            recursion.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of recursion in the OMAR language.              }
+{                                                               }
+{       Recursion is when a method is defined in terms          }
+{       of itself.  It is particularly useful when              }
+{       evaluating functions that are recursively (or           }
+{       circularly) defined such as in the example below.       }
+{                                                               }
+{       In the OMAR language, recursion works the same as       }
+{       it does in other procedural languages such as C,        }
+{       C++, Java, or Pascal.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do recursion_example;
+
+scalar question factorial
+	of integer n;
+is
+	if n = 1 then
+		answer 1;
+	else
+		answer n * factorial of (n - 1);
+	end;
+end;    // factorial
+
+verb recursion_example is
+	for integer counter = 1 .. 10 do
+		write "factorial of ", counter, " = ", factorial of counter, ;
+	end;
+end;    // recursion_example

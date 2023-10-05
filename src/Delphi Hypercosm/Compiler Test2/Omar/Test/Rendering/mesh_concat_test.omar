@@ -1,0 +1,36 @@
+do mesh_test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/polygon_meshes.ores";
+
+
+mesh type mesh1 is new_convex_polygon_mesh
+    of [<-1 -1 0> <1 -1 0> <1 1 0> <-1 1 0>];  
+mesh type mesh2 is new_convex_polygon_mesh
+	of [<-1 1 0> <1 1 0> <1 1 2> <-1 1 2>];
+meshes type meshes is [mesh1 mesh2];
+mesh type mesh3 is meshes to_mesh; 
+
+
+anim mesh_test
+is
+	shape scene is
+		mesh1 instance with
+			color = red;
+			render_mode is wireframe;
+		end;
+		mesh2 instance with
+			color = green;
+			render_mode is wireframe;
+		end;
+		mesh3 instance;
+	end;
+	
+	mesh3 print;
+	
+	mouse_controlled_shape scene with
+		auto_camera is on;
+	end;
+end;	// mesh_test

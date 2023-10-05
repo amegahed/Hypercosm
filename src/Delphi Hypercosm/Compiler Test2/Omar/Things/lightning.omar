@@ -1,0 +1,62 @@
+{***************************************************************}
+{                          lightning.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do lightning_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/random.ores";
+
+
+shape lightning with
+    integer max_level = 5;
+    integer level = 5;
+    integer seed = global seed;
+    integer max_branches = 3;
+    color type root_color = light yellow;
+    color type tail_color = violet;
+    global seed = seed;
+is
+    vector direction = vrandom <-1 -1 1> to <1 1 1>;
+    scalar length = (random .5 to 1) / max_level;
+    integer branches = trunc random 0 to max_branches;
+    vector branching_point = direction * length;
+
+    if (level >= 0) then
+        scalar factor = level / max_level;
+
+        line [<0 0 0> branching_point] with
+            color = blend root_color to tail_color by factor;
+        end;
+        for integer counter = 1..branches do
+            lightning with
+                level = static level - 1;
+                rotation of vrandom <0 0 0> to <1 1 1> *
+                    90;
+                move to branching_point;
+            end;
+        end;
+    end;
+end;    // lightning
+
+
+picture lightning_picture with
+is
+    disk with color = dark green; end;
+    lightning;
+end;    // lightning_picture
+
+
+anim lightning_anim with
+    double_buffer is on;
+    eye = <1 -3 2>;
+is
+    mouse_controlled_picture lightning_picture;
+end;    // lightning_anim

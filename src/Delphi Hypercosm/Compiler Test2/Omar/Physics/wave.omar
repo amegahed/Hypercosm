@@ -1,0 +1,125 @@
+{***************************************************************}
+{                          wave.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do wave_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/grid_shapes.ores";
+include "system/common_materials.ores";
+
+
+subject wave
+extends
+    step_actor
+does
+    objective shape form with
+        integer steps = 10;
+        scalar length = 1.5;
+        scalar height = .5;
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+is
+    // material type wave_material is chalk textured new texture type
+    //     using new image type named "rug.tga";
+    material type wave_material is wood;
+    material type material1 is metal colored light red;
+    material type material2 is metal colored light orange;
+    material type material3 is metal colored light green;
+    material type material4 is metal colored light raspberry;
+
+
+    objective scalar question hat_function
+        at scalar x, y;
+    is
+        answer cos (x * x * 180) * cos (y * y * 180);
+    end;    // hat_function
+
+
+    objective scalar question wavy_function
+        at scalar x, y;
+    is
+        answer (cos (x * 180)) * (cos (y * 180));
+    end;    // wavy_function
+
+
+    objective shape form with
+        integer steps = 10;
+        scalar length = 1.5;
+        scalar height = .5;
+        scalar t = 0;
+    is
+        scalar x, y;
+
+        height_function using wavy_function with
+            material is wave_material;
+            h_steps = static steps;
+            v_steps = static steps;
+            x_center = t;
+            scale by length along <1 0 0>;
+            scale by height along <0 0 1>;
+            triangulate is on;
+        end;
+
+        sphere with
+            material is material1;
+            move to <.75 0 .5>;
+            x = (trans's origin dot <1 0 0>) + t;
+            y = trans's origin dot <0 1 0>;
+            radius = .25 * wavy_function at x y;
+        end;
+        sphere with
+            material is material2;
+            move to <0 .75 .5>;
+            x = (trans's origin dot <1 0 0>) + t;
+            y = trans's origin dot <0 1 0>;
+            radius = .25 * wavy_function at x y;
+        end;
+        sphere with
+            material is material3;
+            move to <0 -.75 .5>;
+            x = (trans's origin dot <1 0 0>) + t;
+            y = trans's origin dot <0 1 0>;
+            radius = .25 * wavy_function at x y;
+        end;
+        sphere with
+            material is material4;
+            move to <-.75 0 .5>;
+            x = (trans's origin dot <1 0 0>) + t;
+            y = trans's origin dot <0 1 0>;
+            radius = .25 * wavy_function at x y;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            t = wave's steps / 10;
+        end;
+    end;    // instance
+end;    // wave
+
+
+anim wave_anim
+    args type args;
+with
+    eye = <0 -4 2>;
+    lookat = <0 0 -.25>;
+    facets = 10;
+    double_buffer is on;
+    args check;
+is
+    wave type wave;
+
+    mouse_controlled_actor wave;
+end;    // wave_anim

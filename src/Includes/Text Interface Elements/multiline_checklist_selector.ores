@@ -1,0 +1,574 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   multiline_checklist_selector.ores    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a list selector that   }
+{        can respond to mouse clicks and mouse overs.           }
+{        A list selector group is like a group of radio         }
+{        buttons where only one of the group may be selected    }
+{        at a given time.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "text_selector_group.ores";
+include "multiline_text_sensor.ores";
+include "multiline_checklists.ores";
+
+subject multiline_checklist_selector
+extends
+	drawable object
+does
+	// constructor
+	//
+	verb new
+		of strings type steps[];
+		at vector location = <0 0 0>;
+		using multiline_text_sensor type step_display;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = proportional_text_size div 2;
+		h_alignment type h_alignment is left;
+		
+		// default colors
+		color type text_color = white, background = black;
+		color type highlight_color = red, highlight_background = background;
+		color type selected_color = highlight_color, selected_background = background;
+		
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+		
+		// misc
+		//
+		boolean show_checkboxes is true;
+	end;
+	
+	// querying methods
+	//
+	string type question selected_step;
+	integer question selected_index;
+	
+	// state changing methods
+	//
+	verb set_selected_step
+		to string type step;
+	end;
+	verb set_selected_index
+		to integer index;
+	end;
+	
+	// drawing method
+	//
+	verb draw;
+has
+	// attributes
+	//
+	public actionable type mouse_down_action is none;
+	public actionable type mouse_up_action is none;
+	public actionable type mouse_over_action is none;
+	public actionable type mouse_away_action is none;
+	
+	// public attributes
+	//
+	public strings type steps[] is none;
+	public strings type text is none;
+	public multiline_text_sensor type step_display is none;
+
+	// selection attributes
+	//
+	public integer current_mouse_over_index = 0;
+	public integer current_selected_index = 0;
+	public integer last_selected_index = 0;
+		
+	// color attributes
+	//
+	public color type text_color, background;
+	public color type highlight_color, highlight_background;
+	public color type selected_color, selected_background;
+	public color type display_color, display_background;
+	
+	// protected attributes
+	//
+	text_selector_group type text_selector_group is none;
+	
+	// private attributes
+	//
+private
+	vector checkbox_offset;
+	boolean show_checkboxes;
+is
+	const char checkbox_char is chr 1;
+	const char check_char is "X";
+	
+	text_selector_group type question selected_item is
+		boolean found is false;
+		text_selector_group type follow is text_selector_group;
+		
+		if some text_selector_group then
+			boolean done is false;
+			
+			while not (done or found) do
+				if follow's selected then
+					found is true;
+				else
+					follow is its next;
+					if follow is text_selector_group then
+						done is true;
+					end;
+				end;
+			end;
+		end;
+		
+		if found then
+			answer follow;
+		else
+			answer none;
+		end;
+	end;    // selected_item
+	
+	verb find_selected_index is
+		boolean found is false;
+		text_selector_group type follow is text_selector_group;
+		integer index = 0;
+			  
+		if some text_selector_group then
+			boolean done is false;
+			index = 1;
+			
+			while not (done or found) do
+				if follow's selected then
+					found is true;
+				else
+					follow is its next;
+					index = itself + 1;
+					if follow is text_selector_group then
+						done is true;
+					end;
+				end;
+			end;
+		end;
+		
+		if found then
+			current_selected_index = index;
+			
+			if index = last_selected_index + 1 then
+				last_selected_index = index;
+			end;
+		end;
+	end;    // find_selected_index
+		
+	verb highlight_text_display is
+			
+		// set text display to highlight colors
+		//
+		step_display set_color to highlight_color over highlight_background;
+	end;    // highlight_text_display
+	
+	verb unhighlight_text_display is
+	
+		// set text display back to its original colors
+		//
+		step_display set_color to display_color over display_background;
+	end;    // unhighlight_text_display
+	
+	abstract subject mouse_action
+	extends
+		actionable object
+	does
+		abstract verb activate;
+	has
+		multiline_checklist_selector type multiline_checklist_selector is none;
+		integer step_number;
+	end;    // mouse_action
+	
+	subject mouse_down_action
+	extends
+		mouse_action
+	does
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		end;
+		verb activate;
+	is
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		is
+			mouse_action's multiline_checklist_selector is multiline_checklist_selector;
+			mouse_action's step_number = step_number;
+		end;    // new
+		   
+		verb activate is
+			multiline_checklist_selector set_selected_index to step_number;
+			
+			if some multiline_checklist_selector's mouse_down_action then
+				multiline_checklist_selector's mouse_down_action activate;
+			end;
+		end;    // activate
+	end;    // mouse_down_action
+	
+	subject mouse_up_action
+	extends
+		mouse_action
+	does
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		end;
+		verb activate;
+	is
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		is
+			mouse_action's multiline_checklist_selector is multiline_checklist_selector;
+			mouse_action's step_number = step_number;
+		end;    // new
+		   
+		verb activate is
+			if some multiline_checklist_selector's mouse_up_action then
+				multiline_checklist_selector's mouse_up_action activate;
+			end;
+		end;    // activate
+	end;    // mouse_up_action
+	
+	subject mouse_over_action
+	extends
+		mouse_action
+	does
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		end;
+		verb activate;
+	is
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		is
+			mouse_action's multiline_checklist_selector is multiline_checklist_selector;
+			mouse_action's step_number = step_number;
+		end;    // new
+		
+		verb activate is
+			multiline_checklist_selector's step_display set_text to multiline_checklist_selector's steps[step_number];
+			multiline_checklist_selector highlight_text_display;
+			multiline_checklist_selector's current_mouse_over_index = step_number;
+						
+			if some multiline_checklist_selector's mouse_over_action then
+				multiline_checklist_selector set_selected_index to step_number;
+				multiline_checklist_selector unhighlight_text_display; 
+				multiline_checklist_selector's mouse_over_action activate;
+			end;
+		end;    // activate
+	end;    // mouse_over_action
+	
+	subject mouse_away_action
+	extends
+		mouse_action
+	does
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		end;
+		verb activate;
+	is
+		verb new
+			to multiline_checklist_selector type multiline_checklist_selector;
+			on integer step_number;
+		is
+			mouse_action's multiline_checklist_selector is multiline_checklist_selector;
+			mouse_action's step_number = step_number;
+		end;    // new
+		
+		verb activate is
+			integer index = multiline_checklist_selector selected_index;
+			
+			if index <> 0 then
+				multiline_checklist_selector's step_display set_text to multiline_checklist_selector's steps[index];
+			else
+				multiline_checklist_selector's step_display set_text to multiline_checklist_selector's text;
+			end;
+			
+			multiline_checklist_selector unhighlight_text_display;          
+			
+			if some multiline_checklist_selector's mouse_away_action then
+				multiline_checklist_selector's mouse_away_action activate;
+			end;
+		end;    // activate
+	end;    // mouse_away_action
+	   
+	//
+	// constructor
+	//
+	
+	verb new
+		of strings type steps[];
+		at vector location = <0 0 0>;
+		using multiline_text_sensor type step_display;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = proportional_text_size div 2;
+		h_alignment type h_alignment is left;
+		
+		// default colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = red, highlight_background = background;
+		color type selected_color = highlight_color, selected_background = background;
+		
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+		
+		// misc
+		//
+		boolean show_checkboxes is true;
+	is
+		text_selector_group type new_item is none;
+		
+		// initialize members
+		//
+		multiline_checklist_selector's steps is steps;
+		multiline_checklist_selector's text is step_display's text;
+		multiline_checklist_selector's step_display is step_display;
+		
+		if h_alignment is left then
+			multiline_checklist_selector's checkbox_offset = <(-2 * text_size / width) 0 0>;
+		else
+			multiline_checklist_selector's checkbox_offset = <(-8 * text_size / width) 0 0>;
+		end;
+		
+		// initialize colors
+		//
+		multiline_checklist_selector's text_color = text_color;
+		multiline_checklist_selector's background = background;
+		multiline_checklist_selector's highlight_color = highlight_color;
+		multiline_checklist_selector's highlight_background = highlight_background;
+		multiline_checklist_selector's selected_color = selected_color;
+		multiline_checklist_selector's selected_background = selected_background;
+				
+		// save text display's color scheme
+		//
+		multiline_checklist_selector's display_color = step_display's text_color;
+		multiline_checklist_selector's display_background = step_display's background;
+		
+		// initialize callbacks
+		//
+		multiline_checklist_selector's mouse_down_action is mouse_down_action;
+		multiline_checklist_selector's mouse_up_action is mouse_up_action;
+		multiline_checklist_selector's mouse_over_action is mouse_over_action;
+		multiline_checklist_selector's mouse_away_action is mouse_away_action;
+		
+		// initialize misc
+		//
+		multiline_checklist_selector's show_checkboxes is show_checkboxes;
+				
+		// initialize text selector group
+		//
+		for integer counter = min steps .. max steps do
+			scalar x = location.x;
+			scalar y = location.y - (counter - 1) * ((text_size + text_spacing) * 1.99 / height);
+			string type label, message;
+			strings type text is none;
+			
+			// create label
+			//
+			label is "Step ";
+			label add integer_to_str counter;
+			
+			// create message
+			//
+			// message is "Click to display Step ";
+			// message add integer_to_str counter;
+			// text is [message];
+			text is steps[counter];
+			
+			new_item is (new text_selector_group type label at <x y 0> linked to text_selector_group with
+				text_size = static text_size;
+				text_spacing = static text_spacing;
+				h_alignment is static h_alignment;
+					   
+				// initialize colors
+				//
+				text_color = static text_color;
+				background = static background;
+				highlight_color = static highlight_color;
+				highlight_background = static highlight_background;
+				selected_color = static selected_color;
+				selected_background = static selected_background;
+				
+				// initialize callbacks
+				//
+				mouse_down_action is (new mouse_down_action type to multiline_checklist_selector on counter);
+				mouse_up_action is (new mouse_up_action type to multiline_checklist_selector on counter);
+				mouse_over_action is (new mouse_over_action type to multiline_checklist_selector on counter);
+				mouse_away_action is (new mouse_away_action type to multiline_checklist_selector on counter);
+			);
+			if show_checkboxes then      
+				// expand active region of selector to include checkboxes
+				//
+				new_item's region expand by text_region of " X " 
+					at (new_item's location + checkbox_offset) 
+					size (round (new_item's text_size * 1.5))
+					h_aligned center;
+			end;
+			
+			if text_selector_group is none then
+				text_selector_group is new_item;
+			end;
+		end;
+	end;    // new
+	
+	//
+	// querying methods
+	//
+	
+	string type question selected_step is
+		text_selector_group type item is selected_item;
+		
+		if some item then
+			answer item's text;
+		else
+			answer none;
+		end;
+	end;    // selected_step
+	
+	integer question selected_index is
+		answer current_selected_index;
+	end;    // selected_index
+	
+	//
+	// state changing methods
+	//
+		
+	verb set_selected_step
+		to string type step;
+	is
+		if some text_selector_group then
+			text_selector_group type follow is text_selector_group;
+			boolean done is false;
+			
+			while not done do
+				if follow's text matches step then
+					follow select;
+				else
+					follow deselect;
+				end;
+				
+				follow is its next;
+				if follow is text_selector_group then
+					done is true;
+				end;
+			end;
+		end;
+		
+		find_selected_index;
+		step_display set_text to multiline_checklist_selector's steps[current_selected_index];
+		unhighlight_text_display;
+	end;    // set_selected_step
+	
+	verb set_selected_index
+		to integer index;
+	is
+		if some text_selector_group then
+			text_selector_group type follow is text_selector_group;
+			boolean done is false;
+			integer counter = 1;
+			
+			while not done do
+				if counter = index then
+					follow select;
+				else
+					follow deselect;
+				end;
+				
+				follow is its next;
+				counter = itself + 1;
+				if follow is text_selector_group then
+					done is true;
+				end;
+			end;
+		end;
+		
+		find_selected_index;
+		step_display set_text to multiline_checklist_selector's steps[current_selected_index];
+		unhighlight_text_display;
+	end;    // set_selected_item
+			 
+	//
+	// drawing method
+	//
+	
+	verb draw is   
+		if some text_selector_group then
+			text_selector_group type follow is text_selector_group;
+			boolean done is false;
+			boolean some_selected is false;
+			
+			while not done do
+				follow draw;
+			
+				if show_checkboxes then
+				
+					// draw checkbox
+					//
+					overlay_text [checkbox_char] at follow's location + checkbox_offset with
+						size = round (follow's text_size * 1.5);
+						bold is true;
+					end;
+				end;
+				
+				if follow's selected then
+					some_selected is true;
+				end;
+				
+				follow is its next;
+				if follow is text_selector_group then
+					done is true;
+				end;
+			end;
+			
+			// draw checks
+			//
+			if some_selected then
+				follow is text_selector_group;
+				for integer counter = 1 .. ilarger of last_selected_index and current_selected_index do
+				
+					if counter <= last_selected_index or counter = current_selected_index then
+						boolean looking_ahead is (counter > last_selected_index);
+						
+						// if looking ahead, then blink
+						//
+						if not looking_ahead or even trunc (get_seconds * 2) then
+							overlay_text [check_char] at follow's location + checkbox_offset with
+								italic is true;
+								bold is true;
+								color = red;
+								
+								if follow's selected then
+									size = round (follow's text_size * 2.5);
+								else
+									size = round (follow's text_size * 1.5);
+								end;
+							end;
+						end;
+					end;
+					
+					follow is its next;
+				end;
+			end;
+		end;
+	end;    // draw
+end;    // multiline_multiline_checklist_selector

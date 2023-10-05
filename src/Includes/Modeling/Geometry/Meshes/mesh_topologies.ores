@@ -1,0 +1,161 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         mesh_topologies.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains generalized mesh topology definitions.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/mesh_topology.ores";
+
+{***************************************************************}
+{           mesh topologies for different shapes                }
+{***************************************************************}
+
+mesh_topology type question get_triangle_mesh_topology with
+	boolean reversed is false;
+is
+	mesh_topology type mesh_topology is recycleable_mesh_topology type's get;
+	
+	mesh_topology's edges is [[1 2] [2 3] [3 1]];
+	if not reversed then
+		mesh_topology's face_indices is [1 2 3 0];
+	else
+		mesh_topology's face_indices is [-3 -2 -1 0];
+	end;
+	
+	answer mesh_topology;
+end;    //  get_triangle_mesh_topology
+
+mesh_topology type question get_quad_mesh_topology with
+	boolean reversed is false;
+is
+	mesh_topology type mesh_topology is recycleable_mesh_topology type's get;
+	
+	mesh_topology's edges is [[1 2] [2 3] [3 4] [4 1]];
+	if not reversed then
+		mesh_topology's face_indices is [1 2 3 4 0];
+	else
+		mesh_topology's face_indices is [-4 -3 -2 -1 0];
+	end;
+	
+	answer mesh_topology;
+end;    //  get_quad_mesh_topology
+
+mesh_topology type question get_polygon_mesh_topology
+	of integer vertices;
+with
+	boolean reversed is false;
+is
+	mesh_topology type mesh_topology is recycleable_mesh_topology type's get;
+	
+	// create polygon edges
+	//    
+	dim mesh_topology's edges[1 .. vertices, 1..2];
+	
+	if not reversed then
+		for integer counter = 1 .. vertices - 1 do
+			mesh_topology's edges[counter, 1] = counter;
+			mesh_topology's edges[counter, 2] = counter + 1;
+		end;
+		mesh_topology's edges[vertices, 1] = vertices;
+		mesh_topology's edges[vertices, 2] = 1;
+	else
+		for integer counter = 1 .. vertices - 1 do
+			mesh_topology's edges[counter, 1] = vertices - (counter - 1);
+			mesh_topology's edges[counter, 2] = vertices - counter;
+		end;
+		mesh_topology's edges[vertices, 1] = 1;
+		mesh_topology's edges[vertices, 2] = vertices;    
+	end;
+	
+	// create polygon face indices
+	//
+	dim mesh_topology's face_indices[1 .. vertices + 1];
+	for integer counter = 1 .. vertices do
+		mesh_topology's face_indices[counter] = counter;
+	end;
+	mesh_topology's face_indices[vertices + 1] = 0;
+	
+	answer mesh_topology;
+end;    // get_polygon_mesh_topology
+
+mesh_topology type question get_triangle_fan_mesh_topology
+	of integer sides;
+with
+	boolean open is false;
+	boolean reversed is false;
+is
+	mesh_topology type mesh_topology is recycleable_mesh_topology type's get;
+	integer vertices, edges, faces;
+	
+	if open then
+		vertices = sides + 2;
+		edges = 2 * sides + 1;
+		faces = sides;
+	else
+		vertices = sides + 1;
+		edges = 2 * sides;
+		faces = sides;
+	end;
+		
+	// create edges
+	//
+	dim mesh_topology's edges[1 .. edges, 1 .. 2];  
+	for integer edge = 1 .. edges do
+		integer side = (edge + 1) div 2;
+		if odd edge then
+		
+			// radial edge
+			//
+			mesh_topology's edges[edge, 1] = 1;
+			mesh_topology's edges[edge, 2] = side + 1;
+		else
+			// side edge
+			//
+			mesh_topology's edges[edge, 1] = side + 1;
+			mesh_topology's edges[edge, 2] = side + 2;
+		end;
+		
+		// handle wraparound
+		//
+		if not open and edge = edges then
+			mesh_topology's edges[edge, 2] = 2;
+		end;
+	end;
+		
+	// create faces
+	//
+	dim mesh_topology's face_indices[1 .. faces * 4];
+	for integer face = 1 .. faces do
+		integer face_index = (face - 1) * 4 + 1;
+		integer edge_index = (face - 1) * 2 + 1;
+		
+		if not reversed then
+			mesh_topology's face_indices[face_index] = edge_index;
+			mesh_topology's face_indices[face_index + 1] = edge_index + 1;
+			mesh_topology's face_indices[face_index + 2] = -(edge_index + 2);
+			mesh_topology's face_indices[face_index + 3] = 0;
+		else
+			mesh_topology's face_indices[face_index] = edge_index + 2;
+			mesh_topology's face_indices[face_index + 1] = -(edge_index + 1);
+			mesh_topology's face_indices[face_index + 2] = -edge_index;
+			mesh_topology's face_indices[face_index + 3] = 0;
+		end;
+		
+		// handle wraparound
+		//
+		if not open and face = faces then
+			if not reversed then
+				mesh_topology's face_indices[face_index + 2] = -1;
+			else
+				mesh_topology's face_indices[face_index] = 1;
+			end;
+		end;
+	end;
+	answer mesh_topology;
+end;    // get_triangle_fan_mesh_topology

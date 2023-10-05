@@ -1,0 +1,245 @@
+{***************************************************************}
+{                          pagoda.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pagoda_picture;
+
+
+include "system/3d.ores";
+include "system/bumps.ores";
+include "system/surfaces.ores";
+
+
+shape pagoda is
+    shape angle_lattice is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <1 0 0>;
+            radius = .02;
+        end;
+        cylinder with
+            end1 = <.2 0 0>;
+            end2 = <1 0 .2>;
+            radius = .02;
+        end;
+        cylinder with
+            end1 = <.4 0 0>;
+            end2 = <1 0 .4>;
+            radius = .02;
+        end;
+        cylinder with
+            end1 = <.6 0 0>;
+            end2 = <1 0 .6>;
+            radius = .02;
+        end;
+        cylinder with
+            end1 = <.8 0 0>;
+            end2 = <1 0 .8>;
+            radius = .02;
+        end;
+        cylinder with
+            end1 = <1 0 0>;
+            end2 = <1 0 1>;
+            radius = .02;
+        end;
+    end;    // angle_lattice
+
+
+    shape spiral_lattice with
+        integer level = 4;
+    is
+        if (level > 0) then
+            angle_lattice;
+            spiral_lattice with
+                level = static level - 1;
+                magnify by golden_mean;
+                rotate by -90 around <0 1 0>;
+                move to <1 0 1>;
+            end;
+        end;
+    end;    // spiral_lattice
+
+
+    shape heart_lattice is
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <1 0 0>;
+            radius = .01;
+        end;
+        cylinder with
+            end1 = <-1 0 2>;
+            end2 = <1 0 2>;
+            radius = .01;
+        end;
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <-1 0 2>;
+            radius = .01;
+        end;
+        cylinder with
+            end1 = <1 0 0>;
+            end2 = <1 0 2>;
+            radius = .01;
+        end;
+        spiral_lattice with
+            scale by golden_mean along <0 0 1>;
+            skew from <1 0 1> to <1 0 2>;
+        end;
+        spiral_lattice with
+            scale by golden_mean along <0 0 1>;
+            skew from <1 0 1> to <1 0 2>;
+            scale by -1 along <1 0 0>;
+        end;
+    end;    // heart_lattice
+
+
+    shape heart is
+        heart_lattice;
+        triangle <0 0 0> <1 0 0> <1 0 .5>;
+        triangle <0 0 0> <-1 0 0> <-1 0 .5>;
+        triangle <0 0 1.5> <-1 0 2> <1 0 2>;
+    end;    // heart
+
+
+    shape pagoda_side is
+        heart with
+            scale by 1.5 along <0 0 1>;
+            move to <0 1.732 1>;
+        end;
+
+        // roof
+        //
+        flat bumpy grey triangle <0 0 4.75> <1.2 2.08 4>
+            <-1.2 2.08 4>;
+        cylinder with
+            end1 = <0 0 4.75>;
+            end2 = <1.2 2.08 4>;
+            radius = .05;
+        end;
+        sphere with
+            center = <1.2 2.08 4>;
+            radius = .05;
+        end;
+
+        // floor
+        //
+        triangle <0 0 1> <-1 1.732 1> <1 1.732 1>;
+
+        // base
+        //
+        cylinder with
+            end1 = <-1 1.732 0>;
+            end2 = <-1 1.732 1>;
+            radius = .04;
+        end;
+        cylinder with
+            end1 = <-1 1.732 0>;
+            end2 = <1 1.732 0>;
+            radius = .04;
+        end;
+        cylinder with
+            end1 = <-1 1.732 1>;
+            end2 = <1 1.732 1>;
+            radius = .04;
+        end;
+        parallelogram with
+            vertex = <-1 1.732 0>;
+            side1 = <0 0 1>;
+            side2 = <2 0 0>;
+        end;
+
+        {
+                heart_lattice with
+                        scale by .5 along 0 0 1;
+                        move to 0 1.732 0;
+                        end;
+                }
+    end;    // pagoda_side
+
+
+    shape pagoda_unit is
+        disk with
+            material is chalk colored brown;
+            center = <0 0 0>;
+            normal = <0 0 1>;
+            radius = 2;
+        end;
+        pagoda_side;
+        pagoda_side with
+            rotate by 60 around <0 0 1>;
+        end;
+        pagoda_side with
+            rotate by 120 around <0 0 1>;
+        end;
+        pagoda_side with
+            rotate by 180 around <0 0 1>;
+        end;
+        pagoda_side with
+            rotate by 240 around <0 0 1>;
+        end;
+        pagoda_side with
+            rotate by 300 around <0 0 1>;
+        end;
+    end;    // pagoda_unit
+
+
+    shape pagoda_top is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 3>;
+            radius1 = .5;
+            radius2 = 0;
+        end;
+        heart with
+            move to <0 0 3>;
+        end;
+    end;    // pagoda_top
+
+    pagoda_unit with
+        scale by 3 along <1 0 0>;
+        scale by 3 along <0 1 0>;
+    end;
+    pagoda_unit with
+        scale by 2.5 along <1 0 0>;
+        scale by 2.5 along <0 1 0>;
+        move to <0 0 4>;
+    end;
+    pagoda_unit with
+        scale by 2 along <1 0 0>;
+        scale by 2 along <0 1 0>;
+        move to <0 0 8>;
+    end;
+    pagoda_unit with
+        scale by 1.5 along <1 0 0>;
+        scale by 1.5 along <0 1 0>;
+        move to <0 0 12>;
+    end;
+    pagoda_unit with
+        scale by 1 along <1 0 0>;
+        scale by 1 along <0 1 0>;
+        move to <0 0 16>;
+    end;
+    pagoda_top with
+        move to <0 0 20>;
+    end;
+end;    // pagoda
+
+
+picture pagoda_picture
+    args type args;
+with
+    eye = <20 -30 20>;
+    lookat = <0 0 12>;
+    width = trunc (height * .75);
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    pagoda with
+        material is wood;
+    end;
+end;    // pagoda_picture

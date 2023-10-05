@@ -1,0 +1,73 @@
+{***************************************************************}
+{                          size.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do size_anim;
+
+include "system/3d.ores";
+include "system/abs_trans.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.ores";
+include "system/snowman.omar";
+
+shape size_scene with
+	scalar time = 0;
+is
+	static material type material1 is glass colored white;
+	static material type material2 is glass colored red;
+	scalar size_factor = .75 + cos (time * 90) * .25;
+	scalar h1 = 3.6 * .5;
+	scalar h2 = h1 * size_factor;
+	snowman with
+		magnify by .5;
+		material is material1;
+		edges is silhouette;
+		render_mode is shaded_line;
+	end;
+	
+	snowman with
+		magnify by .5;
+		material is material2;
+		edges is silhouette;   
+		render_mode is shaded_line;
+	return with
+		// apply the "size" transformation
+		//
+		size of h2 along z_axis;
+	end;
+	
+	// annotations
+	//
+	mark at <0 0 0>;
+	line [<0 0 h1> <.8 0 h1>];
+	line [<0 0 h2> <.6 0 h2>];
+	arrow from <0 0 0> to <0 0 h1>;
+	double_arrow from <.6 0 0> to <.6 0 h2>;
+	double_arrow from <.8 0 0> to <.8 0 h1>;
+	overlay_text "size of <scalar x> along <enum axis> [about <vector point>];" at <0 .85 0>;
+	
+	{
+	futura_l_word "SIZE" with
+		rotate by 90 around <1 0 0>;
+		move to <-.85 0 .75>;
+	end;
+	}
+end;    // size_scene
+	
+	
+anim size_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	mouse_controlled_animated_shape size_scene;
+end;    // size_anim

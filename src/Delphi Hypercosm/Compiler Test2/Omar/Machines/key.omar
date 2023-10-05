@@ -1,0 +1,91 @@
+{***************************************************************}
+{                           key.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do key_anim;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/anims.ores";
+
+
+shape key with
+    scalar pin_heights[0 .. 5] = [ 1 1.5 1 0.25 0.5 -0.25];
+is
+    integer num_pin_heights = max pin_heights;
+    scalar vertices[0 .. ((5 * 4) + 3 - 1), 0 .. 1];
+
+    integer index = 0;
+
+    while index < num_pin_heights do
+        vertices[index * 4, 0] = (index * 2);
+        vertices[index * 4, 1] = pin_heights[index] + 0.25;
+        vertices[index * 4 + 1, 0] = (index * 2) + 0.25;
+        vertices[index * 4 + 1, 1] = pin_heights[index];
+        vertices[index * 4 + 2, 0] = (index * 2) + 0.5;
+        vertices[index * 4 + 2, 1] = pin_heights[index];
+        vertices[index * 4 + 3, 0] = (index * 2) + 0.75;
+        vertices[index * 4 + 3, 1] = pin_heights[index] + 0.25;
+        index = itself + 1;
+    end;
+
+    vertices[index * 4, 0] = index * 2;
+    vertices[index * 4, 1] = 0;
+    vertices[index * 4 + 1, 0] = index * 2;
+    vertices[index * 4 + 1, 1] = -0.5;
+    vertices[index * 4 + 2, 0] = 0;
+    vertices[index * 4 + 2, 1] = -0.5;
+
+    extrude vertices with
+        height = 1;
+    end;
+
+    extrude [
+        [ (index * 2) -0.5 ]
+        [ ((index * 2) - 0.25) -1 ]
+        [ 0 -1 ]
+        [ 0 -0.5 ]
+    ] with
+        height = 0.75;
+        material is silver;
+    end;
+
+    extrude [
+        [ ((index * 2) - 0.25) -1 ]
+        [ ((index * 2) - 0.5) -1.25 ]
+        [ 0 -1.25 ]
+        [ 0 -1 ]
+    ];
+
+    extrude [
+        [ -5 1.25 ]
+        [ -4 3 ]
+        [ -2 3 ]
+        [ -1 1.25 ]
+        [  0 1.25 ]
+        [  0 -1.25 ]
+        [ -1 -1.25 ]
+        [ -2 -3 ]
+        [ -4 -3 ]
+        [ -5 -1.25 ]
+    ];
+end;    // key
+
+
+anim key_anim with
+    eye = <-10 -25 5>;
+is
+    shape scene is
+        key with
+            material is metal colored light gold polished semi shiny;
+        end;
+    end;
+    
+    mouse_controlled_shape scene;
+end;    // key_anim

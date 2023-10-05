@@ -1,0 +1,192 @@
+{***************************************************************}
+{                          engine.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do engine_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/common_materials.ores";
+
+
+subject engine
+extends
+    timed_actor
+does
+    objective shape form with
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+has
+    public scalar rpm = 60;
+is
+    objective shape piston is
+        rod with
+            material is aluminum;
+            end1 = <0 0 0>;
+            end2 = <0 0 .6>;
+            radius = .4;
+        end;
+    end;    // piston
+
+
+    objective shape flywheel is
+        disk with
+            center = <.2 0 0>;
+            normal = <1 0 0>;
+            radius = .7;
+        end;
+        disk with
+            center = <.3 0 0>;
+            normal = <1 0 0>;
+            radius = .7;
+        end;
+        cylinder with
+            end1 = <.2 0 0>;
+            end2 = <.3 0 0>;
+            radius = .7;
+        end;
+    end;    // flywheel
+
+
+    objective shape piston_unit with
+        scalar t = 0;
+    is
+        scalar l = 2;   // piston rod length
+        scalar r = .5;  // radius of shaft
+        scalar top_of_piston;
+        scalar angle, x, y;
+        vector p1, p2;
+
+        angle = t * 360;
+        top_of_piston = ((l * l) - ((r * sin angle) * (r * sin
+            angle))) ^ .5 + (r * cos angle);
+
+        // bottom of piston
+        x = (-sin angle * r);
+        y = (cos angle * r);
+        p1 = (<0 x y>);
+        p2 = (<0 0 top_of_piston>);
+
+        // crankshaft part
+        flywheel with
+            material is titanium;
+            rotate by angle around <1 0 0>;
+        end;
+
+        // connection between piston and shaft
+        cylinder with
+            material is aluminum;
+            end1 = (<-.75 x y>);
+            end2 = (<.25 x y>);
+            radius = .1;
+        end;
+
+        // piston rod
+        cylinder with
+            material is aluminum;
+            end1 = p1;
+            end2 = p2;
+            radius = .1;
+        end;
+        piston with
+            move to (<0 0 (top_of_piston - .2)>);
+        end;
+
+        // cylinder casing
+        cylinder with
+            material is aluminum;
+            end1 = <0 0 1.5>;
+            end2 = <0 0 1.7>;
+            radius = .5;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 0 3>;
+            end2 = <0 0 2.8>;
+            radius = .5;
+        end;
+    end;    // piston_unit
+
+
+    objective shape form with
+        scalar time = 0;
+    is
+        scalar angle = -time * 360;
+
+                color = dark grey;
+        piston_unit with
+            t = time;
+            move to <-1.5 0 0>;
+        end;
+        piston_unit with
+            t = time + .75;
+            move to <-.5 0 0>;
+        end;
+        piston_unit with
+            t = time + .25;
+            move to <.5 0 0>;
+        end;
+        piston_unit with
+            t = time + .5;
+            move to <1.5 0 0>;
+        end;
+        block with
+            scale by 2 along <1 0 0>;
+            render_mode is wireframe;
+        end;
+        block with
+            scale by 2 along <1 0 0>;
+            scale by .5 along <0 1 0>;
+            scale by .25 along <0 0 1>;
+            move to <0 0 1.25>;
+            render_mode is wireframe;
+        end;
+        flywheel with
+            material is titanium;
+            rotate by -angle around <1 0 0>;
+            move to <-2.5 0 0>;
+        end;
+
+        // crankshaft
+        cylinder with
+            material is titanium;
+            end1 = <-2.3 0 0>;
+            end2 = <-4 0 0>;
+            radius = .2;
+            rotate by -angle around <1 0 0>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            material is silver;
+            t = time / 60 * rpm;
+        end;
+    end;    // instance
+end;    // engine
+
+
+anim engine_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <5 -6 .25>;
+    lookat = <0 0 1>;
+    facets = 4;
+    args check;
+is
+    engine type engine;
+
+    mouse_controlled_actor engine;
+end;    // engine_anim

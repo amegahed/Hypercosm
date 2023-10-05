@@ -1,0 +1,85 @@
+do smooth_scale_controller_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+
+
+shape Arrow01 is
+	translated_3ds_sphere with
+		radius = 10;
+		segs = 16;
+		move to <-30 0 0>;
+	end;
+	translated_3ds_cylinder with
+		height = 50;
+		radius = 5;
+		move to <0 0 -25>;
+		rotate by 90 around <0 1 0>;
+	end;
+	translated_3ds_cone with		
+	    radius1 = 10;
+	    radius2 = 0;
+	    height = 20;
+		rotate by 90 around <0 1 0>;
+		move to <25 0 0>;
+	end;
+end;	// Arrow
+
+
+shape Axes01 is
+	Arrow01 with
+		color = red;
+	end;
+	Arrow01 with
+		rotate by 90 around <0 0 1>;
+		color = green;
+	end;
+	Arrow01 with
+		rotate by -90 around <0 1 0>;
+		color = blue;
+	end;
+end;	// Axes01
+
+
+translated_3ds_smooth_scale_controller type Axes01_Controller of [
+	unit_translated_3ds_scale_value 
+	(new translated_3ds_scale_value of <.5 1 1>)
+	(new translated_3ds_scale_value of <1 .5 1>)
+	(new translated_3ds_scale_value of <1 1 .5>)
+	unit_translated_3ds_scale_value
+] at converted_3ds_ticks_array_from_frames_array of [
+	0 25 50 75 100
+];	// Axes01_Controller
+
+
+shape Scene with
+	scalar time = 0;
+is
+	Axes01 with
+		Axes01_Controller apply to trans at (converted_3ds_ticks_from_seconds of time);
+	end;
+end;	// Scene
+
+
+anim smooth_scale_controller_anim with
+	eye = <0 -200 50>;
+	lookat = <0 0 0>;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_animated_shape Scene in environment 
+		titled "3DS Smooth Scale Controller"
+	with
+		duration = converted_3ds_seconds_from_frames of 100;
+	end;
+end;	// smooth_scale_controller_anim

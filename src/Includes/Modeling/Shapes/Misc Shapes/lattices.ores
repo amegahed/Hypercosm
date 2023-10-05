@@ -1,0 +1,303 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            lattices.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains various forms of shape definitions for         }
+{       modelling lattice shapes.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/standard_colors.ores";
+include "system/transformations.ores";
+
+shape line_lattice
+	vector grid[, , ];
+with
+	boolean x_edges is true;
+	boolean y_edges is true;
+	boolean z_edges is true;
+	color type x_edge_color = red;
+	color type y_edge_color = green;
+	color type z_edge_color = blue;
+is
+	integer xmin = min grid[, ], xmax = max grid[, ];
+	integer ymin = min grid[], ymax = max grid[];
+	integer zmin = min grid, zmax = max grid;
+	vector x_vertices[xmin..xmax];
+	vector y_vertices[ymin..ymax];
+	vector z_vertices[zmin..zmax];
+
+	// lines in x direction
+	//
+	if x_edges then
+		color = x_edge_color;
+		for integer iz = zmin..zmax do
+			for integer iy = ymin..ymax do
+				x_vertices = grid[iz, iy, ..];
+				line x_vertices;
+			end;
+		end;
+	end;
+
+	// lines in y direction
+	//
+	if y_edges then
+		color = y_edge_color;
+		for integer iz = zmin..zmax do
+			for integer ix = xmin..xmax do
+				y_vertices = grid[iz, .., ix];
+				line y_vertices;
+			end;
+		end;
+	end;
+
+	// lines in z direction
+	//
+	if z_edges then
+		color = z_edge_color;
+		for integer ix = xmin..xmax do
+			for integer iy = ymin..ymax do
+				z_vertices = grid[.., iy, ix];
+				line z_vertices;
+			end;
+		end;
+	end;
+end;    // line_lattice
+
+shape line_lattice2
+	vector grid[, ];
+with
+	boolean x_edges is true;
+	boolean y_edges is true;
+	color type x_edge_color = red;
+	color type y_edge_color = blue;
+is
+	integer xmin = min grid[], xmax = max grid[];
+	integer ymin = min grid, ymax = max grid;
+	vector x_vertices[xmin..xmax];
+	vector y_vertices[ymin..ymax];
+
+	// lines in x direction
+	//
+	if x_edges then
+		color = x_edge_color;
+		for integer iy = ymin..ymax do
+			x_vertices = grid[iy, ..];
+			line x_vertices;
+		end;
+	end;
+
+	// lines in y direction
+	//
+	if y_edges then
+		color = y_edge_color;
+		for integer ix = xmin..xmax do
+			y_vertices = grid[.., ix];
+			line y_vertices;
+		end;
+	end;
+end;    // line_lattice2
+
+shape edge_lattice
+	vector grid[, , ];
+with
+	shape x_edge
+		from vector end1;
+		to vector end2;
+	end;    // x_edge
+	shape y_edge
+		from vector end1;
+		to vector end2;
+	end;    // y_edge
+	shape z_edge
+		from vector end1;
+		to vector end2;
+	end;    // z_edge
+is
+	integer xmin, xmax;
+	integer ymin, ymax;
+	integer zmin, zmax;
+	xmin = min grid[, ];
+	xmax = max grid[, ];
+	ymin = min grid[];
+	ymax = max grid[];
+	zmin = min grid;
+	zmax = max grid;
+
+	// edges in x direction
+	//
+	if some x_edge then
+		for integer iz = zmin..zmax do
+			for integer iy = ymin..ymax do
+				for integer ix = xmin..(xmax - 1) do
+					vector point1 = grid[iz, iy, ix];
+					vector point2 = grid[iz, iy, ix + 1];
+					x_edge from point1 to point2;
+				end;
+			end;
+		end;
+	end;
+
+	// edges in y direction
+	//
+	if some y_edge then
+		for integer iz = zmin..zmax do
+			for integer ix = xmin..xmax do
+				for integer iy = ymin..(ymax - 1) do
+					vector point1 = grid[iz, iy, ix];
+					vector point2 = grid[iz, iy + 1, ix];
+					y_edge from point1 to point2;
+				end;
+			end;
+		end;
+	end;
+
+	// edges in z direction
+	//
+	if some z_edge then
+		for integer ix = xmin..xmax do
+			for integer iy = ymin..ymax do
+				for integer iz = zmin..(zmax - 1) do
+					vector point1 = grid[iz, iy, ix];
+					vector point2 = grid[iz + 1, iy, ix];
+					z_edge from point1 to point2;
+				end;
+			end;
+		end;
+	end;
+end;    // edge_lattice
+
+shape edge_lattice2
+	vector grid[, ];
+with
+	shape x_edge
+		from vector end1;
+		to vector end2;
+	end;    // x_edge
+	shape y_edge
+		from vector end1;
+		to vector end2;
+	end;    // y_edge
+is
+	integer xmin, xmax;
+	integer ymin, ymax;
+	xmin = min grid[];
+	xmax = max grid[];
+	ymin = min grid;
+	ymax = max grid;
+
+	// edges in x direction
+	//
+	if some x_edge then
+		for integer iy = ymin..ymax do
+			for integer ix = xmin..(xmax - 1) do
+				vector point1 = grid[iy, ix];
+				vector point2 = grid[iy, ix + 1];
+				x_edge from point1 to point2;
+			end;
+		end;
+	end;
+
+	// edges in y direction
+	//
+	if some y_edge then
+		for integer ix = xmin..xmax do
+			for integer iy = ymin..(ymax - 1) do
+				vector point1 = grid[iy, ix];
+				vector point2 = grid[iy + 1, ix];
+				y_edge from point1 to point2;
+			end;
+		end;
+	end;
+end;    // edge_lattice2
+
+shape vertex_lattice
+	vector grid[, , ];
+with
+	shape vertex;
+is
+	if some vertex then
+		for each vector point in grid do
+			vertex with
+				move to point;
+			end;
+		end;
+	end;
+end;    // vertex_lattice
+
+shape vertex_lattice2
+	vector grid[, ];
+with
+	shape vertex;
+is
+	if some vertex then
+		for each vector point in grid do
+			vertex with
+				move to point;
+			end;
+		end;
+	end;
+end;    // vertex_lattice2
+
+shape shape_lattice
+	vector grid[, , ];
+with
+	shape vertex;
+	shape x_edge
+		from vector end1;
+		to vector end2;
+	end;    // x_edge
+	shape y_edge
+		from vector end1;
+		to vector end2;
+	end;    // y_edge
+	shape z_edge
+		from vector end1;
+		to vector end2;
+	end;    // z_edge
+is
+	// make lattice of vertices
+	//
+	vertex_lattice grid with
+		vertex does static vertex;
+	end;
+
+	// make lattice of edges
+	//
+	edge_lattice grid with
+		x_edge does static x_edge;
+		y_edge does static y_edge;
+		z_edge does static z_edge;
+	end;
+end;    // shape_lattice
+
+shape shape_lattice2
+	vector grid[, ];
+with
+	shape vertex;
+	shape x_edge
+		from vector end1;
+		to vector end2;
+	end;    // x_edge
+	shape y_edge
+		from vector end1;
+		to vector end2;
+	end;    // y_edge
+is
+	// make lattice of vertices
+	//
+	vertex_lattice2 grid with
+		vertex does static vertex;
+	end;
+
+	// make lattice of edges
+	//
+	edge_lattice2 grid with
+		x_edge does static x_edge;
+		y_edge does static y_edge;
+	end;
+end;    // shape_lattice2

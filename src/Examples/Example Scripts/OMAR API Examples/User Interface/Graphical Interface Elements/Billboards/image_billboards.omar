@@ -1,0 +1,50 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        image_billboards.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of image billboards.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/image_billboard.ores";
+
+anim example with
+	eye = <2 -4 2>;
+is
+	shape scene is
+		parallelogram with
+			material is plastic poster "hyperlogo.jpg";
+		end;
+		cylinder with
+			end1 = <0 0 0>;
+			end2 = <0 0 1>;
+			radius = .5;
+		end;
+	end;    // scene
+	
+	image_billboard type billboard1 poster "markerA.png" at <-1 -1 0> with
+		vertical_alignment is bottom;
+	end;
+	image_billboard type billboard2 poster "markerB.png" at <-1 1 0> with
+		vertical_alignment is bottom;
+	end;
+	image_billboard type billboard3 poster "markerC.png" at <1 1 0> with
+		vertical_alignment is bottom;
+	end;
+	image_billboard type billboard4 poster "markerD.png" at <1 -1 0> with
+		vertical_alignment is bottom;
+	end;
+	
+	component type components[] is [billboard1 billboard2 billboard3 billboard4];
+	interface_underlay is new overlay_component_group containing components;
+	interface_overlay is (new scaled_sprite poster "white-frame.png");
+		
+	mouse_controlled_shape scene about <0 0 0>;
+end;    // example

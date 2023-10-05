@@ -1,0 +1,176 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          group_instance.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of group instances in the         }
+{       scene graph.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "object_instance.ores";
+include "object_group.ores";
+
+subject group_instance
+extends 
+	scene_searchable object_instance
+does
+	// constructor
+	//
+	verb new
+		of object_group type group;
+		named string type name is none;
+	with
+		trans type trans;
+		material type material is none;
+	end;
+	
+	// querying methods
+	//
+	object_group type question get_group;
+	
+	// searching methods
+	//
+	object_instance type question get_element_by_name
+		string type name;
+	end;
+	object_instance type[] question get_elements_by_name
+		string type name;
+	end;
+	object_instance type question get_element_by_names
+		string type names[];
+	end;
+	object_instance type[] question get_elements_by_names
+		string type names[];
+	end;
+	 
+	// rendering methods
+	//
+	shape instance;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from group_instance type source;
+	end;
+	group_instance type question clone;
+	
+	// printable methods
+	//
+	string type question to_string;
+has
+	// attributes 
+	//
+	object_group type group is none;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of object_group type group;
+		named string type name is none;
+	with
+		trans type trans;
+		material type material is none;
+	is
+		// call superclass constructor
+		//
+		object_instance new named name with
+			trans = static trans;
+			material is static material;
+		end;
+		
+		// set attributes
+		//
+		with group_instance do
+			its group is group;
+		end;
+	end;    // new
+	
+	//
+	// querying methods
+	//
+	
+	
+	object_group type question get_group is
+		answer group;
+	end;    // get_group
+	
+ 
+	object_instance type question get_element_by_name
+		string type name;
+	is
+		answer group get_element_by_name name;
+	end;    // get_element_by_name
+	
+	object_instance type[] question get_elements_by_name
+		string type name;
+	is
+		answer group get_elements_by_name name;
+	end;    // get_elements_by_name
+	
+		
+	object_instance type question get_element_by_names
+		string type names[];
+	is
+		answer group get_element_by_names names;
+	end;    // get_element_by_names
+	
+	object_instance type[] question get_elements_by_names
+		string type names[];
+	is
+		answer group get_elements_by_names names;
+	end;    // get_elements_by_names
+	
+		   
+	//    
+	// rendering methods
+	//
+	
+	
+	shape instance is
+		group instance with
+			global trans = trans;
+			global material is material;
+		end;
+	end;    // instance
+	
+	//   
+	// copying and cloning methods
+	//
+	
+	   
+	verb copy 
+		from group_instance type source;
+	is
+		// call superclass method
+		//
+		object_instance static copy from source;
+			
+		// copy attributes of source
+		//
+		group is source's group clone;      
+	end;    // copy
+	
+	
+	group_instance type question clone is
+		group_instance type instance2 of none;
+		instance2 copy from group_instance;
+		answer instance2;
+	end;    // clone
+	
+	//    
+	// printable methods
+	//
+	
+	
+	string type question to_string is
+		answer "group instance";
+	end;    // to_string
+end;    // group_instance
+

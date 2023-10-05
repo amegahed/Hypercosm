@@ -1,0 +1,39 @@
+do tactile_block_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/meshes.ores";
+include "system/grids.ores";
+
+scalar myscale = 3;
+
+anim tactile_block_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape triangle_shape is
+        write "making triangle", ;
+        triangle <0 0 0> <0 2 0> <2 0 0> with
+            move to <-1 0 0.05>;
+            magnify by myscale;
+            material is wood;
+        end;
+    end;    // triangle_shape
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape triangle_shape titled "Tactile Triangle" in floor;
+end;    // tactile_block_anim

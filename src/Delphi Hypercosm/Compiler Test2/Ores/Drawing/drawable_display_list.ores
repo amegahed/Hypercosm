@@ -1,0 +1,39 @@
+{***************************************************************}
+{                     renderable_display_list.ores        		}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a renderable graphic			}
+{		entity.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/singly_linked_lists.ores";
+include "system/drawing.ores";
+
+
+subject drawable_display_list
+extends
+	drawable singly_linked_list
+does
+	// drawable method
+	//
+	verb draw;
+is
+	//		
+	// renderable method
+	//
+	
+	
+	verb draw is
+    	singly_linked_node type follow is head;
+		while some follow do
+			object type element is follow get;
+			(drawable type element) draw;
+			follow is its next;
+		end;
+	end;	// draw
+end;	// drawable_display_list

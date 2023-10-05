@@ -1,0 +1,44 @@
+do interface_test;
+
+
+interface interface1
+does
+	verb verb1;
+end;	// interface1
+
+
+subject subject1
+implements
+	interface1
+does
+	verb verb1;
+is
+	verb verb1 is
+		write "subject1 verb1", ;
+	end;
+end;	// subject1
+
+
+subject subject2
+extends
+	subject1
+implements
+	interface1
+does
+	verb verb1;
+is
+	verb verb1 is
+		write "subject2 verb1", ;
+	end;	// verb1
+end;	// subject2
+
+
+verb interface_test is
+	subject2 type subjectx;
+	
+	if interface1 type subjectx then
+		(interface1 type subjectx) verb1;
+	end;
+	
+	write "done.", ;
+end;	// interface_test

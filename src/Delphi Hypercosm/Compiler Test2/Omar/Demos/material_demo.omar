@@ -1,0 +1,242 @@
+{***************************************************************}
+{                       material_demo.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do material_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/beveled_slider.ores";
+include "system/native_text.ores";
+
+
+// This animation illustrates the modifiable properties of materials:
+// diffuse color, specular color, specular power, emissive color, and
+// ambient color.
+
+
+color type curr_diffuse_color = grey;
+color type curr_specular_color = black;
+color type curr_ambient_color = curr_diffuse_color;
+color type curr_emissive_color = black;
+scalar curr_specular_power = 0;
+scalar red_factor = .5;
+scalar green_factor = .5;
+scalar blue_factor = .5;
+integer property_selected = 1;
+    // 1 = diffuse
+    // 2 = specular
+    // 3 = ambient
+    // 4 = emissive
+    // 5 = specular power
+boolean clicked_this_frame is false;
+
+
+// sliders to control color
+//
+beveled_slider type red_control controls red_factor from 0 to 1 with
+    end1 = <-2.8 0 0>;
+    end2 = <2.8 0 0>;
+    radius = .5;
+    bar_material is plastic colored red;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type green_control controls green_factor from 0 to 1 with
+    end1 = <-2.8 0 0>;
+    end2 = <2.8 0 0>;
+    radius = .5;
+    bar_material is plastic colored green;
+    knob_material is plastic colored grey;
+end;
+
+beveled_slider type blue_control controls blue_factor from 0 to 1 with
+    end1 = <-2.8 0 0>;
+    end2 = <2.8 0 0>;
+    radius = .5;
+    bar_material is plastic colored blue;
+    knob_material is plastic colored grey;
+end;
+
+
+picture scene
+is
+    // In each frame we re-define the current material to keep it updated
+    // with the slider data
+    //
+    material type curr_material with
+        diffuse = curr_diffuse_color;
+        specular = curr_specular_color;
+        ambient = curr_ambient_color;
+        emissive = curr_emissive_color;
+        specular_power = curr_specular_power;
+    end;
+        
+    // lighting
+    //
+    default_lights;
+    
+    // the three color controls and their labels
+    //
+    if property_selected < 5 then
+        overlay_text "RED" at <-.6 -.45 0> with
+            size = 30;
+            font_family is "arial";
+        end;
+    end;
+    red_control instance with
+        move to <-6 2 -5>;
+    end;
+    
+    if property_selected < 5 then
+        overlay_text "GREEN" at <0 -.45 0> with
+            size = 30;
+            font_family is "arial";
+        end;
+        green_control instance with
+            move to <0 2 -5>;
+        end;
+        
+        overlay_text "BLUE" at <.6 -.45 0> with
+            size = 30;
+            font_family is "arial";
+        end;
+        blue_control instance with
+            move to <6 2 -5>;
+        end;
+    end;
+    
+    // draw the objects whose materials are being altered
+    //
+    sphere with
+        radius = 1.5;
+        rotate by get_seconds * 50 around <0 0 1>;
+        move to <5 0 2>;
+        material is curr_material;
+    end;
+    block with
+        magnify by 1.5;
+        rotate by get_seconds * 50 around <0 0 1>;
+        move to <1 0 2>;
+        material is curr_material;
+    end;
+    
+    for integer i = 1..5 do
+        // button shapes
+        sphere with
+            center = <-8 0 (6 - i)>;
+            radius = .25;
+            if property_selected = i then
+                material is constant_color green;
+            else                              
+                material is constant_color red;
+            end;
+        end;
+        
+        // button press detection
+        if clicked_this_frame and property_selected <> i and sphere_touched with
+            center = <-8 0 (6 - i)>;
+            radius = .25;
+        then
+            // if a new button was clicked, update the slider(s)
+            property_selected = i;
+            if i = 1 then
+                red_factor = curr_diffuse_color.x;
+                green_factor = curr_diffuse_color.y;
+                blue_factor = curr_diffuse_color.z;
+            elseif i = 2 then
+                red_factor = curr_specular_color.x;
+                green_factor = curr_specular_color.y;
+                blue_factor = curr_specular_color.z;
+            elseif i = 3 then
+                red_factor = curr_ambient_color.x;
+                green_factor = curr_ambient_color.y;
+                blue_factor = curr_ambient_color.z;
+            elseif i = 4 then
+                red_factor = curr_emissive_color.x;
+                green_factor = curr_emissive_color.y;
+                blue_factor = curr_emissive_color.z;
+            elseif i = 5 then
+                red_factor = curr_specular_power / 30;
+            else
+                write "ERROR", ;
+                exit;
+            end;
+        end;
+    end;
+    
+    // update the current material based on which property is selected
+    //
+    if property_selected = 1 then                   
+        curr_diffuse_color = <red_factor green_factor blue_factor>;
+    elseif property_selected = 2 then
+        curr_specular_color = <red_factor green_factor blue_factor>;
+    elseif property_selected = 3 then
+        curr_ambient_color = <red_factor green_factor blue_factor>;
+    elseif property_selected = 4 then
+        curr_emissive_color = <red_factor green_factor blue_factor>;
+    elseif property_selected = 5 then
+        curr_specular_power = red_factor * 30;
+    else
+        write "ERROR", ;
+        exit;
+    end;
+    
+    // button labels
+    //
+    overlay_text "Diffuse Color" at <-.75 .75 0> with
+        h_align is left;
+        font_family is "arial";
+        size = 20;
+    end; 
+    overlay_text "Specular Color" at <-.75 .6 0> with
+        h_align is left;
+        font_family is "arial";
+        size = 20;
+    end;
+    overlay_text "Ambient Color" at <-.75 .45 0> with
+        h_align is left;
+        font_family is "arial";
+        size = 20;
+    end;
+    overlay_text "Emissive Color" at <-.75 .3 0> with
+        h_align is left;
+        font_family is "arial";
+        size = 20;
+    end;
+    overlay_text "Specular Power" at <-.75 .15 0> with
+        h_align is left;
+        font_family is "arial";
+        size = 20;
+    end;
+end;    // scene
+
+
+anim material_demo_anim with
+    eye = <0 -20 0>;
+    double_buffer is on;
+    facets = 8;
+is
+    click type my_click;
+        
+    while true do   
+        // detect all mouse clicks each frame
+        //
+        clicked_this_frame is false;
+        my_click is get_click;
+        while some my_click do
+            if my_click is down or my_click is double_click then
+                clicked_this_frame is true;
+            end;
+            my_click is get_click;
+        end;
+    
+        scene;
+    end;
+end;    // material_demo_anim

@@ -1,0 +1,54 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           comparisons.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains several standard comparison procedures         }
+{       for scalars.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+scalar question smaller
+	of scalar s1;
+	and scalar s2;
+is
+	if s1 < s2 then
+		answer s1;
+	else
+		answer s2;
+	end;
+end;    // smaller
+
+scalar question larger
+	of scalar s1;
+	and scalar s2;
+is
+	if s1 > s2 then
+		answer s1;
+	else
+		answer s2;
+	end;
+end;    // larger
+
+scalar question smallest
+	of scalar scalars[];
+is
+	scalar s = scalars[min scalars];
+	for integer counter = min scalars + 1 .. max scalars do
+		s = smaller of s and scalars[counter];
+	end;
+	answer s;
+end;    // smallest
+
+scalar question largest
+	of scalar scalars[];
+is
+	scalar s = scalars[min scalars];
+	for integer counter = min scalars + 1 .. max scalars do
+		s = larger of s and scalars[counter];
+	end;
+	answer s;
+end;    // largest

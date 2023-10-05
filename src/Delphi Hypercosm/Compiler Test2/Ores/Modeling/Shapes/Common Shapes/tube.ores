@@ -1,0 +1,119 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     tube.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		tube. A "tube" is basically a thick cylinder, like 		}
+{		a roll of toilet paper. A tube has an inner cylinder	}
+{		and an outer cylinder, and is capped at its ends.		}
+{		A tube sweep (created by resetting umin and/or umax)	}
+{		can be used to make a half-pipe, or a 3D letter "C".	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+
+
+shape tube with
+    vector end1 = <0 0 -1>;
+    vector end2 = <0 0 1>;
+    scalar inner_radius = 0;
+    scalar outer_radius = 1;
+    scalar umin = 0, umax = 360;
+    material type inner_material is none;
+    material type outer_material is none;
+is
+    vector axis = end2 - end1;
+    vector zero_sweep;
+
+    if axis.z = 0 then
+        if axis.y = 0 then
+            axis = <-axis.x 0 0> parallel (end2 - end1);
+        else
+            axis = <0 -axis.y 0> parallel (end2 - end1);
+        end;
+    else
+        axis = <0 0 1> parallel (end2 - end1);
+    end;
+    axis = normalized axis;
+
+    zero_sweep = <1 0 0> perpendicular axis;
+    if zero_sweep.x = 0 then
+        zero_sweep = <0 1 0> perpendicular axis;
+    end;
+    zero_sweep = normalized zero_sweep;
+
+
+    cylinder with
+        radius = outer_radius;
+        end1 = static end1;
+        end2 = static end2;
+        umin = static umin;
+        umax = static umax;
+        material is outer_material;
+    end;
+
+    if inner_radius = 0 then
+        disk with
+            center = end1;
+            normal = axis;
+            umin = static umin;
+            umax = static umax;
+            radius = outer_radius;
+        end;
+        disk with
+            center = end2;
+            normal = axis;
+            umin = static umin;
+            umax = static umax;
+            radius = outer_radius;
+        end;
+    else
+        cylinder with
+            radius = inner_radius;
+            end1 = static end1;
+            end2 = static end2;
+            umin = static umin;
+            umax = static umax;
+            material is inner_material;
+        end;
+        ring with
+            center = end1;
+            normal = axis;
+            inner_radius = static inner_radius;
+            outer_radius = static outer_radius;
+            umin = static umin;
+            umax = static umax;
+        end;
+        ring with
+            center = end2;
+            normal = axis;
+            inner_radius = static inner_radius;
+            outer_radius = static outer_radius;
+            umin = static umin;
+            umax = static umax;
+        end;
+    end;
+
+    // sweep capping faces
+    //
+    if umax - umin <> 360 then
+        scalar width = outer_radius - inner_radius;
+
+        parallelogram with
+            vertex = end1 + (rotated_vector zero_sweep by umin around axis) * inner_radius;
+            side1 = end2 - end1;
+            side2 = (rotated_vector zero_sweep by umin around axis) * width;
+        end;
+        parallelogram with
+            vertex = end1 + (rotated_vector zero_sweep by umax around axis) * inner_radius;
+            side1 = end2 - end1;
+            side2 = (rotated_vector zero_sweep by umax around axis) * width;
+        end;
+    end;
+end;    // tube

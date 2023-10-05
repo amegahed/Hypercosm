@@ -1,0 +1,48 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        raster_billboards.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of raster billboards.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/raster_billboard.ores";
+
+anim example with
+	eye = <2 -4 2>;
+is
+	shape scene is
+		parallelogram with
+			material is plastic poster "hyperlogo.jpg";
+		end;
+	end;    // scene
+	raster_billboard type billboard1 poster "hyperlogo.jpg" at <-1 -1 0> with
+		width = 32;
+		height = 32;
+	end;
+	raster_billboard type billboard2 poster "hyperlogo.jpg" at <-1 1 0> with
+		width = 48;
+		height = 48;
+	end;
+	raster_billboard type billboard3 poster "hyperlogo.jpg" at <1 1 0> with
+		width = 64;
+		height = 64;
+	end;
+	raster_billboard type billboard4 poster "hyperlogo.jpg" at <1 -1 0> with
+		width = 96;
+		height = 96;
+	end;
+	
+	component type components[] is [billboard1 billboard2 billboard3 billboard4];
+	interface_underlay is new overlay_component_group containing components;
+	interface_overlay is (new scaled_sprite poster "white-frame.png");
+		
+	mouse_controlled_shape scene about <0 0 0>;
+end;    // example

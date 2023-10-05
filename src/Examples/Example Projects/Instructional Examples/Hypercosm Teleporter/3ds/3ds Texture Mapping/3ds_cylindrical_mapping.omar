@@ -1,0 +1,158 @@
+do cylindrical_mapping_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_box.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cylindrical_mapping.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape cylindrical_mapping_shapes with
+	translated_3ds_xyz_alignment type alignment is z;
+is
+	translated_3ds_sphere with		
+	    radius = 25;
+	    segments = 24;
+	    gen_mapping_coords is true;
+		translated_3ds_cylindrical_mapping with
+			length = 50; width = 50; height = 50;
+			u_tile = 1; v_tile = 1; w_tile = 1;
+			u_flip is false; v_flip is false; w_flip is false;
+			alignment is static alignment;
+			with trans do
+				its origin = <0 0 0>;
+				its x_axis = <1 0 0>;
+				its y_axis = <0 1 0>;
+				its z_axis = <0 0 1>;
+			end;
+		end;
+		
+	    move to <-75 0 25>;
+	end;
+	
+	translated_3ds_box with
+	    length = 50;
+	    width = 50;
+	    height = 50;
+	    length_segments = 4;
+	    width_segments = 4;
+	    height_segments = 4;
+	    gen_mapping_coords is true;
+	    
+		translated_3ds_cylindrical_mapping with
+			length = 50; width = 50; height = 50;
+			u_tile = 1; v_tile = 1; w_tile = 1;
+			u_flip is false; v_flip is false; w_flip is false;
+			alignment is static alignment;
+			with trans do
+				its origin = <0 0 25>;
+				its x_axis = <1 0 0>;
+				its y_axis = <0 1 0>;
+				its z_axis = <0 0 1>;
+			end;
+		end;   
+	end;
+	translated_3ds_cylinder with		
+	    radius = 25;
+	    height = 50;
+	    height_segments = 4;
+	    cap_segments = 4;
+	    gen_mapping_coords is true;
+	    
+		translated_3ds_cylindrical_mapping with
+			length = 50; width = 50; height = 50;
+			u_tile = 1; v_tile = 1; w_tile = 1;
+			u_flip is false; v_flip is false; w_flip is false;
+			alignment is static alignment;
+			with trans do
+				its origin = <0 0 25>;
+				its x_axis = <1 0 0>;
+				its y_axis = <0 1 0>;
+				its z_axis = <0 0 1>;
+			end;
+		end;
+		
+		move to <75 0 0>;
+	end;
+end;	// cylindrical_mapping_shapes
+	
+	
+shape cylindrical_mapping_scene with
+    scalar time = 0;
+is
+    const scalar delay = 5;
+	static material type hyper_material is plastic poster "hyper.jpg";
+	static material type tie_dye_material is plastic poster "tie_dye.jpg";
+	static material type flag_material is plastic poster "flag.gif";
+    scalar material_index = trunc (time / delay) mod 3;
+	static shape scene is
+		cylindrical_mapping_shapes with
+			alignment is z;
+			move to <0 -75 0>;
+		end;
+		cylindrical_mapping_shapes with
+			alignment is y;
+			move to <0 0 0>;
+		end;
+		cylindrical_mapping_shapes with
+			alignment is x;
+			move to <0 75 0>;
+		end;
+	end;	// scene
+	 
+    static shape labels is
+    	futura_l_word "Z aligned" with
+    		size = 25;
+    		rotate by 90 around <1 0 0>;
+    		move to <0 -75 75>;
+    	end;
+    	futura_l_word "Y aligned" with
+    		size = 25;
+    		rotate by 90 around <1 0 0>;
+    		move to <0 0 75>;
+    	end;
+    	futura_l_word "X aligned" with
+    		size = 25;
+    		rotate by 90 around <1 0 0>;
+    		move to <0 75 75>;
+    	end;
+    end;	// labels
+	scene with 	     
+        // select material based on time
+        //
+    	if material_index = 0 then
+    	    material is hyper_material;
+    	elseif material_index = 1 then
+    	    material is tie_dye_material;
+    	elseif material_index = 2 then
+    	    material is flag_material;
+    	end;
+	end;
+	labels;    
+end;    // cylindrical_mapping_scene
+
+anim cylindrical_mapping_anim
+    args type args;
+with
+    eye = <100 -100 100>;
+    lookat = <0 0 -10>;
+	field_of_view = 30;
+    background_name is none;
+    background = light grey;
+    args check;
+is	
+	shape environment is
+		plane with
+			magnify by 150;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_animated_shape cylindrical_mapping_scene
+		within new static_shape of environment 
+		titled "3DS Cylindrical Mapping"
+	with
+		auto_zoom is on;
+	end;
+end;	// cylindrical_mapping_anim

@@ -1,0 +1,128 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	   		queues.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a collection of useful queue utilties.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/lists.ores";
+include "system/queueing.ores";
+
+
+{***************************************************************}
+{       queues are lists with both a head and a tail -          }
+{       they allow elements to be added to the tail and         }
+{       removed from the head (in first-in, first-out           }
+{       (FIFO) order)                                           }
+{***************************************************************}
+
+
+abstract subject queue
+extends
+    queueable list
+does
+    // queue construction methods
+    //
+    abstract verb add_last
+    	object type element;
+    end;
+    verb append
+    	object type element;
+    	to list_end type list_end is tail;
+    end;
+    
+    // queue querying methods
+    //    
+    abstract object type question get_last;
+    object type question element
+    	at list_end type list_end is tail;
+    end;
+    
+    // queueing methods
+    //
+    verb enqueue
+        object type element;
+    end;
+    object type question dequeue;
+    
+    // collection construction methods
+    //
+    verb add
+        object type element;
+    end;
+is
+	//
+    // queue construction methods
+    //
+    
+    
+    verb append
+    	object type element;
+    	to list_end type list_end is tail;
+    is
+    	when list_end is
+    		head:
+    			add_first element;
+    		end;
+    		
+    		tail:
+    			add_last element;
+    		end;
+    	end;
+    end;	// insert
+        
+
+	//    
+    // queue querying methods
+    // 
+    
+           
+    object type question element
+    	at list_end type list_end is tail;
+    is
+    	when list_end is
+    		head:
+    			answer get_first;
+    		end;
+    		
+    		tail:
+    			answer get_last;
+    		end;
+    	end;
+    end;	// element
+    
+
+	//    
+    // queueing methods
+    //
+    
+    
+    verb enqueue 
+        object type element;
+    is
+        add_last element;
+    end;    // enqueue
+    
+    
+    object type question dequeue is
+        answer removed_first;
+    end;    // dequeue  
+    
+
+	//    
+    // collection construction methods
+    //
+    
+    
+    verb add
+        object type element;
+    is
+        add_last element;
+    end; 
+end;    // queue

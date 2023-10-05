@@ -1,0 +1,268 @@
+{***************************************************************}
+{                          flying_car.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do car_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/bumps.ores";
+include "system/roadster.omar";
+
+
+subject flying_car
+extends
+    timed_actor
+does
+    objective shape jet_engine_pod;
+    objective shape bat_symbol;
+    objective shape form with
+        scalar t = 0;
+        scalar hood_angle = 0;
+        scalar flap_angle = 0;
+    end;    // form
+
+    shape instance;
+has
+    public scalar speed = 10;
+    public scalar hood_flaps_per_sec = 1 / 5;
+    public scalar wing_flaps_per_sec = 1 / 3;
+is
+    objective shape bat_symbol is
+        polygon [<0 40 0> <4 40 0> <8 38 0> <15 44 0> <10 23 0>
+            <20 13 0> <35 19 0> <45 37 0> <55 25 0> <68 7 0>
+            <70 -11 0> <53 -33 0> <48 -13 0> <35 -23 0>
+            <25 -11 0> <8 -18 0> <0 -29 0> <-8 -18 0>
+            <-25 -11 0> <-35 -23 0> <-48 -13 0> <-53 -33 0>
+            <-70 -11 0> <-68 7 0> <-55 25 0> <-45 37 0>
+            <-35 19 0> <-20 13 0> <-10 23 0> <-15 44 0>
+            <-8 38 0> <-4 40 0>];
+        ring with
+            center = <0 0 0>;
+            normal = <0 0 1>;
+            inner_radius = 70;
+            outer_radius = 80;
+            stretch by 1.2 along <1 0 0>;
+        end;
+    end;    // bat_symbol
+
+
+    objective shape outer_wing is
+        polygon2d [[0 0] [0 32] [4 50] [12 47] [30 34] [40 16]
+            [32 -8] [22 8] [12 -5]]
+        with
+            x_axis = <1 3 -5>;
+            y_axis = <-3 1 0>;
+        end;
+    end;    // outer_wing
+
+
+    objective shape wing is
+        polygon [<-20 0 0> <-10 10 0> <-15 25 0> <15 15 0>
+            <20 0 0>];
+        outer_wing with
+            move to <15 15 0>;
+        end;
+    end;    // wing
+
+
+    objective shape wings with
+        scalar flap_angle = 0;
+    is
+        wing with
+            rotate by flap_angle around <1 0 0>;
+            move to <0 30 0>;
+        end;    // right wing
+        wing with
+            rotate by flap_angle around <1 0 0>;
+            scale by -1 along <0 1 0>;
+            move to <0 -30 0>;
+        end;    // left wing
+    end;    // wings
+
+
+    objective shape jet_engine with
+        integer blades = 24;
+    is
+        shape fan_blade is
+            parallelogram with
+                material is silver;
+                scale by .5 along <1 0 0>;
+                scale by 4 along <0 1 0>;
+                rotate by 45 around <0 1 0>;
+                move to <0 5 0>;
+            end;
+        end;    // fan_blade
+
+
+        for integer counter = 1..blades do
+            fan_blade with
+                rotate by (counter * (360 / blades))
+                    around <1 0 0>;
+                move to <-9 0 0>;
+            end;
+        end;
+        cylinder with
+            end1 = <-10 0 0>;
+            end2 = <10 0 0>;
+            radius = 10;
+        end;
+        cone with
+            end1 = <-10 0 0>;
+            end2 = <-15 0 0>;
+            radius1 = 10;
+            radius2 = 8;
+        end;
+        paraboloid with
+            material is silver;
+            top = <-16 0 0>;
+            base = <-10 0 0>;
+            radius = 5;
+        end;
+        cone with
+            end1 = <10 0 0>;
+            end2 = <25 0 0>;
+            radius1 = 10;
+            radius2 = 6;
+        end;
+
+        {
+                fuzzy purple cone with
+                        end1 = 25 0 0; radius1 = 10;
+                        end2 = 100 0 0; radius2 = 0;
+                end;
+        }
+    end;    // jet_engine
+
+
+    objective shape jet_engine_pod is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 40>;
+            radius = 5;
+            scale by .25 along <0 1 0>;
+        end;
+        jet_engine with
+            material is silver;
+            move to <0 0 40>;
+        end;
+    end;    // jet_engine_pod
+
+
+    objective shape tail is
+        polygon [<0 0 0> <25 0 20> <45 0 30> <60 0 25> <45 0 15>
+            <30 0 0>];
+            {
+        bat_symbol with
+            material is plastic colored yellow;
+            rotate by 90 around <1 0 0>;
+            magnify by .09;
+            move to <33 -.1 15>;
+        end;
+        bat_symbol with
+            material is plastic colored yellow;
+            rotate by 90 around <1 0 0>;
+            magnify by .09;
+            move to <33 .1 15>;
+        end;
+        }
+    end;    // tail
+
+
+    objective shape form with
+        scalar t = 0;
+        scalar hood_angle = 0;
+        scalar flap_angle = 0;
+    is
+        {
+        bat_symbol with
+            material is plastic colored yellow;
+            rotation of <90 0 90>;
+            magnify by .1;
+            move to <-71 0 35>;
+        end;
+        }
+        jet_engine_pod with
+            rotate by 60 around <1 0 0>;
+            move to <45 0 40>;
+        end;
+        jet_engine_pod with
+            rotate by -60 around <1 0 0>;
+            move to <45 0 40>;
+        end;
+        wings with
+            material is silver;
+            flap_angle = static flap_angle;
+            move to <0 0 15>;
+        end;
+        tail with
+            move to <25 0 45>;
+        end;
+        roadster type's form with
+            t = static t;
+            hood_angle = static hood_angle;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            t = speed * time;
+            hood_angle = 30 + sin (360 * time *
+                hood_flaps_per_sec) * 30;
+            flap_angle = 40 + sin (360 * time *
+                wing_flaps_per_sec) * 30;
+            color = purple;
+        end;
+    end;    // instance
+end;    // flying_car
+
+
+picture car_picture with
+    field_of_view = 50;
+    eye = <1 -300 160>;
+    lookat = <0 0 40>;
+    render_mode is shaded;
+    ambient = white * .6;
+    background = dark violet;
+
+    {
+        facets = 0;
+        reflections is on;
+        shadows is on;
+        refractions is on;
+        save_pictures is on;
+        }
+is
+    distant_light from <.3 -1 1>;
+    flying_car type's form with
+        material is metal;
+        rotation of <15 10 60>;
+        move to <0 0 30>;
+        magnify the shader_trans by 20;
+    end;
+    flying_car type's bat_symbol with
+        material is plastic colored yellow;
+    end;
+end;    // bat_picture
+
+
+anim car_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-100 -200 150>;
+    lookat = <0 0 20>;
+    args check;
+is
+    flying_car type flying_car;
+
+    mouse_controlled_actor flying_car;
+end;    // bat_anim

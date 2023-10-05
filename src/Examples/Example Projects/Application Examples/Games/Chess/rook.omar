@@ -1,0 +1,81 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              rook.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of a chess piece.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do rook_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape rook is
+	shape top with
+		integer blocks = 6;
+	is
+		for integer counter = 0 .. (blocks - 1) do
+			scalar angle = counter * 360 / blocks;
+			block with
+				scale by 1 along <1 0 0>;
+				scale by 1.5 along <0 1 0>;
+				scale by 2 along <0 0 1>;
+				move to <4 0 0>;
+				rotate by angle around <0 0 1>;
+			end;
+		end;
+	end;    // top
+	
+	color = white;
+	cylinder with
+		end1 = <0 0 0>;
+		end2 = <0 0 1>;
+		radius = 8;
+	end;
+	disk with
+		radius = 8;
+	end;
+	hyperboloid1 with
+		end1 = <0 0 1>;
+		end2 = <0 0 5>;
+		radius1 = 8;
+		radius2 = 5;
+	end;
+	sphere with
+		radius = 6.5;
+		scale by .3 along <0 0 1>;
+		move to <0 0 5>;
+	end;
+	cone with
+		end1 = <0 0 5>;
+		end2 = <0 0 18>;
+		radius1 = 5;
+		radius2 = 3;
+	end;
+	disk with
+		center = <0 0 18>;
+		radius = 5;
+	end;
+	cylinder with
+		end1 = <0 0 18>;
+		end2 = <0 0 20>;
+		radius = 5;
+	end;
+	top with
+		move to <0 0 22>;
+	end;
+end;    // rook
+
+anim rook_anim
+	args type args;
+with
+	eye = <20 -60 40>;
+	lookat = <0 0 10>;
+	args check;
+is
+	mouse_controlled_shape rook;
+end;    // rook_anim

@@ -1,0 +1,245 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        native_materials.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the subject "material".  The global material   }
+{       type is declared in "native_rendering.ores".            }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_textures.ores";
+include "system/standard_colors.ores";
+include "system/printing.ores";
+
+subject untextured_material
+extends
+	printable object
+does
+	// constructor
+	//
+	verb new
+		colored color type color = white;   // wireframe color
+	with
+		// directional components
+		//
+		color type diffuse = grey;
+		color type specular = white;
+		scalar specular_power = 0;
+
+		// non directional components
+		//
+		color type ambient = black;
+		color type emissive = black;
+
+		// secondary ray components
+		//
+		color type reflected = black;
+		color type transmitted = black;
+	end;    // new
+	
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	public color type diffuse;      // color of diffuse reflected light
+	public color type specular;     // color of specular highlights
+	public scalar specular_power;   // sharpness of specular highlights
+
+	// non directional attributes
+	//
+	public color type ambient;      // color of diffusely reflected ambient light
+	public color type emissive;     // color of diffusely emissive light
+
+	// secondary ray attributes
+	//
+	public color type reflected;    // color of specularly reflected light
+	public color type transmitted;  // color of transmitted light
+
+	// wireframe attributes
+	//
+	public color type color;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		colored color type color = white;   // wireframe color
+	with
+		// directional components
+		//
+		color type diffuse = grey;
+		color type specular = white;
+		scalar specular_power = 0;
+
+		// non directional components
+		//
+		color type ambient = black;
+		color type emissive = black;
+
+		// secondary ray components
+		//
+		color type reflected = black;
+		color type transmitted = black;
+	is
+		// set material's directional components
+		//
+		untextured_material's diffuse = diffuse;
+		untextured_material's specular = specular;
+		untextured_material's specular_power = specular_power;
+
+		// set material's non directional components
+		//
+		untextured_material's ambient = ambient;
+		untextured_material's emissive = emissive;
+
+		// set material's secondary ray components
+		//
+		untextured_material's reflected = reflected;
+		untextured_material's transmitted = transmitted;
+
+		// set material's wireframe attributes
+		//
+		untextured_material's color = color;
+	end;    // new
+	
+	//
+	// printing method
+	//
+
+	verb print is
+
+		// write material's directional components
+		//
+		write "diffuse = ", diffuse, ;
+		write "specular = ", specular, ;
+		write "specular_power = ", specular_power, ;
+
+		// set material's non directional components
+		//
+		write "ambient = ", ambient, ;
+		write "emissive = ", emissive, ;
+
+		// set material's secondary ray components
+		//
+		write "reflected = ", reflected, ;
+		write "transmitted = ", transmitted, ;
+
+		// set material's wireframe attributes
+		//
+		write "color = ", color, ;
+	end;    // print
+end;    // untextured_material
+
+subject material
+extends
+	untextured_material
+does
+	//
+	// constructor
+	//
+
+	verb new
+		colored color type color = white;   // wireframe color
+		textured texture type texture is none;
+		painted image type image is none;
+		poster string type file_name is none;
+	with
+		// directional components
+		//
+		color type diffuse = grey;
+		color type specular = white;
+		scalar specular_power = 0;
+
+		// non directional components
+		//
+		color type ambient = black;
+		color type emissive = black;
+
+		// secondary ray components
+		//
+		color type reflected = black;
+		color type transmitted = black;
+		
+		// texture parameters
+		//
+		boolean interpolation is global interpolation;
+		boolean mipmapping is global mipmapping;
+		boolean wraparound is global wraparound;
+	end;    // new
+has
+	// attributes
+	//
+	public texture type texture is none;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		colored color type color = white;   // wireframe color
+		textured texture type texture is none;
+		painted image type image is none;
+		poster string type file_name is none;
+	with
+		// directional components
+		//
+		color type diffuse = grey;
+		color type specular = white;
+		scalar specular_power = 0;
+
+		// non directional components
+		//
+		color type ambient = black;
+		color type emissive = black;
+
+		// secondary ray components
+		//
+		color type reflected = black;
+		color type transmitted = black;
+		
+		// texture parameters
+		//
+		boolean interpolation is global interpolation;
+		boolean mipmapping is global mipmapping;
+		boolean wraparound is global wraparound;
+	is
+		untextured_material new colored color with
+			diffuse = static diffuse;
+			specular = static specular;
+			specular_power = static specular_power;
+			ambient = static ambient;
+			emissive = static emissive;
+			reflected = static reflected;
+			transmitted = static transmitted;
+		end;
+		
+		// set material's texture attributes
+		//
+		if texture is none then
+			if some image then
+				texture is (new texture using image with
+					interpolation is static interpolation;
+					mipmapping is static mipmapping;
+					wraparound is static wraparound;
+				);
+			elseif some file_name then
+				texture is (new texture using (new image named file_name) with
+					interpolation is static interpolation;
+					mipmapping is static mipmapping;
+					wraparound is static wraparound;
+				);
+			end;
+		end;
+		material's texture is texture;
+	end;    // new
+end;    // material

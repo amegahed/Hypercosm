@@ -1,0 +1,93 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           popup_dock.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a popup dock user     }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do popup_dock_anim;
+
+include "system/3d.ores";
+include "system/dock.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/popup_dock.ores";
+include "system/args.ores";
+
+anim popup_dock_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	icon type disappearing_icon poster "hide_icon.gif" labelled "Hide";
+	
+	popup_dock type dock at bottom {containing (get_camera_controls)} with
+		popup_enabled is disappearing_icon is_selected; end;
+	popup_dock type dock2 at top with
+		popup_enabled is disappearing_icon is_selected; end;
+	popup_dock type dock3 at right with
+		popup_enabled is disappearing_icon is_selected; length = .75; end;
+	popup_dock type dock4 at left with
+		popup_enabled is disappearing_icon is_selected; length = .75; end;
+	
+	verb enable_popup_action is
+		write "enabling popup action", ;
+		dock set_popup_enabled to true;
+		dock2 set_popup_enabled to true;
+		dock3 set_popup_enabled to true;
+		dock4 set_popup_enabled to true;
+	end;
+	
+	verb disable_popup_action is
+		write "disabling popup action", ;
+		dock set_popup_enabled to false;
+		dock2 set_popup_enabled to false;
+		dock3 set_popup_enabled to false;
+		dock4 set_popup_enabled to false;
+	end;    
+
+	picture scene is
+		sphere;     
+		default_lights;
+		default_background at 100;
+		
+		dock overlay at 10;
+		dock2 overlay at 10;
+		dock3 overlay at 10;
+		dock4 overlay at 10;
+	end;    // scene
+
+	verb update is
+		dock update;
+		dock2 update;
+		dock3 update;
+		dock4 update;
+	end;    // update
+	
+	disappearing_icon set_selection_action to (new action of enable_popup_action);
+	disappearing_icon set_deselection_action to (new action of disable_popup_action);
+	
+	// construct dock
+	//  
+	{
+	add_navigation_selector to dock;
+	add_render_mode_selector to dock2;
+	add_collaboration_selector to dock3;
+	add_performance_icons to dock4;
+	add_help_icon to dock;
+	}
+	dock add disappearing_icon;
+
+	// run
+	//  
+	while true do
+		scene;
+		update;
+	end;
+end;    // popup_dock_anim

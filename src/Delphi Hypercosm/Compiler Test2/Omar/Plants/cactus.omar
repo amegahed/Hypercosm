@@ -1,0 +1,303 @@
+{***************************************************************}
+{                          cactus.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cactus_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shaders.ores";
+include "system/bumps.ores";
+
+
+shape cactus is
+    shape spike is
+        cone with
+            material is plastic colored beige;
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = .08;
+            radius2 = .0001;
+        end;
+    end;    // spike
+
+
+    shape cactus_spindle is
+        spike;
+        spike with
+            scale by 1.2 along <0 0 1>;
+            rotate by 30 around <1 0 0>;
+            rotate by 50 around <0 0 1>;
+        end;
+        spike with
+            scale by .8 along <0 0 1>;
+            rotate by 50 around <1 0 0>;
+            rotate by 120 around <0 0 1>;
+        end;
+        spike with
+            scale by .8 along <0 0 1>;
+            rotate by 20 around <1 0 0>;
+            rotate by 200 around <0 0 1>;
+        end;
+        spike with
+            scale by .9 along <0 0 1>;
+            rotate by 60 around <1 0 0>;
+            rotate by 300 around <0 0 1>;
+        end;
+        spike with
+            rotate by 35 around <1 0 0>;
+            rotate by 10 around <0 0 1>;
+        end;
+    end;    // cactus_spindle
+
+
+    shape cactus_node is
+        scalar f = 0;
+        scalar sweep, d, ran, fy, fystep;
+
+        sweep = 180 / 5;
+        sphere with
+            center = <0 0 0>;
+            radius = 1.0;
+        end;
+        sphere with
+            center = <0 0 0>;
+            radius = .4;
+            scale by .5 along <0 0 1>;
+            move to <0 0 .9>;
+        end;
+
+        // ...comprising the main cactus fleshoid...
+        //
+        while f <> 5 do
+            torus with
+                center = <0 0 0>;
+                normal = <0 1 0>;
+                inner_radius = .80;
+                outer_radius = 1.08;
+                rotate by (f * sweep) around <0 0 1>;
+            end;
+
+            // spine_ridges
+            //
+            f = itself + 1;
+        end;
+
+        // create spin ridges
+        //
+        f = 0;
+        ran = 0;
+        fystep = .25 / 12;
+        while f <> 5 do
+            d = 20;
+            fy = .20;
+            while d <> 140 do
+                cactus_spindle with
+                    magnify by fy;
+                    rotate by ran around <0 0 1>;
+                    move to <0 0 1.07>;
+                    rotate by d around <1 0 0>;
+                    rotate by ((f * sweep) + (sweep / 2))
+                        around <0 0 1>;
+                end;
+
+                cactus_spindle with
+                    magnify by fy;
+                    rotate by -ran around <0 0 1>;
+                    move to <0 0 1.07>;
+                    rotate by -d around <1 0 0>;
+                    rotate by ((f * sweep) + (sweep / 2))
+                        around <0 0 1>;
+                end;
+
+                ran = itself + 33;
+                fy = itself + fystep;
+                d = itself + 10;
+            end;
+            f = itself + 1;
+        end;
+    end;    // cactus_node
+
+
+    shape flower is
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = .1;
+            radius2 = .4;
+            color = <.4 .1 .9>;
+        end;
+        sphere with
+            center = <0 0 0>;
+            radius = .4;
+            scale by .25 along <0 0 1>;
+            move to <0 0 1>;
+            color = <.4 .1 .9>;
+        end;
+        paraboloid with
+            base = <0 0 3>;
+            top = <0 0 .60>;
+            radius = .95;
+            color = <.6 .1 .7>;
+        end;
+        cylinder with
+            radius = .05;
+            end1 = <0 0 .6>;
+            end2 = <0 0 1.8>;
+            rotate by 10 around <1 0 0>;
+            rotate by 100 around <0 0 1>;
+            color = red;
+        end;
+        cylinder with
+            radius = .05;
+            end1 = <0 0 .6>;
+            end2 = <0 0 1.8>;
+            rotate by 10 around <1 0 0>;
+            rotate by 200 around <0 0 1>;
+            color = red;
+        end;
+        cylinder with
+            radius = .05;
+            end1 = <0 0 .6>;
+            end2 = <0 0 1.8>;
+            rotate by 10 around <1 0 0>;
+            rotate by 300 around <0 0 1>;
+            color = red;
+        end;
+    end;    // flower
+
+
+    shape flower_stalk is
+        sphere with
+            center = <0 0 0>;
+            radius = .25;
+            scale by 2 along <0 0 1>;
+            color = <.2 1 .1>;
+        end;
+        flower with
+            material is plastic colored red;
+            magnify by .25;
+            rotate by 20 around <1 0 0>;
+            rotate by 30 around <0 0 1>;
+            move to <0 0 .5>;
+        end;
+        flower with
+            material is plastic colored yellow;
+            magnify by .35;
+            rotate by 50 around <1 0 0>;
+            rotate by 230 around <0 0 1>;
+            move to <0 0 .5>;
+        end;
+        flower with
+            material is plastic colored purple;
+            magnify by .31;
+            rotate by 70 around <1 0 0>;
+            rotate by 180 around <0 0 1>;
+            move to <0 0 .5>;
+        end;
+    end;    // flower_stalk
+
+
+    cactus_node with
+        scale by 2.25 along <0 0 1>;
+        magnify by .55;
+        move to <0 0 3.20>;
+        color = dark green;
+    end;
+    flower_stalk with
+        move to <0 0 11.15>;
+        magnify by .4;
+    end;
+end;    // cactus
+
+
+shape pot is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 2.0>;
+        radius1 = 1.0;
+        radius2 = 1.25;
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 2.0>;
+        radius1 = .90;
+        radius2 = 1.15;
+    end;
+
+    torus with
+        center = <0 0 0>;
+        normal = <0 0 1>;
+        inner_radius = 1.15;
+        outer_radius = 1.25;
+        scale by .5 along <0 0 1>;
+        move to <0 0 2.0>;
+    end;
+
+    sphere with
+        center = <0 0 0>;
+        radius = 1.0;
+        scale by .1 along <0 0 1>;
+    end;
+end;    // pot
+
+
+shape water_catch is
+    pot with
+        scale by .25 along <0 0 1>;
+        scale by 1.25 along <1 0 0>;
+        scale by 1.25 along <0 1 0>;
+    end;
+end;    // water_catch
+
+
+shape cactus_pot is
+    pot with
+        move to <0 0 .1>;
+    end;
+    water_catch with
+        color = <.9 .4 .2>;
+    end;
+    disk with
+        material is chalk colored brown;
+        center = <0 0 2.0>;
+        radius = 1.2;
+    end;
+end;    // cactus_pot
+
+
+shape potted_cactus is
+    cactus with
+        material is plastic colored dark green;
+    end;
+    cactus_pot with
+        material is plastic colored dark brick;
+    end;
+end;    // potted_cactus
+
+
+picture cactus_picture with
+    eye = <2 -8 8>;
+    lookat = <0 0 2>;
+is
+    default_lights;
+    potted_cactus;
+end;    // cactus_picture
+
+
+anim cactus_anim
+    args type args;
+with
+    eye = <2 -8 8>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape potted_cactus;
+end;    // cactus_anim

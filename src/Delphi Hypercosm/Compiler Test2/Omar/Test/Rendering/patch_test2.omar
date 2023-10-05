@@ -1,0 +1,101 @@
+{***************************************************************}
+{                          patch_test2.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/hermite.ores";
+include "system/patches.ores";
+include "system/vector_fields.ores";
+
+
+shape curved_thing is
+    vector vertices[0..1, 0..1];
+    vector h_tangents[0..1, 0..1];
+    vector v_tangents[0..1, 0..1];
+
+    for each vector h_tangent in h_tangents do
+        scalar y = (random -1 to 1) * 2;
+        scalar z = (random -1 to 1) * 2;
+        h_tangent = <1 y z>;
+    end;
+    for each vector v_tangent in v_tangents do
+        scalar x = (random -1 to 1) * 2;
+        scalar z = (random -1 to 1) * 2;
+        v_tangent = <x 1 z>;
+    end;
+
+    vertices[0, 0] = <-1 -1 0>;
+    vertices[1, 0] = <1 -1 0>;
+    vertices[0, 1] = <-1 1 0>;
+    vertices[1, 1] = <1 1 0>;
+
+    bicubic_patch 24 by 24 of (ferguson_bicubic through
+        vertices towards h_tangents v_tangents)
+    with
+        material is silver;
+        show_row_tangents is false;
+        show_column_tangents is false;
+        show_normals is false;
+    end;
+
+    {
+    // tangent vectors
+    //
+    vector_field2 of arrows in h_tangents at vertices with
+        length = .5;
+        color = red;
+    end;
+    vector_field2 of arrows in v_tangents at vertices with
+        length = .5;
+        color = blue;
+    end;
+    }
+
+    block with
+        color = red;
+        magnify by .5;
+        rotate by frame_number around <1 0 0>;
+        rotate by frame_number around <0 0 1>;
+        move to <0 0 1>;
+    end;
+end;    // curved_thing
+
+
+picture patch_picture with
+    eye = <3 -3 3>;
+    render_mode is shaded;
+    reflections is on;
+is
+    default_lights;
+    curved_thing;
+
+    block with
+        color = red;
+        magnify by .5;
+        rotate by frame_number around <1 0 0>;
+        rotate by frame_number around <0 0 1>;
+        move to <0 0 1>;
+    end;
+end;    // patch_picture
+
+
+anim test
+    args type args;
+with
+    eye = <1 -5 3>;
+    render_mode is shaded;
+    reflections is on;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape curved_thing;
+end;    // test

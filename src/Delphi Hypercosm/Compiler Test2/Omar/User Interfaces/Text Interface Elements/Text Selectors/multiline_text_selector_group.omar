@@ -1,0 +1,45 @@
+do text_selector_group_anim;
+
+
+include "system/3d.ores";
+include "system/multiline_text_selector_group.ores";
+
+
+anim text_selector_group_anim with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb selection_action1 is
+        write "selection action 1 selected!", ;
+    end;
+    verb selection_action2 is
+        write "selection action 2 selected!", ;
+    end;
+    verb selection_action3 is
+        write "selection action 3 selected!", ;
+    end;
+    
+    strings type text1 is ["button" "number" "one"];
+    strings type text2 is ["button" "number" "two"];
+    strings type text3 is ["button" "number" "three"];
+    
+    multiline_text_selector_group type text_selector1 of text1 at <.75 .25 0> 
+        selecting (new action of static selection_action1);
+    multiline_text_selector_group type text_selector2 of text2
+        linked to text_selector1 at <.75 0 0>
+        selecting (new action of static selection_action2);
+    multiline_text_selector_group type text_selector3 of text3
+        linked to text_selector1 at <.75 -.25 0>
+        selecting (new action of static selection_action3);
+    
+    picture scene is
+        text_selector1 draw;
+        text_selector2 draw;
+        text_selector3 draw;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // text_selector_group_anim
+

@@ -1,0 +1,207 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            sensors.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{          Contains some standard interfaces useful in          }
+{                   interactive applications.                   }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/native_sensing.ores";
+include "system/manipulations.ores";
+include "system/messages.ores";
+include "system/printing.ores";
+
+abstract subject sensor
+extends
+	printable object
+does
+	abstract boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;
+
+	abstract verb update;
+
+	// printing method
+	//
+	abstract verb print;
+has
+	// attributes
+	//
+	public boolean touched is false;
+end;    // sensor
+
+subject sensor_group
+extends
+	touchable addressable renderable printable object
+does
+	// constructor
+	//
+	verb new
+		using sensor type sensors[];
+	end;    // new
+	
+	// methods
+	//
+	verb add
+		sensor type sensor;
+	end;
+	verb update;
+	verb respond
+		using verb response
+			to sensor type sensor;
+		end;
+	end;
+	
+	// touching methods
+	//
+	verb touch
+		from vector location;
+		towards vector direction;
+	end;    // touch
+
+	// addressing methods
+	//
+	verb address
+		receivable type recipient;
+	end;
+
+	// rendering methods
+	//   
+	shape instance;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	struct sensor_entry has
+		sensor type sensor is none;
+		sensor_entry type next is none;
+	end;
+	sensor_entry type list is none;
+
+	// sensor group state information
+	//    
+	sensor type nearest_sensor is none;
+	sensor type prev_nearest_sensor is none;  
+	vector hit_location;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		using sensor type sensors[];
+	is
+		for each sensor type sensor in sensors do
+			add sensor;
+		end;
+	end;    // new
+	
+	//
+	// methods
+	//
+
+	verb add
+		sensor type sensor;
+	is
+		sensor_entry type sensor_entry;
+		sensor_entry's sensor is sensor;
+		sensor_entry's next is list;
+		list is sensor_entry;
+	end;    // add
+	
+	verb update is
+		touch_actor sensor_group;
+	end;    // update
+	
+	verb respond
+		using verb response
+			to sensor type sensor;
+		end;
+	is
+		response to sensor_group's prev_nearest_sensor;
+		response to sensor_group's nearest_sensor;
+	end;    // respond
+
+	//
+	// touching methods
+	//
+
+	verb touch
+		from vector location;
+		towards vector direction;
+	is
+		scalar t_min = infinity;
+		prev_nearest_sensor is nearest_sensor;
+			
+		// find nearest sensor
+		//
+		nearest_sensor is none;
+		direction = normalized direction;
+		for each sensor_entry type sensor_entry and its next in list do   
+			if sensor_entry's sensor is_touched from location towards direction closer than t_min then
+				nearest_sensor is sensor_entry's sensor;
+			end;
+		end;
+		
+		if some nearest_sensor then
+			nearest_sensor's touched is true;
+			hit_location = location + direction * t_min;
+			nearest_sensor update;
+		end;
+		if some prev_nearest_sensor and prev_nearest_sensor isn't nearest_sensor then
+			prev_nearest_sensor's touched is false;
+		end;
+	end;    // touch
+	
+	//
+	// addressing methods
+	//
+
+	verb address
+		receivable type recipient;
+	is
+		for each sensor_entry type sensor_entry and its next in list do   
+			if addressable type sensor_entry's sensor then
+				(addressable type sensor_entry's sensor) address recipient;
+			end;
+		end;
+	end;    // address
+	
+	//
+	// rendering methods
+	//
+
+	shape instance is
+		if some nearest_sensor then
+			sphere with
+				magnify by 1 / vlength of (hit_location - eye);
+				direct from trans's z_axis to (hit_location - eye);  
+				move to hit_location;    
+				transform_trans trans from world to outer;
+				material is constant_color white;
+			end;
+		end;
+	end;    // instance
+	
+	//
+	// printing methods
+	//
+
+	verb print is
+		write "sensor group", ;     
+		for each sensor_entry type sensor_entry and its next in list do
+			sensor_entry's sensor print;
+		end;
+	end;    // print
+end;    // sensor_group

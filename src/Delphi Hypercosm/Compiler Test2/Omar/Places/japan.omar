@@ -1,0 +1,163 @@
+{***************************************************************}
+{                          japan.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do miles_o_pagodas;
+//do monastary_picture;
+
+
+include "system/3d.ores";
+include "system/shaders.ores";
+include "system/pagoda.omar";
+include "system/ash_tree.omar";
+
+
+shape pool with
+    scalar pool_radius = 3;
+    scalar wall_thickness = .5;
+    scalar pool_height = 1;
+    scalar pool_depth = .75;
+is
+    scalar inner_radius = pool_radius - wall_thickness;
+
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 pool_height>;
+        radius = pool_radius;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 pool_height>;
+        radius = inner_radius;
+    end;
+    ring with
+        center = <0 0 pool_height>;
+        inner_radius = static inner_radius;
+        outer_radius = pool_radius;
+    end;
+
+    // bottom of pool
+    //
+    disk with
+        center = <0 0 .1>;
+        radius = inner_radius;
+    end;
+
+    // water
+    //
+    glassy bumpy light aqua disk with
+        center = <0 0 pool_depth>;
+        radius = inner_radius;
+    end;
+end;    // pool
+
+
+shape monastary is
+    pagoda with material is golden; end;
+    ash_tree with
+        magnify by 10;
+        move to <-10 15 0>;
+    end;
+    ash_tree with
+        magnify by 8;
+        move to <18 -10 0>;
+    end;
+    ash_tree with
+        magnify by 10;
+        move to <-20 -5 0>;
+    end;
+    ash_tree with
+        magnify by 6;
+        move to <-15 -18 0>;
+    end;
+    flat speckled white pool with
+        move to <-8 -10 0>;
+    end;
+end;    // monastary
+
+
+shape sanctuary with
+    integer level = 4;
+is
+    scalar offset;
+
+    if level = 0 then
+        monastary;
+    else
+        offset = 30 * 2 ^ (level - 1);
+        sanctuary with
+            level = static level - 1;
+            move to <offset offset 0>;
+        end;
+        sanctuary with
+            level = static level - 1;
+            move to <(-offset) offset 0>;
+        end;
+        sanctuary with
+            level = static level - 1;
+            move to <offset (-offset) 0>;
+        end;
+        sanctuary with
+            level = static level - 1;
+            move to <(-offset) (-offset) 0>;
+        end;
+    end;
+end;    // sanctuary
+
+
+picture monastary_picture with
+    eye = <10 -80 20>;
+    lookat = <0 0 12>;
+    shading is pixel;
+
+    {
+        lookat = -5 -15 0;
+        field_of_view = 10;
+        }
+
+    shadows is on;
+    reflections is on;
+    refractions is on;
+is
+    distant_light from <.3 -.5 1>;
+    monastary;
+    speckled flat dark green parallelogram with
+        magnify by 300;
+    end;
+end;    // monastary_picture
+
+
+picture miles_o_pagodas with
+
+    {
+        field_of_view = 70;
+        eye = 32 -80 20;
+        lookat = 0 0 0;
+        }
+
+    field_of_view = 75;
+    eye = <45 -70 20>;
+    lookat = <0 0 0>;
+    render_mode is wireframe;
+    facets = 2;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+    fog_factor = 2000;
+    background = <.7 .7 1.0>;
+is
+    distant_light from <.3 -.5 1>;
+    sanctuary with
+        level = 4;
+    end;
+    flat speckled dark green plane with
+        magnify by 50;
+    end;
+end;    // miles_o_pagodas

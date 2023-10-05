@@ -1,0 +1,31 @@
+{***************************************************************}
+{                           locating.ores                      	}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains general pixel behavior definitions.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/pixels.ores";
+
+
+adjective pixel_locateable
+does
+	// location querying methods
+	//
+	pixel type question get_location;
+end;	// pixel_locateable
+
+
+adjective pixel_relocateable
+does
+	// location setting methods
+	//
+	verb set_location
+		to pixel type location;
+	end;
+end;	// pixel_relocateable

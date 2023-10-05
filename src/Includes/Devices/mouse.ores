@@ -1,0 +1,43 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             mouse.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native mouse procedures.                   }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_mouse.ores";
+
+enum click is down, double_click, up;
+
+click type question get_click
+	of button integer requested_button = 0;
+return with
+	vector location = get_mouse;
+is
+	click type click is none;
+	static boolean prev_mouse_down is false;
+	boolean current_mouse_down is mouse_down button requested_button;
+	
+	if current_mouse_down and not prev_mouse_down then
+		click is down;
+	elseif not current_mouse_down and prev_mouse_down then
+		click is up;
+	end;
+	prev_mouse_down is current_mouse_down;
+	
+	answer click;
+end;    // get_click
+
+// if buttons = 0, then we have a pen tablet style interface
+// if buttons = 1, then we have a single button Maciontosh style interface
+// if buttons > 1, then we have a multi button Windows style interface
+//
+integer mouse_buttons = 2;

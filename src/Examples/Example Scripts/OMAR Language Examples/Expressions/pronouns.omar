@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            pronouns.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of the use         }
+{       of the pronouns "its" and "itself" in the OMAR          }
+{       language.                                               }
+{                                                               }
+{       There is no direct analogy for this language            }
+{       feature in languages such as C, C++, and Pascal.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do pronouns_example;
+	
+struct chain has
+	chain type next is none;
+end;    // chain
+
+integer i = 1, iterations = 0;
+boolean parity is false;
+chain type chain;
+		
+verb pronouns_example is
+	while some chain do
+	
+		// assignments using expressions containing pronouns
+		//
+		i = itself * 2; 
+		iterations = itself + 1;
+		parity is not itself; 
+		chain is its next;
+	end;
+	
+	write "ok!", ;
+end;    // pronouns_example

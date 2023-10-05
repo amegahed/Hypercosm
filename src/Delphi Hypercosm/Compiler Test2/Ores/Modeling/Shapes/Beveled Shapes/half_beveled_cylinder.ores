@@ -1,0 +1,88 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	  half_beveled_cylinder.ores		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a half beveled cylinder 		}
+{		with nice round edges and corners.						}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+include "system/vectors.ores";
+
+
+shape half_beveled_cylinder with
+    vector end1 = <0 0 1>;
+    vector end2 = <0 0 -1>;
+    scalar radius = 1;
+
+    // sweep parameters
+    //
+    scalar umin = 0;
+    scalar umax = 360;
+
+    // bevel parameter
+    //
+    scalar bevel_width = .1;
+
+    // capping parameter
+    //
+    boolean capped is true;
+is
+    vector axis = end1 - end2;
+    vector new_end2;
+    scalar length = vlength of axis;
+
+    if bevel_width > length then
+        bevel_width = length;
+    end;
+    if bevel_width > radius/2 then
+        bevel_width = radius/2;
+    end;
+
+    new_end2 = end2 + (normalized axis) * bevel_width;
+
+    cylinder with
+        end1 = static end1;
+        end2 = new_end2;
+        radius = static radius;
+        umin = static umin;
+        umax = static umax;
+    end;
+
+    torus with
+        center = new_end2;
+        normal = axis;
+        inner_radius = radius - (bevel_width*2);
+        outer_radius = radius;
+
+        umin = static umin;
+        umax = static umax;
+        vmin = -90;
+        vmax = 0;
+    end;
+
+    if capped then
+        disk with
+            center = end1;
+            normal = axis;
+            radius = static radius;
+
+            umin = static umin;
+            umax = static umax;
+        end;
+        disk with
+            center = end2;
+            normal = axis;
+            radius = static radius - bevel_width;
+
+            umin = static umin;
+            umax = static umax;
+        end;
+    end;
+end;	// half_beveled_cylinder

@@ -1,0 +1,494 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  	 intersections.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains some standard utilities for finding ray		}
+{       / object intersections.  These functions are 			}
+{		commonly used for hit testing and picking in			}
+{		interactive applications. 								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/vectors.ores";
+include "system/sensing_utils.ores";
+
+
+const scalar epsilon = 0.000001;
+
+
+boolean question ray_hits_target
+    shape target;
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+is
+    vector point, normal;
+    boolean hit is ray_hits_shape ray_location ray_direction target return at point towards normal;
+        
+    if hit then
+        if not (min_t refers to none) then
+            scalar distance = vlength of (ray_location - point) / vlength of ray_direction;
+            
+            if distance < min_t then
+                min_t = distance;
+            else
+                hit is false;
+            end;
+        end;
+    end;
+    
+    answer hit;
+end;    // ray_hits_target
+
+
+boolean question unit_ray_hits_cube
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+is
+    scalar x, y, z;
+    scalar dx, dy, dz;
+    scalar t, first_t;
+    boolean hit is false;
+    
+    dx = ray_direction.x;
+    dy = ray_direction.y;
+    dz = ray_direction.z;
+    
+    first_t = infinity;
+    
+    // test sides at x = -1 and x = 1
+    if abs dx > epsilon then
+        // the ray is not perpendicular to the x axis
+        
+        // compute the intersection with the x = 1 plane
+        t = (1 - ray_location.x) / dx;
+        
+        if t >= 0 then
+            // the intersection is in front of the eye
+            y = ray_location.y + (t * dy);
+            z = ray_location.z + (t * dz);
+            
+            if (abs y < 1) and (abs z < 1) then
+                // the intersection is in the bounds of the cube
+                if t < first_t then
+                    first_t = t;
+                end;
+                hit is true;
+            end;
+        end;
+        
+        // compute the intersection with the x = -1 plane
+        t = -(1 + ray_location.x) / dx;
+        
+        if t >= 0 then
+            // the intersection is in front of the eye
+            y = ray_location.y + (t * dy);
+            z = ray_location.z + (t * dz);
+            
+            if (abs y < 1) and (abs z < 1) then
+                // the intersection is in the bounds of the cube
+                if t < first_t then
+                    first_t = t;
+                end;
+                hit is true;
+            end;
+        end;
+    end;
+    
+    // test sides at y = -1 and y = 1
+    if abs dy > epsilon then
+        // the ray is not perpendicular to the y axis
+        
+        // compute the intersection with the y = 1 plane
+        t = (1 - ray_location.y) / dy;
+        
+        if t >= 0 then
+            // the intersection is in front of the eye
+            x = ray_location.x + (t * dx);
+            z = ray_location.z + (t * dz);
+            
+            if (abs x < 1) and (abs z < 1) then
+                // the intersection is in the bounds of the cube
+                if t < first_t then
+                    first_t = t;
+                end;
+                hit is true;
+            end;
+        end;
+        
+        // compute the intersection with the y = -1 plane
+        t = -(1 + ray_location.y) / dy;
+        
+        if t >= 0 then
+            // the intersection is in front of the eye
+            x = ray_location.x + (t * dx);
+            z = ray_location.z + (t * dz);
+            
+            if (abs x < 1) and (abs z < 1) then
+                // the intersection is in the bounds of the cube
+                if t < first_t then
+                    first_t = t;
+                end;
+                hit is true;
+            end;
+        end;
+    end;
+    
+    // test sides at z = -1 and z = 1
+    if abs dz > epsilon then
+        // the ray is not perpendicular to the z axis
+        
+        // compute the intersection with the z = 1 plane
+        t = (1 - ray_location.z) / dz;
+        
+        if t >= 0 then
+            // the intersection is in front of the eye
+            x = ray_location.x + (t * dx);
+            y = ray_location.y + (t * dy);
+            
+            if (abs x < 1) and (abs y < 1) then
+                // the intersection is in the bounds of the cube
+                if t < first_t then
+                    first_t = t;
+                end;
+                hit is true;
+            end;
+        end;
+        
+        // compute the intersection with the z = -1 plane
+        t = -(1 + ray_location.z) / dz;
+        
+        if t >= 0 then
+            // the intersection is in front of the eye
+            x = ray_location.x + (t * dx);
+            y = ray_location.y + (t * dy);
+            
+            if (abs x < 1) and (abs y < 1) then
+                // the intersection is in the bounds of the cube
+                if t < first_t then
+                    first_t = t;
+                end;
+                hit is true;
+            end;
+        end;
+    end;
+    
+    if hit then
+        if min_t refers to none then
+            answer yes;
+        end;
+        
+        if min_t > first_t then
+            min_t = first_t;
+            answer yes;
+        end;
+    end;
+    
+    answer no;
+end;    // unit_ray_hits_cube
+
+
+boolean question ray_hits_cube
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+is
+    answer unit_ray_hits_cube from ray_location 
+    	towards ray_direction closer than min_t;
+end;    // ray_hits_cube
+
+
+boolean question ray_hits_bounds
+    trans type trans;
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+is
+    trans invert;
+    ray_location = trans transformed ray_location;
+    ray_direction = trans oriented ray_direction;
+    
+    answer (unit_ray_hits_cube from ray_location 
+    	towards ray_direction closer than min_t);
+end;    // ray_hits_bounds
+
+
+boolean question ray_hits_block
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+with
+    vector vertex = <(-1) (-1) (-1)>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+    vector side3 = <0 0 2>;
+is
+    trans type trans with
+        x_axis = side1 * 0.5;
+        y_axis = side2 * 0.5;
+        z_axis = side3 * 0.5;
+        origin = vertex + x_axis + y_axis + z_axis;
+    end;
+    
+    answer (ray_hits_bounds trans from ray_location 
+    	towards ray_direction closer than min_t);
+end;    // ray_hits_block
+
+
+boolean question ray_hits_sphere
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+with
+    vector center = <0 0 0>;
+    scalar radius = 1;
+is
+    scalar qa, qb, qc, qd;
+    scalar sqrt_qd;
+    scalar numerator;
+    scalar first_t;
+    boolean hit is false;
+    
+    ray_location = itself - center;      
+    qa = ray_direction dot ray_direction;
+    if qa > 0 then
+        qb = 2.0 * (ray_direction dot ray_location);
+        qc = (ray_location dot ray_location) - (radius * radius);
+        qd = (qb * qb) - (4.0 * qa * qc);
+        
+        if qd >= 0 then
+            sqrt_qd = sqrt qd;
+            
+            numerator = (-qb) - sqrt_qd;
+            
+            if numerator < 0 then
+                // first point of intersection is behind the eye
+                numerator = (-qb) + sqrt_qd;
+            end;
+            
+            if numerator >= 0 then
+                // some point of intersection is in front of the eye
+                hit is true;
+                
+                first_t = numerator / (2.0 * qa);
+            end;
+        end;
+    end;
+    
+    if hit then
+        if min_t refers to none then
+            answer yes;
+        end;
+        
+        if min_t > first_t then
+            min_t = first_t;
+            answer yes;
+        end;
+    end;
+    
+    answer no;
+end;    // ray_hits_sphere
+
+
+boolean question ray_hits_infinite_plane
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+with
+    vector origin = <0 0 0>;
+    vector normal = <0 0 1>;
+return
+    vector plane_location;
+is
+    scalar PndL;
+    scalar first_t;
+    vector intersect_location;   
+
+	// initialize return value
+	//
+	plane_location = <0 0 0>;
+	
+    PndL = normal dot ray_direction;
+  
+    // If PndL is 0 then the ray is parallel to the plane, or the plane
+    // is not well defined.
+    
+    if PndL <> 0 then
+        first_t = ((normal dot origin) - (normal dot ray_location)) / PndL;
+        
+        if first_t < 0 then
+            // the plane is behind the eye
+            answer false;
+        end;
+        
+        if not (min_t refers to none) then
+            if min_t <= first_t then
+                answer false;
+            end;
+        end;
+        
+        plane_location = ray_location + (ray_direction * first_t); 
+
+        if not (min_t refers to none) then
+            min_t = first_t;
+        end;
+        
+        answer true;
+    end;
+    
+    answer false;
+end;    // ray_hits_infinite_plane
+
+
+boolean question ray_hits_plane
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+with
+    vector origin = <0 0 0>;
+    vector x_axis = <1 0 0>;
+    vector y_axis = <0 1 0>;
+    
+    boolean restrict_to_bounds is false;
+    vector min_bounds = <-1 -1 0>;  // these bounds are tested against the
+    vector max_bounds = <1 1 0>;    // plane_location, which is in the form <x y 0>.
+return
+    vector plane_location;
+is
+    vector plane_normal;
+    scalar PndL;
+    scalar first_t;
+    vector intersect_location;
+    scalar x, y;
+    
+    plane_location = <0 0 0>;
+    plane_normal = x_axis cross y_axis; 
+    PndL = plane_normal dot ray_direction;
+    
+    // If PndL is 0 then the ray is parallel to the plane, or the plane
+    // is not well defined.
+    //
+    if PndL <> 0 then
+        first_t = ((plane_normal dot origin) - (plane_normal dot ray_location)) / PndL;
+        
+        if first_t < 0 then
+            // the plane is behind the eye
+            answer no;
+        end;
+        
+        if not (min_t refers to none) then
+            if min_t <= first_t then
+                answer no;
+            end;
+        end;
+        
+        intersect_location = ray_location + (ray_direction * first_t); 
+        plane_location = location_in_plane intersect_location origin x_axis y_axis;
+        
+        if restrict_to_bounds then
+            if (plane_location.x < min_bounds.x) or
+               (plane_location.y < min_bounds.y) or
+               (plane_location.x > max_bounds.x) or
+               (plane_location.y > max_bounds.y)
+            then
+                answer no;
+            end;
+        end;
+        
+        if not (min_t refers to none) then
+            min_t = first_t;
+        end;
+        
+        answer yes;
+    end;
+    
+    answer no;
+end;    // ray_hits_plane
+
+
+boolean question ray_hits_xy_plane
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+with
+    boolean restrict_to_bounds is false;
+    vector min_bounds = <-1 -1 0>;  // these bounds are tested against the
+    vector max_bounds = <1 1 0>;    // plane_location, which is in the form <x y 0>.
+return
+    vector plane_location;
+is
+    scalar first_t;
+    vector intersect_location;
+    
+    plane_location = <0 0 0>;
+        
+    // If ray_direction.z is 0 then the ray is parallel to the plane.
+    // 
+    if (abs ray_direction.z) >= epsilon then
+        first_t = -(ray_location.z / ray_direction.z);
+        
+        if first_t < 0 then
+            // the plane is behind the eye
+            answer no;
+        end;
+        
+        if not (min_t refers to none) then
+            if min_t <= first_t then
+                answer no;
+            end;
+        end;
+        
+        plane_location = ray_location + (ray_direction * first_t);
+        plane_location.z = 0;
+        
+        if restrict_to_bounds then
+            if (plane_location.x < min_bounds.x) or 
+               (plane_location.y < min_bounds.y) or
+               (plane_location.x > max_bounds.x) or 
+               (plane_location.y > max_bounds.y) 
+            then
+                answer no;
+            end;
+        end;
+        
+        if not (min_t refers to none) then
+            min_t = first_t;
+        end;
+        
+        answer yes;
+    end;
+    
+    answer no;
+end;    // ray_hits_xy_plane
+
+
+boolean question ray_hits_parallelogram
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+with
+    vector vertex = <-1 -1 0>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+is
+    trans type trans with
+        x_axis = side1 * 0.5;
+        y_axis = side2 * 0.5;
+        z_axis = side1 cross side2;
+        origin = vertex + x_axis + y_axis;
+    end;
+  
+    trans invert;
+    ray_location = trans transformed ray_location;
+    ray_direction = trans oriented ray_direction;
+        
+    answer (ray_hits_xy_plane from ray_location 
+    	towards ray_direction closer than min_t with
+        restrict_to_bounds is true);
+end;    // ray_hits_parallelogram

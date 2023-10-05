@@ -1,0 +1,250 @@
+{***************************************************************}
+{                          barn.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do barn_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape large_silo is
+    cylinder with
+        material is plastic colored white;
+        end1 = <0 0 0>;
+        end2 = <0 0 1.5>;
+        radius = .3;
+    end;
+    sphere with
+        material is plastic colored blue;
+        center = <0 0 1.5>;
+        radius = .3;
+        vmin = 0;
+    end;
+end;    // large_silo
+
+
+shape small_silo is
+    cylinder with
+        material is plastic colored white;
+        end1 = <0 0 0>;
+        end2 = <0 0 1>;
+        radius = .3;
+    end;
+    sphere with
+        material is plastic colored blue;
+        center = <0 0 1>;
+        radius = .3;
+        vmin = 0;
+    end;
+end;    // small_silo
+
+
+shape barn is
+    shape square is
+        parallelogram with
+            vertex = <0 0 0>;
+            side1 = <1 0 0>;
+            side2 = <0 1 0>;
+        end;
+    end;    // square
+
+
+    shape cube is
+        block with
+            vertex = <0 0 0>;
+            side1 = <1 0 0>;
+            side2 = <0 1 0>;
+            side3 = <0 0 1>;
+        end;
+    end;    // cube
+
+
+    shape window_frame is
+        cube with
+            scale by .1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+            move to <.9 -.05 0>;
+        end;
+        cube with
+            scale by .1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+            move to <0 -.05 0>;
+        end;
+        cube with
+            scale by .1 along <0 0 1>;
+            scale by .1 along <0 1 0>;
+            move to <0 -.05 .9>;
+        end;
+        cube with
+            scale by .1 along <0 0 1>;
+            scale by .1 along <0 1 0>;
+            move to <0 -.05 0>;
+        end;
+    end;    // window_frame
+
+
+    shape window is
+        cube with
+            scale by .1 along <1 0 0>;
+            scale by .005 along <0 1 0>;
+            scale by .15 along <0 0 1>;
+            move to <0 -.0025 0>;
+            material is constant_color black;
+        end;    // window glass
+        window_frame with
+            material is chalk colored white;
+            scale by .1 along <1 0 0>;
+            scale by .2 along <0 1 0>;
+            scale by .15 along <0 0 1>;
+        end;
+        cube with
+            material is chalk colored white;
+            scale by .01 along <0 0 1>;
+            scale by .01 along <0 1 0>;
+            scale by .1 along <1 0 0>;
+            move to <0 -.005 0>;
+        end;    // windowsill
+    end;    // window
+
+
+    shape windows is
+        window with
+            move to <-.25 0 -.1>;
+        end;
+        window with
+            move to <-.5 0 -.1>;
+        end;
+        window with
+            move to <0 0 -.1>;
+        end;
+        window with
+            move to <.25 0 -.1>;
+        end;
+        window with
+            move to <.5 0 -.1>;
+        end;
+    end;    // windows
+
+
+    shape door is
+        cube with
+            material is chalk colored grey;
+            scale by .5 along <1 0 0>;
+            scale by .05 along <0 1 0>;
+            move to <0 -.025 0>;
+        end;
+    end;    // door
+
+
+    shape half_barn_front is
+        polygon2d [[0 0] [1 0] [1 1] [.6 1.7] [0 2]] with
+            origin = <0 0 0>;
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+        end;
+        door with
+            move to <.05 0 0>;
+        end;
+    end;    // half_barn_front
+
+
+    shape barn_front is
+        half_barn_front;
+        half_barn_front with
+            scale by -1 along <1 0 0>;
+        end;
+    end;    // barn_front
+
+
+    shape barn_side is
+        parallelogram with
+            vertex = <0 -1.5 0>;
+            side1 = <0 3 0>;
+            side2 = <0 0 1>;
+        end;
+        windows with
+            magnify by 2;
+            rotate by 90 around <0 0 1>;
+            move to <0 0 .4>;
+        end;
+    end;    // barn_side
+
+
+    shape roof_half is
+        parallelogram with
+            vertex = <0 -1.6 2>;
+            side1 = <0 3.2 0>;
+            side2 = <.6 0 -.3>;
+        end;
+        parallelogram with
+            vertex = <.6 -1.6 1.7>;
+            side1 = <0 3.2 0>;
+            side2 = <.6 0 -.8>;
+        end;
+    end;    // roof_half
+
+    roof_half with
+        material is chalk colored grey;
+    end;
+    roof_half with
+        material is chalk colored grey;
+        scale by -1 along <1 0 0>;
+    end;
+    barn_front with
+        move to <0 -1.5 0>;
+    end;
+    barn_front with
+        move to <0 1.5 0>;
+    end;
+    barn_side with
+        move to <1 0 0>;
+    end;
+    barn_side with
+        scale by -1 along <1 0 0>;
+        move to <-1 0 0>;
+    end;
+end;    // barn
+
+
+picture barn_picture with
+    eye = <6 -6 4>;
+    lookat = <0 0 1>;
+    render_mode is shaded;
+    shading is vertex;
+    background = sky_blue;
+is
+    distant_light from <.3 -.5 1>;
+    large_silo with
+        move to <-1.5 -2 0>;
+    end;
+    small_silo with
+        move to <-2 -2.5 0>;
+    end;
+    barn with
+        material is chalk colored red;
+    end;
+    plane with
+        material is chalk colored dark green;
+        magnify by 3;
+    end;
+end;    // barn_picture
+
+
+anim barn_anim
+    args type args;
+with
+    eye = <6 -6 4>;
+    lookat = <0 0 .5>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture barn_picture;
+end;    // barn_anim

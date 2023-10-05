@@ -1,0 +1,14 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            cameras.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard camera control definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/free_camera.ores";
+include "system/targeted_camera.ores";

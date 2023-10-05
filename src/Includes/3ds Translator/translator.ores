@@ -1,0 +1,483 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          translator.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains shape, light, and material definitions         }
+{       that correspond to definitions in 3D Studio Max.        }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/native_shapes.ores";
+include "system/materials.ores";
+include "system/hulls.ores";
+
+shape translated_torus with
+	scalar radius = 1;
+	scalar radius2 = 0.25;
+	scalar rotation = 0;
+	scalar twist = 0;
+	integer segments = 24;
+	integer sides = 12;
+	integer smooth = 2;
+	integer sliceOn = 0;
+	scalar pieSlice1 = 0;
+	scalar pieSlice2 = 0;
+	integer genUVs = 0;
+is
+	torus with
+		inner_radius = radius - radius2;
+		outer_radius = radius + radius2;
+		if sliceOn = 1 then
+			umin = pieSlice1;
+			umax = pieSlice2;
+		end;
+	end;
+end;    // translated_torus
+
+shape translated_sphere with
+	scalar radius = 1;
+	integer segs = 32;
+	integer smooth = 1;
+	scalar hemi = 0;
+	integer squash = 0;
+	integer recenter = 0;
+	integer genUVs = 0;
+	integer sliceOn = 0;
+	scalar sliceFrom = 0;
+	scalar sliceTo = 0;
+is
+	sphere with
+		radius = static radius;
+	end;
+end;    // translated_sphere
+
+shape translated_box with
+	scalar length = 1;
+	scalar width = 1;
+	scalar height = 1;
+	integer lsegs = 1;
+	integer wsegs = 1;
+	integer hsegs = 1;
+	integer genUVs = 0;
+is
+	block with
+		scale by (length / 2) along < 0 1 0 >;
+		scale by (width / 2) along < 1 0 0 >;
+		scale by (height / 2) along < 0 0 1 >;
+		move to < 0 0 (height / 2) >;   
+	end;
+end;    // translated_box
+
+shape translated_teapot with
+	scalar radius = 1;
+	integer segs = 4;
+	integer smooth = 1;
+	integer body = 1;
+	integer handle = 1;
+	integer spout = 1;
+	integer lid = 1;
+	integer genUVs = 0;
+is
+	shape teapot with
+		boolean triangulate is false;
+		boolean alternate is true;
+		boolean patches is true;
+		integer steps = facets;
+	is
+		shape sides is
+			trans type path[1..5];
+			integer index = min path;
+			trans type reference trans;
+	
+			// initialize path
+			//
+			trans refers to path[index];
+			magnify the trans by .75;
+			move the trans to <0 0 0>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by 1;
+			move the trans to <0 0 .3>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .75;
+			move the trans to <0 0 .95>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .65;
+			move the trans to <0 0 1>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .6;
+			move the trans to <0 0 .975>; 
+			index = itself + 1;
+	
+			// create curved hull from cross section and path
+			//
+			round_hull along path with
+				triangulate is static triangulate;
+				alternate is static alternate;
+				patches is static patches;
+				rows = static steps; 
+				columns = static steps;
+				closed is true;
+			end;
+		end;    // sides
+	
+		shape top is
+			trans type path[1..5];
+			integer index = min path;
+			trans type reference trans;
+	
+			// initialize path
+			//
+			trans refers to path[index];
+			magnify the trans by .6;
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .5;
+			move the trans to <0 0 .075>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .075;
+			move the trans to <0 0 .2>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .175;
+			move the trans to <0 0 .35>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by 0;
+			move the trans to <0 0 .4>; 
+	
+			// create curved hull from cross section and path
+			//
+			round_hull along path with
+				triangulate is static triangulate;
+				alternate is static alternate;
+				patches is static patches;
+				rows = static steps; 
+				columns = static steps;
+							closed is true;
+			end;
+		end;    // top
+	
+		shape spout is
+			trans type path[1..4];
+			integer index = min path;
+			trans type reference trans;
+	
+			// initialize path
+			//
+			trans refers to path[index];
+			magnify the trans by .25;
+			rotate the trans by 90 around <0 1 0>;
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .15;
+			rotate the trans by 45 around <0 1 0>;
+			move the trans to <.3 0 .1>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .1;
+			rotate the trans by 30 around <0 1 0>;
+			move the trans to <.4 0 .4>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .1;
+			scale the trans by .75 along <0 1 0>;
+			move the trans to <.6 0 .5>; 
+			index = itself + 1;
+	
+			// create curved hull from cross section and path
+			//
+			round_hull along path with
+				triangulate is static triangulate;
+				alternate is static alternate;
+				patches is static patches;
+				rows = static steps; 
+				columns = static steps;
+							closed is false;
+			end;
+		end;    // spout
+	
+		shape handle is
+			vector cross_section[0..3];
+			trans type path[1..4];
+			integer index = min path;
+			trans type reference trans;
+	
+			// initialize triangular cross section
+			//
+			cross_section[0] = <0 1 0>;
+			cross_section[1] = <0 0 -1>;
+			cross_section[2] = <0 -1 0>;
+			cross_section[3] = <0 1 0>;
+	
+			// initialize path
+			//
+			trans refers to path[index];
+			magnify the trans by .1;
+			move the trans to <0 0 .4>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .1;
+			rotate the trans by 45 around <0 -1 0>;
+			move the trans to <-.6 0 .4>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .1;
+			rotate the trans by 135 around <0 -1 0>;
+			move the trans to <-.5 0 0>; 
+			index = itself + 1;
+	
+			trans refers to path[index];
+			magnify the trans by .1;
+			rotate the trans by 150 around <0 -1 0>;
+			move the trans to <-.2 0 -.2>; 
+			index = itself + 1;
+	
+			// create curved hull from cross section and path
+			//
+			curved_hull of cross_section along path with
+				triangulate is static triangulate;
+				alternate is static alternate;
+				patches is static patches;
+				rows = static steps; 
+				columns = static steps;
+							closed is true;
+			end;
+		end;    // handle
+	
+		shape body is
+			sides;
+			top with
+				move to <0 0 .975>;
+			end;
+		end;    // body
+	
+		// create teapot parts  
+		//
+		body with 
+			rotate by 45 around <0 0 1>;
+		end;    
+		spout with
+			move to <.85 0 .4>; 
+		end;
+		handle with
+			move to <-.7 0 .5>;
+		end;
+	end;    // teapot
+	
+	teapot with
+		magnify by radius;
+	end;    
+end;    // translated_teapot
+
+shape translated_cone with
+	scalar radius1 = 1;
+	scalar radius2 = 0;
+	scalar height = 1;
+	integer segments = 5;
+	integer sides = 24;
+	integer smooth = 1;
+	integer sliceon = 0;
+	scalar pieSlice1 = 0;
+	scalar pieSlice2 = 0;
+	integer genUVs = 0;
+is
+	cone with
+		end1 = < 0 0 height >;
+		radius1 = static radius2;
+		end2 = < 0 0 0 >;
+		radius2 = static radius1;
+	end;
+end;    // translated_cone
+
+shape translated_cylinder with
+	scalar radius = 1;
+	scalar height = 1;
+	integer segments = 5;
+	integer capSegments = 1;
+	integer sides = 18;
+	integer smooth = 1;
+	integer sliceon = 0;
+	scalar pieSlice1 = 0;
+	scalar pieSlice2 = 0;
+	integer genUVs = 0;
+is
+	cylinder with
+		radius = static radius;
+		end1 = < 0 0 height >;
+		end2 = < 0 0 0 >;
+	end;
+	
+	disk with
+		radius = static radius;
+		center = < 0 0 height >;
+	end;
+	
+	disk with
+		radius = static radius;
+		normal = <0 0 -1>;
+	end;
+end;    // translated_cylinder
+
+shape translated_omni_light with
+	scalar intensity = 1;
+	vector color = < 1 1 1 >;
+	integer on = 1;
+	integer shadow = 0;
+	scalar scale = 1;
+is
+	// Shadows are left intentionally off because they are currently
+	// expensive since they are raytraced
+	//
+	if (on <> 0) then
+		point_light with
+			brightness = 0.7 * sqrt intensity;
+			color = static color;
+			//shadows is (shadow <> 0);
+			magnify by scale;
+		end;
+	end;
+end;    // translated_omni_light
+
+shape translated_spot_light with
+	scalar intensity = 1;
+	vector color = < 1 1 1 >;
+	integer on = 1;
+	integer shadow = 0;
+	scalar fallsize = 45;
+	scalar scale = 1;
+is    
+	if (on <> 0) then
+		spot_light towards < 0 0 -1 > with
+			brightness = 0.7 * sqrt intensity;
+			color = static color;
+			angle = fallsize;
+			magnify by scale;
+		end;
+	end;
+end;    // translated_spot_light
+
+shape translated_fspot_light with
+	scalar intensity = 1;
+	vector color = < 1 1 1 >;
+	integer on = 1;
+	integer shadow = 0;
+	scalar fallsize = 45;
+	scalar scale = 1;
+is
+	// Shadows are left intentionally off because they are currently
+	// expensive since they are raytraced
+	//
+	if (on <> 0) then
+		spot_light towards < 0 0 -1 > with
+			brightness = 0.7 * sqrt intensity;
+			color = static color;
+			angle = fallsize;
+			magnify by scale;
+		end;
+	end;
+end;    // translated_fspot_light
+
+shape translated_dir_light with
+	scalar intensity = 1;
+	vector color = < 1 1 1 >;
+	integer on = 1;
+	integer shadow = 0;
+	scalar scale = 1;
+is
+	// Shadows are left intentionally off because they are currently
+	// expensive since they are raytraced
+	//
+	if (on <> 0) then
+		distant_light from < 0 0 1 > with
+			brightness = 0.7 * sqrt intensity;
+			color = static color;
+		end;
+	end;
+end;    // translated_dir_light
+
+shape translated_tdir_light with
+	scalar intensity = 1;
+	vector color = < 1 1 1 >;
+	integer on = 1;
+	integer shadow = 0;
+	scalar scale = 1;
+is
+	// Shadows are left intentionally off because they are currently
+	// expensive since they are raytraced
+	//
+	if (on <> 0) then
+		distant_light from < 0 0 1 > with
+			brightness = 0.7 * sqrt intensity;
+			color = static color;
+		end;
+	end;
+end;    // translated_tdir_light
+
+material type question translated_material with
+	vector ambient_color = < 0 0 0 >;
+	vector diffuse_color = < 1 1 1 >;
+	vector specular_color = < 0.9 0.9 0.9 >;
+	scalar shininess = 0.6;
+	scalar opacity = 1;
+	vector emissive_color = < 0 0 0 >;
+	string type texture_name is none;
+	scalar u_offset = 0;
+	scalar v_offset = 0;
+	scalar u_scale = 0;
+	scalar v_scale = 0;
+	scalar rotation = 0;
+is
+	vector wireframe_color;
+	
+	if vlength of diffuse_color > vlength of specular_color then
+		wireframe_color = diffuse_color;
+	else
+		if (specular_color <> < 0.9 0.9 0.9 >) then
+			wireframe_color = specular_color;
+		else
+			wireframe_color = diffuse_color;        
+		end;
+	end;
+	
+	answer (new material colored wireframe_color with
+		diffuse = diffuse_color;
+		specular_power = specularity of shininess;
+		specular = specular_color * sqrt specular_power;
+		ambient = diffuse_color;
+		emissive = emissive_color;
+	);
+end;    // translated_material
+
+shape translated_rectangle with
+	scalar width = 1;
+	scalar length = 1;
+	integer fillet = 0;
+is  
+	parallelogram with
+		vertex = < (-width / 2) (-length / 2) 0 >;
+		side1 = < width 0 0 >;
+		side2 = < 0 length 0 >;
+	end;    
+end;    // translated_rectangle

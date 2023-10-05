@@ -1,0 +1,56 @@
+{***************************************************************}
+{                          recliner.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do recliner_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape recliner is
+    shape side is
+        extrude [[1 0] [1 1] [.5 1.5] [-1 1.5] [-1 0]]
+            along <1 0 0>
+        with
+            height = .5;
+            smoothing is on;
+        end;
+    end;    // side
+
+    shape body is
+        extrude [[1 0] [1 1] [-.5 1] [-.5 2.5] [-1 2.5] [-1 0]]
+            along <1 0 0>
+        with
+            height = 1.5;
+            smoothing is on;
+        end;
+    end;    // body
+
+    color = brown;
+    side with
+        move to <-1 0 0>;
+    end;
+    side with
+        move to <1 0 0>;
+    end;
+    body;
+end;    // recliner
+
+
+anim recliner_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape recliner;
+end;    // recliner_anim

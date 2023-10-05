@@ -1,0 +1,101 @@
+{***************************************************************}
+{                       native_shading.ores                     }
+{                      OMAR Resources (ORES)                    }
+{***************************************************************}
+{                                                               }
+{             Contains the native shading utilities.            }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/strings.ores";
+include "system/color.ores";
+
+
+enum coords is raster, screen, camera, world, local, surface, parametric;
+
+
+native vector question location
+    in coords type coords is world;
+end;    // location
+
+native vector question normal
+    in coords type coords is world;
+end;    // normal
+
+native vector question direction
+    in coords type coords is world;
+end;    // direction
+
+native scalar question distance;
+
+
+{***************************************************************}
+{                   SAGE illumination primitives                }
+{***************************************************************}
+native integer question light_number;
+
+native vector question light_direction
+    of integer light_number;
+end;    // light_direction
+
+native vector question light_intensity
+    of integer light_number;
+end;    // light_intensity
+
+
+{***************************************************************}
+{                     SAGE lighting primitives                  }
+{***************************************************************}
+native vector question diffuse;
+native vector question specular
+    scalar shininess;
+end;    // specular
+
+
+{***************************************************************}
+{                   SAGE ray tracing primitives                 }
+{***************************************************************}
+native boolean question ray_inside;
+native boolean question shadow_ray;
+native integer question reflection_level;
+native integer question refraction_level;
+
+native color type question reflect
+    color type color;
+end;    // reflect
+
+native color type question refract
+    scalar index;
+    color type color;
+end;    // refract
+
+
+{***************************************************************}
+{         SAGE displacement and bump mapping primitives         }
+{***************************************************************}
+native verb set_location
+    in coords type coords is world;
+    to vector v;
+end;    // set_location
+
+native verb set_normal
+    in coords type coords is world;
+    to vector v;
+end;    // set_normal
+
+native verb set_direction
+    in coords type coords is world;
+    to vector v;
+end;    // set_direction
+
+native verb set_distance
+    to scalar s;
+end;    // set_distance

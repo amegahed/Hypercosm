@@ -1,0 +1,29 @@
+do ellipse_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_ellipse.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim ellipse_anim
+is
+	shape scene with
+	    scalar time = 0;
+	is	
+		translated_3ds_ellipse with
+		    length = 50;
+		    width = 75 + sin(time * 90) * 25;
+		    steps = 8;
+    	end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Ellipse" with
+		auto_camera is on;
+	end;
+end;	// ellipse_anim

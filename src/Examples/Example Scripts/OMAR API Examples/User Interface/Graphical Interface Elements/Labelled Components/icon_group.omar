@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            icon_group.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of an icon group         }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do icon_group_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/icon.ores";
+include "system/overlay_selector_group.ores";
+
+anim icon_group_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	verb wireframe_action is
+		write "wireframe!", ;
+	end;
+	verb shaded_action is
+		write "shaded!", ;
+	end;
+	
+	overlay_components type components is [
+		new icon labelled "Wireframe" at <-.8 .8 0> 
+			poster "wireframe_icon.gif"
+			selecting (new action of wireframe_action)
+		new icon labelled "Shaded" at <-.8 .5 0> 
+			poster "smooth_icon.gif"
+			selecting (new action of shaded_action)
+	];
+	overlay_selector_group type icon_group containing components;
+				
+	picture scene is
+		sphere;
+		icon_group overlay at 10;
+		default_lights;
+		default_background at 100;
+	end;    // scene
+	
+	verb update is
+		icon_group update;
+	end;    // update
+	
+	while true do
+		scene;
+		update;
+	end;
+end;    // icon_group_anim

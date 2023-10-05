@@ -1,0 +1,80 @@
+do trans_to_quat_test;
+
+
+include "system/trans.ores";
+include "system/transformations.ores";
+include "system/quaternions.ores";
+
+
+verb quat_to_trans_test is
+	quat type quat of -0.5277 by <-0.6987 0.2909 -0.3852>;
+	axes type axes;
+	
+	write "original quat: ", ;
+	quat print;
+	write;
+	
+	write "derived trans: ", ;
+	quat get_axes axes;
+	axes print;
+	write;
+end;	// quat_to_trans_test
+
+
+verb trans_to_quat_test is
+	trans type trans;
+	quat type quat;
+	rotate the trans by 270 around <0 0 1>;
+	//rotate the trans by 90 around <0 1 0>;
+
+	write "original trans: ", ;
+	trans print;
+	write;
+	
+	write "derived quat: ", ;
+	quat set_axes to trans;
+	//quat's v = - quat's v;
+	quat print;	
+	write;
+	
+	write "derived trans: ", ;
+	quat get_axes trans;
+	trans print;
+end;	// trans_to_quat_test
+
+
+verb quat_interpolation_test is
+	trans type trans1;
+	trans type trans2;
+	quat type quat1;
+	quat type quat2;
+	quat type quat3;
+	trans type trans3;
+	trans type trans4;
+	
+	trans2 = trans1;
+	rotate the trans2 by 90 around <0 0 1>;
+	
+	write "trans1: ", ;
+	trans1 print;
+	write "trans2: ", ;
+	trans2 print;
+	
+	write "quat1: ", ;
+	quat1 set_axes to trans1;
+	quat1 print;
+	write "quat2: ", ;
+	quat2 set_axes to trans2;
+	quat2 print;
+	write "quat3: ", ;
+	quat3 is quat1 interpolated to quat2 by .5;
+	quat3 print;
+	
+	write "trans3: ", ;
+	quat1 get_axes trans3;
+	trans3 print;
+	
+	write "trans4: ", ;
+	quat2 get_axes trans4;
+	trans4 print;
+end;	// quat_interpolation_test

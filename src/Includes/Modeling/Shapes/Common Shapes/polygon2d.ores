@@ -1,0 +1,35 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           polygon2d.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of an        }
+{       polygon which takes an array of 2d points.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_shapes.ores";
+
+shape polygon2d
+	scalar vertices[, ];
+with
+	vector origin = <0 0 0>;
+	vector x_axis = <1 0 0>;
+	vector y_axis = <0 1 0>;
+is
+	final integer first = min vertices;
+	final integer last = max vertices;
+	vector point[first..last];
+
+	x_axis = x_axis / sqrt (x_axis dot x_axis);
+	y_axis = y_axis / sqrt (y_axis dot y_axis);
+	for integer counter = first..last do
+		point[counter] = origin + x_axis * vertices[counter, 1] +
+			y_axis * vertices[counter, 2];
+	end;
+	
+	polygon point;
+end;    // polygon2d

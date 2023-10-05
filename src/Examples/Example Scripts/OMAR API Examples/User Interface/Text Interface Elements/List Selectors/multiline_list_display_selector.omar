@@ -1,0 +1,62 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm  multiline_list_display_selector.omar  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a multiline list      }
+{       display selector user interface component.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do multiline_list_display_selector_anim;
+
+include "system/3d.ores";
+include "system/multiline_list_display_selector.ores";
+ 
+anim multiline_list_display_selector_anim with
+	double_buffer is true;
+is
+	strings type title is [
+		"Procedure Checklist"
+		"Steps"
+	];
+	strings type step1 is ["This"];
+	strings type step2 is ["That"];
+	strings type step3 is ["The" "Other" "Thing!"];
+	strings type checklist[] is [
+		step1 step2 step3
+	];
+	strings type labels is [
+		"First Step"
+		"Second Step"
+		"Third Step"
+	];
+	multiline_text_display type text_display of title at <-1 .8 0> aligned to middle_left;
+	multiline_list_display_selector type list_display_selector
+		of checklist labelled labels
+		at <.95 0 0> aligned to middle_right
+		using text_display
+	with
+		selected is false;
+	end;
+		
+	verb list_display_action is
+		strings type step is list_display_selector get_selected_step;
+		
+		write "selected item is:", ;
+		step print;
+		write;
+	end;    // list_display_action
+	picture scene is
+		list_display_selector draw;
+		text_display draw;
+	end;
+	
+	list_display_selector set_selection_action to (new action of list_display_action);
+	while true do
+		scene;
+		list_display_selector update;
+	end;
+end;    // multiline_list_display_selector_anim

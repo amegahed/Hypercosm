@@ -1,0 +1,81 @@
+{***************************************************************}
+{                          hash_test.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "hashtables.ores";
+include "printing.ores";
+
+
+subject thing
+implements
+	printable
+does
+    verb new with
+        integer value = 0;
+    end;    // new
+
+    verb print;
+has
+    integer value = 0;
+is
+    verb new with
+        integer value = 0;
+    is
+        thing's value = value;
+    end;    // new
+
+
+    verb print is
+        write "thing with value = ", value, ;
+    end;    // print
+end;    // thing
+
+
+verb test is
+    thing type thing1 with
+        value = 8;
+    end;
+    thing type thing2 with
+        value = 16;
+    end;
+    subject type item is none;
+    thing type thing is none;
+    hashtable type hashtable;
+
+    // store items in hashtable
+    //
+    write "storing thing1 as fred, thing2 as barney", ;
+    hashtable enter the thing1 as "fred", the thing2 as "barney";
+    write "stored ", hashtable entries, " items", ;
+
+    // retreive first item from hashtable
+    //
+    write "retreiving fred...", ;
+    thing is thing type hashtable item named "fred";
+    thing print;
+
+    // retreive second item from hashtable
+    //
+    write "retreiving barney...", ;
+    thing is thing type hashtable item named "barney";
+    thing print;
+
+    // retreive third (nonexistant) item from hashtable
+    //
+    write "retreiving wilma...", ;
+    item is hashtable item named "wilma";
+    if some item then
+        thing is thing type item;
+        thing print;
+    else
+        write "no item", ;
+    end;
+end;    // test

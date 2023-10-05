@@ -1,0 +1,395 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  3ds_pyramid.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains pyramid definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_textureable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+
+
+final subject translated_3ds_pyramid
+extends
+    translated_3ds_collapsable translated_3ds_texturable_object
+does
+    // constructor
+    //
+	verb new with
+	
+    	// geometry parameters
+    	//
+        scalar width = 1;
+        scalar depth = 1;
+        scalar height = 1;
+        
+        // tessellation parameters
+        //
+        integer width_segments = 1;
+    	integer depth_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+	end;
+
+    // attributes setting method
+    //
+	verb set with
+	
+    	// geometry parameters
+    	//
+        scalar width = 1;
+        scalar depth = 1;
+        scalar height = 1;
+        
+        // tessellation parameters
+        //
+        integer width_segments = 1;
+    	integer depth_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+	end;
+		
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_pyramid type question get;
+	reference verb recycle;	
+has
+	// geometry attributes
+	//
+    scalar width;
+    scalar depth;
+    scalar height;
+    
+    // tessellation attributes
+    //
+    integer width_segments;
+	integer depth_segments;
+	integer height_segments;
+	
+private	
+	// recycling attributes
+	//
+	translated_3ds_pyramid type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_pyramid type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    	
+	verb new with
+	
+    	// geometry parameters
+    	//
+        scalar width = 1;
+        scalar depth = 1;
+        scalar height = 1;
+        
+        // tessellation parameters
+        //
+        integer width_segments = 1;
+    	integer depth_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+	is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+
+		if verbose_recycling then
+			write "new 3ds pyramid", ;
+		end;
+				    
+		with translated_3ds_pyramid do
+		
+        	// set geometry attributes
+        	//
+            its width = width;
+            its depth = depth;
+            its height = height;
+            
+            // set tessellation attributes
+            //
+            its width_segments = width_segments;
+        	its depth_segments = depth_segments;
+        	its height_segments = height_segments;
+	    end;
+	end;	// new	
+
+
+	//
+    // attributes setting method
+    //
+    
+    
+	verb set with
+	
+    	// geometry parameters
+    	//
+        scalar width = 1;
+        scalar depth = 1;
+        scalar height = 1;
+        
+        // tessellation parameters
+        //
+        integer width_segments = 1;
+    	integer depth_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+    is
+		with translated_3ds_pyramid do
+		
+        	// set geometry attributes
+        	//
+            its width = width;
+            its depth = depth;
+            its height = height;
+            
+            // set tessellation attributes
+            //
+            its width_segments = width_segments;
+        	its depth_segments = depth_segments;
+        	its height_segments = height_segments;
+        	
+            // set texturing parameters
+            //
+	        its gen_mapping_coords is gen_mapping_coords;
+	    end;    
+	end;	// set
+	
+	
+    //
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;		
+	    
+    	vector points[1..5];
+    	integer sign = sign width * sign depth * sign height;
+    		 
+    	points[1] = <(-width / 2) (-depth / 2) 0>;
+    	points[2] = <(width / 2) (-depth / 2) 0>;
+    	points[3] = <(width / 2) (depth / 2) 0>;
+    	points[4] = <(-width / 2) (depth / 2) 0>;
+    	points[5] = <0 0 height>;
+
+        // side faces
+        //
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[1] points[2] points[5] points[5]
+		with
+    		// tessellation parameters
+    		//
+    		rows = height_segments;
+    		columns = width_segments;
+    
+    		// rendering parameters
+    		//
+    		one_sided is true;
+    		reversed is (sign < 0);
+    		
+    		// texturing parameters
+    		//
+    		textured is gen_mapping_coords;
+		);
+		
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[2] points[3] points[5] points[5]
+		with
+    		// tessellation parameters
+    		//
+    		rows = height_segments;
+    		columns = depth_segments;
+    
+    		// rendering parameters
+    		//
+    		one_sided is true;
+    		reversed is (sign < 0);
+    		
+    		// texturing parameters
+    		//
+    		textured is gen_mapping_coords;
+		);    
+
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[3] points[4] points[5] points[5]
+		with
+    		// tessellation parameters
+    		//	
+    		rows = height_segments;
+    		columns = width_segments;
+    
+    		// rendering parameters
+    		//		
+    		one_sided is true;
+    		reversed is (sign < 0);
+    		
+    		// texturing parameters
+    		//
+    		textured is gen_mapping_coords;
+		);    
+
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[4] points[1] points[5] points[5]
+		with
+    		// tessellation parameters
+    		//	
+    		rows = height_segments;
+    		columns = depth_segments;
+    		
+    		// rendering parameters
+    		//	
+    		one_sided is true;
+    		reversed is (sign < 0);
+    		
+    		// texturing parameters
+    		//
+    		textured is gen_mapping_coords;
+		); 
+		
+		// bottom face
+		//
+		editable_mesh add_element (get_quad_grid_mesh
+            of points[4] points[3] points[2] points[1]
+		with
+    		// tessellation parameters
+    		//	
+    		rows = depth_segments;
+    		columns = width_segments;
+    		
+    		// rendering parameters
+    		//			
+    		one_sided is true;
+    		reversed is (sign < 0);
+    		
+    		// texturing parameters
+    		//
+    		textured is gen_mapping_coords;
+		);
+		
+		recycle;
+		answer editable_mesh;
+	end;	// get_collapsed
+	
+	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_pyramid type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_pyramid type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_pyramid;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_pyramid;
+		
+		translated_3ds_pyramid is none;
+	end;		// recycle			
+end;    // translated_3ds_pyramid
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_pyramid with
+
+	// geometry parameters
+	//
+    scalar width = 1;
+    scalar depth = 1;
+    scalar height = 1;
+    
+    // tessellation parameters
+    //
+    integer width_segments = 1;
+	integer depth_segments = 1;
+	integer height_segments = 1;
+	
+	// texturing parameters
+	//
+    boolean gen_mapping_coords is false;
+    
+    // modifier stack
+    //
+	translated_3ds_pyramid type translated_3ds_pyramid is translated_3ds_pyramid type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_pyramid;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_pyramid set with
+	
+    	// set geometry parameters
+    	//
+        width = static width;
+        depth = static depth;
+        height = static height;
+        
+        // set tessellation parameters
+        //
+        width_segments = static width_segments;
+    	depth_segments = static depth_segments;
+    	height_segments = static height_segments;
+    	
+    	// set texturing parameters
+    	//
+        gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_pyramid

@@ -1,0 +1,118 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          bubbling_fish.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a description of a fish blowing a stream        }   
+{       of animated bubbles.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do bubbling_fish_anim;
+
+include "system/3d.ores";
+include "fish.omar";
+include "bubble_stream.ores";
+
+subject bubbling_fish
+extends
+	advanceable fish
+does
+	// constructor
+	//
+	verb new with
+		scalar tail_wags_per_sec = 1 / 4;
+		scalar fin_wags_per_sec = 1;
+		scalar max_tail_deflection = 20;
+		scalar max_fin_deflection = 30;
+		integer blink_time = 50;
+	end;    // new
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// animation methods
+	//
+	verb advance
+		by scalar time_step;
+	end;
+has
+	// attributes
+	//
+	bubble_stream type bubble_stream;
+	material type bubble_material is glass;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		scalar tail_wags_per_sec = 1 / 4;
+		scalar fin_wags_per_sec = 1;
+		scalar max_tail_deflection = 20;
+		scalar max_fin_deflection = 30;
+		integer blink_time = 50;
+	is
+		// call superclass constructor
+		//
+		fish new with
+			tail_wags_per_sec = static tail_wags_per_sec;
+			fin_wags_per_sec = static fin_wags_per_sec;
+			max_tail_deflection = static max_tail_deflection;
+			max_fin_deflection = static max_fin_deflection;
+			blink_time = static blink_time;
+		end;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+	
+	
+	shape instance is
+		fish static instance;
+		bubble_stream instance with
+			move to <-21 0 0>;
+			material is bubble_material;
+		end;
+	end;    // instance
+	
+	
+	//
+	// animation methods
+	//
+	
+	
+	verb advance
+		by scalar time_step;
+	is   
+		// advance bubbles
+		//
+		bubble_stream advance by time_step;
+	end;    // update
+end;    // bubbling_fish
+
+anim bubbling_fish_anim
+	args type args;
+with
+	double_buffer is on;
+	eye = <-50 -30 10>; 
+	//interface_underlay is new scaled_sprite poster "binoculars.png";
+	interface_overlay is new scaled_sprite poster "white-frame.png";
+	args check;
+is
+	bubbling_fish type fish;
+	
+	targeted_camera type front_camera from <-50 0 0> to <0 0 0>
+		using (new camera_lens with field_of_view = 60);
+	targeted_camera type back_camera from <50 0 0> to <0 0 0>
+		using (new camera_lens with field_of_view = 60);
+			
+	cameras is [front_camera back_camera];
+	camera_labels is ["Front" "Back"];  
+	mouse_controlled_actor fish titled "Fish!" subtitled "(with bubbles!)";
+end;    // bubbling_fish_anim

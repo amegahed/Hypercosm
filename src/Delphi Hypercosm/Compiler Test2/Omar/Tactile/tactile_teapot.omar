@@ -1,0 +1,37 @@
+do tactile_teapot_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/teapot.omar";
+
+
+anim tactile_teapot_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape teapot_shape is
+        write "making teapot", ;
+        teapot with
+            magnify by 4;
+            teapot;
+        end;
+    end;    // teapot_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape teapot_shape titled "Tactile Teapot" in floor;
+end;    // tactile_teapot_anim

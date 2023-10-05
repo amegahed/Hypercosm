@@ -1,0 +1,115 @@
+{***************************************************************}
+{                      manipulation_planes.ores                 }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/manipulation.ores";
+include "system/intersections.ores";
+
+
+subject infinite_plane
+does
+    verb new
+        at vector origin = <0 0 0>;
+        around vector normal = <0 0 1>;
+    end;
+has
+    public vector origin, normal;
+is
+    verb new
+        at vector origin = <0 0 0>;
+        around vector normal = <0 0 1>;
+    is
+        with infinite_plane do
+            its origin = origin;
+            its normal = normal;
+        end;
+    end;    // new
+end;    // infinite_plane
+
+
+subject manipulation_plane
+extends
+    touchable pressable infinite_plane
+does
+    verb new
+        at vector origin = <0 0 0>;
+        around vector normal = <0 0 1>;
+    end;
+    
+    // touchable methods
+    //
+    verb touch
+        from vector location;
+        towards vector direction;
+    end; 
+        
+    // pressable methods
+    //
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;
+    verb release
+        from vector location;
+        towards vector direction;
+    end;
+has    
+    public vector press_point, touch_point;
+is
+    verb new
+        at vector origin = <0 0 0>;
+        around vector normal = <0 0 1>;
+    is
+        infinite_plane new at origin around normal;
+    end;    // new
+    
+
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        scalar min_t = infinity;
+        if (ray_hits_infinite_plane from location towards direction closer than min_t 
+            with origin = static origin; normal = static normal) then
+            touch_point = location + direction * min_t;
+        end;
+    end;    // touch    
+
+    
+        
+    // pressable methods
+    //
+    
+
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    is
+        scalar min_t = infinity;
+        if (ray_hits_infinite_plane from location towards direction closer than min_t 
+            with origin = static origin; normal = static normal) then
+            press_point = location + direction * min_t; 
+        end;
+    end;    // press
+    
+    
+    verb release
+        from vector location;
+        towards vector direction;
+    is
+        press_point = touch_point;
+    end;
+end;    // manipulation_plane

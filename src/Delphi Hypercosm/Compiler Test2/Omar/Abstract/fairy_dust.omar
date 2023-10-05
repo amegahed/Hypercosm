@@ -1,0 +1,95 @@
+{***************************************************************}
+{                          fairy_dust.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do interactive_pixie_path;
+
+
+include "system/3d.ores";
+include "system/views.ores";
+include "system/paths.ores";
+include "system/figures.ores";
+
+
+picture pixie_path_pict
+    pixie_path type pixie_path;
+with
+    eye = <1 -3 2>;
+    render_mode is wireframe;
+is
+    pixie_path instance;
+end;    // pixie_path_pict
+
+
+anim pixie_path_anim with
+    double_buffer is on;
+is
+    scalar angle = 0;
+    scalar x, y;
+    pixie_path type pixie_path is none;
+
+    x = cos angle;
+    y = sin angle;
+    new pixie_path at <x y 0> with
+        steps = 10;
+        particles = 30;
+        size = .1;
+        head_color = white;
+        tail_color = violet;
+    end;
+    while true do
+        pixie_path_pict pixie_path;
+        angle = angle + 15;
+        x = cos angle;
+        y = sin angle;
+        pixie_path step to <x y 0>;
+    end;
+end;    // pixie_path_anim
+
+
+picture fairy_picture
+    pixie_path type pixie_path;
+with
+    vector location = <0 0 0>;
+is
+    distant_light;
+    pixie_path instance;
+    plane;
+//  sphere;
+    star with
+        magnify by .1;
+        scale by height / width along <1 0 0>;
+        move to location;
+    end;
+end;    // fairy_picture
+
+
+anim interactive_pixie_path
+        args type args;
+with
+    double_buffer is on;
+    render_mode is wireframe;
+    background = black;
+    args check;
+is
+    vector v = default_mouse get_location;
+    
+    pixie_path type pixie_path at v with
+        steps = 20;
+        particles = 30;
+        size = .1;
+    end;
+
+    while true do
+        fairy_picture pixie_path with
+            ortho_view;
+            location = default_mouse get_location;
+            pixie_path step to location;
+        end;
+    end;
+end;    // interactive_pixie_path

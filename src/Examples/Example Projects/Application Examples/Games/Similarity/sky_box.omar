@@ -1,0 +1,105 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            sky_box.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       The sky_box can be used to envelop a scene and          }
+{       rotate slowly to simulate the sky with moving clouds.   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do sky_box_test;
+
+include "system/anims.ores";
+include "system/actors.ores";
+include "system/materials.ores";
+include "system/shapes.ores";
+
+subject sky_box
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new with
+		scalar size = 1;
+		scalar seconds_per_revolution = 120;
+	end;
+	// rendering method
+	//  
+	shape instance;
+has
+	// attributes
+	//
+	scalar created_time = get_seconds;
+	scalar seconds_per_revolution = 120;
+	scalar size;
+is
+	// implementation
+	//
+	texture type texture_sky using new image named "clouds.jpg"; 
+	material type material_sky is (constant_color white textured texture_sky); 
+	material type material_sky_color_only is (constant_color blue); 
+
+	//
+	// constructor
+	//
+	
+		
+	verb new with
+		scalar size = 1;
+		scalar seconds_per_revolution = 120;
+	is
+		// call supeclass constructor
+		//
+		timed_actor new;
+		
+		// set attributes
+		//
+		with sky_box do
+			its size = size;
+			its seconds_per_revolution = seconds_per_revolution;
+		end;
+	end;    // new
+	
+	//
+	// rendering method
+	//
+	
+		
+	shape instance
+	is
+		scalar now = get_seconds;
+		scalar delta_time = now - created_time;
+		scalar seconds_turned = delta_time / seconds_per_revolution;
+		scalar percent_turned = seconds_turned - (trunc seconds_turned);
+		scalar rotate_amount = percent_turned * 360;
+		
+		cylinder
+		with
+			radius = size;
+			end1 = <0 0 50>;
+			end2 = <0 0 -50>;
+			if texture_sky status is loaded then
+				material is material_sky;
+			else
+				material is material_sky_color_only;
+			end;
+			rotate by rotate_amount around <0 0 1>;
+		end;
+	end;
+end;
+	
+anim sky_box_test
+with
+	double_buffer is on;
+	eye = <1 0 0>;
+is
+	sky_box type sky_box with
+		size = 50;
+	end;
+	
+	mouse_controlled_actor sky_box;
+end;

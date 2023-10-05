@@ -1,0 +1,68 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           squares.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of non axis aligned square        }
+{       shaped  regions.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+subject square
+does
+	// constructor
+	//
+	verb new
+		of vector vertices[1 .. 4];
+	end;
+	
+	// querying methods
+	//
+	vector[] question get_vertices;     // returns 4 vertices
+	vector[,] question get_edges;       // returns 4 pairs of vertices
+has
+	// attributes
+	//
+	public vector vertices[1 .. 4];
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of vector vertices[1 .. 4];
+	is
+		square's vertices is vertices;
+	end;    // new
+	
+	//  
+	// querying methods
+	//
+	
+	vector[] question get_vertices is
+		answer vertices;
+	end;    // get_vertices
+	
+	vector[,] question get_edges is
+		vector edges[1 .. 4, 1 .. 2];
+		
+		verb set_edge
+			integer index;
+			from integer index1;
+			to integer index2;
+		is
+			edges[index, 1] = vertices[index1];
+			edges[index, 2] = vertices[index2];
+		end;    // set_edge
+		
+		set_edge 1 from 1 to 2;
+		set_edge 2 from 2 to 3;
+		set_edge 3 from 3 to 4;
+		set_edge 4 from 4 to 1;
+		
+		answer edges;
+	end;    // get_edges
+end;    // square

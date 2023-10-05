@@ -1,0 +1,761 @@
+{***************************************************************}
+{                          alarm_clock.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do alarm_anim;
+
+
+include "system/native_sounds.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/digital.ores";
+include "system/futura_l.ores";
+include "system/common_materials.ores";
+
+
+subject alarm_clock
+extends
+    pressable_actor
+does
+    verb new;
+    shape instance;
+    verb act;
+
+    // methods for setting the alarm
+    //
+    verb set_alarm;
+    verb increment_minute;
+    verb increment_hour;
+    verb deactivate_alarm;
+
+    // method for pushing buttons
+    //
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;    // press
+    verb release
+        from vector location;
+        towards vector direction;
+    end;    // release
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;    // touch
+has
+    enum object is set_alarm_button, increment_hours_button,
+        increment_minutes_button, increment_seconds_button,
+        deactivate_button;
+
+    // time attributes
+    //
+    integer hours, minutes, seconds;
+    boolean pm;
+
+    // alarm attributes
+    //
+    boolean alarm_mode is false;
+    integer alarm_hours = 12, alarm_minutes = 0, alarm_seconds = 0;
+    boolean alarm_pm is false, sound_alarm is false;
+
+
+    digital_readout type hour_readout shows hours with
+        digits = 2;
+        decimal_places = 0;
+        show_leading_zeros is false;
+    end;
+    digital_readout type minute_readout shows minutes with
+        digits = 2;
+        decimal_places = 0;
+    end;
+    digital_readout type second_readout shows seconds with
+        digits = 2;
+        decimal_places = 0;
+    end;
+
+    // button status attributes
+    //
+    object type tracked_object is none;
+    object type touched_object is none;
+is
+    // materials
+    //
+    material type clock_material is wood_veneer;
+    material type strip_material is brushed_metal;
+    material type panel_material is plastic colored dark dark grey;
+    material type label_material is constant_color white;
+    material type led_material is constant_color red;
+
+    // sounds
+    //
+    sound type ticking_sound named "Type.wav";
+    sound type alarm_sound named "ringout.wav";
+    sound type button_sound named "ding.wav";
+
+    scalar height = 2;
+    scalar depth = 4;
+    scalar length = 8;
+    scalar roundness = .55;
+    scalar foot_height = .25;
+    scalar foot_radius = .45;
+    scalar button_spacing = 1.75;
+
+
+    verb check_alarm is
+        if hours = alarm_hours and minutes = alarm_minutes and
+            seconds = alarm_seconds and pm is alarm_pm
+        then
+            sound_alarm is true;
+        end;
+    end;    // check_alarm
+
+
+    verb get_clock_time is
+        hours = trunc (get_time dot <1 0 0>);
+        minutes = trunc (get_time dot <0 1 0>);
+        seconds = trunc (get_time dot <0 0 1>);
+
+        // convert to 12 hour time
+        //
+        pm is (hours >= 12);
+        if hours = 0 then
+            hours = 12;
+        elseif hours > 12 then
+            hours = itself - 12;
+        end;
+
+        // see if alarm is set off
+        //
+        check_alarm;
+    end;    // get_clock_time
+
+
+    verb new is
+        get_clock_time;
+
+        // set alarm time to current time
+        // + 30 seconds
+        //
+        alarm_hours = hours;
+        alarm_pm is pm;
+
+        if seconds < 30 then
+            alarm_minutes = minutes;
+            alarm_seconds = seconds + 30;
+        else
+            alarm_minutes = (minutes + 1) mod 60;
+            alarm_seconds = (seconds + 30) mod 60;
+        end;
+    end;    // new
+
+
+    objective shape button
+        labelled string type label;
+    with
+    	boolean depressed is false;
+    is
+        static shape button_body is
+            block with
+                material is chalk colored dark grey;
+                scale by .5 along <1 0 0>;
+                scale by .25 along <0 1 0>;
+                scale by .1 along <0 0 1>;
+                move to <0 0 .1>;
+            end;
+        end;
+
+        button_body with
+        	if depressed then
+                move to <0 0 -.1>;
+        	end;
+        end;
+        futura_l_word label with
+            move to <0 0 .125>;
+            magnify by 2;
+        	if depressed then
+                move to <0 0 -.1>;
+        	end;
+        end;
+    end;    // button
+
+
+    objective shape corner is
+        sphere with
+            umin = -90;
+            umax = 90;
+            vmin = 0;
+            vmax = 90;
+            radius = roundness;
+            rotate by 90 around <1 0 0>;
+            scale by (height / 2 / roundness) along <0 0 1>;
+        end;
+    end;    // corner
+
+
+    objective shape side is
+        // front right corner
+        //
+        corner with
+            move to <0 (-depth / 2) 0>;
+        end;
+
+        // rear right corner
+        //
+        corner with
+            move to <0 (-depth / 2) 0>;
+            scale by -1 along <0 1 0>;
+        end;
+
+        // right side
+        //
+        cylinder with
+            end1 = <0 (-depth / 2) 0>;
+            end2 = <0 (depth / 2) 0>;
+            umin = -90;
+            umax = 90;
+            radius = roundness;
+            scale by (height / 2 / roundness) along <0 0 1>;
+        end;
+    end;    // side
+
+
+    objective shape cross_section with
+        boolean front is true;
+    is
+        static material type glassy_material is glass polished very shiny poster "transparent60.png";
+        
+        // top
+        //
+        parallelogram with
+            scale by (depth / 2) along <0 1 0>;
+            move to <0 0 (height / 2)>;
+        end;
+
+        // bottom
+        //
+        parallelogram with
+            scale by (depth / 2) along <0 1 0>;
+            move to <0 0 (-height / 2)>;
+        end;
+
+        // rear
+        //
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <1 0 0>;
+            umin = -90;
+            umax = 90;
+            radius = roundness;
+            scale by (height / 2 / roundness) along <0 0 1>;
+            move to <0 (depth / 2) 0>;
+        end;
+
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <1 0 0>;
+            umin = -90;
+            umax = 90;
+            radius = roundness;
+            scale by (height / 2 / roundness) along <0 0 1>;
+            move to <0 (depth / 2) 0>;
+            scale by -1 along <0 1 0>;
+            scale by .99 along <1 0 0>;
+
+            if front is false then
+                material is glassy_material;
+                // render_mode is wireframe;
+                edges is silhouette;
+                color = white;
+            end;
+        end;
+    end;    // cross_section
+
+
+    objective shape body_shell is
+        // right side
+        //
+        side with
+            move to <(length / 2) 0 (height / 2)>;
+        end;
+
+        // left side
+        //
+        side with
+            move to <(length / 2) 0 (height / 2)>;
+            scale by -1 along <1 0 0>;
+        end;
+
+        // main body
+        //
+        cross_section with
+            scale by ((length - 1) / 2) along <1 0 0>;
+            move to <0 0 (height / 2)>;
+            front is false;
+        end;
+        cross_section with
+            scale by .25 along <1 0 0>;
+            move to <((length - .5) / 2) 0 (height / 2)>;
+            material is strip_material;
+        end;
+        cross_section with
+            scale by .25 along <1 0 0>;
+            move to <(-(length - .5) / 2) 0 (height / 2)>;
+            material is strip_material;
+        end;
+    end;    // body_shell
+
+
+    objective shape foot is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 foot_height>;
+            radius = foot_radius;
+        end;
+        disk with
+            material is chalk colored dark green;
+            radius = foot_radius;
+        end;
+    end;    // foot
+
+
+    objective shape feet is
+        scalar length_offset = (length - 1) / 2;
+        scalar depth_offset = (depth - 1) / 2;
+
+        // back feet
+        //
+        foot with
+            move to <(-length_offset) (-depth_offset) 0>;
+        end;
+        foot with
+            move to <length_offset (-depth_offset) 0>;
+        end;
+
+        // front feet
+        //
+        foot with
+            move to <(-length_offset) depth_offset 0>;
+        end;
+        foot with
+            move to <length_offset depth_offset 0>;
+        end;
+    end;    // feet
+
+
+    objective shape marker is
+        disk with
+            radius = .1;
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // marker
+
+
+    objective shape colon is
+        marker with
+            move to <0 0 .25>;
+        end;
+        marker with
+            move to <0 0 -.25>;
+        end;
+    end;    // colon
+
+
+    shape display_labels is
+        futura_l_word "AM" with
+            rotate by 90 around <1 0 0>;
+            magnify by 2;
+            move to <-3 0 .5>;
+        end;
+        futura_l_word "PM" with
+            rotate by 90 around <1 0 0>;
+            magnify by 2;
+            move to <-3 0 -.5>;
+        end;
+    end;    // display_labels
+
+
+    shape display_digits is
+        boolean reference pm;
+
+        // AM / PM indicator light
+        //
+        if alarm_mode then
+            pm refers to alarm_clock's alarm_pm;
+        else
+            pm refers to alarm_clock's pm;
+        end;
+        if not pm then
+            marker with
+                move to <-2.5 0 .5>;
+            end;
+        else
+            marker with
+                move to <-2.5 0 -.5>;
+            end;
+        end;
+
+        hour_readout instance with
+            rotate by 90 around <1 0 0>;
+            move to <-2 0 0>;
+        end;
+        colon with
+            move to <-1 0 0>;
+        end;
+        minute_readout instance with
+            rotate by 90 around <1 0 0>;
+            move to <0 0 0>;
+        end;
+        if alarm_mode or trunc (get_time dot <0 0 1> * 2) mod 2 = 0 then
+            colon with
+                move to <1.5 0 0>;
+            end;
+        end;
+        second_readout instance with
+            rotate by 90 around <1 0 0>;
+            move to <2.5 0 0>;
+        end;
+    end;    // display_digits
+
+
+    objective shape display_side is
+        parallelogram with
+            scale by .25 along <1 0 0>;
+            scale by (height / 2) along <0 1 0>;
+            rotate by 90 around <0 1 0>;
+            rotate by 90 around <1 0 0>;
+            move to <0 -.25 0>;
+        end;
+        disk with
+            umin = 90;
+            umax = -90;
+            normal = <1 0 0>;
+            radius = roundness;
+            scale by (height / 2 / roundness) along <0 0 1>;
+            move to <0 -.5 0>;
+        end;
+    end;    // display_side
+
+
+    objective shape display_backing is
+        parallelogram with
+            scale by (length / 2) along <1 0 0>;
+            scale by (height / 2 * .99) along <0 1 0>;
+            rotate by 90 around <1 0 0>;
+        end;
+        display_side with
+            move to <((length - 1) / 2) 0 0>;
+        end;
+        display_side with
+            move to <(-(length - 1) / 2) 0 0>;
+        end;
+    end;    // display_backing
+
+
+    shape display_panel is
+        display_backing with
+            material is panel_material;
+        end;
+        display_labels with
+            material is label_material;
+            move to <0 -.1 0>;
+        end;
+
+        if not sound_alarm or trunc (get_time dot <0 0 1> * 2)
+            mod 2 = 0
+        then
+            display_digits with
+                material is led_material;
+                move to <0 -.05 0>;
+            end;
+        end;
+    end;    // display_panel
+
+
+    objective shape set_alarm_button with
+    	boolean depressed is false;
+    is
+        button labelled "SET" with
+        	depressed is static depressed;
+            move to <(button_spacing * -1.5) 0
+                (foot_height + height)>;
+        end;
+    end;    // set_alarm_button
+
+
+    objective shape increment_hours_button with
+    	boolean depressed is false;
+    is
+        button labelled "H" with
+        	depressed is static depressed;
+            move to <(button_spacing * -.75) 0
+                (foot_height + height)>;
+        end;
+    end;    // increment_hours_button
+
+
+    objective shape increment_minutes_button with
+    	boolean depressed is false;
+    is
+        button labelled "M" with
+        	depressed is static depressed;
+            move to <(button_spacing * 0) 0
+                (foot_height + height)>;
+        end;
+    end;    // increment_minutes_button
+
+
+    objective shape increment_seconds_button with
+    	boolean depressed is false;
+    is
+        button labelled "S" with
+        	depressed is static depressed;
+            move to <(button_spacing * .75) 0
+                (foot_height + height)>;
+        end;
+    end;    // increment_seconds_button
+
+
+    objective shape deactivate_button with
+    	boolean depressed is false;
+    is
+        button labelled "OFF" with
+        	depressed is static depressed;
+            move to <(button_spacing * 1.5) 0
+                (foot_height + height)>;
+        end;
+    end;    // deactivate_button
+
+
+    shape clock is
+        display_panel with
+            move to <0 (-(depth - 1) / 2) (height / 2)>;
+            skew from <0 0 1> to <0 .5 1>;
+        end;
+        body_shell with
+            skew from <0 0 1> to <0 .5 1>;
+        end;
+    end;    // clock
+
+
+	//
+	// renderable method
+	//
+	
+	
+    shape instance is
+        feet with
+            material is aluminum;
+        end;
+        clock with
+            material is clock_material;
+            move to <0 0 foot_height>;
+        end;
+
+        // alarm setting buttons
+        //
+        set_alarm_button with
+        	depressed is tracked_object is set_alarm_button;
+        return with
+	    	if bounds_touched then
+				touched_object is set_alarm_button;
+	        end;
+        end;
+        
+        increment_hours_button with
+        	depressed is tracked_object is increment_hours_button;
+        return with
+        	if bounds_touched then
+        		touched_object is increment_hours_button;
+        	end;
+        end;
+        
+        increment_minutes_button with
+        	depressed is tracked_object is increment_minutes_button;
+        return with
+        	if bounds_touched then
+        		touched_object is increment_minutes_button;
+        	end;
+        end;
+        
+        increment_seconds_button with
+        	depressed is tracked_object is increment_seconds_button;
+        return with
+        	if bounds_touched then
+        		touched_object is increment_seconds_button;
+        	end;
+        end;
+
+        deactivate_button with
+        	depressed is tracked_object is deactivate_button;
+        return with
+        	if bounds_touched then
+        		touched_object is deactivate_button;
+        	end;
+        end;
+    end;    // instance
+
+
+    verb set_alarm is
+        alarm_mode is not alarm_mode;
+        if alarm_mode then
+            hour_readout's value refers to alarm_hours;
+            minute_readout's value refers to alarm_minutes;
+            second_readout's value refers to alarm_seconds;
+        else
+            hour_readout's value refers to hours;
+            minute_readout's value refers to minutes;
+            second_readout's value refers to seconds;
+        end;
+    end;    // set_alarm
+
+
+    verb increment_hour is
+        alarm_hours = (alarm_hours) mod 12 + 1;
+        if alarm_hours = 12 then
+            alarm_pm is not alarm_pm;
+        end;
+    end;    // increment_hour
+
+
+    verb increment_minute is
+        alarm_minutes = (alarm_minutes + 1) mod 60;
+    end;    // increment_minute
+
+
+    verb increment_second is
+        alarm_seconds = (alarm_seconds + 1) mod 60;
+    end;    // increment_second
+
+
+    verb deactivate_alarm is
+        sound_alarm is false;
+    end;    // deactivate_alarm
+
+
+    // method for pushing buttons
+    //
+
+
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    is
+        if some touched_object then
+        	tracked_object is touched_object;
+            button_sound play;
+        end;
+    end;    // press
+
+
+    verb release
+        from vector location;
+        towards vector direction;
+    is
+        if some tracked_object then
+            if tracked_object is touched_object then
+                when tracked_object is
+                    set_alarm_button:
+                        set_alarm;
+                    end;
+
+                    increment_hours_button:
+                        increment_hour;
+                    end;
+
+                    increment_minutes_button:
+                        increment_minute;
+                    end;
+
+                    increment_seconds_button:
+                        increment_second;
+                    end;
+
+                    deactivate_button:
+                        deactivate_alarm;
+                    end;
+                end;
+            end;
+
+            tracked_object is none;
+            touched_object is none;
+        end;
+    end;    // release
+
+
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        if not ((some current_interaction) and (current_interaction is_tracking)) then
+
+            if (some tracked_object) or (some touched_object) then
+                set_cursor to finger_point;
+
+                if some current_interaction then
+                    current_interaction override;
+                end;
+            else
+                set_cursor to arrow;
+            end;
+
+            if touched_object isn't tracked_object then
+                touched_object is none;
+            end;
+        end;
+    end;    // touch
+    
+    
+    verb act is
+        static integer prev_seconds = 0;
+		
+        if not alarm_mode then
+            get_clock_time;
+        end;
+        if seconds <> prev_seconds then
+            if sound_alarm then
+                alarm_sound play;
+            else
+                ticking_sound play;
+            end;
+        end;
+
+        prev_seconds = seconds;
+        
+        // call superclass method
+        //
+        pressable_actor static act;
+    end;	// act
+end;    // alarm_clock
+
+
+anim alarm_anim
+    args type args;
+with
+    eye = <4 -10 8>;
+    lookat = <0 0 .5>;
+    double_buffer is on;
+    render_mode is shaded;
+    shading is vertex;
+    args check;
+is
+    alarm_clock type alarm_clock;
+
+    shape environment is
+        
+        plane with
+            magnify by 16;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_actor alarm_clock in environment titled "Virtual Alarm Clock";
+end;    // alarm_anim

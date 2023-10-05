@@ -1,0 +1,35 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            pie_graphs.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard shapes for creating simple pie        }
+{       graphs with multicolored slices.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/shapes.ores";
+
+shape pie_graph
+	scalar percentages[];
+with
+	color type pie_color[];
+is
+	scalar sum_angle = 0;
+	integer counter = min pie_color;
+	for each scalar percentage in percentages do
+		scalar theta = percentage / 100 * 360;
+		pie with
+			angle = theta;
+			rotate by -sum_angle around <0 1 0>;
+			if (max pie_color <> 0) then
+				color = pie_color[counter];
+			end;
+		end;
+		sum_angle = itself + theta;
+		counter = itself + 1;
+	end;
+end;    // pie_graph

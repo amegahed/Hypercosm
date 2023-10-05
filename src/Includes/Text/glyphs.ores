@@ -1,0 +1,134 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             glyphs.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{    Glyphs are the shapes that make up a text character set.   }
+{    The glyph objects defined here are used by Hypercosm's     }
+{    standard 3D text                                           } 
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+
+subject glyph
+does
+	// constructor
+	//
+	verb new
+		of width scalar width; // The horizontal measurement of the
+							   // glyph, not including any whitespace
+							   // on its sides, and adjusted for
+							   // generic kerning
+		draws shape figure with
+			scalar depth = 0;
+		end;
+	end;
+has
+	// attributes
+	//
+	public scalar width;
+	public shape figure with
+		scalar depth = 0;
+	end;
+is  
+	//
+	// constructor
+	//
+
+	verb new
+		of width scalar width;
+		draws shape figure with
+			scalar depth = 0;
+		end;
+	is
+		glyph's width = width;
+		glyph's figure does figure;
+	end;
+end;    // glyph
+
+abstract subject glyph_set
+does
+	abstract scalar question glyph_spacing;
+	abstract scalar question ascent_line;
+	abstract scalar question base_line;
+	abstract scalar question descent_line;
+has
+	// attributes
+	//
+	public glyph type glyphs[];
+end;    // glyph_set
+
+subject font_family
+does
+	// constructor
+	//
+	verb new with
+		glyph_set type plain_set is none;
+		glyph_set type bold_set is none;
+		glyph_set type italic_set is none;
+		glyph_set type bold_italic_set is none;
+	end;
+has
+	// attributes
+	//
+	public glyph_set type plain_set is none;
+	public glyph_set type bold_set is none;
+	public glyph_set type italic_set is none;
+	public glyph_set type bold_italic_set is none;
+is
+	//
+	// constructor
+	//
+
+	verb new with
+		glyph_set type plain_set is none;
+		glyph_set type bold_set is none;
+		glyph_set type italic_set is none;
+		glyph_set type bold_italic_set is none;
+	is
+		boolean bold_italic is some bold_italic_set;
+	
+		// Assign some glyph_set to each set in family
+		//
+		if some plain_set then
+			font_family's plain_set is plain_set;
+		elseif some bold_set then
+			font_family's plain_set is bold_set;
+		elseif some italic_set then
+			font_family's plain_set is italic_set;
+		elseif some bold_italic_set then
+			font_family's plain_set is bold_italic_set;
+		else
+			write "Warning: font_family created with no";
+			write " corresponding glyph_set",;
+		end;
+		
+		if some bold_italic_set then
+			font_family's bold_italic_set is bold_italic_set;
+		elseif some italic_set then
+			font_family's bold_italic_set is italic_set;
+		elseif some bold_set then
+			font_family's bold_italic_set is bold_set;
+		else
+			font_family's bold_italic_set is plain_set;
+		end;
+		
+		if some italic_set then
+			font_family's italic_set is italic_set;
+		elseif bold_italic then
+			font_family's italic_set is bold_italic_set;
+		else
+			font_family's italic_set is plain_set;
+		end;
+		
+		if some bold_set then
+			font_family's bold_set is bold_set;
+		elseif bold_italic then
+			font_family's bold_set is bold_italic_set;
+		else
+			font_family's bold_set is plain_set;
+		end;
+	end;    // new
+end;    // font_family

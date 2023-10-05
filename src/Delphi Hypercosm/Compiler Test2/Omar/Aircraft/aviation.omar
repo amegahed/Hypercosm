@@ -1,0 +1,54 @@
+{***************************************************************}
+{                          aviation.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do aviation_picture;
+
+
+include "system/3d.ores";
+include "system/shuttle.omar";
+include "system/p38.omar";
+include "system/wright.omar";
+
+
+picture aviation_picture
+    args type args;
+with
+    eye = <5 -5 3>;
+    lookat = <0 0 .5>;
+    field_of_view = 30;
+    render_mode is shaded;
+    shading is pixel;
+    background = sky_blue;
+    window_name is "Aviation";
+
+
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    landing_shuttle with
+        material is golden;
+        rotate by 180 around <0 0 1>;
+        magnify by .1;
+    end;
+    landing_p38 with
+        material is chalk colored dark lime_green;
+        magnify by .1;
+        move to <-.8 1.8 0>;
+    end;
+    flyer type's form with
+        material is chalk colored brown;
+        rotate by 180 around <0 0 1>;
+        magnify by .025;
+        move to <.2 -1 0>;
+    end;
+    plane with
+        color = light brown;
+        magnify by 2;
+    end;
+end;    // aviation_picture

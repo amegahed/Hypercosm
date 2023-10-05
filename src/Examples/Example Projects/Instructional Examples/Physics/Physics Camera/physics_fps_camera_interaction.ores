@@ -1,0 +1,197 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    physics_fps_camera_                 3d      }
+{ |/  \|            interaction.ores                    To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the the class that defines a typical           }
+{       first-person-shooter type mouse and keyboard            }
+{       interaction for a physics camera.                       }
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+include "system/physics_camera_interaction.ores";
+subject physics_fps_camera_interaction 
+extends 
+	physics_camera_interaction
+does
+	// constructor
+	//
+	verb new with
+		// key parameters
+		//
+		integer forward_key = char_to_key of "w";
+		integer backward_key = char_to_key of "s";
+		integer left_key = char_to_key of "a";
+		integer right_key = char_to_key of "d";
+		integer jump_key = char_to_key of space;
+		
+		// calibrations and limits
+		//
+		scalar max_translation_velocity = 2.5;
+		scalar turn_speed = 35;
+		scalar max_turn_rate = 5;
+		scalar camera_height = 0;
+		scalar max_updown_rotation = 45;
+		boolean look_only_on_mouse_down is false;
+		mouse_button type look_button is right;
+	end;
+	
+	// update method
+	//
+	verb update 
+		using physics_actor type actor;
+	end;
+has
+	// key_parameters
+	//
+	integer forward_key = char_to_key of "w";
+	integer backward_key = char_to_key of "s";
+	integer left_key = char_to_key of "a";
+	integer right_key = char_to_key of "d";
+	integer jump_key = char_to_key of space;
+	
+	// calibrations and limits
+	//
+	scalar max_updown_rotation = 45;
+	scalar acceleration_mult = 15;
+	scalar turn_speed = 5;
+	boolean look_only_on_mouse_down is false;
+	mouse_button type look_button is right;
+	scalar camera_height = 0;
+	// state parameters
+	//
+	scalar x_rotation = 0;
+	scalar z_rotation = 0;
+is
+
+	//
+	// constructor
+	//
+	
+	
+	verb new with 
+		// key parameters
+		//
+		integer forward_key = char_to_key of "w";
+		integer backward_key = char_to_key of "s";
+		integer left_key = char_to_key of "a";
+		integer right_key = char_to_key of "d";
+		integer jump_key = char_to_key of space;
+		
+		// calibrations and limits
+		//
+		scalar max_translation_velocity = 2.5;
+		scalar turn_speed = 35;
+		scalar max_turn_rate = 5;
+		scalar camera_height = 0;
+		scalar max_updown_rotation = 45;
+		boolean look_only_on_mouse_down is false;
+		mouse_button type look_button is right;
+	is
+		physics_camera_interaction new with
+			max_translation_velocity = static max_translation_velocity;
+			max_turn_rate = static max_turn_rate;
+		end;
+		
+		with physics_fps_camera_interaction do
+			its camera_height = static camera_height;
+			its forward_key = static forward_key;
+			its backward_key = static backward_key;
+			its left_key = static left_key;
+			its right_key = static right_key;
+			its jump_key = static jump_key;
+			its max_updown_rotation = static max_updown_rotation;
+			its look_only_on_mouse_down is static look_only_on_mouse_down ;
+			its look_button is static look_button;
+			its turn_speed = static turn_speed;
+		end;        
+	end;    // new
+	
+	//
+	// update methods
+	//
+
+	boolean question some_control_key_down is
+		answer (
+			key_down forward_key or 
+			key_down backward_key or 
+			key_down left_key or 
+			key_down right_key or 
+			key_down jump_key
+		);        
+	end;    // some_control_key_down
+
+	verb update 
+		using physics_actor type actor;
+	is
+		vector mouse_pos = get_mouse;
+		vector current_velocity = actor get_linear_velocity;
+		camera type current_camera is targeted_camera type's get_current;
+		trans type trans, camera_trans;
+		actor get_trans trans;
+		camera_trans's origin = trans's origin + <0 0 camera_height>;
+		if not look_only_on_mouse_down or mouse_down of look_button then
+			// update the rotation values        
+			scalar delta_z = ((mouse_pos dot <1 0 0>)^2*turn_speed*-1*get_frame_duration);
+			scalar delta_x = ((mouse_pos dot <0 1 0>)^2*turn_speed*get_frame_duration);
+			// retain the sign of the values even though we squared them
+			if mouse_pos dot <0 1 0> < 0 then delta_x = itself*-1; end;
+			if mouse_pos dot <1 0 0> < 0 then delta_z = itself*-1; end;
+			// clamp the values 
+			delta_z = clamp delta_z from -max_turn_rate to max_turn_rate;
+			delta_x = clamp delta_x from -max_turn_rate to max_turn_rate;
+			
+			// apply values
+			x_rotation = itself + delta_x;
+			z_rotation = itself + delta_z;
+	
+			// clamp the clamp the total up/down rotation
+			if x_rotation < -max_updown_rotation then
+				x_rotation  = -max_updown_rotation;
+			elseif x_rotation > max_updown_rotation then 
+				x_rotation = max_updown_rotation;
+			end;
+		end;
+		
+		rotate the camera_trans by z_rotation about camera_trans's origin around <0 0 1>;
+		rotate the camera_trans by x_rotation about camera_trans's origin around camera_trans's x_axis;
+		
+		// activate the camera in its new position
+		current_camera set_trans to camera_trans;
+		current_camera activate;
+		current_force = <0 0 0>;
+		// gather input from the keyboard and use it to generate velocities to apply to the camera's physics actor
+		if some_control_key_down and abs(current_velocity.z) < max_translation_velocity/5 and vlength of current_velocity < max_translation_velocity then
+			// forward
+			if key_down forward_key then
+				current_force = itself + (normalized (camera_trans's x_axis  cross <0 0 -1>))*max_translation_velocity*actor get_mass*acceleration_mult;
+			end;
+			// back
+			if key_down backward_key then
+				current_force = itself - (normalized (camera_trans's x_axis  cross <0 0 -1>))*max_translation_velocity*actor get_mass*acceleration_mult;
+			end;
+			// strafe left
+			if key_down left_key then
+				current_force = itself - (normalized (camera_trans's x_axis))*max_translation_velocity*actor get_mass*acceleration_mult;
+			end;
+			// strafe right
+			if key_down right_key then
+				current_force = itself + (normalized (camera_trans's x_axis))*max_translation_velocity*actor get_mass*acceleration_mult;
+			end;
+			// jumping
+			if key_down jump_key then
+				current_force = itself + <0 0 (max_translation_velocity*actor get_mass*acceleration_mult*3)>;
+			end;
+		elseif vlength of current_velocity > (max_translation_velocity/10) then
+			// decelerate
+			current_force = <(current_velocity.x) (current_velocity.y) 0>*(acceleration_mult*-.5)*actor get_mass;
+		end;
+		
+		if vlength of current_force > 0 then
+			actor add_force current_force;
+		end;
+	end;    // update
+end;

@@ -1,0 +1,87 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  grid_tables.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a standard grid table subject for storing      }
+{		objects in a regular grid.								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+subject grid_table
+does
+	// constructor
+	//
+	verb new
+		of integer rows;
+		by integer columns;
+	end;
+
+	// construction methods
+	//
+	verb enter
+		object type item;
+		of integer rows;
+		by integer columns;
+	end;
+
+	// querying methods
+	//	 
+	object type question lookup
+		of integer rows;
+		by integer columns;
+	end;
+has
+	// grid table attributes
+	//
+	object type table[,];
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of integer rows;
+		by integer columns;
+	is
+		dim none table[1 .. rows, 1 .. columns];
+	end;	// new
+	
+
+	//
+	// construction methods
+	//
+	
+	
+	verb enter
+		object type item;
+		of integer rows;
+		by integer columns;
+	is
+		if rows < num table and columns < num table[] then
+			table[rows, columns] is item;
+		end;
+	end;	// enter
+	
+
+	//
+	// querying methods
+	//
+	
+			
+	object type question lookup
+		of integer rows;
+		by integer columns;
+	is
+		if rows < num table and columns < num table[] then
+			answer table[rows, columns];
+		else
+			answer none;
+		end;
+	end;	// lookup
+end;	// grid_table

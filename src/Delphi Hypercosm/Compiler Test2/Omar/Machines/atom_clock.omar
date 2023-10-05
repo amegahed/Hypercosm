@@ -1,0 +1,46 @@
+{***************************************************************}
+{                          atom_clock.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do atom_clock_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/digital_clock.omar";
+include "system/atom.omar";
+
+
+picture atom_clock_picture with
+    eye = <-6 -12 8>;
+is
+    static atom type atom;
+
+    distant_light from <.5 -.3 1>;
+    digital_clock with
+        time = get_time;
+        rotate by 90 around <1 0 0>;
+    end;
+    atom type's electrons with
+        t = atom's steps / 30;
+        magnify by 5;
+        material is silver;
+    end;
+    atom step;
+end;    // atom_clock_picture
+
+
+anim atom_clock_anim
+    args type args;
+with
+    eye = <-6 -12 8>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture atom_clock_picture;
+end;    // atom_clock_anim

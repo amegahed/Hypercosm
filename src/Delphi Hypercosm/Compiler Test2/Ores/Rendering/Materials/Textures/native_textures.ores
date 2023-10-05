@@ -1,0 +1,45 @@
+{***************************************************************}
+{                       native_textures.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{            Contains the native texturing utilities.           }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_images.ores";
+
+
+// default texture settings
+//
+boolean interpolation is on;
+boolean mipmapping is on;
+boolean wraparound is on;
+
+
+subject texture
+does
+    // constructor
+    //
+    native verb new
+        using image type image;
+    with
+        boolean interpolation is global interpolation;
+        boolean mipmapping is global mipmapping;
+        boolean wraparound is global wraparound;
+    end;    // new
+
+    // destructor
+    //
+    native verb free;
+has
+    private long id;
+end;    // texture

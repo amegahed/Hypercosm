@@ -1,0 +1,36 @@
+do evts_test;
+
+
+include "system/native_evts.ores";
+include "system/time.ores";
+
+
+verb wait
+    for scalar delay = 1;
+is
+    scalar start_time = get_seconds;
+    while get_seconds - start_time < delay do
+    end;    
+end;    // wait
+
+
+verb evts_test is
+    scalar delay = 1;
+    
+    while not evts enabled do
+        write "evts is not enabled!", ;
+    end; 
+
+    write "evts is enabled!", ;
+    while true do
+        scalar start_time;
+        
+        for integer counter = 1..12 do
+            write "setting stimulator ", counter, ;
+            evts set_amplitude of stimulator counter to 100;
+            evts set_pwm_duty_cycle of stimulator counter to 100;
+            wait for 5;    
+            evts set_amplitude of stimulator counter to 0;
+        end;
+    end;    
+end;    // evts_test

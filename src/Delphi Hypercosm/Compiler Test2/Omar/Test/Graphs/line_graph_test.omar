@@ -1,0 +1,53 @@
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/line_graphs.ores";
+include "system/polynomials.ores";
+
+
+polynomials type hermite_blending is new_polynomials of [
+	[2 -3 0 1]
+	[-2 3 0 0]
+	[1 -2 1 0]
+	[1 -1 0 0]
+];	// hermite_blending
+	
+	
+shape scene is
+	line_graph
+		through [0 1 2 3 4 5]
+		at [1 1.5 1.75 2 3 10]
+	with
+		x_min = -10;
+		x_max = 10;
+		y_min = -10;
+		y_max = 10;
+	end;
+end;
+
+
+shape scene2 is
+	for integer counter = min hermite_blending .. max hermite_blending do
+		scalar question hermite_blend
+			at scalar t;
+		is
+			answer hermite_blending[counter] value at t;
+		end;
+		
+		function_graph of hermite_blend with
+			x_min = 0;
+			x_max = 1;
+			y_min = 0;
+			y_max = 1;
+		end;
+	end;
+end;	// scene2
+	
+	
+anim test is
+	mouse_controlled_shape scene2 with
+		auto_camera is on;
+	end;
+end;	// test

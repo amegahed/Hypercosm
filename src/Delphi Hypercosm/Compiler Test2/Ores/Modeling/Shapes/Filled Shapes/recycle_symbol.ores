@@ -1,0 +1,42 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 recycle_symbol.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of a standard filled shape		}
+{		in the form of a recycle symbol.						}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+
+
+shape recycle_symbol with
+    scalar thickness = .5;
+    scalar arc_length = 65;
+is
+    shape arrow is
+        triangle (<0 thickness 0>) (<(-thickness) 0 0>) (
+            <0 (-thickness) 0>)
+        with
+            move to <0 (1 - thickness / 2) 0>;
+        end;
+        ring with
+            inner_radius = 1 - thickness;
+            umin = 90 - arc_length;
+            umax = 90;
+        end;
+    end;    // arrow
+
+    arrow;
+    arrow with
+        rotate by 120 around <0 0 1>;
+    end;
+    arrow with
+        rotate by 240 around <0 0 1>;
+    end;
+end;    // recycle_symbol

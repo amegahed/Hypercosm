@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     renderable_display_list.ores       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a renderable graphic           }
+{       entity.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/singly_linked_lists.ores";
+include "system/rendering.ores";
+
+subject renderable_display_list
+extends
+	renderable singly_linked_list
+does
+	// rendering method
+	//
+	shape instance;
+is
+	//      
+	// rendering method
+	//
+	
+	shape instance is
+		singly_linked_node type follow is head;
+
+		while some follow do
+			object type element is follow get;
+
+			(renderable type element) instance;
+			follow is its next;
+		end;
+	end;    // instance
+end;    // renderable_display_list

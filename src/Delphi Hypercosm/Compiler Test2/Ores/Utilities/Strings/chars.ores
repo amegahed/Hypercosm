@@ -1,0 +1,103 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		     chars.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{              Contains the standard char utilities.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+
+
+const char eof is chr -1;
+const char null is chr 0;
+const char space is chr 32;
+const char double_quote is chr 34;
+const char cr is chr 13;
+const char nl is chr 10;
+const char tab is chr 9;
+
+
+boolean question whitespace
+    char ch;
+is
+    answer (ch is space) or (ch is tab) or (ch is cr) or (ch is nl);
+end;    // whitespace
+
+
+boolean question is_upper
+    char ch;
+is
+    answer ord "A" <= ord ch <= ord "Z";
+end;    // is_upper
+
+
+boolean question is_lower
+    char ch;
+is
+    answer ord "a" <= ord ch <= ord "z";
+end;    // is_lower
+
+
+boolean question alphabetical
+    char ch;
+is
+    answer is_lower ch or is_upper ch;
+end;    // alphabetical
+
+
+boolean question numerical
+    char ch;
+is
+    answer ord "1" <= ord ch <= ord "9" or ch is "0";
+end;    // numerical
+
+
+char question to_lower
+    char ch;
+is
+    const integer case_difference = ord "a" - ord "A";
+
+    if is_upper ch then
+        answer chr (ord ch + case_difference);
+    else
+        answer ch;
+    end;
+end;    //  to_lower
+
+
+char question to_upper
+    char ch;
+is
+    const integer case_difference = ord "A" - ord "a";
+
+    if is_lower ch then
+        answer chr (ord ch + case_difference);
+    else
+        answer ch;
+    end;
+end;    // to_upper
+
+
+integer question char_to_integer
+    of char ch;
+is
+    if ord ch >= ord "1" and ord ch <= ord "9" then
+        answer (ord ch) - (ord "1") + 1;
+    else
+        answer 0;
+    end;
+end;    // char_to_integer
+
+
+char question digit_to_char
+    of integer digit;
+is
+    // We mod by 10 to make sure all we have is a single digit.
+    answer chr(ord "0" + (digit mod 10));
+end;	// digit_to_char

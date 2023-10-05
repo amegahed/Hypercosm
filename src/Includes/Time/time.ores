@@ -1,0 +1,53 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             time.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{               Contains standard procedures for                }
+{                 capturing and measuring time.                 }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "native_time.ores";
+include "booleans.ores";
+include "math.ores";
+include "time_conversions.ores";
+
+// *** get_seconds_since_midnight ***
+// Returns the number of seconds that have elapsed since midnight.
+// This is a recommended value for use as a seed to random functions.
+//
+scalar question get_seconds_since_midnight
+is
+	answer (time_to_seconds get_time);
+end;    // get_seconds_since_midnight
+
+scalar question get_seconds is
+	time type time = get_time;
+	integer hours = trunc (time dot <1 0 0>);
+	integer minutes = trunc (time dot <0 1 0>);
+	scalar seconds = (time dot <0 0 1>) + minutes * 60 + hours *  3600;
+	
+	answer seconds;
+end;    // get_seconds
+
+// *** elapsed_time ***
+// Returns the difference between two times, in seconds.
+//
+// If time2 is less than time1, the function assumes the elapsed time
+// crosses one midnight, and adds a day of seconds to the difference.
+//
+scalar question elapsed_time
+	from time type time1;
+	to time type time2;
+is
+	scalar elapsed = (time_to_seconds time2) - (time_to_seconds time1);
+	
+	if elapsed < 0 then
+		elapsed = itself + (hours_to_seconds 24);
+	end;
+	answer elapsed;
+end;    // elapsed_time

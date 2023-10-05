@@ -1,0 +1,88 @@
+{***************************************************************}
+{                          bowling_pin.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bowling_pin_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/hulls.ores";
+
+
+shape bowling_pin is
+    shape thing with
+        integer sections = 4;
+        integer steps = facets;
+    is
+        // cross section
+        //
+        scalar x_section[0..sections, 1..2];
+
+        // initialize round cross section
+        //
+        for integer counter = 0 .. sections - 1 do
+            scalar angle = (counter / sections) * -360;
+
+            x_section[counter, 1] = sin angle;
+            x_section[counter, 2] = cos angle;
+        end;
+
+        // wraparound
+        //
+        x_section[sections, 1] = x_section[0, 1];
+        x_section[sections, 2] = x_section[0, 2];
+
+        // body is sampled at 6 discrete points
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [0 10 20 27 29.5 30]
+
+            // ymins
+            [-3 -6 -1.75 -3 -2.2 0]
+
+            // ymaxes
+            [3 6 1.75 3 2.2 0]
+
+            // zmins
+            [-3 -6 -1.75 -3 -2.2 0]
+
+            // zmaxes
+            [3 6 1.75 3 2.2 0]
+        with
+            rows = steps;
+            columns = steps;
+            triangulate is off;
+            alternate is on;
+            mending is on;
+            closed is false;
+        end;
+    end;    //
+
+    thing with
+        material is plastic colored beige;
+        rotate by -90 around <0 1 0>;
+        magnify by .1;
+    end;
+end;    // bowling_pin
+
+
+anim bowling_pin_anim
+    args type args;
+with
+    eye = <2 -5 2>;
+    lookat = <0 0 1.5>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape bowling_pin;
+end;    // bowling_pin_anim

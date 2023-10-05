@@ -1,0 +1,18 @@
+do test;
+
+
+include "native_images.ores";
+
+
+image type image named "blah.jpg";
+
+
+verb test is
+  for integer h = 1 .. 10 do
+    for integer v = 1 .. 10 do
+      vector color = image get_color at h v;
+      
+      write "image color = ", color, ; 
+    end;
+  end;
+end;    // test

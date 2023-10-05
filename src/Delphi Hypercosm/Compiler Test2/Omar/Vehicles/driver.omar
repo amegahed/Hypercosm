@@ -1,0 +1,252 @@
+do driving_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/arrows.ores";
+
+
+subject driver
+extends
+    timed_actor
+does
+    // constructor
+    //
+    verb new
+        towards vector direction;
+    with
+        scalar turning_angle = 0;
+        scalar baseline = 1;
+    end;
+    
+    // driving methods
+    //
+    verb set_speed
+        to scalar speed;
+    end;
+    verb set_turning_angle
+        to scalar angle;
+    end;
+    
+    // actor methods
+    //
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    public scalar speed = 0, distance = 0;
+    public vector location = <0 0 0>, direction = <0 0 0>;
+    public scalar turning_angle = 0, baseline = 1;
+is
+    // constructor
+    //
+    verb new
+        towards vector direction;
+    with
+        scalar turning_angle = 0;
+        scalar baseline = 1;
+    is
+        driver's direction = normalized direction;
+        driver's turning_angle = turning_angle;
+        driver's baseline = baseline;
+    end;    // new
+    
+ 
+    // driving methods
+    //   
+    verb set_speed
+        to scalar speed;
+    is
+        driver's speed = speed;
+    end;    // set_speed
+    
+   
+    verb set_turning_angle
+        to scalar angle;
+    is
+        driver's turning_angle = angle;
+    end;    // set_turning_angle
+     
+
+    // actor methods
+    //   
+    verb advance
+        by scalar time_step;
+    is
+        scalar distance = speed * time_step;
+        
+        driver's distance = itself + distance;
+        
+        if turning_angle = 0 then
+            location = itself + direction * distance;
+        else
+            // turn car
+            //
+            scalar turning_radius = (baseline / 2) / tan turning_angle;
+            scalar circumference = 2 * pi * turning_radius;
+                        
+            // figure out angular turn of car
+            //
+            scalar angle = distance / circumference * 360;
+            
+            // compute pivot point
+            //
+            vector pivot = location + (direction cross <0 0 1>) * turning_radius;
+            
+            // rotate direction and location of car
+            //
+            rotate_point location by angle around <0 0 1> about pivot;
+            rotate_vector direction by angle around <0 0 1>;    
+        end;
+    end;    // advance
+    
+    
+    shape instance is
+        arrow from location to location + direction;
+    end;    // instance
+end;    // driver
+
+
+subject test_driver
+extends
+    driver
+does
+    // constructor
+    //
+    verb new;
+    shape instance;
+is
+    // constructor
+    //
+    verb new
+    is
+        driver new towards <1 0 0> with baseline = 3; end;
+    end;    //new
+    
+    
+    objective shape car_body is
+        extrude [[.75 0] [1 .75] [2 .75] [2.25 0] [3 .25] [3 1] [1.5 1.5] [1 2]
+            [-.5 2] [-1 1.5] [-3 .75] [-3 .25] [-2.25 0] [-2 .75] [-1 .75] [-.75 0]]
+            along <0 1 0>
+        with
+            height = 2;
+        end;
+    end;    // car_body
+    
+    
+    objective shape tire is
+        tube with
+            end1 = <0 .2 0>;
+            end2 = <0 -.2 0>;
+            outer_radius = .5;
+            inner_radius = .25;
+            color = dark grey;
+        end;
+    end;
+    
+    
+    objective shape wheel is
+        tire;
+        rod with
+            end1 = <0 .1 0>;
+            end2 = <0 -.1 0>;
+            radius = .25;
+            color = white;
+        end;
+    end;    // wheel
+    
+    
+    objective shape wheels with
+        scalar turning_angle = 0;
+        scalar wheel_rotation = 0;
+    is
+        wheel with
+            rotate by wheel_rotation around <0 1 0>;
+            rotate by turning_angle around <0 0 1>;
+            move to <0 1 0>;
+        end;
+        wheel with
+            rotate by wheel_rotation around <0 1 0>;
+            rotate by turning_angle around <0 0 1>;
+            move to <0 -1 0>;
+        end;
+    end;    // wheels
+    
+    
+    objective shape car with
+        scalar turning_angle = 0;
+        scalar wheel_rotation = 0;
+    is 
+        car_body with
+            scale by 1 along <1 0 0>;
+            move to <0 0 .25>;
+            material is plastic colored red;
+        end;
+        
+        // rear wheels
+        //
+        wheels with
+            turning_angle = -static turning_angle;
+            wheel_rotation = static wheel_rotation;
+            move to <1.5 0 .5>;
+        end;
+        
+        // front wheels
+        //
+        wheels with
+            turning_angle = static turning_angle;
+            wheel_rotation = static wheel_rotation;
+            move to <-1.5 0 .5>;
+        end;
+    end;    // car
+    
+       
+    shape instance is
+        car with
+            turning_angle = driver's turning_angle;
+            wheel_rotation = driver's distance / (2 * pi * .5) * -360;
+            
+            trans's origin = location;
+            trans's x_axis = direction;
+            trans's z_axis = <0 0 1>;
+            trans's y_axis = trans's z_axis cross trans's x_axis;
+        end;
+    end;
+end;    // test_driver
+
+
+test_driver type test_driver;
+
+
+picture test_driver_picture
+is
+    scalar x = get_mouse dot <1 0 0>;
+    scalar y = get_mouse dot <0 1 0>;
+
+    static shape environment is
+        default_lights;
+        plane with
+            magnify by 20;
+        end;
+    end;    // environment
+
+    eye = test_driver's location + <5 -10 5>;
+    lookat = test_driver's location;
+          
+    test_driver instance;
+    environment;
+    
+    test_driver set_speed to y * 5;
+    test_driver set_turning_angle to -x * 30;
+    test_driver advance by get_frame_duration;
+end;    // test_driver_picture
+
+
+anim driving_anim is    
+    mouse_controlled_picture test_driver_picture;
+end;    // driving_anim
+        
+
+

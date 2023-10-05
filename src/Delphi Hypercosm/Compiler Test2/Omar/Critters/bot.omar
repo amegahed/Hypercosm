@@ -1,0 +1,1048 @@
+{***************************************************************}
+{                          bot.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+//do bot_anim;
+do bot_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/bumps.ores";
+include "system/desk.omar";
+include "system/office_chair.omar";
+include "system/uzi.omar";
+
+
+// integer wood_image = load_image "wood.tga";
+shape short_finger_joint is
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 2>;
+        radius = 1;
+    end;
+    sphere with
+        center = <0 0 2>;
+        radius = 1;
+    end;
+end;    // short_finger_joint
+
+
+shape finger_nail is
+    shaded_triangle <0 -1 -.5> <.8 -.8 .9> <0 -1 1> <0 -1 0> <.8 -.8 0>
+        <0 -1 0>;
+    shaded_triangle <0 -1 -.5> <-.8 -.8 .9> <0 -1 1> <0 -1 0> <-.8 -.8
+        0> <0 -1 0>;
+    shaded_triangle <0 -1 -.5> <.8 -.8 .9> <.8 -.8 -.25> <0 -1 0> <.8
+        -.8 0> <.8 -.8 0>;
+    shaded_triangle <0 -1 -.5> <-.8 -.8 .9> <-.8 -.8 -.25> <0 -1 0> <
+        -.8 -.8 0> <-.8 -.8 0>;
+    shaded_triangle <.9 -.5 .5> <.8 -.8 .9> <.8 -.8 -.25> <.9 -.5 0> <
+        .8 -.8 0> <.8 -.8 0>;
+    shaded_triangle <-.9 -.5 .5> <-.8 -.8 .9> <-.8 -.8 -.25> <-.9 -.5
+        0> <-.8 -.8 0> <-.8 -.8 0>;
+    shaded_triangle <.9 -.5 0> <.9 -.5 .5> <.8 -.8 -.25> <.9 -.5 0> <
+        .9 -.5 0> <.8 -.8 0>;
+    shaded_triangle <-.9 -.5 0> <-.9 -.5 .5> <-.8 -.8 -.25> <-.9 -.5 0>
+        <-.9 -.5 0> <-.8 -.8 0>;
+end;    // finger_nail
+
+
+shape last_finger_joint is
+    short_finger_joint;
+    finger_nail with
+        material is aluminum;
+        move to <0 0 2>;
+    end;
+end;    // last_finger_joint
+
+
+shape long_finger_joint is
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 3>;
+    end;
+    sphere with
+        center = <0 0 3>;
+    end;
+end;    // long_finger_joint
+
+
+shape last_knuckle
+    scalar angle;
+is
+    long_finger_joint;
+    last_finger_joint with
+        rotate by -angle around <1 0 0>;
+        move to <0 0 3>;
+    end;
+end;    // last_knuckle
+
+
+shape thumb
+    scalar angle;
+is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 3>;
+        radius1 = 1.5;
+        radius2 = 1;
+    end;
+    sphere with
+        center = <0 0 3>;
+        radius = 1;
+    end;
+    last_finger_joint with
+        rotate by -angle around <1 0 0>;
+        move to <0 0 3>;
+    end;
+end;    // thumb
+
+
+shape grasp_finger is
+    sphere;
+    long_finger_joint;
+    last_knuckle 30 with
+        rotate by -45 around <1 0 0>;
+        move to <0 0 3>;
+    end;
+end;    // grasp_finger
+
+
+shape pinky_knuckle
+    scalar angle;
+is
+    last_finger_joint with
+        rotate by -angle around <1 0 0>;
+        move to <0 0 2>;
+    end;
+    short_finger_joint;
+end;    // pinky_knuckle
+
+
+shape grasp_pinky is
+    sphere;
+    long_finger_joint;
+    pinky_knuckle 30 with
+        rotate by -45 around <1 0 0>;
+        move to <0 0 3>;
+    end;
+end;    // grasp_pinky
+
+
+shape trigger_finger is
+    sphere;
+    long_finger_joint;
+    last_knuckle 45 with
+        rotate by -15 around <1 0 0>;
+        move to <0 0 3>;
+    end;
+end;    // trigger_finger
+
+
+shape right_hand is
+    trigger_finger with
+        rotate by -15 around <1 0 0>;
+        move to <-2 0 7>;
+    end;
+    grasp_finger with
+        rotate by -30 around <1 0 0>;
+        move to <0 -.25 8>;
+    end;
+    grasp_finger with
+        rotate by -30 around <1 0 0>;
+        move to <2 0 7>;
+    end;
+    grasp_pinky with
+        rotate by -15 around <1 0 0>;
+        move to <4 .25 6>;
+    end;
+    thumb 45 with
+        rotate by -45 around <1 0 0>;
+        rotate by -45 around <0 1 0>;
+        move to <-4 1 3>;
+    end;
+    sphere with
+        center = <-4 1 3>;
+        radius = 1.5;
+    end;
+    cone with
+        end1 = <-2 0 7>;
+        end2 = <-1 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <0 -.25 8>;
+        end2 = <0 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <2 0 7>;
+        end2 = <1 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <4 .25 6>;
+        end2 = <2 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <-4 1 3>;
+        end2 = <-2 0 0>;
+        radius1 = 1.5;
+        radius2 = 2;
+    end;
+    sphere with
+        radius = 2.5;
+        scale by 1.5 along <1 0 0>;
+    end;
+end;    // right_hand
+
+
+shape left_hand is
+    trigger_finger with
+        rotate by -15 around <1 0 0>;
+        move to <2 0 7>;
+    end;
+    grasp_finger with
+        rotate by -30 around <1 0 0>;
+        move to <0 -.25 8>;
+    end;
+    grasp_finger with
+        rotate by -30 around <1 0 0>;
+        move to <-2 0 7>;
+    end;
+    grasp_pinky with
+        rotate by -15 around <1 0 0>;
+        move to <-4 .25 6>;
+    end;
+    thumb 45 with
+        rotate by -45 around <1 0 0>;
+        rotate by 45 around <0 1 0>;
+        move to <4 1 3>;
+    end;
+    sphere with
+        center = <4 1 3>;
+        radius = 1.5;
+    end;
+    cone with
+        end1 = <2 0 7>;
+        end2 = <1 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <0 -.25 8>;
+        end2 = <0 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <-2 0 7>;
+        end2 = <-1 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <-4 .25 6>;
+        end2 = <-2 0 0>;
+        radius1 = 1;
+        radius2 = 2;
+    end;
+    cone with
+        end1 = <4 1 3>;
+        end2 = <2 0 0>;
+        radius1 = 1.5;
+        radius2 = 2;
+    end;
+    sphere with
+        radius = 2.5;
+        scale by 1.5 along <1 0 0>;
+    end;
+    uzi with
+        material is aluminum;
+        rotate by 90 around <0 0 1>;
+
+        {
+        rotate by 45 around 0 1 0;
+        rotate by 90 around 1 0 0;
+        }
+
+        rotate by 45 around <0 1 0>;
+        move to <5.5 3 12>;
+    end;
+end;    // left_hand
+
+
+shape beer is
+    cylinder with
+        end1 = <0 0 -.8>;
+        end2 = <0 0 .8>;
+        radius = .55;
+    end;
+    cylinder with
+        material is aluminum;
+        end1 = <0 0 -1>;
+        end2 = <0 0 1>;
+        radius = .54;
+    end;
+    disk with
+        material is aluminum;
+        center = <0 0 -1>;
+        normal = <0 0 1>;
+        radius = .54;
+    end;
+    disk with
+        material is aluminum;
+        center = <0 0 1>;
+        normal = <0 0 1>;
+        radius = .54;
+    end;
+end;    // beer
+
+
+shape right_forearm is
+    right_hand with
+        rotate by -90 around <0 0 1>;
+        move to <0 0 24>;
+    end;
+    beer with
+        material is metal colored red;
+        magnify by 5.5;
+        rotate by 90 around <1 0 0>;
+        move to <3 0 32>;
+    end;
+    cone with
+        end1 = <0 0 24>;
+        end2 = <0 0 0>;
+        radius1 = 2;
+        radius2 = 3;
+        scale by 1.5 along <1 0 0> about <0 0 12>;
+    end;
+    sphere with
+        radius = 5;
+        scale by 2.4 along <0 0 1>;
+        move to <0 0 12>;
+    end;
+end;    // right_forearm
+
+
+shape left_forearm is
+    left_hand with
+        move to <0 0 24>;
+    end;
+    cone with
+        end1 = <0 0 24>;
+        end2 = <0 0 0>;
+        radius1 = 2;
+        radius2 = 3;
+        scale by 1.5 along <1 0 0>;
+    end;
+    sphere with
+        radius = 5;
+        scale by 2.4 along <0 0 1>;
+        move to <0 0 12>;
+    end;
+end;    // left_forearm
+
+
+shape right_arm is
+    right_forearm with
+        rotate by -40 around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <0 0 24>;
+    end;
+    sphere with
+        material is aluminum;
+        radius = 5.5;
+        move to <0 0 24>;
+    end;
+    sphere with
+        radius = 7;
+        scale by 2 along <0 0 1>;
+        move to <0 0 12>;
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 24>;
+        radius1 = 7;
+        radius2 = 5;
+    end;
+end;    // right_arm
+
+
+shape left_arm is
+    left_forearm with
+        rotate by -90 around <0 -1 0>;
+        move to <0 0 24>;
+    end;
+    sphere with
+        material is aluminum;
+        center = <0 0 24>;
+        radius = 5.5;
+    end;
+    sphere with
+        radius = 6;
+        scale by 2 along <0 0 1>;
+        move to <0 0 12>;
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 24>;
+        radius1 = 7;
+        radius2 = 5;
+    end;
+end;    // left_arm
+
+
+shape chest is
+    sphere with
+        material is aluminum;
+        center = <-20 0 0>;
+        radius = 9;
+    end;
+    sphere with
+        material is aluminum;
+        center = <20 0 0>;
+        radius = 9;
+    end;
+    sphere with
+        radius = 8;
+        scale by 2 along <1 0 0>;
+    end;
+    cylinder with
+        end1 = <-16 1 -7>;
+        end2 = <-1 1 -7>;
+        radius = 8;
+        scale by 2 along <0 0 1>;
+    end;
+    sphere with
+        radius = 8;
+        scale by .5 along <1 0 0>;
+        move to <-2 1 -7>;
+    end;
+    sphere with
+        radius = 8;
+        scale by .5 along <1 0 0>;
+        move to <2 1 -7>;
+    end;
+    cylinder with
+        end1 = <16 1 -7>;
+        end2 = <1 1 -7>;
+        radius = 8;
+        scale by 2 along <0 0 1>;
+    end;
+    sphere with
+        radius = 8;
+        scale by 2 along <0 0 1>;
+        move to <16 0 -7>;
+    end;
+    sphere with
+        radius = 8;
+        scale by 2 along <0 0 1>;
+        move to <-16 0 -7>;
+    end;
+    right_arm with
+        rotate by 110 around <0 1 0>;
+        rotate by 135 around <1 0 0>;
+        rotate by 20 around <0 0 1>;
+        magnify by 1.125;
+        move to <20 0 0>;
+    end;
+    left_arm with
+        rotate by -80 around <0 0 1>;
+        rotate by 180 around <1 0 0>;
+        rotate by -30 around <0 -1 0>;
+        magnify by 1.125;
+        move to <-20 0 0>;
+    end;
+    cone with
+        material is aluminum;
+        end1 = <0 0 -7>;
+        end2 = <0 0 -40>;
+        radius1 = 10;
+        radius2 = 8;
+        scale by 2 along <1 0 0>;
+        scale by .8 along <0 1 0>;
+    end;
+end;    // chest
+
+
+shape hose_seg is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 .5>;
+        radius1 = 2;
+        radius2 = 1.5;
+    end;
+    cone with
+        end1 = <0 0 .5>;
+        end2 = <0 0 1>;
+        radius1 = 1.5;
+        radius2 = 2;
+    end;
+end;    // hose_seg
+
+
+shape hose
+    integer i;
+is
+    for integer counter = 1..i do
+        hose_seg with
+            move to <0 0 (counter - 1)>;
+        end;
+    end;
+end;    // hose
+
+
+shape lens is
+    paraboloid with
+        top = <0 -.04 0>;
+        base = <0 -.03 0>;
+        radius = .45;
+    end;
+    paraboloid with
+        top = <0 .04 0>;
+        base = <0 .03 0>;
+        radius = .45;
+    end;
+end;    // lens
+
+
+shape head_cam is
+    cone with
+        material is aluminum;
+        end1 = <0 1 0>;
+        end2 = <0 -10 0>;
+        radius1 = 3;
+        radius2 = 5;
+    end;
+    cone with
+        material is chalk colored grey;
+        end1 = <0 1 0>;
+        end2 = <0 -10 0>;
+        radius1 = 2.5;
+        radius2 = 3.5;
+    end;
+    transparent white lens with
+        scale by 6 along <1 0 0>;
+        scale by 6 along <0 0 1>;
+    end;
+    ring with
+        center = <0 1 0>;
+        normal = <0 1 0>;
+        inner_radius = 2.5;
+        outer_radius = 3;
+    end;
+end;    // head_cam
+
+
+shape lips_cheeks is
+    extrude [[2 8] [1.5 8.5] [2 9] [5 7] [7.5 4.5] [9 1.5] [9 -1.5]
+        [7.5 -4.5] [5 -7] [1 -9] [-1 -9] [-5 -7] [-7.5 -4.5]
+        [-9 -1.5] [-9 1.5] [-7.5 4.5] [-5 7] [-2 9] [-1.5 8.5]
+        [-2 8] [-5 6] [-7 4] [-8 1] [-8 -1] [-7 -4] [-4.5 -6.5]
+        [-1 -8] [1 -8] [4.5 -6.5] [7 -4] [8 -1] [8 1] [7 4]
+        [5 6] [2 8]]
+    with
+        height = 3;
+        rotate by 90 around <1 0 0>;
+        move to <0 0 -5>;
+    end;
+end;    // lips_cheeks
+
+
+shape head is
+    sphere with
+        material is titanium;
+        radius = 8;
+        scale by 1.2 along <0 0 1>;
+    end;
+    cylinder with
+        material is titanium;
+        end1 = <0 0 4>;
+        end2 = <0 0 0>;
+        radius = 8;
+    end;
+    sphere with
+        material is titanium;
+        radius = 8;
+        scale by .8 along <0 0 1>;
+        move to <0 0 4>;
+    end;
+
+    {back of head}
+    cylinder with
+        material is aluminum;
+        end1 = <7 -2 2>;
+        end2 = <-7 -2 2>;
+        radius = 7;
+    end;
+    cylinder with
+        end1 = <7 -2 2>;
+        end2 = <-7 -2 2>;
+        radius = 8;
+    end;
+    disk with
+        material is aluminum;
+        center = <7 -2 2>;
+        normal = <1 0 0>;
+        radius = 8;
+    end;
+    disk with
+        material is aluminum;
+        center = <-7 -2 2>;
+        normal = <1 0 0>;
+        radius = 8;
+    end;
+
+    {
+    {** Geordi LaForge glasses **}
+    cylinder with
+        material is aluminum;
+        end1 = 0 1 -1.5;
+        end2 = 0 1 1.5;
+        radius = 10.5;
+    end;
+    cylinder with
+        material is constant_color <1 .2 .2>;
+        end1 = 0 1.3 -.5;
+        end2 = 0 1.3 .5;
+        radius = 10.5;
+    end;
+    }
+
+    sphere with
+        radius = 6;
+        scale by .3333 along <0 1 0>;
+        scale by .6667 along <1 0 0>;
+        move to <0 8 -5>;
+    end;
+
+    {front of "face"}
+    sphere with
+        material is aluminum;
+        radius = 6;
+        scale by .2 along <0 0 1>;
+        rotate by -20 around <1 0 0>;
+        move to <0 6 8>;
+    end;
+
+    {"Shelf" on head}
+    sphere with
+        radius = 7;
+        scale by .25 along <0 0 1>;
+        scale by 1.5 along <1 0 0>;
+        move to <0 -2 9>;
+    end;
+
+    {Top of head}
+    sphere with
+        radius = 6;
+        scale by .2 along <0 0 1>;
+        scale by .6 along <0 1 0>;
+        scale by 1.8 along <1 0 0>;
+        rotate by -15 around <1 0 0>;
+        move to <0 4 9>;
+    end;
+    head_cam with
+        material is aluminum;
+        move to <0 10 1>;
+    end;
+    head_cam with
+        material is aluminum;
+        scale by .5 along <1 0 0>;
+        scale by .5 along <0 0 1>;
+        move to <5 11 3>;
+    end;
+    head_cam with
+        material is aluminum;
+        scale by .5 along <1 0 0>;
+        scale by .5 along <0 0 1>;
+        move to <-5 11 3>;
+    end;
+    head_cam with
+        material is aluminum;
+        scale by .5 along <1 0 0>;
+        scale by .5 along <0 0 1>;
+        move to <5 11 -1>;
+    end;
+    head_cam with
+        material is aluminum;
+        scale by .5 along <1 0 0>;
+        scale by .5 along <0 0 1>;
+        move to <-5 11 -1>;
+    end;
+
+    {** Right "ear" **}
+    cone with
+        end1 = <11 0 2>;
+        end2 = <7 0 2>;
+        radius1 = 5;
+        radius2 = 6;
+    end;
+    sphere with
+        radius = 5;
+        scale by .25 along <1 0 0>;
+        move to <10 0 2>;
+    end;
+    ring with
+        center = <11 0 2>;
+        normal = <1 0 0>;
+        inner_radius = 4.5;
+        outer_radius = 5;
+    end;
+    cylinder with
+        end1 = <11 0 2>;
+        end2 = <7 0 2>;
+        radius = 4.5;
+    end;
+
+    {** Left "ear" **}
+    cone with
+        end1 = <-11 0 2>;
+        end2 = <-7 0 2>;
+        radius1 = 5;
+        radius2 = 6;
+    end;
+    sphere with
+        center = <-10 0 2>;
+        radius = 5;
+        scale by .25 along <1 0 0>;
+    end;
+    ring with
+        center = <-11 0 2>;
+        normal = <1 0 0>;
+        inner_radius = 4.5;
+        outer_radius = 5;
+    end;
+    cylinder with
+        end1 = <-11 0 2>;
+        end2 = <-7 0 2>;
+        radius = 4.5;
+    end;
+    hose 12 with
+        rotate by 20 around <1 0 0>;
+        move to <-7 3 -12>;
+    end;
+    hose 12 with
+        move to <-5 -5 -12>;
+    end;
+    hose 12 with
+        rotate by 20 around <1 0 0>;
+        move to <7 3 -12>;
+    end;
+    hose 12 with
+        move to <5 -5 -12>;
+    end;
+    hose 12 with
+        move to <0 -6 -12>;
+    end;
+    lips_cheeks with
+        material is metal colored <.7 .6 .6>;
+        magnify by 1.25;
+    end;
+end;    // head
+
+
+shape toe is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 8 0>;
+        radius1 = 4;
+        radius2 = 3;
+        scale by 2 along <1 0 0>;
+    end;
+    sphere with
+        radius = 3;
+        scale by 2 along <1 0 0>;
+        move to <0 8 0>;
+    end;
+    semi_glossy grey cylinder with
+        end1 = <0 8 0>;
+        end2 = <0 8 -4>;
+        radius = 3;
+        scale by 2 along <1 0 0>;
+    end;
+    disk with
+        normal = <0 0 1>;
+        radius = 3;
+        scale by 2 along <1 0 0>;
+        move to <0 8 -4>;
+    end;
+    semi_glossy grey extrude [[-8 0] [8 0] [6 8] [-6 8]] with
+        height = 4;
+        rotate by 90 around <1 0 0>;
+        move to <0 0 -2>;
+    end;
+end;    // toe
+
+
+shape foot is
+    sphere with
+        radius = 7;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 -12>;
+        radius = 7;
+    end;
+    disk with
+        material is plastic colored grey;
+        center = <0 0 -10>;
+        normal = <0 0 1>;
+        radius = 7.5;
+    end;
+    cylinder with
+        material is plastic colored grey;
+        end1 = <0 0 -10>;
+        end2 = <0 0 -12>;
+        radius = 7.5;
+    end;
+    disk with
+        material is plastic colored grey;
+        center = <0 0 -12>;
+        normal = <0 0 1>;
+        radius = 7.5;
+    end;
+    cylinder with
+        material is titanium;
+        end1 = <-7 0 0>;
+        end2 = <7 0 0>;
+        radius = 6;
+    end;
+    sphere with
+        material is titanium;
+        radius = 6;
+        scale by .25 along <1 0 0>;
+        move to <-7 0 0>;
+    end;
+    sphere with
+        material is titanium;
+        radius = 6;
+        scale by .25 along <1 0 0>;
+        move to <7 0 0>;
+    end;
+    sphere with
+        material is aluminum;
+        radius = 8;
+        scale by .5 along <0 1 1>;
+        move to <0 9 -4>;
+    end;
+    cylinder with
+        end1 = <0 0 -8>;
+        end2 = <0 16 -8>;
+        radius = 8;
+        scale by .5 along <0 0 1> about <0 8 -8>;
+    end;
+    sphere with
+        material is titanium;
+        radius = 8;
+        scale by .5 along <0 0 1>;
+        scale by .5 along <0 1 0>;
+        move to <0 16 -8>;
+    end;
+    block with
+        material is plastic colored dark grey;
+        vertex = <-8 0 -12>;
+        side1 = <16 0 0>;
+        side2 = <0 0 4>;
+        side3 = <0 16 0>;
+    end;
+    toe with
+        rotate by -10 around <1 0 0>;
+        move to <0 20 -8>;
+    end;
+end;    // foot
+
+
+shape lower_leg is
+    sphere with
+        material is aluminum;
+        center = <0 1 0>;
+        radius = 10.5;
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 -40>;
+        radius1 = 9;
+        radius2 = 7;
+    end;
+    sphere with
+        radius = 7;
+        scale by 2 along <0 0 1>;
+        move to <0 -1 -16>;
+    end;
+    cone with
+        material is titanium;
+        end1 = <0 4 -20>;
+        end2 = <0 4 -42>;
+        radius1 = 5;
+        radius2 = 8;
+    end;
+    disk with
+        material is titanium;
+        center = <0 4 -20>;
+        normal = <0 0 1>;
+        radius = 5;
+    end;
+    disk with
+        material is titanium;
+        center = <0 4 -42>;
+        normal = <0 0 1>;
+        radius = 8;
+    end;
+    foot with
+        rotate by 10 around <1 0 0>;
+        move to <0 0 -40>;
+    end;
+end;    // lower_leg
+
+
+shape left_leg is
+    sphere with
+        radius = 12;
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 -40>;
+        radius1 = 12;
+        radius2 = 10;
+    end;
+    sphere with
+        radius = 11.5;
+        scale by 1.6 along <0 0 1>;
+        move to <0 -1 -16>;
+    end;
+    lower_leg with
+        rotate by -10 around <1 0 0>;
+        move to <0 0 -40>;
+    end;
+end;    // left_leg
+
+
+shape right_leg is
+    sphere with
+        radius = 12;
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 -40>;
+        radius1 = 12;
+        radius2 = 10;
+    end;
+    sphere with
+        radius = 11.5;
+        scale by 1.6 along <0 0 1>;
+        move to <0 -1 -16>;
+    end;
+    lower_leg with
+        rotate by -40 around <1 0 0>;
+        rotate by -50 around <1 0 0>;
+        rotate by -20 around <1 0 0>;
+        move to <0 0 -40>;
+    end;
+end;    // right_leg
+
+
+shape bot is
+    head with
+        rotate by -25 around <0 0 1>;
+        move to <0 0 60>;
+    end;
+    chest with
+        scale by 1.5 along <0 1 0>;
+        move to <0 0 40>;
+    end;
+    cylinder with
+        end1 = <0 0 44>;
+        end2 = <0 0 56>;
+        radius = 5;
+    end;
+    sphere with
+        radius = 12;
+        scale by 2 along <1 0 0>;
+    end;
+
+    {leg on chair}
+    left_leg with
+
+        {amount by which leg is raised up}
+        rotate by 92 around <1 0 0>;
+
+        {amount by which leg is moved to side}
+        rotate by -45 around <0 0 1>;
+        move to <12 0 -2>;
+    end;
+    right_leg with
+        rotate by 80 around <1 0 0>;
+        move to <-12 0 -2>;
+    end;
+end;    // bot
+
+
+picture bot_picture with
+    eye = <-50 220 200>;
+    lookat = <40 0 60>;
+    field_of_view = 70;
+    facets = 0;
+is
+    static material type bot_material is metal colored <1 .8 1>;
+    static material type chair_material is chalk colored brown;
+
+    distant_light from <.3 .5 1>;
+    bot with
+        material is bot_material;
+        move to <0 0 64>;
+    end;
+    office_chair with
+        material is chair_material;
+        magnify by 23;
+        rotate by 90 around <0 0 1>;
+        magnify the shader_trans by .1;
+    end;
+    office_chair with
+        material is chair_material;
+        magnify by 23;
+        rotate by 200 around <0 0 1>;
+        move to <70 70 0>;
+        magnify the shader_trans by .1;
+    end;
+    messy_desk with
+        magnify by 45;
+        rotate by -60 around <0 0 1>;
+        move to <50 -55 0>;
+    end;
+
+    // glossy show_image wood_image in local plane with
+    plane with
+        render_mode is wireframe;
+        origin = <0 0 -.1>;
+        normal = <0 0 1>;
+        magnify the shader_trans by 100;
+    end;
+end;    // bot_picture
+
+
+anim bot_anim
+    args type args;
+with
+    eye = <-50 220 200>;
+    lookat = <40 0 60>;
+    render_mode is wireframe;
+    field_of_view = 70;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture bot_picture;
+end;    // bot_anim

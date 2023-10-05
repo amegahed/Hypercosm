@@ -1,0 +1,67 @@
+do line_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_line.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+shape closed_loop with
+	scalar time = 0;
+is
+	translated_3ds_line of [
+		translated_3ds_connected_cyclic_spline through [
+			translated_3ds_smooth_vertex at <-25 -25 0>	
+			translated_3ds_smooth_vertex at <25 -25 0>
+			translated_3ds_smooth_vertex at <25 25 0>
+			translated_3ds_smooth_vertex at <-25 25 0>
+			translated_3ds_smooth_vertex at <-25 -25 0>	
+		]			
+	];
+end;	// closed_loop
+
+
+shape backwards_loop is
+	translated_3ds_line of [
+		translated_3ds_connected_cyclic_spline through [
+			translated_3ds_corner_vertex at <-25 -25 0>	
+			translated_3ds_corner_vertex at <-25 25 0>
+			translated_3ds_corner_vertex at <25 25 0>
+			translated_3ds_corner_vertex at <25 -25 0>
+		]				
+	];
+end;	// backwards_loop
+
+
+shape curvy_loop is
+	translated_3ds_line of [
+		translated_3ds_connected_cyclic_spline through [
+			translated_3ds_bezier_vertex at <0 -25 0> from -<50 0 0> to <50 0 0>
+			translated_3ds_corner_vertex at <25 0 0>
+			translated_3ds_bezier_vertex at <0 25 0> from -<-50 0 0> to <-50 0 0>
+			translated_3ds_bezier_corner_vertex at <-25 0 0> from -<0 -50 0> to <-50 -50 0>
+		]
+	];
+end;	// curvy_loop
+
+
+anim line_anim
+is
+	shape scene with
+		scalar time = 0;
+	is
+		closed_loop with
+			time = static time;
+			material is plastic poster "hyper.jpg";
+		end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Line" with
+		auto_camera is on;
+	end;
+end;	// line_anim

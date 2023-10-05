@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   3ds_constant_parameter_controllers   3d      }
+{ |/  \|                       .ores                    To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_constant_float_controller.ores";
+include "system/3ds_constant_point3_controller.ores";
+include "system/3ds_constant_quat_controller.ores";
+include "system/3ds_constant_scale_value_controller.ores";
+include "system/3ds_constant_color_controller.ores";

@@ -1,0 +1,226 @@
+{***************************************************************}
+{                          cabin.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cabin_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/tree.omar";
+
+
+shape cabin is
+    shape side_log is
+        cylinder with
+            end1 = <0 -30 0>;
+            end2 = <0 30 0>;
+            radius = 4;
+        end;
+        cone with
+            end1 = <0 -30 0>;
+            end2 = <0 -35 0>;
+            radius1 = 4;
+            radius2 = 0;
+        end;
+        cone with
+            end1 = <0 30 0>;
+            end2 = <0 35 0>;
+            radius1 = 4;
+            radius2 = 0;
+        end;
+    end;    // side_log
+
+
+    shape window_log is
+        cylinder with
+            end1 = <0 -10 0>;
+            end2 = <0 10 0>;
+            radius = 4;
+        end;
+        disk with
+            center = <0 -10 0>;
+            normal = <0 1 0>;
+            radius = 4;
+        end;
+        disk with
+            center = <0 10 0>;
+            normal = <0 1 0>;
+            radius = 4;
+        end;
+        cylinder with
+            end1 = <0 -20 0>;
+            end2 = <0 -30 0>;
+            radius = 4;
+        end;
+        cone with
+            end1 = <0 -30 0>;
+            end2 = <0 -35 0>;
+            radius1 = 4;
+            radius2 = 0;
+        end;
+        disk with
+            center = <0 -20 0>;
+            normal = <0 1 0>;
+            radius = 4;
+        end;
+        cylinder with
+            end1 = <0 20 0>;
+            end2 = <0 30 0>;
+            radius = 4;
+        end;
+        cone with
+            end1 = <0 30 0>;
+            end2 = <0 35 0>;
+            radius1 = 4;
+            radius2 = 0;
+        end;
+        disk with
+            center = <0 20 0>;
+            normal = <0 1 0>;
+            radius = 4;
+        end;
+    end;    // window_log
+
+
+    shape side is
+        side_log;
+        side_log with
+            move to <0 0 6>;
+        end;
+        window_log with
+            move to <0 0 12>;
+        end;
+        window_log with
+            move to <0 0 18>;
+        end;
+        side_log with
+            move to <0 0 24>;
+        end;
+    end;    // side
+
+    polygon2d [[20 0] [20 30] [0 40] [-20 30] [-20 0] [-5 0]
+        [-5 20] [5 20] [5 0]]
+    with
+        origin = <0 -30 0>;
+        x_axis = <1 0 0>;
+        y_axis = <0 0 1>;
+    end;    // front
+    polygon2d [[0 0] [10 0] [10 20] [0 20]] with
+        origin = <-5 -30 0>;
+        x_axis = <-2 -1 0>;
+        y_axis = <0 0 1>;
+    end;    // door
+
+    // doorstep
+    cylinder with
+        end1 = <-20 -30 0>;
+        end2 = <20 -30 0>;
+        radius = 2.5;
+    end;
+
+    // door frame
+    cylinder with
+        end1 = <7.5 -30 0>;
+        end2 = <7.5 -30 25>;
+        radius = 2.5;
+    end;
+    cylinder with
+        end1 = <-7.5 -30 0>;
+        end2 = <-7.5 -30 25>;
+        radius = 2.5;
+    end;
+    cylinder with
+        end1 = <-12.5 -30 25>;
+        end2 = <12.5 -30 25>;
+        radius = 2.5;
+    end;
+    disk with
+        center = <-12.5 -30 25>;
+        normal = <1 0 0>;
+        radius = 2.5;
+    end;
+    disk with
+        center = <12.5 -30 25>;
+        normal = <1 0 0>;
+        radius = 2.5;
+    end;
+    polygon2d [[20 0] [20 30] [0 40] [-20 30] [-20 0]] with
+        origin = <0 30 0>;
+        x_axis = <1 0 0>;
+        y_axis = <0 0 1>;
+    end;    // back
+    side with
+        move to <20 0 0>;
+    end;
+
+    {right side}
+    side with
+        move to <-20 0 0>;
+    end;
+
+    {left side}
+    parallelogram with
+        material is chalk colored grey;
+        vertex = <0 -35 41>;
+        side1 = <0 70 0>;
+        side2 = <24 0 -12>;
+    end;
+    parallelogram with
+        material is chalk colored grey;
+        vertex = <0 -35 41>;
+        side1 = <0 70 0>;
+        side2 = <-24 0 -12>;
+    end;
+end;    // cabin
+
+
+picture cabin_picture with
+    field_of_view = 40;
+    eye = <150 -150 50>;
+    lookat = <0 10 15>;
+    render_mode is wireframe;
+    shading is pixel;
+    background = black;
+is
+    distant_light from <.3 -.5 1>;
+    tree with
+        material is wood;
+        magnify by 15;
+        move to <40 30 5>;
+    end;
+    cabin with
+        material is wood;
+    end;
+    parallelogram with
+        color = dark green;
+        magnify by 40;
+    end;
+end;    // cabin_picture
+
+
+anim cabin_anim
+    args type args;
+with
+    eye = <80 -100 40>;
+    lookat = <0 0 10>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        cabin with
+            material is wood;
+        end;
+        plane with
+            magnify by 50;
+            render_mode is wireframe;
+        end;
+    end;
+    mouse_controlled_shape scene;
+end;    // cabin_anim

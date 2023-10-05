@@ -1,0 +1,63 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       docking_user_interface.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a docking user        }
+{       interface.                                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/3d.ores";
+include "system/docking_user_interface.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/check_keys.ores";
+include "system/mouse_interaction.ores";
+include "system/rotate_behavior.ores";
+include "system/zoom_roll_behavior.ores";
+include "system/pan_behavior.ores";
+
+anim example 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	mouse_interaction type interaction with
+		behaviors is [
+			new rotate_behavior
+			new zoom_roll_behavior
+			new pan_behavior
+		];
+	end;
+	docking_user_interface type user_interface with
+		popup_dock is false;
+	end;
+				
+	picture scene is
+		sphere with
+			interaction apply;
+		end;
+		
+		default_lights;
+		default_background at 100;
+		user_interface overlay at 1;
+		set_manual_near_far_planes on from .5 to 150;
+	end;    // scene
+	
+	verb update is
+		interaction update;
+		user_interface update;
+	end;    // update
+		
+	while true do
+		scene;
+		update;
+		check_keys;
+	end;
+end;    // example

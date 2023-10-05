@@ -1,0 +1,68 @@
+do tactile_block_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/meshes.ores";
+include "system/grids.ores";
+
+scalar myscale = 2;
+
+anim tactile_block_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape triangle_shape is
+        write "making triangle", ;
+        triangle <0 0 0> <0 2 0> <2 0 0> with
+            move to <-3.8 -1 0.05>;
+            magnify by myscale;
+            material is wood;
+        end;
+    end;    // triangle_shape
+    
+    shape plane_shape is
+        write "making plane", ;
+        plane with
+            move to <0 0 0.05>;
+            magnify by myscale;
+            material is wood;
+        end;
+            
+    end;    // plane_shape
+    
+    shape disk_shape is
+        write "making disk", ;
+        disk with
+            move to <3 0 0.05>;
+            magnify by myscale;
+            material is wood;
+        end;
+    end;    // disk_shape
+    
+    shape shapes is
+        write "making shapes", ;
+       
+        triangle_shape;
+        plane_shape;
+        disk_shape;
+        
+    end;    // shapes
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape shapes titled "Tactile 2D Primitive Shapes" in floor;
+end;    // tactile_block_anim

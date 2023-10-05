@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     rod.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		rod.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+
+
+shape rod with
+    vector end1 = <0 0 -1>;
+    vector end2 = <0 0 1>;
+    scalar radius = 1;
+    scalar umin = 0, umax = 360;
+is
+    vector axis = end2 - end1;
+
+    cylinder with
+        radius = static radius;
+        end1 = static end1;
+        end2 = static end2;
+        umin = static umin;
+        umax = static umax;
+    end;
+    disk with
+        center = end1;
+        normal = -axis;
+        umin = static umin;
+        umax = static umax;
+        radius = static radius;
+    end;
+    disk with
+        center = end2;
+        normal = -axis;
+        umin = static umin;
+        umax = static umax;
+        radius = static radius;
+    end;
+end;    // rod

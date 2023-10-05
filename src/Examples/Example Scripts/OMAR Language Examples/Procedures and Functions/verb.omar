@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             verb.omar                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of verbs in the OMAR language.                  }
+{                                                               }
+{       In the OMAR language, "verbs" are the same as           }
+{       "procedures" in other languages such as Pascal          }
+{       or void "functions" in languages such as C, C++         }
+{       and Java.                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do verb_example;
+
+integer n1, n2;
+
+// declaration of "verb" named "write_average"
+//
+verb write_average is
+	integer sum;            // local variables used by verb statements below
+	scalar average;
+	sum = n1 + n2;          // statements of verb
+	average = sum / 2;
+	write "average = ", average, ;
+end;    // write_average
+
+verb verb_example is
+	n1 = 10;
+	n2 = 30;
+	write_average;          // call to verb named "write_average"
+	n1 = 15;
+	n2 = 7;
+	write_average;          // call to verb named "write_average"   
+end;    // verb_example

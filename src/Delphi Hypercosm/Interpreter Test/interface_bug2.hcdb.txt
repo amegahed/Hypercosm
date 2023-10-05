@@ -1,0 +1,28 @@
+ 1
+"C:\Documents and Settings\megaheda\My Documents\Programming\Delphi Hypercosm Versions\Delphi Hypercosm\Compiler Test\interface_bug2.omar"
+15
+1 0 0 "subject"
+2 4 1 "interface1"
+3 6 1 "verb1"
+4 0 0 "interface1"
+5 12 1 "subject1"
+6 16 1 "verb1"
+7 0 0 "subject1"
+8 0 0 "subject"
+9 24 1 "subject2"
+10 30 1 "verb1"
+11 0 0 "subject2"
+12 0 0 "subject1"
+13 0 0 "subject"
+14 36 1 "interface_test"
+15 39 1 "subjectx"
+9
+1 17
+2 17
+3 31
+4 31
+5 39
+6 40
+8 43
+9 43
+10 0

@@ -1,0 +1,127 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      3ds_standard_materials.ores       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains material definitions that correspond to        }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_material.ores";
+include "system/vector.ores";
+
+subject translated_3ds_standard_material
+extends
+	translated_3ds_material
+does
+	// constructor
+	//
+	verb new with
+		
+		// color component parameters
+		//
+		color type ambient_color = black;
+		color type diffuse_color = white;
+		color type specular_color = white;
+		color type self_illum_color = black;
+	
+		// scalar parameters
+		//        
+		scalar specular_level = 5;
+		scalar glossiness = 25;
+		scalar soften = .1;
+		scalar opacity = 1;
+	end;
+	
+	// querying method
+	//
+	material type question to_material;
+has
+	// attributes
+	//
+	public color type ambient_color;
+	public color type diffuse_color;
+	public color type specular_color;
+	public color type self_illum_color;
+	
+	// blinn scalar attributes
+	//        
+	public scalar specular_level = 5;
+	public scalar glossiness = 25;
+	public scalar soften = .1;
+	public scalar opacity = 1;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		// color component parameters
+		//
+		color type ambient_color = black;
+		color type diffuse_color = white;
+		color type specular_color = white;
+		color type self_illum_color = black;
+	
+		// scalar parameters
+		//        
+		scalar specular_level = 5;
+		scalar glossiness = 25;
+		scalar soften = .1;
+		scalar opacity = 1;
+	is
+		with translated_3ds_standard_material do
+		
+			// set color component attributes
+			//
+			its ambient_color = ambient_color;
+			its diffuse_color = diffuse_color;
+			its specular_color = specular_color;
+			its self_illum_color = self_illum_color;
+		
+			// set scalar attributes
+			//        
+			its specular_level = specular_level;
+			its glossiness = glossiness;
+			its soften = soften;
+			its opacity = opacity;
+		end;
+	end;    // new
+	
+	//
+	// querying methods
+	//
+	
+	material type question to_material is
+		vector wireframe_color;
+		texture type texture is none;
+		
+		if vlength of diffuse_color > vlength of specular_color then
+			wireframe_color = diffuse_color;
+		else
+			if (specular_color <> white) then
+				wireframe_color = specular_color;
+			else
+				wireframe_color = diffuse_color;        
+			end;    
+		end;
+		
+		// get texture map for opacity
+		//
+		if opacity <> 1 then
+			texture is get_transparency_map of (1 - opacity);
+		end;
+					
+		answer (new material colored wireframe_color textured texture with
+			diffuse = diffuse_color;
+			specular_power = specular_level;
+			specular = specular_color * glossiness / 100;
+			ambient = diffuse_color;
+			emissive = self_illum_color;
+		);
+	end;    // to_material
+end;    // translated_3ds_standard_material

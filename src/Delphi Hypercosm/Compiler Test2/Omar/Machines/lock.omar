@@ -1,0 +1,581 @@
+{***************************************************************}
+{                          lock.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do lock_anim;
+
+
+include "system/3d.ores";
+include "system/figures.ores";
+include "system/spline_shapes.ores";
+include "system/devices.ores";
+include "system/native_text.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/key.omar";
+
+
+subject animated_lock
+extends
+    cycling_actor
+does
+    verb new;
+    shape instance;
+is
+    scalar pin_heights[0 .. 5] = [ 1 1.5 1 0.25 0.5 -0.25];
+    integer num_pin_heights = max pin_heights;
+    scalar cam_radius = 5;
+    scalar hook_angle = 32.75;
+    scalar cycle_duration = 10;
+    
+
+    verb new is
+        set_duration to 5;
+        set_autoreverse to true;
+    end;    // new
+    
+    
+    objective scalar question find_point_on_line
+        scalar x, x1, y1, x2, y2;
+    is
+        scalar b;
+        scalar m;
+    
+        m = (y2 - y1) / (x2 - x1);
+        b = -(m * x1 - y1);
+        answer (m * x + b);
+    end;    // find_point_on_line
+    
+    
+    objective scalar question key_function
+        scalar x;
+    is
+        // Compute the value of the key at location x
+        integer index = 0;
+        scalar y = 0;
+    
+        if (x > (num_pin_heights * 2)) then
+            y = 0;
+        else
+            // Find the range where x lies
+            while (not ((x >= (index * 2)) and (x < (((index + 1) * 2))))) do
+                index = itself + 1;
+            end;
+    
+            if ( index > num_pin_heights ) then
+                index = num_pin_heights;
+            end;
+    
+            if(x < (index * 2) + 0.25) then
+                y = find_point_on_line x (index * 2) (pin_heights[index] + 0.25) (index * 2 + 0.25) (pin_heights[index]);
+            elseif (x < ((index * 2) + 0.5)) then
+                y = pin_heights[index];
+            elseif (x < ((index * 2) + 0.75)) then
+                y = find_point_on_line x (index * 2 + 0.5) (pin_heights[index]) (index * 2 + 0.75) (pin_heights[index] + 0.25);
+            else
+                y = find_point_on_line x (index * 2 + 0.75) (pin_heights[index] + 0.25) ((index + 1) * 2) (pin_heights[index + 1] + 0.25);
+            end;
+        end;
+    
+        answer y;
+    end;    // key_function
+    
+    
+    objective scalar question pin_height
+        scalar start_x;
+        scalar end_x;
+    is
+        // Find the highest point on the key within the specified range
+        scalar start_y;
+        scalar end_y;
+        scalar h;
+        integer index;
+    
+        start_y = key_function start_x;
+        end_y = key_function end_x;
+    
+        index = 0;
+    
+        // Find the range where x lies
+        while (not ((end_x >= (index * 2)) and (end_x < (((index + 1) * 2))))) do
+                index = itself + 1;
+        end;
+    
+        if ( index >= num_pin_heights ) then
+            index = num_pin_heights - 1;
+        end;
+    
+        // Check for inflection
+        if ((end_x >= (index * 2)) and (end_x <= (index * 2 + 0.25))) then
+            end_y = pin_heights[index] + 0.25;
+        elseif ((start_x >= (index * 2 + 0.5)) and (start_x <= (index * 2 + 0.75))) then
+            start_y = pin_heights[index] + 0.25;
+        end;
+    
+        if (start_y > end_y) then
+            h = start_y;
+        else
+            h = end_y;
+        end;
+    
+        answer h;
+    end;    // pin_height
+    
+    
+    objective shape key is
+        global key with
+            pin_heights is static pin_heights;
+            material is metal colored light gold polished semi shiny;
+        end;
+    end;    // key
+    
+    
+    objective shape bottom_pin with
+        scalar top_length = 3.5;
+    is
+        extrude[
+        [(-0.25 / 2) 0]
+        [(-0.75 / 2) 0.25]
+        [(-0.75 / 2) top_length]
+        [(0.75 / 2) top_length]
+        [(0.75 / 2) 0.25]
+        [(0.25 / 2) 0]
+        ];
+    end;    // bottom_pin
+    
+    
+    objective shape top_pin with
+        scalar top_length = 3.5;
+    is
+        extrude [
+        [(-0.75 / 2) top_length]
+        [(-0.75 / 2) 6]
+        [(0.75 / 2) 6]
+        [(0.75 / 2) top_length]
+        ];
+    end;    // top_pin
+    
+    
+    objective shape bottom_spacer is
+        integer index;
+        scalar pin_location;
+    
+        index = 0;
+    
+        while (index < 6) do
+    
+            pin_location = ((0.75 / 2) + index * 2);
+    
+            extrude [
+            [(0.75 / 2) 2]
+            [(0.75 / 2) 4]
+            [(2 - (0.75 / 2)) 4]
+            [(2 - (0.75 / 2)) 2]
+            ] with
+              move to < pin_location 0 0 >;
+              height = 0.25;
+              material is aluminum;
+            end;
+    
+            index = itself + 1;
+        end;
+    
+        extrude [
+            [0.75 2]
+            [12 2]
+            [12 -1.25]
+            [0.75 -1.25]
+        ] with
+            material is aluminum;
+            render_mode is wireframe;
+        end;
+    end;    // bottom_spacer
+    
+    
+    objective shape top_spacer is
+        integer index;
+        scalar pin_location;
+    
+        index = 0;
+    
+        while (index < 6) do
+    
+            pin_location = ((0.75 / 2) + index * 2);
+    
+            extrude [
+            [(0.75 / 2) 4]
+            [(0.75 / 2) 8]
+            [(2 - (0.75 / 2)) 8]
+            [(2 - (0.75 / 2)) 4]
+            ] with
+              move to < pin_location 0 0 >;
+              height = 0.25;
+              material is chalk colored dark white;
+            end;
+    
+            index = itself + 1;
+        end;
+    end;    // top_spacer
+    
+    
+    objective shape bottom_pins with
+        scalar progress = 1.0;
+    is
+        scalar pin_location;
+        integer index = 0;
+    
+        while (index < 5) do
+    
+            pin_location = ((0.75 / 2) + (10 - 10 * progress) + index * 2);
+    
+            bottom_pin with
+                top_length = 4 - pin_heights[index];
+                move to < ((0.75 / 2) + 2 + (index * 2)) 0 (pin_height (pin_location - 0.25 / 2) (pin_location + 0.25 / 2) ) >;
+            end;
+    
+            index = itself + 1;
+        end;
+    end;    // bottom_pins
+    
+    
+    objective shape top_pins with
+        scalar progress = 1.0;
+    is
+        scalar pin_location;
+        integer index = 0;
+    
+        while (index < 5) do
+    
+            pin_location = ((0.75 / 2) + (10 - 10 * progress) + index * 2);
+    
+            top_pin with
+                top_length = 4 - pin_heights[index];
+                move to < ((0.75 / 2) + 2 + (index * 2)) 0 (pin_height (pin_location - 0.25 / 2) (pin_location + 0.25 / 2) ) >;
+            end;
+    
+            index = itself + 1;
+        end;
+    end;    // top_pins
+    
+    
+    objective shape lock_housing is
+        top_spacer;
+    
+        cylinder with
+            render_mode is wireframe;
+            edges is silhouette;
+            color = dark white;
+            end1 = < 0.75 0 1 >;
+            end2 = < 12 0 1 >;
+            radius = 7;
+        end;
+    end;    // lock_housing
+    
+    
+    objective shape outer_assembly with
+        scalar progress = 1.0;
+    is
+        lock_housing;
+    
+        top_pins with
+            progress = static progress;
+            material is chalk colored red;
+        end;
+    end;    // outer_assembly
+    
+    
+    objective shape cam is
+        bottom_spacer;
+    
+        cylinder with
+            end1 = < 0.75 0 0 >;
+            end2 = < 12 0 0 >;
+            radius = 4;
+            material is aluminum;
+            render_mode is wireframe; 
+            edges is silhouette;
+        end;
+    
+        extrude [
+            [ 12 -1 ]
+            [ 12 1 ]
+            [ 16 1 ]
+            [ 16 -1 ]
+        ]
+        with
+            height = 1.5;
+            material is chalk colored grey;
+        end;
+    
+        cylinder with
+            end1 = < 16 0 0 >;
+            end2 = < 17 0 0 >;
+            radius = cam_radius;
+            material is chalk colored grey;
+        end;
+    
+        disk with
+            radius = cam_radius;
+            rotate by 90 around < 0 1 0 >;
+            move to < 16 0 0 >;
+            material is chalk colored grey;
+        end;
+    
+        disk with
+            radius = cam_radius;
+            rotate by 90 around < 0 1 0 >;
+            move to < 17 0 0 >;
+            material is chalk colored grey;
+        end;
+    
+        cylinder with
+            end1 = < 15.5 0 0 >;
+            end2 = < 17.25 0 0 >;
+            radius = 0.25;
+            material is aluminum;
+            move to < 0 0 ( - (cam_radius - 0.75) ) >;
+            rotate by -hook_angle around < 1 0 0 >;
+        end;
+    
+        sphere with
+            radius = 0.25;
+            material is aluminum;
+            move to < 17.25 0 ( - (cam_radius - 0.75) ) >;
+            rotate by -hook_angle around < 1 0 0 >;
+        end;
+    
+        disk with
+            radius = 0.25;
+            rotate by 90 around < 0 1 0 >;
+            radius = 0.25;
+            material is aluminum;
+            move to < 15.5 0 ( - (cam_radius - 0.75) ) >;
+            rotate by -hook_angle around < 1 0 0 >;
+        end;
+    end;    // cam
+    
+    
+    objective shape inner_assembly with
+        scalar progress = 1.0;
+        scalar key_progress = 1.0;
+    is
+        bottom_pins with
+            progress = static progress;
+            material is chalk colored white;
+        end;
+    
+        cam;
+    
+        key with
+            move to < (2 - 10 + 10 * progress - 5 + 5 * key_progress) 0 0 >;
+        end;
+    end;    // inner_assembly
+    
+    
+    objective shape bolt is
+        extrude [
+            [ 0 4 ]
+            [ 16 4 ]
+            [ 16 0 ]
+            [ 12 -4 ]
+            [ 0 -4 ]
+        ] with
+            height = 4;
+            rotate by -90 around < 1 0 0 >;
+            rotate by -90 around < 0 0 1 >;
+            material is aluminum;
+        end;
+    end;    // bolt
+    
+    
+    objective shape bolt_assembly with
+        scalar lock_rotation = 0;
+    is
+        scalar angle;
+        scalar y_location;
+        scalar z_location;
+    
+        angle = (270 - 32.75 + lock_rotation);
+        y_location = cos (angle) * ( cam_radius - 0.75 );
+        z_location = sin (angle) * ( cam_radius - 0.75 );
+    
+        cylinder with
+            end1 = < 17.25 (y_location - 11) -3.25 >;
+            end2 = < 17.25 y_location z_location >;
+            radius = 0.25;
+            material is aluminum;
+        end;
+    
+        cylinder with
+            end1 = < 15.25 (y_location - 11) -3.25 >;
+            end2 = < 19.25 (y_location - 11) -3.25 >;
+            radius = 0.25;
+            material is aluminum;
+        end;
+    
+        disk with
+            radius = 0.25;
+            rotate by 90 around < 0 1 0 >;
+            move to < 15.25 (y_location - 11) -3.25 >;
+            material is aluminum;
+        end;
+    
+        disk with
+            radius = 0.25;
+            rotate by 90 around < 0 1 0 >;
+            move to < 19.25 (y_location - 11) -3.25 >;
+            material is aluminum;
+        end;
+    
+        bolt with
+            render_mode is wireframe;
+            move to < 17 (y_location - 10) -3.25 >;
+        end;
+    end;    // bolt_assembly
+    
+    
+    objective shape door is
+        extrude [
+            [ 25 -20 ]
+            [ 25 20 ]
+            [ -22 20 ]
+            [ -22 -20 ]
+        ] with
+            height = 20;
+            rotate by 90 around < 0 0 1 >;
+            move to < 15 0 0 >;
+            render_mode is wireframe;
+            color = brown;
+        end;
+    end;    // door
+    
+    
+    objective shape lock with
+        scalar progress = 1.0;
+        scalar lock_rotation = 0.0;
+        scalar key_progress = 1.0;
+    is
+        outer_assembly with
+            progress = static progress;
+        end;
+    
+        inner_assembly with
+            progress = static progress;
+            key_progress = static key_progress;
+            rotate by lock_rotation around < 1 0 0 >;
+        end;
+    
+        bolt_assembly with
+            lock_rotation = static lock_rotation;
+        end;
+    
+        door;
+    end;    // lock
+    
+
+    shape instance is
+        scalar progress = time;
+        scalar lock_rotation = 0;
+        scalar lock_progress= 1;
+        scalar key_progress = 1;
+        
+        if (progress < 0.25) then
+            lock_progress = 0;
+            key_progress = progress / 0.25;
+        elseif (progress < 0.75) then
+            lock_progress = (progress - 0.25) / 0.5;
+        elseif (progress < 0.85) then
+        else
+            lock_rotation = ((progress - 0.85) / 0.15) * 90;
+        end;
+
+        lock with
+            progress = lock_progress;
+            lock_rotation = static lock_rotation;
+            key_progress = static key_progress;
+            move to < -5 0 0 >;
+        end;
+    end;    // instance;
+end;    // animated_lock
+
+
+anim lock_anim with
+    double_buffer is on;
+    facets = 8;
+    eye = <-10 -25 5>;
+    lookat = <3 0 0>;
+is
+    animated_lock type lock;
+    
+    verb show_instructions is
+        overlay_text "A = auto-play" at <-.9 -.65 0> with
+            h_align is left;
+        end;
+        overlay_text "M = manual control" at <-.9 -.75 0> with
+            h_align is left;
+        end;
+        overlay_text "F = step forward" at <0.1 -.65 0> with
+            h_align is left;
+        end;
+        overlay_text "B = step back" at <0.1 -.75 0> with
+            h_align is left;
+        end;
+    end;    // show_instructions 
+       
+    verb custom_controls is
+        scalar progress;
+        
+        if key_down shift_key then
+            progress = ((get_mouse dot <1 0 0>) + 1) / 2;
+            lock pause;
+            lock reset to progress;
+        else            
+            if lock is_paused then
+                if key_down char_to_key "f" then
+                    lock play;
+                    lock update;
+                    lock pause;
+                end;
+                if key_down char_to_key "b" then
+                    lock backup;
+                    lock update;
+                    lock pause;
+                end;
+                
+                if key_pressed char_to_key "a" then
+                    lock play;
+                end;
+            else
+                // auto-play mode
+                //
+                if (key_pressed char_to_key "m") or
+                   (key_pressed char_to_key "b") or
+                   (key_pressed char_to_key "f")
+                then
+                    lock pause;
+                end;
+            end;
+        end;
+        
+        show_instructions;
+        check_keys;
+    end;    // custom_controls
+    
+    
+    shape lights is
+        distant_light from <-1 0 1> with
+            color = light light orange;
+        end;
+        distant_light from <1 0 -1> with
+            color = light light blue;
+        end;
+    end;    // lights
+    
+    
+    mouse_controlled_actor lock doing custom_controls around lights;
+end;    // lock_anim

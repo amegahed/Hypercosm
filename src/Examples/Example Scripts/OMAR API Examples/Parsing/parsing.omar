@@ -1,0 +1,95 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             parsing.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       text parsing utilities.                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/parsing.ores";
+include "system/string_utils.ores";
+
+strings type text is [
+	"Fourscore and seven years ago our fathers brought forth on this continent a new nation, conceived in liberty and dedicated to the proposition that all men are created equal." 
+	"Now we are engaged in a great civil war, testing whether that nation or any nation so conceived and so dedicated can long endure."
+	"We are met on a great battlefield of that war."
+	"We have come to dedicate a portion of it as a final resting place for those who died here that the nation might live."
+	"This we may, in all propriety do."
+	"But in a larger sense, we cannot dedicate, we cannot consecrate, we cannot hallow this ground."
+	"The brave men, living and dead who struggled here have hallowed it far above our poor power to add or detract."
+	"The world will little note nor long remember what we say here, but it can never forget what they did here." 
+	"It is rather for us the living, we here be dedicated to the great task remaining before us--"
+	"that from these honored dead we take increased devotion to that cause for which they here gave the last full measure of devotion--"
+	"that we here highly resolve that these dead shall not have died in vain, that this nation shall have a new birth of freedom, and that government of the people, by the people, for the people shall not perish from the earth." 
+];
+
+strings type text2 is [
+	"1 2 3"
+	"100 200 300"
+];
+
+strings type text3 is [
+	get_quotated "this that other thing"
+	get_quotated "this is only a test"
+];
+
+verb char_counting_test is
+	write "The text has ", get_text_char_count of text, " characters.", ;
+end;    // char_counting_test
+
+verb string_parsing_test is
+	integer char_number = 1, line_number = 1;
+	boolean done is false;
+	string type string;
+		
+	while not done do
+		parse_string string at column char_number on line line_number of text;
+		if some string then
+			write "string = ", string, ;
+		else
+			done is true;
+		end;
+	end;
+end;    // string_parsing_test
+
+verb number_parsing_test is
+	integer char_number = 1, line_number = 1;
+	integer i;
+	
+	while some_text at column char_number on line line_number of text2 do
+		parse_integer i at column char_number on line line_number of text2;
+		write "i = ", i, ;
+	end;
+end;    // number_parsing_test
+
+verb quotated_string_parsing_test is
+	integer char_number = 1, line_number = 1;
+	boolean done is false;
+	string type string;
+	
+	write "text3:", ;
+	text3 print;
+	write;
+		
+	while not done do
+		parse_quotated_string string at column char_number on line line_number of text3;
+		if some string then
+			write "quotated string = ", get_quotated string, ;
+		else
+			done is true;
+		end;
+	end;
+end;    // quotated_string_parsing_test
+
+verb example is
+	char_counting_test;
+	string_parsing_test;
+	number_parsing_test;
+	quotated_string_parsing_test;
+end;    // example

@@ -1,0 +1,141 @@
+{***************************************************************}
+{                          galaxy.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do galaxy_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/random.ores";
+
+
+shader starry
+    color type color;
+is
+    scalar distance = location dot location;
+    scalar r1 = random 0 to 1 / (distance + 6);
+    scalar r2 = (4 * r1) + random 0 to .1;
+
+    if (r2 > .15) then
+        answer (color * (r2 + random 0 to 1));
+    else
+        answer refract 1 white;
+    end;
+end;    // starry
+
+
+shape gassy_arm with
+    integer puffs = 70;
+is
+    for integer counter = 1..puffs do
+        scalar r = counter / puffs;
+
+        if r > random 0 to 1 then
+            color type color = light (<r .5 (1 - r)>);
+            vector point = (<(random 0 to 1) (random 0 to 1) 0>);
+
+            fuzzy color sphere with
+                radius = (1 - r) / 2 + (random 0 to .4)
+                    + .2;
+                move to ((<(4 * r + .5) 0 0>) + point);
+                rotate by r * 180 around <0 0 1>;
+            end;
+        end;
+    end;
+end;    // gassy_arm
+
+
+shape starry_arm with
+    integer puffs = 50;
+is
+    for integer counter = 1..puffs do
+        scalar r = counter / puffs;
+        vector v = (<(random 0 to 1) (random 0 to 1) 0>);
+
+        starry white sphere with
+            radius = (1 - r) / 1.5 + (random 0 to .5) + .2;
+            move to (<(10 * r + .5) 0 0>) + v;
+            rotate by (r * 180) around <0 0 1>;
+        end;
+    end;
+end;    // starry_arm
+
+
+shape core is
+    for integer counter = 1..80 do
+        scalar r = random 0 to 1;
+
+        sphere with
+            radius = (1 - r) * .4 + .4;
+            move to <((r * 1) + .5) 0 0>;
+            rotate by (random 0 to -1) * 90 around <0 1 0>;
+            rotate by (random 0 to 1) * 360 around <0 0 1>;
+        end;
+    end;
+end;    // core
+
+
+shape galaxy with
+    integer arms = 2;
+is
+    // galactic halo
+    //
+    {
+        fuzzy white sphere with
+                radius = 8;
+        end;
+        }
+
+    // galactic core
+    //
+    fuzzy (white * 1.75) sphere with
+        radius = 3;
+    end;
+
+    // galactic arms
+    //
+    for integer counter = 1..arms do
+        starry_arm with
+            magnify by .75;
+            rotate by (counter / arms) * 360 around <0 0 1>;
+        end;
+
+        {
+                gassy_arm with
+                        rotate by ((counter + .2) / arms) * 360
+                around <0 0 1>;
+                end;
+        }
+    end;
+
+    // galactic disk
+    //
+    starry white sphere with
+        radius = 8;
+        scale by .1 along <0 0 1>;
+    end;
+end;    // galaxy
+
+
+picture galaxy_picture
+        args type args;
+with
+    eye = <0 -30 0>;
+        background = black;
+    render_mode is shaded;
+    facets = 0;
+    refractions is on;
+    shadows is on;
+    max_refractions = 10;
+        args check;
+is
+    galaxy with
+        rotate by 30 around <1 0 0>;
+    end;
+end;    // galaxy_picture

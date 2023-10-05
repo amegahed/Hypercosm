@@ -1,0 +1,332 @@
+{***************************************************************}
+{                          picking_demo.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// This is a sample of a fairly easy and robust way to do object
+// picking.  Some notable features of this code:  the window width
+// and height are set randomly (unless command-line arguments are
+// provided) to demonstrate that this code works with any window
+// aspect ratio.  The object picking looks at what object is
+// closer so that overlapping objects are handled correctly.  And,
+// some advanced features of the interaction subject are used so
+// that the scene cannot be rotated while an object is selected.
+//
+// This demo can be used as the basis for most interactive picking
+// applets in OMAR.
+
+do picking_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/fish.omar";
+
+
+enum object_kind is sphere, cube, block, fish, anyshape, box;
+
+
+shape anyshape is
+    torus;
+end;	// anyshape
+
+
+shape planar_box with
+    vector vertex = <-1 -1 0>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+is
+    vector v = vertex;
+    vector s1 = side1;
+    vector s2 = side2;
+    
+    parallelogram with
+        vertex = v;
+        side1 = s1 * 0.25;
+        side2 = s2 * 0.75;
+    end;
+    parallelogram with
+        vertex = v + (s1 * 0.25);
+        side1 = s1 * 0.75;
+        side2 = s2 * 0.25;
+    end;
+    parallelogram with
+        vertex = v + (s2 * 0.75);
+        side1 = s1 * 0.75;
+        side2 = s2 * 0.25;
+    end;
+    parallelogram with
+        vertex = v + (s1 * 0.75) + (s2 * 0.25);
+        side1 = s1 * 0.25;
+        side2 = s2 * 0.75;
+    end;
+end;	// planar_box
+
+
+picture picking_demo_picture is
+    static object_kind type next_picked_object is none;
+
+    object_kind type picked_object;
+    click type click;
+
+    // box parameters
+    static vector axis1 = <1 0 0>;
+    static vector axis2 = <0 1 0>;
+    static vector r1 = <1 1 1>;
+    static vector r2 = <0 1 2>;
+    scalar temp_t;
+    vector pt_touched;
+
+    // t keeps track of how close the closest object is.  Each time we call
+    // sphere_touched, cube_touched, or block_touched, t is updated if the
+    // new shape is the closest.  So, the last shape that says it's touched
+    // is the one.
+    scalar t = infinity;
+
+    default_lights;
+
+    // Because we don't know what the closest object is until we're drawn
+    // them all, we highlight and select using the picking results from the
+    // previous frame.
+    picked_object is next_picked_object;
+    next_picked_object is none;
+
+    // Draw the scene.  Each time we draw an object that can be picked, see
+    // if the mouse is over that object so we can pick it on the next frame.
+    // Also draw the scene based on what was picked on the previous frame.
+
+    sphere with
+        move to <5 0 -5>;
+        magnify by 2;
+
+        if picked_object is sphere then
+            material is plastic colored yellow;
+        else
+            material is plastic colored green;
+        end;
+
+        // Test for what object the mouse is over, for the next frame.
+        // This is the magic.  Only test if the user is not dragging the
+        // scene around.
+        if (current_interaction is none) or
+                (not current_interaction is_tracking) then
+            // We should test if the mouse is picking this object
+            if sphere_touched at get_mouse closer than t then
+                next_picked_object is sphere;
+            end;
+        end;
+    end;
+
+    block with
+        move to <-5 0 0>;
+        magnify by 3;
+
+        if picked_object is cube then
+            material is plastic colored yellow;
+        else
+            material is plastic colored green;
+        end;
+
+        // Test for what object the mouse is over, for the next frame.
+        // This is the magic.  Only test if the user is not dragging the
+        // scene around.
+        if (current_interaction is none) or
+                (not current_interaction is_tracking) then
+            // We should test if the mouse is picking this object
+            if cube_touched at get_mouse closer than t then
+                next_picked_object is cube;
+            end;
+        end;
+    end;
+
+    block with
+        vertex = <0 0 5>;
+        side1 = <1 0 0>;
+        side2 = <1 3 0>;
+        side3 = <0 1 2>;
+
+        if picked_object is block then
+            material is plastic colored yellow;
+        else
+            material is plastic colored green;
+        end;
+
+        // Test for what object the mouse is over, for the next frame.
+        // This is the magic.  Only test if the user is not dragging the
+        // scene around.  The 'with' parameters to block_touched must be
+        // the same as the parameters to the block.  If you don't change
+        // the vertex, side1, side2, and side3 parameters, then use
+        // cube_touched instead - it's faster.
+        if (current_interaction is none) or
+                (not current_interaction is_tracking) then
+            // We should test if the mouse is picking this object
+            if (block_touched at get_mouse closer than t with
+                    vertex = <0 0 5>;
+                    side1 = <1 0 0>;
+                    side2 = <1 3 0>;
+                    side3 = <0 1 2>;) then
+                next_picked_object is block;
+            end;
+        end;
+    end;
+
+    fish type's form with
+        magnify by 0.1;
+        move to <0 -10 0>;
+
+        if picked_object is fish then
+            material is plastic colored red;
+        else
+            material is plastic colored green;
+        end;
+
+        // Test for what object the mouse is over, for the next frame.
+        // This is the magic.  Only test if the user is not dragging the
+        // scene around.
+        if (current_interaction is none) or
+                (not current_interaction is_tracking) then
+            // We should test if the mouse is picking this object
+            scale by 2 along <1 0 0>;   // test with an oval bounding region
+            // Draw the actual sphere to help debug the bounding region -
+            // an applet author would remove this when the region is correct.
+            sphere with
+                render_mode is wireframe;
+                radius = 15;
+                center = <5 0 0>;
+            end;
+            if (sphere_touched at get_mouse closer than t with
+                    radius = 15;
+                    center = <5 0 0>;) then
+                next_picked_object is fish;
+            end;
+            scale by 1/2 along <1 0 0>; // undo the above transformation
+        end;
+    end;
+
+    anyshape with
+        rotate by 90 around <1 0 0>;
+        move to <-2 6 -2>;
+        magnify by 2;
+
+        if picked_object is anyshape then
+            material is plastic colored yellow;
+        else
+            material is plastic colored green;
+        end;
+
+        // Test for what object the mouse is over, for the next frame.
+        // This is the magic.  Only test if the user is not dragging the
+        // scene around.
+        if (current_interaction is none) or
+                (not current_interaction is_tracking) then
+            // We should test if the mouse is picking this object
+            if shape_touched anyshape at get_mouse closer than t then
+                next_picked_object is anyshape;
+            end;
+        end;
+    end;
+
+    planar_box with
+        // make the box spin in odd ways
+        rotate_vector r1 by (30 * get_frame_duration) around <-1 3 2>;
+        rotate_vector r2 by (14 * get_frame_duration) around <2 -5 -7>;
+        rotate_vector axis1 by (23 * get_frame_duration) around r1;
+        rotate_vector axis2 by (41 * get_frame_duration) around r2;
+
+        vertex = <5 -4 4> - ((axis1 + axis2) * 2);
+        side1 = axis1 * 4;
+        side2 = axis2 * 4;
+
+        if picked_object is box then
+            material is plastic colored yellow;
+        else
+            material is plastic colored green;
+        end;
+
+        // Test for what object the mouse is over, for the next frame.
+        // This is the magic.  Only test if the user is not dragging the
+        // scene around.
+        if (current_interaction is none) or
+                (not current_interaction is_tracking) then
+            // We should test if the mouse is picking this object.
+            // Use a temporary variable in place of t, because even though
+            // the plane is touched, the portion of the plane that is the
+            // box might not be touched, and we don't want to modify t
+            // unless the box itself is being touched.
+            temp_t = t;
+            if (plane_touched at get_mouse closer than temp_t with
+                    origin = <5 -4 4>;
+                    x_axis = axis1;
+                    y_axis = axis2;
+                    return pt_touched) then
+                // The plane is touched; now see if the box is touched.
+                if ((abs pt_touched.x) <= 2) and
+                   ((abs pt_touched.y) <= 2) and
+                   (((abs pt_touched.x) >= 1) or
+                    ((abs pt_touched.y) >= 1)) then
+                    t = temp_t;
+                    next_picked_object is box;
+                end;
+            end;
+        end;
+    end;
+
+    // This gives more visual feedback to the user, and prevents the scene
+    // from jiggling when the user clicks on objects.
+    if some picked_object then
+        set_cursor to arrow;
+        if some current_interaction then
+            current_interaction override;
+        end;
+    end;
+
+    click is get_click;
+    if (click is down) or (click is double_click) then
+        when picked_object is
+            sphere:
+                write "Picked Sphere!", ;
+            end;
+
+            cube:
+                write "Picked Cube!", ;
+            end;
+
+            block:
+                write "Picked Block!", ;
+            end;
+
+            fish:
+                write "Picked Fish!", ;
+            end;
+
+            anyshape:
+                write "Picked Donut!", ;
+            end;
+
+            box:
+                write "Picked Box!", ;
+            end;
+        end;
+    end;
+end;	// picking_demo_picture
+
+
+anim picking_demo_anim with
+    eye = <0 -50 0>;
+    lookat = <0 0 0>;
+    double_buffer is true;
+
+    // This is somewhat gratuitous, but it demonstrates the robustness
+    // of the above techniques.  This will only work if the applet is
+    // run standalone, or in Studio with no project open.
+    width = irandom 300 to 800;
+    height = irandom 300 to 800;
+is
+    mouse_controlled_picture picking_demo_picture;
+end;	// picking_demo_anim

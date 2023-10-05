@@ -1,0 +1,68 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             nodes.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard subject for holding references      }
+{       to objects.  Typically, this node class will be         }
+{       subclassed to build more complex data structures.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/mutable_containing.ores";
+
+subject node
+extends
+	mutable_containable object
+does
+	// constructor
+	//
+	verb new
+		containing object type item is none;
+	end;
+	
+	// data access methods
+	//
+	object type question get;
+
+	// data modifier methods
+	// 
+	verb set
+		to object type item;
+	end;
+has
+	// attributes
+	//
+	object type item is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		containing object type item is none;
+	is
+		node's item is item;
+	end;    // new
+	
+	//    
+	// data access methods
+	//
+	
+	object type question get is
+		answer item;
+	end;    // get
+	
+	//
+	// data modifier methods
+	//
+	
+	verb set
+		to object type item;
+	is
+		node's item is item;
+	end;    // set
+end;    // node

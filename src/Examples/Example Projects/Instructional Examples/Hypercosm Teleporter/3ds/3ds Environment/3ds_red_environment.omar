@@ -1,0 +1,34 @@
+do red_environment_anim;
+
+include "system/3d.ores";
+include "system/3ds_translator.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "3ds_objects.omar";
+
+translated_3ds_environment type red_environment with
+	background_color = red;
+	background_name is "red_background.jpg";
+	use_map is true;
+	
+	// lighting parameters
+	//
+	ambient_color = red;
+	
+	// default light parameters
+	//
+	light_tint = white;
+	light_level = 1;
+end;    // red_environment
+
+anim red_environment_anim 
+	args type args;
+with
+	red_environment activate;
+	lookat = <0 0 -2>;
+	args check;
+is
+	mouse_controlled_tessellated_shape objects titled "Red Environment" with
+		auto_zoom is on;
+	end;
+end;    // red_environment_anim

@@ -1,0 +1,45 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           i_beam.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of an        }
+{       i-beam.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/extrude.ores";
+include "system/transformations.ores";
+
+shape i_beam
+	from vector end1;
+	to vector end2;
+with
+	scalar width = 1;
+	scalar height = 1;
+	scalar thickness = .1;
+is
+	shape unit_i_beam is
+		scalar x = thickness;
+		scalar y = 1 - (thickness * 2);
+		extrude [[-1 -1] [1 -1] [1 (-y)] [x (-y)] [x y]
+			[1 y] [1 1] [-1 1] [-1 y] [(-x) y] [(-x) (-y)]
+			[-1 (-y)] [-1 -1]]
+		with
+			height = 2;
+			rotate by 90 around <0 0 1>;
+		end;
+	end;    // unit_i_beam
+
+	vector direction = (end2 - end1) / 2;
+	vector center = (end2 + end1) / 2;
+	unit_i_beam with
+		scale by width along <0 1 0>;
+		scale by height along <0 0 1>;
+		orient from <1 0 0> to direction;
+		move to center;
+	end;
+end;    // i_beam

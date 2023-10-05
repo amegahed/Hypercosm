@@ -1,0 +1,533 @@
+{***************************************************************}
+{                          roadster.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do roadster_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/actors.ores";
+include "system/solids.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/engine.omar";
+include "system/ash_tree.omar";
+
+
+subject roadster
+extends
+    timed_actor
+does
+    objective shape form with
+        scalar t = 0;
+        scalar hood_angle = 0;
+    end;    // form
+
+    shape instance;
+has
+    public scalar speed = 10;
+    public scalar flaps_per_sec = 1 / 5;
+is
+    objective shape tire is
+        cylinder with
+            end1 = <0 -3 0>;
+            end2 = <0 3 0>;
+            radius = 15;
+        end;
+        cylinder with
+            end1 = <0 -3 0>;
+            end2 = <0 3 0>;
+            radius = 10;
+        end;
+        ring with
+            center = <0 3 0>;
+            normal = <0 1 0>;
+            inner_radius = 10;
+            outer_radius = 15;
+        end;
+        ring with
+            center = <0 -3 0>;
+            normal = <0 1 0>;
+            inner_radius = 10;
+            outer_radius = 15;
+        end;
+    end;    // tire
+
+
+    objective shape wheel is
+        tire with
+            material is chalk colored charcoal;
+        end;
+        ring with
+            material is chalk colored white;
+            center = <0 2 0>;
+            normal = <0 1 0>;
+            inner_radius = 8;
+            outer_radius = 10;
+        end;    // whitewalls
+        cone with
+            material is silver;
+            end1 = <0 2 0>;
+            end2 = <0 4 0>;
+            radius1 = 8;
+            radius2 = 0;
+        end;
+        sphere with
+            center = <0 2 0>;
+            radius = 3;
+        end;
+    end;    // wheel
+
+
+    objective shape axel is
+        cylinder with
+            material is silver;
+            end1 = <0 25 0>;
+            end2 = <0 -25 0>;
+            radius = 2;
+        end;
+        wheel with
+            move to <0 25 0>;
+        end;
+        wheel with
+            rotate by 180 around <0 0 1>;
+            move to <0 -25 0>;
+        end;
+    end;    // axel
+
+
+    objective shape fender is
+
+        // footstep
+        polygon [<-20 -5 0> <20 -5 0> <20 5 0> <-20 5 0>];
+
+        // front fender
+        polygon [<-65 -5 20> <-20 -5 0> <-20 5 0> <-65 5 20>];
+        polygon [<-75 -5 20> <-65 -5 20> <-65 5 20> <-75 5 20>];
+        polygon [<-75 -5 20> <-85 -5 10> <-85 5 10> <-75 5 20>];
+
+        // rear fender
+        polygon [<40 -5 20> <20 -5 0> <20 5 0> <40 5 20>];
+        polygon [<40 -5 20> <50 -5 20> <50 5 20> <40 5 20>];
+        polygon [<50 -5 20> <60 -5 10> <60 5 10> <50 5 20>];
+    end;    // fender
+
+
+    objective shape hood is
+        polygon [<0 -10 10> <50 -10 10> <50 0 0> <0 0 0>];
+        polygon [<0 -10 10> <50 -10 10> <50 -20 10> <0 -20 10>];
+        polygon [<0 -20 10> <50 -20 10> <50 -30 0> <0 -30 0>];
+    end;    // hood
+
+
+    objective shape body is
+
+        // front
+        polygon [<-70 15 0> <-70 15 20> <-70 5 30> <-70 -5 30>
+            <-70 -15 20> <-70 -15 0>];
+
+        // dashboard
+        polygon [<-20 15 0> <-20 15 20> <-20 5 30>
+            <-20 -5 30> <-20 -15 20> <-20 -15 0>] with
+            material is chalk colored grey;
+        end;
+
+        // sides
+        polygon [<-70 -15 0> <-20 -15 0> <-20 -15 20> <-70 -15 20>];
+        polygon [<-70 15 0> <-20 15 0> <-20 15 20> <-70 15 20>];
+
+        // triangular piece in front of seat
+        polygon [<0 -20 0> <-20 -15 20> <-20 -15 0>];
+        polygon [<0 20 0> <-20 15 20> <-20 15 0>];
+
+        // sides in back
+        polygon [<0 -20 0> <60 -20 0> <60 -20 10> <0 -20 10>];
+        polygon [<0 20 0> <60 20 0> <60 20 10> <0 20 10>];
+
+        // vertical piece under seats
+        polygon [<0 -20 0> <0 -20 10> <0 20 10> <0 20 0>];
+
+        // floor under seats
+        polygon [<0 -20 10> <60 -20 10> <60 20 10> <0 20 10>];
+    end;    // body
+
+
+    objective shape seat_back is
+        sphere with
+            center = <0 -5 20>;
+            radius = 3;
+        end;
+        sphere with
+            center = <0 5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 -5 0>;
+            end2 = <0 -5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 5 0>;
+            end2 = <0 5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 5 20>;
+            end2 = <0 -5 20>;
+            radius = 3;
+        end;
+    end;    // seat_back
+
+
+    objective shape seat is
+        seat_back with
+            rotate by 15 around <0 1 0>;    // tilt seat back
+            move to <8 0 0>;
+        end;
+        cylinder with
+            end1 = <8 5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 -5 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 0 0>;
+            end2 = <8 0 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <-8 -5 0>;
+            radius = 3;
+        end;    // front of seat
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <8 5 0>;
+            radius = 3;
+        end;    // side of seat
+        cylinder with
+            end1 = <-8 -5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;    // side of seat
+    end;    // seat
+
+
+    objective shape gas_tank is
+        cylinder with
+            end1 = <0 -16 0>;
+            end2 = <0 16 0>;
+            radius = 10;
+        end;
+        paraboloid with
+            top = <0 -19 0>;
+            base = <0 -16 0>;
+            radius = 10;
+        end;
+        paraboloid with
+            top = <0 19 0>;
+            base = <0 16 0>;
+            radius = 10;
+        end;
+    end;    // gas_tank
+
+
+    objective shape trunk is
+        block with
+            vertex = <0 -15 0>;
+            side1 = <30 0 0>;
+            side2 = <0 30 0>;
+            side3 = <0 0 30>;
+        end;
+    end;    // trunk
+
+
+    objective shape hitch is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 6>;
+            radius = 1;
+        end;
+        sphere with
+            center = <0 0 6>;
+            radius = 2;
+        end;
+    end;    // hitch
+
+
+    objective shape steering_wheel is
+        cylinder with
+            material is silver;
+            end1 = <0 0 10>;
+            end2 = <0 0 20>;
+            radius = 1;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <-8 0 20>;
+            end2 = <8 0 20>;
+            radius = .8;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 -8 20>;
+            end2 = <0 8 20>;
+            radius = .8;
+        end;
+        cylinder with
+            material is chalk colored charcoal;
+            end1 = <0 0 19.5>;
+            end2 = <0 0 20.5>;
+            radius = 8;
+        end;
+        ring with
+            material is chalk colored charcoal;
+            center = <0 0 20.5>;
+            normal = <0 0 1>;
+            inner_radius = 7;
+            outer_radius = 8;
+        end;
+        disk with
+            center = <0 0 20.5>;
+            normal = <0 0 1>;
+            radius = 2;
+        end;
+    end;    // steering_wheel
+
+
+    objective shape headlight is
+        paraboloid with
+            top = <10 0 0>;
+            base = <0 0 0>;
+            radius = 5;
+        end;
+        transparent white sphere with
+            center = <3 0 0>;
+            radius = 2;
+        end;
+    end;    // headlight
+
+
+    objective shape chassis is
+        fender with
+            move to <0 -25 15>;
+        end;
+        fender with
+            move to <0 25 15>;
+        end;
+        body with
+            move to <0 0 15>;
+        end;
+
+        // crankshaft
+        cylinder with
+            material is chalk colored white;
+            end1 = <-20 0 15>;
+            end2 = <45 0 15>;
+            radius = 1;
+        end;
+        steering_wheel with
+            rotate by 80 around <0 1 0>;
+            move to <-30 10 35>;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <45 0 35>;
+            end2 = <60 0 35>;
+            radius = 2;
+        end;    // spare wheel holder
+        wheel with
+            rotate by -90 around <0 0 1>;
+            move to <60 0 35>;
+        end;    // spare wheel
+        seat with
+            material is wood;
+            move to <10 -10 28>;
+        end;
+        seat with
+            material is wood;
+            move to <10 10 28>;
+        end;
+        trunk with
+            material is wood;
+            move to <25 0 15>;
+            magnify the shader_trans by 20;
+        end;
+        gas_tank with
+            material is silver;
+            move to <35 0 45>;
+        end;
+        hitch with
+            material is silver;
+            move to <68 0 15>;
+        end;
+
+        // floor
+        polygon [<70 0 15> <60 20 15> <-70 20 15>
+            <-80 0 15> <-70 -20 15> <60 -20 15>] with
+            material is chalk colored charcoal;
+        end;
+        headlight with
+            material is silver;
+            move to <-70 -25 40>;
+        end;
+        headlight with
+            material is silver;
+            move to <-70 25 40>;
+        end;
+    end;    // chassis
+
+
+    objective shape form with
+        scalar t = 0;
+        scalar hood_angle = 0;
+    is
+        engine type's form with
+            t = static t / 15;
+            magnify by 8;
+            rotate by 180 around <0 0 1>;
+            move to <-50 0 15>;
+        end;
+        axel with
+            rotate by (t * 10) around <0 -1 0>;
+            move to <-70 0 15>;
+        end;
+        axel with
+            rotate by (t * 10) around <0 -1 0>;
+            move to <45 0 15>;
+        end;
+
+        hood with
+            rotate by -hood_angle around <1 0 0>;
+            move to <-70 15 35>;
+        end;
+        chassis;
+    end;    // form
+
+
+    shape instance is
+        static material type body_material is plastic colored lime_green;
+
+        form with
+            t = speed * time;
+            hood_angle = 30 + sin (360 * time *
+                flaps_per_sec) * 30;
+            material is body_material;
+        end;
+    end;    // instance
+end;    // roadster
+
+
+picture roadster_picture with
+    eye = <400 -600 400>;
+    eye = <100 -150 100>;
+    lookat = <0 0 16>;
+    background = sky_blue;
+    fog_factor = 1000;
+    render_mode is shaded;
+
+    {
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    }
+
+    {
+    facets = 4;
+    render_mode = hidden_line;
+    }
+
+    {
+    eye = 100 -150 16;
+    projection = orthographic;
+    field_of_view = 400;
+    }
+is
+    distant_light from <.3 -.5 1>;
+    glossy dirty red roadster type's form with
+        magnify the shader_trans by 100;
+    end;
+    ash_tree with
+        magnify by 100;
+        move to <0 100 0>;
+    end;
+    ash_tree with
+        magnify by 80;
+        move to <100 150 0>;
+    end;
+    ash_tree with
+        magnify by 90;
+        move to <-120 40 0>;
+    end;
+    ash_tree with
+        magnify by 120;
+        move to <-150 150 0>;
+    end;
+    ash_tree with
+        magnify by 100;
+        move to <-110 -80 0>;
+    end;
+    ash_tree with
+        magnify by 90;
+        move to <80 -250 0>;
+    end;
+    ash_tree with
+        magnify by 70;
+        move to <140 -75 0>;
+    end;
+
+    block with
+        material is chalk colored grey;
+        scale by 400 along <1 0 0>;
+        scale by 40 along <0 1 0>;
+        magnify the shader_trans by 50;
+    end;
+
+    plane with
+        color = aqua;
+        magnify by 100;
+        magnify the shader_trans by 50;
+    end;
+end;    // roadster_picture
+
+
+anim roadster_anim
+    args type args;
+with
+    double_buffer is on;
+    field_of_view = 80;
+    eye = <80 -120 60>;
+    lookat = <0 0 15>;
+    args check;
+is
+    roadster type roadster;
+
+    mouse_controlled_actor roadster;
+end;    // roadster_anim

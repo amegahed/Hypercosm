@@ -1,0 +1,57 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         strings_arrays.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some utilities to operate upon arrays          }
+{       of strings and arrays of arrays of strings.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+
+subject strings_array
+extends
+	strings type[]
+does
+	// printing method
+	//
+	verb print;
+is
+	//
+	// printing method
+	//
+
+	verb print is
+		for each strings type strings in strings_array do
+			write "[";
+			strings print;
+			write "]";
+		end;
+	end;    // print
+end;    // strings_array
+
+subject strings_array_array
+extends
+	strings_array type[]
+does
+	// printing method
+	//
+	verb print;
+is
+	//
+	// printing method
+	//
+
+	verb print is
+		for each strings_array type strings_array in strings_array_array do
+			write "[";
+			strings_array print;
+			write "]";
+			write;
+		end;
+	end;    // print
+end;    // strings_array_array

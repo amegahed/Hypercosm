@@ -1,0 +1,60 @@
+do rotation_marker_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+
+shape rotation_marker is
+    static shape arrow is
+    	translated_3ds_sphere with
+    		radius = 5;
+    		segments = 16;
+    		move to <-20 0 0>;
+    	end;
+    	translated_3ds_cylinder with
+    		height = 40;
+    		radius = 2.5;
+    		move to <0 0 -20>;
+    		rotate by 90 around <0 1 0>;
+    	end;
+    	translated_3ds_cone with		
+    	    radius1 = 5;
+    	    radius2 = 0;
+    	    height = 10;
+    		rotate by 90 around <0 1 0>;
+    		move to <15 0 0>;
+    	end;
+    end;	// arrow
+    
+	arrow with
+		material is plastic colored red;
+	end;
+	arrow with
+		rotate by 90 around <0 0 1>;
+		material is plastic colored green;
+	end;
+	arrow with
+		rotate by -90 around <0 1 0>;
+		material is plastic colored blue;
+	end;
+end;	// rotation_marker
+
+anim rotation_marker_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_shape rotation_marker within new static_shape of environment;
+end;	// rotation_marker_anim

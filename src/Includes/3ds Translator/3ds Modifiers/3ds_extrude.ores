@@ -1,0 +1,580 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         3ds_extrude.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains extrude definitions that correspond to         }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/3ds_modifier.ores";
+include "system/3ds_editable_spline.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_planar_mapping.ores";
+include "system/grid_meshes.ores";
+
+enum translated_3ds_extrude_output_kind is patch, mesh, nurbs;
+enum translated_3ds_extrude_capping_kind is morph, grid;
+
+subject translated_3ds_extrude
+extends
+	translated_3ds_collapsable2 translated_3ds_activatable translated_3ds_modifier
+does
+	// constructor
+	//
+	verb new with
+	
+		// extrude parameters
+		//
+		scalar amount = 1;
+		integer segments = 1;
+		translated_3ds_extrude_output_kind type output_kind is mesh; 
+		boolean smooth is true;
+					   
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_extrude_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+				
+		// activation parameters
+		//
+		boolean active is true;
+	end;
+	
+	// setting method
+	//
+	verb set with
+	
+		// extrude parameters
+		//
+		scalar amount = 1;
+		integer segments = 1;
+		translated_3ds_extrude_output_kind type output_kind is mesh; 
+		boolean smooth is true;
+					   
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_extrude_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+				
+		// activation parameters
+		//
+		boolean active is true;
+	end;
+	
+	// collapsing methods
+	//    
+	translated_3ds_stackable type question get_collapsed
+		translated_3ds_stackable type argument;
+	end;
+	
+	// activating methods
+	//  
+	verb activate;
+	verb deactivate;
+	boolean question is_activated;
+	boolean question is_deactivated;
+	
+	// recycling methods
+	//
+	objective translated_3ds_extrude type question get;
+	reference verb recycle;
+has
+	// attributes
+	//
+	scalar amount;
+	integer segments;
+	translated_3ds_extrude_output_kind type output_kind;
+	boolean smooth;
+			
+	// capping attributes
+	//
+	boolean cap_start;
+	boolean cap_end;
+	translated_3ds_extrude_capping_kind type capping_kind;
+
+	// mapping attributes
+	//
+	boolean gen_mapping_coords;
+	boolean gen_mat_IDs;
+	boolean use_shape_IDs;
+	
+	// activatable parameters
+	//
+	boolean active is true;
+	
+private 
+	// recycling attributes
+	//
+	translated_3ds_extrude type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_extrude type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new with
+	
+		// extrude parameters
+		//
+		scalar amount = 1;
+		integer segments = 1;
+		translated_3ds_extrude_output_kind type output_kind is mesh;
+		boolean smooth is true;
+					   
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_extrude_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	is
+		if verbose_recycling then
+			write "new 3ds extrude", ;
+		end;
+		
+		// clamp tessellation to minimum value
+		//
+		if segments < 1 then
+			segments = 1;
+		end;
+			
+		with translated_3ds_extrude do
+		
+			// set extrude attributes
+			//
+			its amount = amount;
+			its segments = segments;
+			its output_kind is output_kind;
+			its smooth is smooth;
+									
+			// set capping attributes
+			//
+			its cap_start is cap_start;
+			its cap_end is cap_end;
+			its capping_kind is capping_kind;
+			// set mapping attributes
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+			its gen_mat_IDs is gen_mat_IDs;
+			its use_shape_IDs is use_shape_IDs;
+			
+			// set activation attributes
+			//
+			its active is active;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set with
+	
+		// extrude parameters
+		//
+		scalar amount = 1;
+		integer segments = 1;
+		translated_3ds_extrude_output_kind type output_kind is mesh; 
+		boolean smooth is true;
+					   
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		translated_3ds_extrude_capping_kind type capping_kind is morph;
+		
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+				
+		// activation parameters
+		//
+		boolean active is true;
+	is
+		// clamp tessellation to minimum value
+		//
+		if segments < 1 then
+			segments = 1;
+		end;
+		
+		with translated_3ds_extrude do
+		
+			// set extrude attributes
+			//
+			its amount = amount;
+			its segments = segments;
+			its output_kind is output_kind;
+			its smooth is smooth;
+									
+			// set capping attributes
+			//
+			its cap_start is cap_start;
+			its cap_end is cap_end;
+			its capping_kind is capping_kind;
+			// set mapping attributes
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+			its gen_mat_IDs is gen_mat_IDs;
+			its use_shape_IDs is use_shape_IDs;
+			
+			// set activation attributes
+			//
+			its active is active;
+		end;    
+	end;    // set
+	
+	//
+	// tessellating methods
+	//
+	
+	verb add_extruded_line_segment
+		translated_3ds_spline_segment type segment;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = (segment's vertex1's point);
+			side1 = (segment's vertex2's point) - vertex;
+			side2 = <0 0 amount>;
+			h_steps = 1;
+			v_steps = segments;
+			one_sided is true;
+			reversed is (amount < 0);
+			textured is false;
+		);
+	end;    // add_extruded_line_segment
+	
+	verb add_extruded_curve_segment
+		translated_3ds_spline_segment type segment;
+		divided into integer steps;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		vector_grid type vector_grid;
+		vector_grid type normal_grid;
+		integer rows = segments + 1;
+		integer columns = steps + 2;
+		vpolynomial type cubic_spline is segment get_cubic_spline;
+		vpolynomial type tangent_spline is cubic_spline get_derivative;
+			
+		// initialize grid vectors
+		//
+		dim vector_grid[1 .. rows, 1 .. columns];
+		dim normal_grid[1 .. rows, 1 .. columns];
+		for integer row = 1 .. rows do
+			scalar s = (row - 1) / (rows - 1);
+			vector offset = <0 0 (amount * s)>;
+			
+			for integer column = 1 .. columns do
+				scalar t = (column - 1) / (columns - 1);
+				vector point = cubic_spline get_value at t;
+				
+				vector_grid[row, column] = point + offset;
+				normal_grid[row, column] = (tangent_spline get_value at t) cross <0 0 1>;
+			end;
+		end;
+		
+		editable_mesh add_element (get_grid_mesh
+			of vector_grid oriented to normal_grid
+		with
+			smoothing is smooth;
+			mending is false;
+			closed is true;
+			reversed is (amount < 0);
+			textured is false;
+		);
+	end;    // add_extruded_curve_segment
+
+	verb add_extruded_segment
+		translated_3ds_spline_segment type segment;
+		divided into integer steps;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		if segment is_line then
+			add_extruded_line_segment segment to editable_mesh;
+		else
+			add_extruded_curve_segment segment divided into steps to editable_mesh;        
+		end;
+	end;    // add_extruded_segment
+	
+	verb add_extruded_spline
+		translated_3ds_spline type spline;
+		divided into integer steps;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		iterator type iterator is spline's segment_list get_iterator;
+		while iterator is_iterating do
+			add_extruded_segment translated_3ds_spline_segment type iterator next
+				divided into steps to editable_mesh;
+		end;
+	end;    // add_extruded_spline
+	
+	verb add_polyline_caps
+		of polyline type polyline;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		polyline type polyline2;
+		
+		if cap_start then
+				
+			// add start cap
+			//
+			editable_mesh add_element (get_polygon_mesh of polyline with   
+				smoothing is true;
+				one_sided is true;
+				reversed is (amount >= 0);
+			);
+			
+			if cap_end then
+				polyline2 = polyline;
+				polyline is polyline2;
+			end;
+		end;
+		
+		if cap_end then
+			for each vector point in polyline do
+				point = itself + <0 0 amount>;
+			end;
+			
+			// add end cap
+			//
+			editable_mesh add_element (get_polygon_mesh of polyline with   
+				smoothing is true;
+				one_sided is true;
+				reversed is (amount < 0);
+			);
+		end;
+	end;    // add_polyline_caps
+	
+	verb add_editable_spline_caps
+		of translated_3ds_editable_spline type editable_spline;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		translated_3ds_spline type spline is translated_3ds_spline type
+			editable_spline's spline_list get_first;
+			
+		if spline is_closed then
+			vector polyline[] is (spline to_polyline with steps = editable_spline's steps);
+			add_polyline_caps of polyline to editable_mesh;
+		end;
+	end;    // add_editable_spline_caps
+		
+	verb add_extruded_editable_spline
+		translated_3ds_editable_spline type editable_spline;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		if not editable_spline's spline_list is_empty then
+			iterator type iterator is editable_spline's spline_list get_iterator;
+			translated_3ds_spline type spline is translated_3ds_spline type iterator next;
+			// add extrude sides
+			//
+			if spline is_closed then
+				spline set_orientation to counter_clockwise;
+			end;       
+			add_extruded_spline spline divided into editable_spline's steps to editable_mesh;
+			
+			// add extrude hole sides
+			//
+			while iterator is_iterating do
+				spline is translated_3ds_spline type iterator next;
+				if spline is_closed then
+					spline set_orientation to clockwise;
+				end;
+				add_extruded_spline spline divided into editable_spline's steps to editable_mesh;
+			end;
+			
+			// add extrude capping faces
+			//
+			if cap_start or cap_end then
+				add_editable_spline_caps of editable_spline to editable_mesh;
+			end;
+		end;
+	end;    // add_extruded_editable_spline
+	
+	//
+	// collapsing methods
+	//
+
+	translated_3ds_stackable type question get_collapsed
+		translated_3ds_stackable type argument;
+	is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;
+		
+		if translated_3ds_editable_spline type argument then
+			translated_3ds_editable_spline type editable_spline is 
+				translated_3ds_editable_spline type argument;
+			
+			// create extrusion
+			//  
+			add_extruded_editable_spline editable_spline to editable_mesh;
+				
+			// texture map extrusion
+			//
+			if gen_mapping_coords then
+				volume_bounding type bounds is editable_spline get_bounds;
+				scalar width = bounds get_size dot <1 0 0>;
+				scalar length = bounds get_size dot <0 -1 0>;
+				
+				if width <> 0 and length <> 0 then
+					translated_3ds_planar_mapping type planar_mapping with
+						width = static width;
+						length = static length;
+						u_flip is true;
+						trans's origin = bounds get_center;
+					end;
+					editable_mesh is translated_3ds_editable_mesh type
+						(planar_mapping get_collapsed translated_3ds_stackable type editable_mesh);
+				end;
+			end;
+		end;
+		
+		recycle;
+		if recycleable type argument then
+			recycleable type recycleable is recycleable type argument;
+			recycleable recycle;
+		end;
+		
+		answer editable_mesh;
+	end;    // get_collapsed
+	
+	//
+	// activating methods
+	//
+	
+	verb activate is
+		active is true;
+	end;    // activate
+	
+	verb deactivate is
+		active is false;
+	end;    // deactivate
+	
+	boolean question is_activated is
+		answer active;
+	end;    // is_activated
+	
+	boolean question is_deactivated is
+		answer not active;
+	end;    // is_deactivated
+		
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_extrude type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_extrude type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_extrude;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_extrude;
+		
+		translated_3ds_extrude is none;
+	end;        // recycle
+end;    // translated_3ds_extrude
+
+//
+// procedural interface
+//
+
+verb translated_3ds_extrude with
+	
+	// extrude parameters
+	//
+	scalar amount = 1;
+	integer segments = 1;
+	translated_3ds_extrude_output_kind type output_kind is mesh; 
+	boolean smooth is true;
+				   
+	// capping parameters
+	//
+	boolean cap_start is true;
+	boolean cap_end is true;
+	translated_3ds_extrude_capping_kind type capping_kind is morph;
+	
+	// mapping parameters
+	//
+	boolean gen_mapping_coords is true;
+	boolean gen_mat_IDs is true;
+	boolean use_shape_IDs is false;
+			
+	// activation parameters
+	//
+	boolean active is true;
+is
+	translated_3ds_extrude type translated_3ds_extrude is translated_3ds_extrude type's get;
+		
+	translated_3ds_extrude set with
+	
+		// extrude parameters
+		//
+		amount = static amount;
+		segments = static segments;
+		output_kind is static output_kind; 
+		smooth is static smooth;
+					   
+		// capping parameters
+		//
+		cap_start is static cap_start;
+		cap_end is static cap_end;
+		capping_kind is static capping_kind;
+	
+		// mapping parameters
+		//
+		gen_mapping_coords is static gen_mapping_coords;
+		gen_mat_IDs is static gen_mat_IDs;
+		use_shape_IDs is static use_shape_IDs;
+				
+		// activation parameters
+		//
+		active is static active;
+	end;
+	
+	modifier_stack push translated_3ds_stackable type translated_3ds_extrude;   
+end;    // translated_3ds_extrude

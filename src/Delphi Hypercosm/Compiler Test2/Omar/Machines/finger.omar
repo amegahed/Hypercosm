@@ -1,0 +1,195 @@
+{***************************************************************}
+{                          finger.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do surprize;
+
+
+include "system/3d.ores";
+include "system/check_keys.ores";
+
+
+shape hand with
+    scalar t = 0;
+is
+    static shape joint with
+        scalar radius = .5;
+        scalar length = 1;
+    is
+        sphere;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 length>;
+            radius1 = 1;
+            radius2 = radius;
+        end;
+    end;    // joint
+
+
+    static shape finger with
+        scalar curl = 0;
+        scalar joint_radius = .9;
+        scalar joint_length = 2.3;
+    is
+
+        // first knuckle
+        //
+        joint with
+            radius = joint_radius;
+            length = joint_length;
+            rotate by curl around <1 0 0>;
+
+            // second knuckle
+            //
+            joint with
+                radius = joint_radius;
+                length = joint_length;
+                magnify by joint_radius;
+                move to <0 0 joint_length>;
+                rotate by curl around <1 0 0>;
+
+                // third knuckle
+                //
+                joint with
+                    radius = joint_radius;
+                    length = joint_length;
+                    magnify by joint_radius;
+                    move to <0 0 joint_length>;
+                    rotate by curl around <1 0 0>;
+
+                    // fingertip
+                    //
+                    sphere with
+                        center = <0 0 joint_length>;
+                        radius = joint_radius;
+                    end;
+                end;
+            end;
+        end;
+    end;    // finger
+
+
+    static shape palm is
+        sphere with
+            scaling of <4 2 3.5>;
+            move to <0 0 -3>;
+        end;
+    end;    // palm
+
+
+    static shape wrist is
+        cylinder with
+            scaling of <2 1.5 3.5>;
+            move to <0 0 -5>;
+        end;
+        disk with
+            scaling of <2 1.5 3.5>;
+            move to <0 0 -8>;
+        end;
+    end;    // wrist
+
+
+    scalar finger_curl[1..5];
+    scalar fist_factor = 0;
+    scalar middle_finger_factor = 0;
+
+    {
+        fist_factor = 1 - sqr(sin(t * 360) + 1) / 4;
+        }
+    fist_factor = sqr (sin (t * 360) + 1) / 4;
+
+    middle_finger_factor = fist_factor;
+    finger_curl = [80 70 70 70 40];
+
+    finger_curl[1] = finger_curl[1] * fist_factor;
+    finger_curl[2] = finger_curl[2] * fist_factor;
+    finger_curl[3] = finger_curl[3] * middle_finger_factor;
+    finger_curl[4] = finger_curl[4] * fist_factor;
+    finger_curl[5] = finger_curl[5] * fist_factor;
+
+    // pinky
+    //
+    finger with
+        curl = finger_curl[1];
+        joint_radius = .95;
+        magnify by .8;
+        rotate by -10 around <0 1 0>;
+        move to <-3 0 -1>;
+    end;
+
+    // ring finger
+    //
+    finger with
+        curl = finger_curl[2];
+        rotate by -5 around <0 1 0>;
+        move to <-1 0 0>;
+    end;
+
+    // middle finger
+    //
+    finger with
+        curl = finger_curl[3];
+        joint_length = 2.4;
+        rotate by 5 around <0 1 0>;
+        move to <1 0 0>;
+    end;
+
+    // pointing finger
+    //
+    finger with
+        curl = finger_curl[4];
+        rotate by 10 around <0 1 0>;
+        move to <2.5 0 0>;
+    end;
+
+    // thumb finger
+    //
+    finger with
+        curl = finger_curl[5];
+        joint_length = 1.9;
+        joint_radius = .8;
+        magnify by 1.4;
+        rotate by 70 around <0 1 0>;
+        rotate by -70 around <0 0 1>;
+        move to <3 0 -4>;
+    end;
+
+    // body of hand
+    //
+    palm;
+    wrist;
+end;    // hand
+
+
+picture hand_picture
+is
+    scalar x = get_mouse dot <1 0 0>;
+    scalar y = get_mouse dot <0 1 0>;
+
+    distant_light from <-.3 -.5 1>;
+    hand with
+        material is chalk colored pink;
+        t = y * 2;
+        magnify by .1;
+        rotate by x * 360 around <0 0 1>;
+    end;
+end;    // hand_picture
+
+
+anim surprize
+    args type args;
+with
+    eye = <0 -2 2>;
+    double_buffer is on;
+    args check;
+is
+    while true do
+        hand_picture;
+        check_keys;
+    end;
+end;    // surprize

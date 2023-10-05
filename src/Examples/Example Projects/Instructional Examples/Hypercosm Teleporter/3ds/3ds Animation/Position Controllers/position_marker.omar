@@ -1,0 +1,30 @@
+do position_marker_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_translator.ores";
+
+shape position_marker is
+	translated_3ds_sphere with
+		radius = 10;
+		segments = 16;
+		material is plastic colored red;
+	end;
+end;	// position_marker
+
+anim position_marker_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_shape position_marker within new static_shape of environment;
+end;	// position_marker_anim

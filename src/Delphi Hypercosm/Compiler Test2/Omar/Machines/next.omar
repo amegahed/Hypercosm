@@ -1,0 +1,134 @@
+{***************************************************************}
+{                          next.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do next_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shaders.ores";
+include "system/solids.ores";
+include "system/monitor.omar";
+
+
+shape next is
+    shape next_logo is
+        block with
+            vertex = <0 0 0>;
+            side1 = <.1 0 0>;
+            side2 = <0 0 .2>;
+            side3 = <0 .2 0>;
+            rotate by -45 around <1 0 0>;
+        end;
+    end;    // next_logo
+
+
+    shape key is
+        block with
+            material is chalk colored dark grey;
+            shading is face;
+            vertex = <-.075 -.075 0>;
+            side1 = <.15 0 0>;
+            side2 = <0 .15 0>;
+            side3 = <0 0 .15>;
+        end;
+    end;    // key
+
+
+    shape keypad is
+        scalar x, y;
+
+        x = -.4;
+        while x <= .4 do
+            y = -.4;
+            while y <= .4 do
+                key with
+                    move to <x y 0>;
+                end;
+                y = y + .2;
+            end;
+            x = x + .2;
+        end;
+    end;    // keypad
+
+
+    shape keyboard is
+        block with
+            vertex = <-2.75 -1 0>;
+            side1 = <5.5 0 0>;
+            side2 = <0 2 0>;
+            side3 = <0 0 .3>;
+        end;
+
+        // numeric keypad
+        //
+        keypad with
+            move to <2.1 0 .3>;
+        end;
+
+        // alphabetical keypad
+        //
+        keypad with
+            move to <-2.1 0 .3>;
+        end;
+        keypad with
+            move to <-1.1 0 .3>;
+        end;
+        keypad with
+            move to <-.1 0 .3>;
+        end;
+        keypad with
+            move to <.9 0 .3>;
+        end;
+    end;    // keyboard
+
+
+    material type next_material is plastic colored dark grey
+        polished semi shiny;
+
+
+    // instantiate parts
+    //
+    block with
+        material is next_material;
+        vertex = <-2.125 0 0>;
+        side1 = <4.25 0 0>;
+        side2 = <0 4.5 0>;
+        side3 = <0 0 .7>;
+    end;    // next slab
+    monitor with
+        material is next_material;
+        move to <0 1 .7>;
+    end;
+    keyboard with
+        material is next_material;
+        move to <0 -1.3 0>;
+    end;
+end;    // next
+
+
+anim next_anim
+    args type args;
+with
+    eye = <5 -10 8>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    args check;
+is
+        shape scene is
+                next;
+                plane with
+                        magnify by 5;
+                        render_mode is wireframe;
+                end;
+        end;    // scene
+
+
+        mouse_controlled_shape scene;
+end;    // next_anim

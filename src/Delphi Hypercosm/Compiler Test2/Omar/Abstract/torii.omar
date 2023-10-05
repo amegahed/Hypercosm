@@ -1,0 +1,59 @@
+{***************************************************************}
+{                          torii.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do torii_picture;
+
+
+include "system/3d.ores";
+include "system/shaders.ores";
+include "system/surfaces.ores";
+include "system/earth.omar";
+
+
+shape thing is
+    shape thingy is
+        torus with
+            normal = <0 0 1>;
+            inner_radius = .7;
+        end;
+    end;    // thingy
+
+    thingy;
+    thingy with
+        rotate by 90 around <1 0 0>;
+    end;
+    thingy with
+        rotate by 90 around <0 1 0>;
+    end;
+end;    // thing
+
+
+picture torii_picture with
+    eye = <1 -3 2>;
+    ambient = white * .5;
+    facets = 0;
+
+    // shadows is on;
+    reflections is on;
+    refractions is on;
+is
+    distant_light from <5 -10 10> with
+        brightness = 1.25;
+        color = light yellow;
+    end;
+    metallic light show_rgb thing;
+    earth with
+        magnify by .5;
+        rotate by 220 around <0 0 1>;
+    end;
+    cloudy sphere with
+        magnify by .6;
+    end;
+    celestial_sphere;
+end;    // torii_picture

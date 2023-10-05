@@ -1,0 +1,29 @@
+do lights_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// transformations
+//
+include "distant_light.omar";
+include "point_light.omar";
+include "spot_light.omar";
+
+anim lights_anim 
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .25>;
+	facets = 16;
+	ambient = grey;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_shape of distant_light_scene) named "distant_light";
+	multi_actor add_actor (new animated_shape of point_light_scene) named "point_light";
+	multi_actor add_actor (new animated_shape of spot_light_scene) named "spot_light";
+	
+	mouse_controlled_actor multi_actor lit by none;
+end;    // lights_anim

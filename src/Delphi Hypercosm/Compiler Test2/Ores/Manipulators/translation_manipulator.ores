@@ -1,0 +1,339 @@
+{***************************************************************}
+{                    translation_manipulator.ores               }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/manipulation.ores";
+include "system/manipulator.ores";
+include "system/translation_arrow_handles.ores";
+include "system/picking.ores";
+include "system/manipulation_plane.ores";
+include "system/arrows.ores";
+
+
+enum plane is xy_plane, yz_plane, xz_plane;
+
+
+subject translation_manipulator
+extends
+    shape_manipulator
+does
+    verb new
+        controlling shape target;
+        bounded by shape bounding_shape does none;
+    with
+        scalar handle_size = default_handle_size;
+        vector translation_snap = <0 0 0>, final_translation_snap = <0 0 0>;
+        scalar max_translation = 0;
+    end;
+    
+    verb deselect;
+
+    // shape manipulator methods
+    //
+    shape handles
+        of trans type trans;
+    end;
+    
+    // touchable methods
+    //
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;
+    boolean question is_handle_touched
+        from vector location;
+        towards vector direction;
+        closer than scalar reference min_t refers to none;
+    end;  
+    
+    // pressable methods
+    //
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;
+    verb release
+        from vector location;
+        towards vector direction;
+    end;
+has    
+    // manipulator parameters
+    //
+    scalar handle_size;
+    handle_state type xy_handle_states[1..2];
+    handle_state type yz_handle_states[1..2];
+    handle_state type xz_handle_states[1..2];
+           
+    // current translation state
+    //
+    plane type plane;
+    vector translation;
+    vector translation_snap, final_translation_snap;
+    scalar max_translation;
+    scalar min_t;
+    
+    // reference state
+    //
+    manipulation_plane type manipulation_plane;
+    trans type start_trans;
+is
+    verb new
+        controlling shape target;
+        bounded by shape bounding_shape does none;
+    with
+        scalar handle_size = default_handle_size;
+        vector translation_snap = <0 0 0>, final_translation_snap = <0 0 0>;
+        scalar max_translation = 0;
+    is
+        shape_manipulator new controlling target bounded by bounding_shape
+            padded by <handle_size handle_size handle_size> / 2;
+            
+        with translation_manipulator do
+            its handle_size = handle_size;
+            its translation_snap = translation_snap;
+            its final_translation_snap = final_translation_snap;
+            its max_translation = max_translation;
+        end; 
+    end;    // new
+    
+    
+    
+    verb deselect is
+        manipulator static deselect;
+        plane is none;
+    end;    // deselect
+    
+          
+    verb select_translation
+        from vector location;
+        towards vector direction; 
+        closer than scalar reference min_t;
+    is
+        trans type trans;
+        vector point, normal;
+        
+        objective shape xy_translation_target is     
+            xy_translation_handles of trans with
+                handle_size = static handle_size;
+            end;
+        end;
+        objective shape yz_translation_target is
+            yz_translation_handles of trans with
+                handle_size = static handle_size;
+            end;
+        end;
+        objective shape xz_translation_target is
+            xz_translation_handles of trans with
+                handle_size = static handle_size;
+            end;
+        end;
+        
+        // compute bounding trans
+        //
+        trans's origin = target_center;
+        scaling the trans of target_size about target_center;  
+        trans transform from relative_trans;
+         
+        // find intersections using trans
+        //    
+        if ray_touches_shape xy_translation_target
+            from location towards direction closer than min_t
+            return at point towards normal
+        then
+            plane is xy_plane;
+            manipulation_plane's origin = point;
+            manipulation_plane's normal = -trans's z_axis;
+        end;
+        
+        if ray_touches_shape yz_translation_target
+            from location towards direction closer than min_t
+            return at point towards normal
+        then
+            plane is yz_plane;
+            manipulation_plane's origin = point;
+            manipulation_plane's normal = -trans's x_axis;
+        end;
+               
+        if ray_touches_shape xz_translation_target
+            from location towards direction closer than min_t
+            return at point towards normal
+        then
+            plane is xz_plane;
+            manipulation_plane's origin = point;
+            manipulation_plane's normal = -trans's y_axis;
+        end;
+    end;    // select_translation
+    
+ 
+    // shape manipulator methods
+    //
+    shape handles
+        of trans type trans;
+    is
+        // set handle states
+        //                        
+        if some plane then
+            when plane is
+                xy_plane:
+                    set_handle_states xy_handle_states to highlighted;
+                    set_handle_states yz_handle_states to hidden;
+                    set_handle_states xz_handle_states to hidden;
+                end;
+                yz_plane:
+                    set_handle_states xy_handle_states to hidden;
+                    set_handle_states yz_handle_states to highlighted;
+                    set_handle_states xz_handle_states to hidden;
+                end;
+                xz_plane:
+                    set_handle_states xy_handle_states to hidden;
+                    set_handle_states yz_handle_states to hidden;
+                    set_handle_states xz_handle_states to highlighted;
+                end;
+            end;
+        else
+            set_handle_states xy_handle_states to unselected;
+            set_handle_states yz_handle_states to unselected;
+            set_handle_states xz_handle_states to unselected;
+        end;   
+        
+        translation_handles of trans with
+            handle_size = static handle_size;
+            xy_handle_states is static xy_handle_states;
+            yz_handle_states is static yz_handle_states;
+            xz_handle_states is static xz_handle_states;
+        end;
+    end;    // handles
+    
+    
+    verb manipulate
+        from vector location;
+        towards vector direction;
+    is
+        manipulation_plane touch from location towards direction;
+        
+        translation = manipulation_plane's touch_point - manipulation_plane's press_point;
+        if max_translation > 0 then
+            if vlength of translation > max_translation then
+                translation = normalized translation * max_translation;
+            end;
+        end;
+        if translation_snap <> <0 0 0> then
+            translation = vsnap translation to translation_snap;
+        end;
+        
+        // update relative trans
+        //
+        relative_trans = start_trans;
+        relative_trans's origin = itself + translation;
+    end;    // manipulate
+ 
+
+    // touchable methods
+    //
+    
+    
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        if pressed then 
+            manipulate from location towards direction;  
+        elseif not mouse_down then
+            min_t = infinity; 
+            
+            plane is none;     
+            touched is is_touched from location towards direction closer than min_t;
+ 
+            if touched then
+                min_t = infinity;        
+                select_translation from location towards direction closer than min_t;
+                
+                if some plane then
+                    if some current_interaction then
+                        current_interaction override;
+                    end;
+                end;
+            end;     
+        end;
+    end;    // touch
+       
+
+    boolean question is_handle_touched
+        from vector location;
+        towards vector direction;
+        closer than scalar reference min_t refers to none;
+    is   
+        if touched and some plane then
+            if min_t refers to none then
+                answer true;
+            else
+                if translation_manipulator's min_t < min_t then
+                    min_t = translation_manipulator's min_t;
+                    answer true;
+                else
+                    answer false;
+                end;
+            end;
+        else
+            answer false;
+        end;
+    end;    // is_handle_touched  
+    
+      
+    // pressable methods
+    //
+    
+        
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    is
+        if double_click then
+            if is_handle_touched from location towards direction then
+                reset;
+            end;
+        else
+            // activate selected manipulation
+            //
+            if some plane then
+                pressed is true;
+                start_trans = relative_trans;
+                manipulation_plane press from location towards direction;
+                translation = <0 0 0>;
+            end;
+        end;
+    end;    // press
+
+
+    verb release
+        from vector location;
+        towards vector direction;
+    is 
+        // end translation
+        //
+        if pressed then
+            // update relative trans
+            //
+            relative_trans = start_trans;
+            relative_trans's origin = itself + translation;
+            if final_translation_snap <> <0 0 0> then
+                relative_trans's origin = vsnap relative_trans's origin to final_translation_snap;
+            end;
+            
+            pressed is false;
+        end;
+    end;    // release
+end;    // translation_manipulator

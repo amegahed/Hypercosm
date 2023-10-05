@@ -1,0 +1,116 @@
+{***************************************************************}
+{                         glass_demo.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do glass_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/text.ores";
+
+
+// This applet demonstrates the syntax of using the glass material, and its
+// appearance in a scene.
+
+// NOTE: Not all computer systems support texture transparency (which the 
+// glass material uses). 
+
+
+shape glass_ring
+is
+    for integer i = 0 .. 10 do
+    
+        // circle of glass walls
+        //
+        parallelogram with
+            rotate by 90 around <1 0 0>;
+            scale by 2 along <0 0 1>;
+            move to <0 -3.4 0>;
+            rotate by ((i + 1) * (360 / 11)) around <0 0 1>;
+            
+            // The walls become increasingly more transparent, from 0 (opaque)
+            // to 100 (perfectly clear).
+            //
+            if i = 0 then
+                material is glass textured glass0;            
+            elseif i = 1 then
+                material is glass textured glass10;
+            elseif i = 2 then
+                material is glass textured glass20;
+            elseif i = 3 then
+                material is glass textured glass30;
+            elseif i = 4 then
+                material is glass textured glass40;
+            elseif i = 5 then
+                material is glass;     // The glass material uses the
+                                       // the glass50 texture by default.
+            elseif i = 6 then
+                material is glass textured glass60;
+            elseif i = 7 then
+                material is glass textured glass70;
+            elseif i = 8 then
+                material is glass textured glass80;
+            elseif i = 9 then
+                material is glass textured glass90;
+            elseif i = 10 then
+                material is glass textured glass100;
+            else
+                // error
+            end;
+        end;
+        
+        // transparency labels
+        //
+        text (integer_to_string of (i * 10)) with
+            move to <0 -3.5 -1>;
+            color = lime_green;
+            rotate by ((i + 1) * (360 / 11)) around <0 0 1>;
+        end;
+    end;
+    
+    // top/bottom caps
+    //
+    sphere with
+        radius = 4.5;
+        vmin = 0;
+        scale by .4 along <0 0 1>;
+        move to <0 0 1.6>;
+        material is glass colored lime_green;
+    end;
+    disk with
+        radius = 5;
+        move to <0 0 -2>;
+        material is chalk colored grey;
+    end;
+end;    // glass_ring
+
+
+shape scene is
+    // glass walls
+    glass_ring;
+    
+    // center shape
+    sphere;
+    
+    // outer sphere
+    sphere with
+        magnify by 20;
+        color = dark purple;
+    end;
+end;    // scene
+
+
+anim glass_demo_anim with
+    double_buffer is on;
+    eye = <0 -12 1>;
+    lookat = <0 0 -.2>;
+    facets = 11;
+is    
+    mouse_controlled_shape scene;
+end;    // glass_demo_anim

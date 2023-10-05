@@ -1,0 +1,39 @@
+do highlighted_sprite_sensor_anim;
+
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/highlighted_sprite_sensor.ores";
+
+
+anim highlighted_sprite_sensor_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+    verb mouse_up_action is
+    	write "released!", ;
+    end;
+    
+	highlighted_sprite_sensor type wireframe_sprite_sensor at <-.8 .8 0> poster "wireframe_icon.gif" with
+		highlighted_color = yellow;
+		mouse_down_action is (new action of static mouse_down_action);
+		mouse_up_action is (new action of static mouse_up_action);
+	end;
+	
+	picture scene is
+		sphere;
+		wireframe_sprite_sensor overlay at 10;
+		default_lights;
+		default_background at 100;
+	end;	// scene
+	
+	while true do
+		scene;
+	end;
+end;	// highlighted_sprite_sensor_anim

@@ -1,0 +1,92 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     lenses.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains various forms of shape definitions	for			}
+{		lens shapes.											}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+shape convex_lens with
+    scalar thickness = .25;
+    scalar radius = 1;
+is
+    paraboloid with
+        base = <0 0 0>;
+        top = <0 0 (thickness / 2)>;
+        radius = static radius;
+    end;
+    paraboloid with
+        base = <0 0 0>;
+        top = <0 0 (-thickness / 2)>;
+        radius = static radius;
+    end;
+end;    // convex_lens
+
+
+shape plano_convex_lens with
+    scalar thickness = .25;
+    scalar radius = 1;
+is
+    paraboloid with
+        base = <0 0 (-thickness / 2)>;
+        top = <0 0 (thickness / 2)>;
+        radius = static radius;
+    end;
+    disk with
+        center = <0 0 (-thickness / 2)>;
+        radius = static radius;
+        normal = <0 0 -1>;
+    end;
+end;    // plano_convex_lens
+
+
+shape concave_lens with
+    scalar inner_thickness = .25;
+    scalar outer_thickness = .5;
+    scalar radius = 1;
+is
+    paraboloid with
+        base = <0 0 (outer_thickness / 2)>;
+        top = <0 0 (inner_thickness / 2)>;
+        radius = static radius;
+    end;
+    paraboloid with
+        base = <0 0 (-outer_thickness / 2)>;
+        top = <0 0 (-inner_thickness / 2)>;
+        radius = static radius;
+    end;
+    cylinder with
+        end1 = <0 0 (outer_thickness / 2)>;
+        end2 = <0 0 (-outer_thickness / 2)>;
+        radius = static radius;
+    end;
+end;    // concave_lens
+
+
+shape plano_concave_lens with
+    scalar inner_thickness = .5;
+    scalar outer_thickness = .25;
+    scalar radius = 1;
+is
+    paraboloid with
+        top = <0 0 (inner_thickness - outer_thickness / 2)>;
+        base = <0 0 (outer_thickness / 2)>;
+        radius = static radius;
+    end;
+    disk with
+        center = <0 0 (-outer_thickness / 2)>;
+        radius = static radius;
+        normal = <0 0 -1>;
+    end;
+    cylinder with
+        end1 = <0 0 (outer_thickness / 2)>;
+        end2 = <0 0 (-outer_thickness / 2)>;
+        radius = static radius;
+    end;
+end;    // plano_concave_lens

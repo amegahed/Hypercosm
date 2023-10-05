@@ -1,0 +1,31 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 			3ds_time.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains time definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+//
+// various time unit data types from large to small
+//
+
+
+type translated_3ds_seconds is scalar;
+type translated_3ds_frames is integer;
+type translated_3ds_ticks is integer;
+
+
+//
+// 3ds internal time data type
+//
+
+
+type translated_3ds_time is translated_3ds_ticks type;
+type translated_3ds_times is translated_3ds_time type[];

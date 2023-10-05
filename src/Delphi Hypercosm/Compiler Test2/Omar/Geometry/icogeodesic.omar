@@ -1,0 +1,116 @@
+{***************************************************************}
+{                          icogeodesic.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do icogeodesic_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/platonics.ores";
+
+
+shape icogeodesic with
+    boolean unit_radius is true;
+    integer level = 3;
+    vector colors[];
+is
+    vector vertices[] is icosahedric type's vertices;
+    integer edges[][] is icosahedric type's edges;
+    integer sides[][] is icosahedric type's sides;
+
+
+    shape triangles
+        vector vertex1, vertex2, vertex3;
+    with
+        integer level = 1;
+    is
+        if level > 1 then
+            scalar d = vlength of vertex1;
+            vector vertex4 = normalized (vertex1 + vertex2) * d;
+            vector vertex5 = normalized (vertex2 + vertex3) * d;
+            vector vertex6 = normalized (vertex3 + vertex1) * d;
+
+            // generate 4 subtriangular units
+            //
+            triangles vertex1 vertex4 vertex6 with
+                level = static level - 1;
+            end;
+            triangles vertex4 vertex2 vertex5 with
+                level = static level - 1;
+            end;
+            triangles vertex5 vertex3 vertex6 with
+                level = static level - 1;
+            end;
+            triangles vertex4 vertex5 vertex6 with
+                level = static level - 1;
+            end;
+        else
+            // generate a single triangle
+            //
+            triangle vertex1 vertex2 vertex3;
+        end;
+    end;    // triangles
+
+
+    shape faces is
+        vector mesh_vertex1 = vertices[sides[1][1]];
+        vector mesh_vertex2 = vertices[sides[1][2]];
+        vector mesh_vertex3 = vertices[sides[1][3]];
+
+        shape triangle_mesh is
+            triangles mesh_vertex1 mesh_vertex2 mesh_vertex3 with
+                level = static level;
+            end;
+        end;    // triangle_mesh
+
+
+        for integer counter = min sides..max sides do
+            vector vertex1 = vertices[sides[counter][1]];
+            vector vertex2 = vertices[sides[counter][2]];
+            vector vertex3 = vertices[sides[counter][3]];
+
+            triangle_mesh with
+                orient3 from mesh_vertex1 mesh_vertex2
+                    mesh_vertex3 to vertex1 vertex2
+                    vertex3;
+                color = colors[min colors + counter mod
+                    num colors];
+            end;
+        end;    // for
+    end;    // faces
+
+
+    // scale icogeodesic
+    //
+    if unit_radius then
+        faces with
+            magnify by 1 / icosahedric type's radius;
+        end;
+    else
+        faces;
+    end;
+end;    // icogeodesic
+
+
+anim icogeodesic_anim
+    args type args;
+with
+    eye = <1 -3 2>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        icogeodesic with
+            colors = [red green blue cyan magenta yellow];
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // icogeodesic_anim

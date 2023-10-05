@@ -1,0 +1,62 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        optional_params.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of optional parameters in the OMAR              }
+{       language.                                               }
+{                                                               }
+{       Optional parameters are useful whenever you have        }
+{       a method with parameters that you don't always          }
+{       want to specify values for when calling the method.     }
+{       These optional parameters must be given default         }
+{       values that are used whenever they are not specified    }
+{       by the caller.                                          }
+{                                                               }
+{       There is no direct analogy for these types of           }
+{       parameters in languages such as C, C++, and Pascal.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do optional_params_example;
+
+verb init_table
+	integer table[];            // mandatory parameter for table
+with
+	integer value = 0;          // optional parameter for table contents
+is
+	for each integer i in table do
+		i = value;
+	end;
+end;    // init_table
+
+verb write_table
+	integer table[];
+is
+	for each integer i in table do
+		write i, " ";
+	end;
+end;    // write_table
+
+verb optional_params_example is
+	integer table[1 .. 10];
+	// initialize table using the default value for the optional parameter
+	//
+	init_table table;
+	write "table values using default value:";
+	write_table table;
+	// write an empty line to seperate output
+	//  
+	write;  
+	
+	// call function with a specific value (-1) for the optional parameter
+	//
+	init_table table with
+		value = -1;
+	end;
+	write "table values using specified value: ";
+	write_table table;
+end;    // optional_params_example

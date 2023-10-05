@@ -1,0 +1,74 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm      3ds_modifier_behaviors.ores 		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains modifier stack definitions that correspond  	}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+
+include "system/introspection.ores";
+include "system/recycling.ores";
+
+
+// This interface is used to tie together a set of 
+// different modifier and modifiable classes.
+// Any class that implements this interface can be 
+// pushed on to the modifier stack.
+//
+// Various types of classes are used on the stack
+// including the following:
+//
+// - renderable objects such as editable meshes
+// - high level parametric objects such as spheres
+// - texture mapping object modifiers
+// - geometric object modifiers
+// - geometric operators that take other objects
+//   as parameters such as lathe or sweep
+//
+adjective translated_3ds_stackable extends introspective;
+    
+
+//
+// modifier behaviors
+//
+
+
+adjective translated_3ds_collapsable
+does
+    // these modifiers are collapsable to form other
+    // more primitive types of modified objects.
+    //
+	translated_3ds_stackable type question get_collapsed;
+end;	// translated_3ds_collapsable
+
+
+adjective translated_3ds_collapsable2
+does
+    // these modifiers are collapsable to form other
+    // more primitive types of modified objects but 
+    // require an additional modifier parameter to
+    // be collapsed
+    //
+	translated_3ds_stackable type question get_collapsed
+	    translated_3ds_stackable type argument;
+	end;
+end;	// translated_3ds_collapsable2
+
+
+adjective translated_3ds_activatable 
+does
+    // these modifiers can be activated or deactivated
+    //
+	verb activate;
+	verb deactivate;
+	boolean question is_activated;
+	boolean question is_deactivated;
+end;	// translated_3ds_activatable
+	
+

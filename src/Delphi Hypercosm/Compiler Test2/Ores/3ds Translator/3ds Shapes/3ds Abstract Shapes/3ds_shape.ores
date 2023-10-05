@@ -1,0 +1,102 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	       3ds_shape.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains shape definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_textureable_object.ores";
+
+
+abstract subject translated_3ds_shape
+extends
+    translated_3ds_texturable_object
+does
+    // constructor
+    //
+    verb new with
+    
+        // interpolation parameters
+        //
+        integer steps = 4;
+        boolean optimize is false;
+        boolean adaptive is false;
+        
+        // rendering parameters
+        //
+        boolean renderable is false;
+        scalar thickness = 1;
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+    end;
+has
+    // interpolation attributes
+    //
+    public integer steps;
+    public boolean optimize;
+    public boolean adaptive;
+    
+    // rendering attributes
+    //
+    public boolean renderable;
+    public scalar thickness; 
+is
+    //
+    // constructor
+    //
+    
+    
+    verb new with
+    
+        // interpolation parameters
+        //
+        integer steps = 4;
+        boolean optimize is false;
+        boolean adaptive is false;
+        
+        // rendering parameters
+        //
+        boolean renderable is false;
+        scalar thickness = 1; 
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+    is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+	    
+	    // clamp steps to minimum value
+	    //
+	    if steps < 0 then
+	    	steps = 0;
+	    end;
+	    
+        with translated_3ds_shape do
+    
+            // set interpolation attributes
+            //
+            its steps = steps;
+            its optimize is optimize;
+            its adaptive is adaptive;
+            
+            // set rendering attributes
+            //
+            its renderable is renderable;
+            its thickness = thickness; 
+        end;
+    end;    // new
+end;    // translated_3ds_shape

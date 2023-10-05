@@ -1,0 +1,99 @@
+do primitives_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// quadric primitives
+//
+include "sphere.omar";
+include "cylinder.omar";
+include "cone.omar";
+include "paraboloid.omar";
+include "hyperboloid1.omar";
+include "hyperboloid2.omar";
+// non-planar primitives
+//
+include "block.omar";
+include "torus.omar";
+include "mesh.omar";
+include "shaded_triangle.omar";
+include "shaded_polygon.omar";
+include "blob.omar";
+// planar primitives
+//
+include "plane.omar";
+include "triangle.omar";
+include "parallelogram.omar";
+include "polygon.omar";
+include "disk.omar";
+include "ring.omar";
+// non-surface primitives
+//
+include "points.omar";
+include "lines.omar";
+include "volume.omar";
+
+anim primitives_anim 
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	lookat = <0 0 -.125>;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	// quadric primitives
+	//    
+	multi_actor add_actor (new static_shape of sphere_scene)
+		named "sphere";
+	multi_actor add_actor (new static_shape of cylinder_scene)
+		named "cylinder";        
+	multi_actor add_actor (new static_shape of cone_scene)
+		named "cone";  
+	multi_actor add_actor (new static_shape of paraboloid_scene)
+		named "paraboloid";  
+	multi_actor add_actor (new static_shape of hyperboloid1_scene)
+		named "hyperboloid1";  
+	multi_actor add_actor (new static_shape of hyperboloid2_scene)
+		named "hyperboloid2";          
+	// non-planar primitives
+	//
+	multi_actor add_actor (new static_shape of block_scene)
+		named "block"; 
+	multi_actor add_actor (new static_shape of torus_scene)
+		named "torus";         
+	multi_actor add_actor (new static_shape of mesh_scene)
+		named "mesh";    
+	multi_actor add_actor (new static_shape of shaded_triangle_scene)
+		named "shaded_triangle";   
+	multi_actor add_actor (new static_shape of shaded_polygon_scene)
+		named "shaded_polygon";   
+	multi_actor add_actor (new static_shape of blob_scene)
+		named "blob";  
+		
+	// planar primitives
+	//  
+	multi_actor add_actor (new static_shape of plane_scene)
+		named "plane";      
+	multi_actor add_actor (new static_shape of triangle_scene)
+		named "triangle";   
+	multi_actor add_actor (new static_shape of parallelogram_scene)
+		named "parallelogram";  
+	multi_actor add_actor (new static_shape of polygon_scene)
+		named "polygon";         
+	multi_actor add_actor (new static_shape of disk_scene)
+		named "disk";
+	multi_actor add_actor (new static_shape of ring_scene)
+		named "ring";    
+		
+	// planar primitives
+	//  
+	multi_actor add_actor (new static_shape of points_scene)
+		named "points";       
+	multi_actor add_actor (new static_shape of lines_scene)
+		named "lines";   
+	multi_actor add_actor (new static_shape of volume_scene)
+		named "volume";     
+		
+	mouse_controlled_actor multi_actor;                                                                              
+end; // primitives_anim

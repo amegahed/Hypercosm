@@ -1,0 +1,183 @@
+{***************************************************************}
+{                          fir.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do fir_picture;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+
+
+shape fir_tree with
+    integer height = 25;
+is
+    static shape needle is
+        shape needle_shape is
+            pyramid with
+                move to <0 0 2>;
+            end;
+            pyramid with
+                move to <0 0 2>;
+                scale by -1 along <0 0 1>;
+            end;
+            prism;
+        end;    // needle_shape
+
+        needle_shape with
+            scale by .2 along <1 0 0>;
+            scale by .2 along <0 1 0>;
+        end;
+    end;    // needle
+
+
+    static shape needle_cluster with
+        integer needles = 13;
+        scalar height = 12;
+    is
+        cylinder with
+            material is chalk colored brown;
+            end1 = <0 0 0>;
+            end2 = <0 0 height>;
+            radius = .5;
+        end;
+        for integer counter = 1..needles do
+            needle with
+                color = dark green;
+                rotate by 90 around <0 1 0>;
+                move to <3 0 0>;
+                rotate by random -40 to 40 around
+                    <1 0 0>;
+                rotate by random -40 to 40 around
+                    <0 1 0>;
+                rotate by random 0 to 360 around
+                    <0 0 1>;
+                move to <0 0 (random 0 to height)>;
+            end;
+        end;
+    end;    // needle_cluster
+
+
+    static shape branch with
+        integer length = 3;
+    is
+        scalar branching_factor = 1;
+        scalar cluster_length = 15;
+        scalar branch_rotation = 30;
+        scalar angle;
+
+        needle_cluster;
+        if (length > 0) then
+            branch with
+                move to <0 0 cluster_length>;
+                angle = random -branch_rotation to
+                    branch_rotation;
+                rotate by angle / static length around
+                    <1 0 0> about <0 0 cluster_length>;
+                angle = random -branch_rotation to
+                    branch_rotation;
+                rotate by angle / static length around
+                    <0 1 0> about <0 0 cluster_length>;
+                length = static length - 1;
+            end;
+        end;
+
+        // side branches
+        //
+        if (length > 0) then
+
+            // left branch offshoot
+            //
+            if (random 0 to 1 < branching_factor / length)
+            then
+                branch with
+                    move to <0 0 cluster_length>;
+                    angle = random -branch_rotation to
+                        branch_rotation;
+                    rotate by angle / static length
+                        around <0 0 1> about
+                        <0 0 cluster_length>;
+                    rotate by 40 around <0 1 0> about
+                        <0 0 cluster_length>;
+                    length = static length - 1;
+                end;
+            end;
+
+            // right branch offshoot
+            //
+            if (random 0 to 1 < branching_factor / length)
+            then
+                branch with
+                    move to <0 0 cluster_length>;
+                    angle = random -branch_rotation to
+                        branch_rotation;
+                    rotate by angle / static length
+                        around <0 0 1> about
+                        <0 0 cluster_length>;
+                    rotate by 40 around <0 1 0> about
+                        <0 0 cluster_length>;
+                    length = static length - 1;
+                end;
+            end;
+        end;
+    end;    // branch
+
+
+    if (height > 0) then
+        cone with
+            material is chalk colored brown;
+            end1 = <0 0 0>;
+            end2 = <0 0 10>;
+            radius1 = height / 5;
+            radius2 = (height - 1) / 5;
+        end;
+
+        // branches
+        //
+        for integer counter = 1..3 do
+            branch with
+                magnify by .6;
+                length = trunc (height / 2.5);
+                rotate by 80 around <1 0 0>;
+                rotate by random 0 to 720 around
+                    <0 0 1>;
+                move to <0 0 10>;
+            end;
+        end;
+    end;
+    if (height > 0) then
+        fir_tree with
+            move to <0 0 10>;
+
+            {
+                        rotate by (random -10 to 10) / static height
+                                around 0 1 0 about 0 0 10;
+                        rotate by (random -10 to 10) / static height
+                                around 1 0 0 about 0 0 10;
+                        }
+            height = static height - 1;
+        end;
+    end;
+end;    // fir_tree
+
+
+picture fir_picture
+    args type args;
+with
+    eye = <10 -50 20>;
+    lookat = <0 0 12>;
+    render_mode is shaded;
+    facets = 0;
+
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    fir_tree with
+        magnify by .1;
+    end;
+end;    // fir_picture

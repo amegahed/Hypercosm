@@ -1,0 +1,226 @@
+{***************************************************************}
+{                          show_height.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do height_anim;
+
+
+include "system/3d.ores";
+include "system/interactions.ores";
+include "system/densities.ores";
+include "system/fields.ores";
+include "system/meshes.ores";
+include "system/physics.ores";
+include "system/toggle.omar";
+include "system/crosshair.omar";
+include "system/button_meter.omar";
+
+
+scalar slice_height = .5;
+vector light_orientation = <0 0 1>;
+boolean do_shading is off;
+boolean clipping is off;
+vector orientation = <0 0 0>;
+
+
+density_field2 type density_field2 using wave_function_p
+    from <-1 0 -1> to <1 0 1>
+with
+    x_steps = 25;
+    y_steps = 25;
+end;    // density_field2
+
+
+shape cross_section
+    scalar field_height[, ];
+with
+    scalar threshold = 0;
+is
+    integer ymin = min field_height, ymax = max field_height;
+    integer xmin = min field_height[], xmax = max field_height[];
+    scalar density[0..0, ymin..ymax, xmin..xmax];
+
+    density[0, .., ..] = field_height[.., ..];
+
+    volume density with
+        threshold = static threshold;
+        capping is on;
+        color = red;
+        move to <0 0 .01>;
+    end;
+    volume density with
+        threshold = static threshold + .2;
+        capping is on;
+        color = green;
+        move to <0 0 .02>;
+    end;
+    volume density with
+        threshold = static threshold + .4;
+        capping is on;
+        color = blue;
+        move to <0 0 .03>;
+    end;
+end;    // cross_section
+
+
+shape height_shape is
+    {show_rgb} height_field density_field2's density with
+        move to <0 0 -.5>;
+        scale by 2 along <0 0 1>;
+    end;
+end;    // height_shape
+
+
+shape cross_section_shape
+    scalar threshold;
+is
+    cross_section density_field2's density with
+        threshold = static threshold;
+    end;
+end;    // cross_section_shape
+
+
+picture height_picture with
+    eye = <0 -8 4>;
+    field_of_view = 40;
+    projection is perspective;
+    if do_shading then
+        render_mode is shaded;
+    else
+        render_mode is wireframe;
+    end;
+    background = white;
+    window_name is "Height Field";
+is
+    scalar x = orientation dot <1 0 0>;
+    scalar y = orientation dot <0 1 0>;
+    scalar threshold = slice_height;
+
+
+    shape sliced_shape is
+        height_shape with
+            rotate by x * 360 around <0 0 1>;
+            rotate by y * 360 around <-1 0 0>;
+        end;
+        clipping_plane with
+            move to <0 0 (slice_height * 2 - 1)>;
+            rotate by x * 360 around <0 0 1>;
+            rotate by y * 360 around <-1 0 0>;
+        end;
+    end;    // sliced_shape
+
+    distant_light from light_orientation;
+    block with
+        render_mode is wireframe;
+        rotate by x * 360 around <0 0 1>;
+        rotate by y * 360 around <-1 0 0>;
+    end;
+
+    {
+        if (not do_shading) and clipping then
+        }
+    if clipping then
+        cross_section_shape threshold with
+            move to <0 0 (slice_height * 2 - 1)>;
+            rotate by x * 360 around <0 0 1>;
+            rotate by y * 360 around <-1 0 0>;
+        end;
+        parallelogram with
+            render_mode is wireframe;
+            move to <0 0 (slice_height * 2 - 1)>;
+            rotate by x * 360 around <0 0 1>;
+            rotate by y * 360 around <-1 0 0>;
+            color = red;
+        end;
+        sliced_shape;
+    else
+        height_shape with
+            rotate by x * 360 around <0 0 1>;
+            rotate by y * 360 around <-1 0 0>;
+        end;
+    end;
+end;    // height_picture
+
+
+picture instruments_picture with
+    background = black;
+    window_name is "Instruments";
+is
+    static toggle type clipping_switch labelled "clipping"
+        controls clipping;
+    static toggle type shading_switch labelled "shading"
+        controls do_shading;
+    static crosshair type crosshair labelled "light orientation"
+        controls light_orientation;
+    static button_meter type height_meter labelled "slice height"
+        controls slice_height;
+    scalar aspect_ratio = height / width;
+
+    clipping_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .8 0>;
+    end;
+    shading_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .5 0>;
+    end;
+
+    render_mode is wireframe;
+    crosshair instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+    height_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.65 0>;
+    end;
+end;    // instruments_picture
+
+
+anim height_anim with
+    double_buffer is on;
+is
+    integer total_width = width;
+    boolean first_frame is true;
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging orientation);
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+        default_cursor is arrow;
+    end;
+
+    while true do
+        if mouse_down or first_frame or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+
+        height_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((
+                total_width - width) div 2);
+        end;
+
+        interaction update;
+
+        first_frame is false;
+    end;
+end;    // height_anim

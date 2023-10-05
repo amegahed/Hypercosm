@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script>
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+function GetPlugin() {
+  return InternetExplorer ? window.HyperX1 : window.document.HyperX1;
+}
+function selectHandler() {
+  var choice = document.getElementById("select").value;
+  GetPlugin().SendMessage(choice);
+}
+</script>
+</head>
+<body>
+<div align="center">
+<font face="Verdana, Arial, Helvetica, sans-serif">Select 3ds Object To Display: </font>
+<select name="site" size=1 onChange="selectHandler()" id="select">
+<option value="3ds_bicubic_patch">3ds Bicubic Patch 
+<option value="3ds_box">3ds Box
+<option value="3ds_c_ext">3ds C Ext 
+<option value="3ds_capsule">3ds Capsule
+<option value="3ds_chamfer_box">3ds Chamfer Box
+<option value="3ds_chamfer_cyl">3ds Chamfer Cyl
+<option value="3ds_gen_gon">3ds Gen Gon
+<option value="3ds_l_ext">3ds L Ext
+<option value="3ds_oil_tank">3ds Oil Tank
+<option value="3ds_plane">3ds Plane
+<option value="3ds_prism">3ds Prism
+<option value="3ds_pyramid">3ds Pyramid
+<option value="3ds_sphere">3ds Sphere
+<option value="3ds_spindle">3ds Spindle
+<option value="3ds_teapot">3ds Teapot
+<option value="3ds_torus">3ds Torus
+<option value="3ds_tube">3ds Tube
+</select>
+<script src="http://www.hypercosm.com/download/player/scripts/checkforplayer.js"></script>
+<!--HypercosmAppletBegin-->
+<!--HypercosmAppletEnd-->
+</div>
+</body>
+</html>

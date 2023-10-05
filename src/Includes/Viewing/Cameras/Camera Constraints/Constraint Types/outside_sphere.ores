@@ -1,0 +1,100 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          outside_sphere.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains constraint systems used for restricting where  }
+{       a controllable camera can be moved.  The abstract       }
+{       subject camera_constraint is in camera.ores.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/camera_constraint.ores";
+
+subject constraint_outside_sphere
+extends
+	camera_constraint
+does
+	// constructor
+	//
+	verb new with
+		vector origin = <0 0 0>;
+		scalar radius = 1;
+	end;
+
+	// querying methods
+	//    
+	boolean question is_valid
+		trans type trans;
+		scalar fov;
+	end;
+
+	// constraint methods
+	//      
+	verb constrain_movement
+		from trans type start_trans;
+		scalar start_fov;
+		to trans type end_trans;
+		scalar end_fov;
+	return
+		trans type new_trans;
+		scalar new_fov;
+	end;
+has
+	// attributes
+	//
+	public vector origin;
+	public scalar radius;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		vector origin = <0 0 0>;
+		scalar radius = 1;
+	is
+		constraint_outside_sphere's origin = origin;
+		constraint_outside_sphere's radius = radius;
+	end;    // new
+
+	//
+	// querying methods
+	//
+		  
+	boolean question is_valid
+		trans type trans;
+		scalar fov;
+	is
+		if (vlength of (trans's origin - origin)) >= radius then
+			answer true;
+		else
+			answer false;
+		end;
+	end;    // is_valid
+
+	//
+	// constraint methods
+	// 
+		 
+	verb constrain_movement
+		from trans type start_trans;
+		scalar start_fov;
+		to trans type end_trans;
+		scalar end_fov;
+	return
+		trans type new_trans;
+		scalar new_fov;
+	is
+		if (not (is_valid start_trans start_fov)) or (is_valid end_trans end_fov) then
+			new_trans = end_trans;
+			new_fov = end_fov;
+		else
+			new_trans = start_trans;
+			new_fov = start_fov;
+		end;
+	end;    // constrain_movement
+end;    // constraint_outside_sphere

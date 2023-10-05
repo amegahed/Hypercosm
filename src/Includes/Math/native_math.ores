@@ -1,0 +1,94 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          native_math.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native math functions.                     }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+//
+// trigonometric functions
+//
+
+native scalar question sin
+	scalar angle;
+end;
+
+native scalar question cos
+	scalar angle;
+end;
+
+native scalar question tan
+	scalar angle;
+end;
+
+//
+// inverse trigonometric functions
+//
+
+native scalar question asin
+	scalar s;
+end;
+
+native scalar question acos
+	scalar s;
+end;
+
+native scalar question atan
+	scalar s;
+end;
+
+//
+// logarithmic functions 
+//
+
+native scalar question ln
+	scalar s;
+end;
+
+native scalar question exp
+	scalar s;
+end;
+
+//
+// scalar to integer conversion functions
+//
+
+native integer question trunc
+	scalar s;
+end;
+
+native integer question round
+	scalar s;
+end;
+
+//
+// char to integer conversion functions
+//
+
+native char question chr
+	integer i;
+end;
+
+native integer question ord
+	char ch;
+end;
+
+//
+// complex to scalar conversion functions
+//
+
+native scalar question real
+	complex c;
+end;
+
+native scalar question imag
+	complex c;
+end;

@@ -1,0 +1,164 @@
+{***************************************************************}
+{                       bouncing_ball.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do bouncey_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/devices.ores";
+include "system/random.ores";
+include "system/native_overlay_text.ores";
+include "system/fractions.ores";
+
+// This bouncing ball program demonstrates the basics of collision detection
+// and ballistic motion.
+
+const scalar ball_radius = 1;                   // the ball's radius
+const scalar gravity = 100;                     // units per second per second
+const scalar friction = .95;                    // energy maintained after collision (1 = no loss)
+const scalar cage_width = 20;                   // cage size in x-axis
+const scalar cage_length = 20;                  // cage size in y-axis
+const scalar cage_height = 20;                  // cage size in z-axis
+const vector initial_ball_position = <0 0 15>;  // ball starting position
+vector ball_position = initial_ball_position;   // current ball position
+vector ball_velocity = <0 0 0>;                 // ball velocity (units per second)
+
+shape ball is
+	sphere with
+		radius = ball_radius;
+		material is plastic colored red;
+	end;
+end;    // ball
+
+shape ball_shadow is
+	disk with
+		radius = ball_radius;
+		material is constant_color dark grey;
+	end;
+end;    // ball_shadow
+
+picture scene is  
+	string type s;
+	
+	// lighting
+	//
+	default_lights;
+	
+	// the floor
+	//
+	plane with
+		render_mode is wireframe;
+		color = green;
+		magnify by 10;
+	end;
+	
+	// the cage
+	//
+	block with
+		render_mode is wireframe;
+		color = green;
+		vertex = <(-half of cage_width) (-half of cage_length) 0>;
+		side1 = <cage_width 0 0>;
+		side2 = <0 cage_length 0>;
+		side3 = <0 0 cage_height>;
+	end;
+	
+	// draw the ball & its shadow
+	//
+	ball with
+		move to ball_position;
+	end;
+	ball_shadow with
+		move to <(ball_position.x) (ball_position.y) .1>;
+	end;
+	
+	// trace the ball's position visually with 3 lines
+	//
+	line [<(-half of cage_width) (ball_position.y) (ball_position.z)>
+		  <(half of cage_width) (ball_position.y) (ball_position.z)>];
+		  
+	line [<(ball_position.x) (-half of cage_length) ball_position.z>
+		  <(ball_position.x) (half of cage_length)  ball_position.z>];
+		  
+	line [<(ball_position.x) (ball_position.y) 0>
+		  <(ball_position.x) (ball_position.y) cage_height>];
+	
+	// display the ball's x-y-z coordinates
+	//
+	s is "Ball Position: <";
+	s add scalar_to_string of ball_position.x;
+	s add " ";
+	s add scalar_to_string of ball_position.y;
+	s add " ";
+	s add scalar_to_string of ball_position.z;
+	s add ">";
+	
+	overlay_text s at <-.9 -.9 0> with
+		horizontal_alignment is left;
+	end;
+end;    // scene
+
+anim bouncey_anim with
+	double_buffer is on;
+	eye = <25 -50 25>;
+	lookat = <0 0 10>;
+is
+	while true do
+		
+		// check if mouse was clicked
+		//
+		if mouse_clicked then
+			// if the user clicks, then reset the ball's position and
+			// randomize its initial velocity
+			//
+			ball_position = initial_ball_position;
+			ball_velocity = vrandom from <-30 -30 0> to <30 30 30>;
+		end;
+		
+		// update ball velocity and position
+		//
+		ball_velocity.z = itself - get_clamped_frame_duration * gravity;
+		ball_position = itself + ball_velocity * get_clamped_frame_duration;
+		
+		// detect collisions with floor, ceiling, and walls, respectively;
+		// if there is a collision, invert the appropriate component of the
+		// ball's velocity, subtract any loss of energy due to friction, and
+		// snap the ball's position to remain within the cage.
+		//
+		if ball_position.z < ball_radius then
+			ball_position.z = ball_radius;
+			ball_velocity.z = itself * -friction;
+		elseif ball_position.z > cage_height - ball_radius then
+			ball_position.z = cage_height - ball_radius;
+			ball_velocity.z = itself * -friction;
+		end;
+		
+		if ball_position.x > half of cage_width - ball_radius then
+			ball_position.x = half of cage_width - ball_radius;
+			ball_velocity.x = itself * -friction;
+		elseif ball_position.x < -half of cage_width + ball_radius then
+			ball_position.x = -half of cage_width + ball_radius;
+			ball_velocity.x = itself * -friction;
+		end;
+		
+		if ball_position.y > half of cage_length - ball_radius then
+			ball_position.y = half of cage_length - ball_radius;
+			ball_velocity.y = itself * -friction;
+		elseif ball_position.y < -half of cage_length + ball_radius then
+			ball_position.y = -half of cage_length + ball_radius;
+			ball_velocity.y = itself * -friction;
+		end;
+		
+		// slowly rotate the scene
+		//
+		scene with
+			rotate by get_seconds * 10 around <0 0 1>;
+		end;
+	end;
+end;    // bouncey_anim

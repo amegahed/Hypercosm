@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         scene_parser.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a parser for parsing scene           }
+{       definitions from an XML stream.                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2007 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/xml_reading.ores";
+include "objects_parser.ores";
+
+object_group type question parse_scene
+	from xml_reading type xml_reader;
+is
+	object_group type scene;
+	xml_reader_constant type event;
+	// parse start element
+	//  
+	xml_reader require start_element named "scene";
+	xml_reader skip_element;
+	// parse nested elements
+	//      
+	parse_objects into scene from xml_reader;
+	// parse end element
+	//          
+	xml_reader require end_element named "scene";
+	xml_reader skip_element;
+	// return scene
+	//      
+	answer scene;
+end;    // parse_scene

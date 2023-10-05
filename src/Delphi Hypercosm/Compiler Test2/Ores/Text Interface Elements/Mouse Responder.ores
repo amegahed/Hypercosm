@@ -1,0 +1,138 @@
+{***************************************************************}
+{                       mouse_responder.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{        Contains a base class for building widgets that        }
+{        respond to mouse clicks and mouse overs.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "devices.ores";
+include "actions.ores";
+
+
+abstract subject mouse_responder
+does
+    verb new with
+        // user defined callbacks
+        //
+        actionable type mouse_down_action is none;
+        actionable type mouse_up_action is none;
+        actionable type mouse_over_action is none;
+        actionable type mouse_away_action is none;
+    end;    // new
+       
+    // self responses
+    //
+    verb mouse_down_response;
+    verb mouse_up_response;
+    verb mouse_over_response;
+    verb mouse_away_response;
+    
+    verb update;
+    abstract boolean question is_mouse_over;
+has
+    // user defined callbacks
+    //
+    public actionable type mouse_down_action is none;
+    public actionable type mouse_up_action is none;
+    public actionable type mouse_over_action is none;
+    public actionable type mouse_away_action is none;
+
+    // current state information
+    //
+    public boolean mouse_down is false;
+    public boolean mouse_over is false;
+is
+    //
+    // constructor
+    //
+    
+    
+    verb new with
+        // user defined callbacks
+        //
+        actionable type mouse_down_action is none;
+        actionable type mouse_up_action is none;
+        actionable type mouse_over_action is none;
+        actionable type mouse_away_action is none;
+    is
+        mouse_responder's mouse_down_action is mouse_down_action;
+        mouse_responder's mouse_up_action is mouse_up_action;
+        mouse_responder's mouse_over_action is mouse_over_action;
+        mouse_responder's mouse_away_action is mouse_away_action;
+    end;    // new
+    
+            
+    //
+    // self responses
+    //
+    
+    
+    verb mouse_down_response is
+        if some mouse_down_action then
+            mouse_down_action activate;
+        end;
+    end;    // mouse_down_response
+    
+    
+    verb mouse_up_response is
+        if some mouse_up_action then
+            mouse_up_action activate;
+        end;    
+    end;    // mouse_up_response
+    
+    
+    verb mouse_over_response is
+        if some mouse_over_action then
+            mouse_over_action activate;
+        end;
+    end;    // mouse_over_response
+    
+    
+    verb mouse_away_response is
+        if some mouse_away_action then
+            mouse_away_action activate;
+        end;
+    end;    // mouse_away_response
+
+    
+    //
+    // mouse update behavior
+    //
+    
+    
+    verb update is
+        click type click is none;
+          
+        reset_frame_events;
+        click is get_click;
+         
+        if is_mouse_over then
+
+            if some click then
+                flush_clicks;
+                         
+                if click is down then
+                    mouse_down_response;
+                elseif click is up then
+                    mouse_up_response;
+                end;
+            end;
+            
+            if not mouse_over then
+                mouse_over is true;
+                mouse_over_response;
+            end;
+        else
+            if mouse_over then
+                mouse_over is false;
+                mouse_away_response;
+            end;
+        end;   
+    end;
+end;    // mouse_responder

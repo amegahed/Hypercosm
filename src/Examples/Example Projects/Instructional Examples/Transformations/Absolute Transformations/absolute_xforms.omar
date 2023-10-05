@@ -1,0 +1,30 @@
+do absolute_xforms_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// transformations
+//
+include "dimensions.omar";
+include "limit.omar";
+include "size.omar";
+
+anim absolute_xforms_anim 
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_shape of dimensions_scene) 
+		named "dimensions";     
+	multi_actor add_actor (new animated_shape of limit_scene) 
+		named "limit";   
+	multi_actor add_actor (new animated_shape of size_scene) 
+		named "size";   
+																					
+	mouse_controlled_actor multi_actor;
+end;    // absolute_xforms_anim

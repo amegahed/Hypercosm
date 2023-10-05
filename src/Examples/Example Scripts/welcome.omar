@@ -1,0 +1,206 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            welcome.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple starter scene to welcome    }
+{       you to using Hypercosm Studio.                          }
+{                                                               }
+{       Click the GO Button on the Hypercosm Studio button      }
+{       bar or select the menu option "Build>Run File"          }
+{       to run this file!                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***|***|***|***   WELCOME TO HYPERCOSM STUDIO!  ***|***|***|***}
+{
+	You've just opened up the world's most powerful tool for
+	creating interactive 3D web applets... Hypercosm Studio!
+	Here are a few paths you can follow to begin making your
+	own Hypercosm applets...
+	
+	1)  If you haven't yet done so, download the Hypercosm
+		Graphics Orientation Tutorial from our website at:
+		
+		http://dev.hypercosm.com/download#tutorial
+		
+		Through four step-by-step lessons, this tutorial intro-
+		duces Hypercosm Studio, demonstrates how you can create
+		and publish your own applets, and gets you started in
+		writing your own OMAR programs.
+		Then you can move on to the Hypercosm 3D Graphics System
+		guide and the OMAR Programming Language Reference Manual,
+		taking in what you find most useful and interesting, and
+		experimenting with all the different ideas you find
+		in them.
+		
+	2)  Studio comes with all kinds of sample files and projects
+		(including the file you're reading now!) Open and run
+		these files to get a sense of the possibilities of
+		Hypercosm graphics. You can also use them as models on
+		which to build your own creations.
+		
+		To run this file, just click on the little GO button on
+		the Studio toolbar. Or, press the F6 button. When you 
+		run it, Studio opens up a graphics window that should
+		display a simple, interactive Hypercosm coffee mug.
+		You can read the code that produces the graphics below.
+		
+		To open other sample files, open the File > Open dialog
+		through the menu options above. Then click on the OMAR
+		Samples button there. Open any of the various directories
+		you see and you'll find all kinds of different OMAR files
+		that you can open, examine, and run.
+		
+		You can also find Sample Projects (a project is a
+		collection of files that together produce one applet)
+		by opening the File > Open Project dialog through the
+		menu options above. Click on the Sample Projects button,
+		and then open any of the .hsp files you find in the
+		directories there.
+		
+	If you have any further questions or concerns about getting
+	started, please visit http://dev.hypercosm.com/support.
+	There you'll find answers to frequently asked questions and
+	information on how you can join a Hypercosm discussion group.
+	You'll also find a form you can use to submit any support
+	questions you might have. We'll be happy to help you begin
+	adding 3D interactivity to your web site.
+	
+****************************************************************}
+//  The starter_mug OMAR code...
+//  Text that follows double slashes (//) is comment text and is
+//  ignored by Studio.
+{   Text placed inside curly braces is also comment text.       } 
+
+// The header statement: this line of code tells
+// Studio where to start running the file. In this
+// case, Studio will run the anim called "mug_anim".
+//
+do mug_anim;    
+
+// An include statement: this includes OMAR
+// code from another file. The file "3d.ores"
+// includes all kinds of OMAR code that is
+// needed for producing 3D graphics.
+//
+include "system/3d.ores";                             
+include "system/anims.ores";   
+
+// The following is a shape definition. It defines the
+// geometry of a "mug".
+//         
+shape mug with
+	scalar height = 2.5;
+	scalar inner_radius = 1;
+	scalar outer_radius = 1.1;
+	color type handle_color = light brown;
+is
+	scalar brim_radius = (outer_radius - inner_radius) / 2; 
+	// The mug is a combination of the following shapes...
+	// The mug's outer cylinder:
+	//
+	cylinder with
+		end1 = <0 0 (height/2 - brim_radius)>;
+		end2 = <0 0 (-height/2 + brim_radius)>;
+		radius = outer_radius;
+		material is chalk poster "hyper.jpg" colored light lime_green;
+	end;
+	
+	// The mug's inner cylinder:
+	//
+	cylinder with
+		end1 = <0 0 (height/2 - brim_radius)>;
+		end2 = <0 0 (-height/2 + 2*brim_radius)>;
+		radius = inner_radius;
+	end;
+	
+	// The mug's brim:
+	//
+	torus with
+		center = <0 0 (height/2 - brim_radius)>;
+		inner_radius = static inner_radius;
+		outer_radius = static outer_radius;
+		vmax = 180;
+	end;
+	// The rounded edge around the mug's base:
+	//
+	torus with
+		center = <0 0 (-height/2 + brim_radius)>;
+		inner_radius = static inner_radius;
+		outer_radius = static outer_radius;
+		vmin = 270;
+		vmax = 360;
+	end;
+	// The mug's base:
+	//
+	disk with
+		center = <0 0 (-height/2)>;
+		radius = static outer_radius - brim_radius;
+	end;
+	
+	// The mug's inner bottom:
+	//
+	sphere with 
+		radius = inner_radius;
+		scale by (brim_radius / inner_radius) along <0 0 1>;
+		move to <0 0 (-height/2 + brim_radius*2)>;
+		vmax = 0;
+	end;
+	
+	// The mug's handle:
+	//
+	torus with
+		center = <(static outer_radius + height/25) 0 0>;
+		inner_radius = height/4;
+		outer_radius = height/3;
+		normal = <0 1 0>;
+		umax = 105;
+		umin = -105;
+		scale by .75 along <1 0 0> about center;
+		scale by 2 along <0 1 0>;
+		material is plastic colored handle_color;
+	end;
+end;    // mug
+
+// The mug_anim is this file's main procedure. That means it's the
+// first procedure that Studio runs when it reads the file because
+// it's listed in the header statement at the top of the file.
+//
+anim mug_anim with
+	eye = <0 -6 4>;
+	auto_upright is false;
+	facets = 12;
+is
+	// We create a scene here to pass to the "mouse_controlled_shape".
+	// Note that we can't pass the mug directly because the
+	// mouse_controlled_shape is expecting a shape with no
+	// parameters.  The mug has a set of parameters such as 
+	// "height" and "inner_radius" that need to be defined before 
+	// it can be passed into the mouse_controlled_shape.
+	//
+	shape scene is
+	
+		// To add the mug to the scene, we need to "call" the mug shape
+		// that is defined above. When calling a shape, you can change any
+		// of its "parameters". Try changing the values you see below
+		// (including the color names), run the file again, and see what
+		// happens!
+		//
+		mug with
+			height = 2.5;
+			inner_radius = 1;
+			outer_radius = 1.2;
+			handle_color = dark lime_green;
+			material is plastic colored charcoal;
+		end;
+	end;    // scene
+	
+	// "mouse_controlled_shape" is a standard Hypercosm anim that
+	// takes a shape and adds standard mouse interactions.
+	//
+	mouse_controlled_shape scene {about <0 0 -1.25>};
+end;    // mug_anim

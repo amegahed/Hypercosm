@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             array.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of an        }
+{       array of other shapes.                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/transformations.ores";
+
+shape array
+	of integer i;
+	by integer j;
+	shape thing;
+with
+	scalar x_spacing = 1;
+	scalar y_spacing = 1;
+is
+	scalar x_offset = ((i - 1) * x_spacing) / 2;
+	scalar y_offset = ((j - 1) * y_spacing) / 2;
+	
+	for integer counter1 = 0..(j - 1) do
+		scalar y = (counter1 * y_spacing) - y_offset;
+		for integer counter2 = 0..(i - 1) do
+			scalar x = (counter2 * x_spacing) - x_offset;
+			thing with
+				move to <x y 0>;
+			end;
+		end;
+	end;
+end;    // array

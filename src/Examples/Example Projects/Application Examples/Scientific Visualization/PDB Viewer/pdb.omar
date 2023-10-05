@@ -1,0 +1,30 @@
+do pdb_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "pdb_molecule.ores";
+
+pdb_molecule type molecule is none;
+
+anim pdb_anim
+    args type args;
+is   
+    shape scene is
+        molecule instance;
+    end;
+    if some args then
+        scalar size;
+        
+        new molecule from args[1];
+        
+        write "# of atoms = ", molecule num_atoms, ;
+        size = vlength of molecule get_size;
+        eye = <(-size * 1.5) 0 size>;
+        lookat = molecule get_center;
+        
+        //set_manual_near_far_planes on from size / 5 to size * 10;     
+        //default_background_plane_distance = size * 4;
+    end;
+    
+    mouse_controlled_shape scene;
+end;    // pdb_anim

@@ -1,0 +1,36 @@
+do tactile_apple_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/apple.omar";
+
+
+anim tactile_apple_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape apple_shape is
+        write "making apple", ;
+        apple with
+            magnify by 3.5;
+        end;
+    end;    // apple_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape apple_shape titled "Tactile Apple Large" in floor;
+end;    // tactile_apple_anim

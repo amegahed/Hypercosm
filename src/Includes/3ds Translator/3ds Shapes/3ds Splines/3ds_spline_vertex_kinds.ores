@@ -1,0 +1,103 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     3ds_spline_vertex_kinds.ores       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains spline vertex definitions that correspond      }
+{       to entities from Discreet's 3D Studio Max software.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_spline_vertex.ores";
+
+{***************************************************************} 
+{           various utility vertex construction methods         }
+{***************************************************************}
+
+translated_3ds_spline_vertex type question translated_3ds_corner_vertex
+	at vector point;
+is
+	translated_3ds_spline_vertex type vertex is translated_3ds_spline_vertex type's get;
+	vertex set at point from <0 0 0> to <0 0 0>;
+	answer vertex;
+end;    // translated_3ds_corner_vertex
+
+translated_3ds_spline_vertex type question translated_3ds_smooth_vertex
+	at vector point;
+is
+	translated_3ds_spline_vertex type vertex is translated_3ds_spline_vertex type's get;
+	vertex set at point with
+		smooth_tangents is true;
+	end;
+	answer vertex;
+end;    // translated_3ds_smooth_vertex
+
+translated_3ds_spline_vertex type question translated_3ds_bezier_vertex
+	at vector point;
+	from vector in_tangent = <0 0 0>;
+	to vector out_tangent = <0 0 0>;
+is
+	translated_3ds_spline_vertex type vertex is translated_3ds_spline_vertex type's get;
+	
+	// make sure tangents are colinear
+	//
+	vector direction;
+	
+	if in_tangent dot out_tangent < 0 then
+	
+		// in and out tangents pointing in opposite directions
+		//
+		direction = normalized (in_tangent - out_tangent);
+	else
+		// in and out tangents pointing in the same direction
+		//
+		direction = normalized (in_tangent + out_tangent);
+	end;
+	
+	in_tangent = in_tangent parallel direction;
+	out_tangent = out_tangent parallel direction;
+	
+	vertex set at point from in_tangent to out_tangent;
+	answer vertex;
+end;    // translated_3ds_bezier_vertex
+
+translated_3ds_spline_vertex type question translated_3ds_bezier_handle_vertex
+	at vector point;
+	from vector in_tangent_handle;
+	to vector out_tangent_handle;
+is
+	// compute tangents relative to point
+	//
+	vector in_tangent = (in_tangent_handle - point);
+	vector out_tangent = (out_tangent_handle - point);
+	
+	answer translated_3ds_bezier_vertex at point
+		from in_tangent to out_tangent;
+end;    // translated_3ds_bezier_handle_vertex
+
+translated_3ds_spline_vertex type question translated_3ds_bezier_corner_vertex
+	at vector point;
+	from vector in_tangent = <0 0 0>;
+	to vector out_tangent = <0 0 0>;
+is
+	translated_3ds_spline_vertex type vertex is translated_3ds_spline_vertex type's get;
+	vertex set at point from in_tangent to out_tangent;
+	answer vertex;
+end;    // translated_3ds_bezier_corner_vertex
+
+translated_3ds_spline_vertex type question translated_3ds_bezier_corner_handle_vertex
+	at vector point;
+	from vector in_tangent_handle;
+	to vector out_tangent_handle;
+is 
+	// compute tangents relative to point
+	//
+	vector in_tangent = (in_tangent_handle - point);
+	vector out_tangent = (out_tangent_handle - point);
+	
+	answer translated_3ds_bezier_corner_vertex at point
+		from in_tangent to out_tangent;
+end;    // translated_3ds_bezier_corner_handle_vertex

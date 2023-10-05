@@ -1,0 +1,101 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_material_maps.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains material definitions that correspond to        }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+static subject translated_3ds_material_maps
+does
+	// constructor
+	//
+	verb new with
+		texture type ambient_map is none;
+		texture type diffuse_map is none;
+		texture type specular_map is none;
+		texture type specular_level_map is none;
+		texture type gloss_map is none;
+		texture type illumination_map is none;
+		texture type opacity_map is none;
+		texture type filter_map is none;
+		texture type bump_map is none;
+		texture type reflection_map is none;
+		texture type refraction_map is none;
+		texture type displacement_map is none;
+	end;
+	
+	// querying methods
+	//
+	boolean question is_empty;
+has
+	// attributes
+	//
+	public texture type ambient_map is none;
+	public texture type diffuse_map is none;
+	public texture type specular_map is none;
+	public texture type specular_level_map is none;
+	public texture type gloss_map is none;
+	public texture type illumination_map is none;
+	public texture type opacity_map is none;
+	public texture type filter_map is none;
+	public texture type bump_map is none;
+	public texture type reflection_map is none;
+	public texture type refraction_map is none;
+	public texture type displacement_map is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		texture type ambient_map is none;
+		texture type diffuse_map is none;
+		texture type specular_map is none;
+		texture type specular_level_map is none;
+		texture type gloss_map is none;
+		texture type illumination_map is none;
+		texture type opacity_map is none;
+		texture type filter_map is none;
+		texture type bump_map is none;
+		texture type reflection_map is none;
+		texture type refraction_map is none;
+		texture type displacement_map is none;
+	is
+		with translated_3ds_material_maps do
+		
+			// set texture map attributes
+			//
+			its ambient_map is ambient_map;
+			its diffuse_map is diffuse_map;
+			its specular_map is specular_map;
+			its specular_level_map is specular_level_map;
+			its gloss_map is gloss_map;
+			its illumination_map is illumination_map;
+			its opacity_map is opacity_map;
+			its filter_map is filter_map;
+			its bump_map is bump_map;
+			its reflection_map is reflection_map;
+			its refraction_map is refraction_map;
+			its displacement_map is displacement_map;       
+		end;
+	end;    // new
+	
+	//  
+	// querying methods
+	//
+	
+	boolean question is_empty is
+		answer ambient_map is none and diffuse_map is none and
+			specular_map is none and specular_level_map is none and
+			gloss_map is none and illumination_map is none and
+			opacity_map is none and filter_map is none and
+			bump_map is none and reflection_map is none and
+			refraction_map is none and displacement_map is none;
+	end;    // is_empty
+end;    // translated_3ds_material_maps

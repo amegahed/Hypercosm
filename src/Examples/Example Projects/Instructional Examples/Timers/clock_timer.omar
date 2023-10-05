@@ -1,0 +1,85 @@
+do clock_timer_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/clock_timer.ores";
+include "stopwatch.omar";
+
+subject clock_timer_actor
+extends
+	renderable clock_timer
+does
+	// constructor
+	//
+	verb new;
+	
+	// renderable method
+	//
+	shape instance;
+	
+	// update method
+	//
+	verb update;
+is
+	// constructor
+	//
+	verb new is
+		clock_timer new;
+	end;    // new
+	
+	
+	shape instance is
+		stopwatch with
+			time = clock_timer get_time;
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // instance
+	
+	
+	verb check_keys is
+		if key_down char_to_key of " " then
+			reset;
+		end;
+	end;    // check_keys
+	
+	
+	verb draw_instructions
+		at scalar x = -.9, y = .8; 
+	is
+		verb draw_line
+			string type line;
+		is
+			overlay_text line at <x y 0> with
+				horizontal_alignment is left;
+			end;
+			
+			// go to next line
+			//
+			y = itself - .1;
+		end;    // draw_line
+		
+		
+		draw_line "Press 'space' to Reset";
+	end;    // draw_instructions
+	
+		
+	verb update is
+		check_keys;
+		draw_instructions;
+		
+		// call superclass method
+		//
+		clock_timer static update;
+	end;    // update
+end;    // clock_timer_actor
+
+anim clock_timer_anim with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+	show_animation_control is false;
+is  
+	clock_timer_actor type clock_timer_actor;
+	
+	mouse_controlled_actor clock_timer_actor titled "Clock Timer";
+end;    // clock_timer_anim

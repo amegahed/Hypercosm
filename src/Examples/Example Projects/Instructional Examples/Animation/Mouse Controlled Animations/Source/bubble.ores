@@ -1,0 +1,133 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            bubbles.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard subjects for creating bubble          }
+{       paths or trails behind moving shapes.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/actors.ores";
+include "system/random.ores";
+include "system/trans_stacks.ores";
+
+subject bubble
+extends
+	timed_actor
+does
+	verb new 
+		at vector location = <0 0 0>;
+		towards vector velocity = <0 0 5>;
+	with
+		scalar size = 0.1, expansion_speed = random from .25 to .5;
+		scalar wobble_size = .1, wobble_speed = .25;
+		scalar lifetime = random from .5 to 1;
+	end;
+	
+	verb advance
+		by scalar time_step;
+	end;
+	
+	boolean question popped;
+	reference verb pop;
+	shape instance;
+has
+	// attributes
+	//
+	const material type default_bubble_material is glass;
+	
+	public vector location, velocity;
+	public scalar size, expansion_speed;
+	public scalar wobble_size, wobble_speed;
+	public scalar age, lifetime; 
+	public axes type axes;
+	public boolean done;
+	material type bubble_material is default_bubble_material; 
+	
+	// link
+	//
+	public bubble type next is none;    
+is
+	verb new 
+		at vector location = <0 0 0>;
+		towards vector velocity = <0 0 5>;
+	with
+		scalar size = 0.1, expansion_speed = random from .25 to .5;
+		scalar wobble_size = .1, wobble_speed = .25;
+		scalar lifetime = random from .5 to 1;
+	is
+		// call superclass constructor
+		//
+		timed_actor new;
+		
+		// set attributes
+		//
+		with bubble do
+			its location = location;
+			its velocity = velocity;
+			its size = size;
+			its expansion_speed = expansion_speed;
+			its wobble_size = wobble_size;
+			its wobble_speed = wobble_speed;
+			its age = 0;
+			its lifetime = lifetime;
+		end;
+		if vlength of velocity <> 0 then
+			orient_axes axes from <0 0 1> to velocity;
+		end;
+		done is false;
+		next is none;
+	end;    // new
+	
+	
+	verb advance
+		by scalar time_step;
+	is
+		if age < lifetime then
+			location = itself + velocity * time_step;
+			size = itself + expansion_speed * time_step / (size + 1);
+			age = itself + time_step;
+			
+			if age > lifetime then
+				pop;
+			end;
+		end;
+	end;    // advance
+	
+	
+	reference verb pop is
+		size = 0;
+		done is true;
+		bubble is none;
+	end;    // pop
+	
+	
+	boolean question popped is
+		answer done;
+	end;    // popped
+	
+	verb wobble is
+		scalar wobble_angle = age / wobble_speed * 360;
+		move to axes's x_axis * sin wobble_angle * wobble_size;
+		move to axes's y_axis * cos wobble_angle * wobble_size;
+	end;    // wobble
+	
+		
+	shape instance is
+		if not done then
+			sphere with
+				move to location;
+				radius = size;
+				color = white;
+				wobble;
+				edges is silhouette;
+				material is bubble_material; 
+			end;
+		end;
+	end;    // instance
+end;    // bubble
+

@@ -1,0 +1,276 @@
+{***************************************************************}
+{                          p_orbital.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do slicer_anim;
+
+
+include "system/3d.ores";
+include "system/densities.ores";
+include "system/physics.ores";
+include "system/fields.ores";
+include "system/toggle.omar";
+include "system/crosshair.omar";
+include "system/button_meter.omar";
+
+
+scalar threshold = .6;
+vector slice_orientation = <0 0 0>;
+vector orientation = <0 0 0>;
+boolean do_shading is on;
+boolean clipping is off;
+
+
+// density_field type density_field using noisy_field with
+density_field type density_field using wave_function_p
+    from <-1 -1 -2> to <1 1 2>
+with
+    x_steps = 11;
+    y_steps = 11;
+    z_steps = 39;
+end;    // density_field
+
+
+shape cross_section
+    scalar density[, , ];
+with
+    scalar threshold = .5;
+    vector section_x_axis = <1 0 0>;
+    vector section_y_axis = <0 1 0>;
+is
+    integer resolution = max density - min density;
+    scalar d[0..0, 0..resolution, 0..resolution];
+    scalar cube_size = 2 / (resolution);
+    scalar offset = cube_size * (resolution) / 2;
+    const scalar spacing = .01;
+
+    // cross section materials
+    //
+    static material type inner_material is plastic colored red;
+    static material type middle_material is plastic colored green;
+    static material type outer_material is plastic colored blue;
+
+    for integer y_counter = 0..resolution do
+        scalar y = (y_counter * cube_size) - offset;
+
+        for integer x_counter = 0..resolution do
+            scalar x = (x_counter * cube_size) - offset;
+
+            vector point = (section_x_axis * x) +
+                (section_y_axis * y);
+            d[0, y_counter, x_counter] = density_field
+                    interpolate at point;
+        end;
+    end;
+
+    // do cross sections
+    //
+    volume d with
+        material is outer_material;
+        threshold = static threshold * 1.2;
+        capping is true;
+        move to <0 0 (spacing * 2)>;
+    end;
+    volume d with
+        material is middle_material;
+        threshold = static threshold * 1.1;
+        move to <0 0 spacing>;
+        capping is true;
+    end;
+    volume d with
+        material is inner_material;
+        threshold = static threshold;
+        capping is true;
+    end;
+end;    // cross_section
+
+
+shape isosurface with
+    scalar threshold = .5;
+    boolean capping is off;
+    boolean clipping is on;
+    vector slice_orientation = <0 0 1>;
+is
+    scalar x = slice_orientation dot <1 0 0>;
+    scalar y = slice_orientation dot <0 1 0>;
+
+
+    shape clipped_volume is
+        volume density_field's density with
+            threshold = static threshold;
+            capping is static capping;
+        end;
+        clipping_plane with
+            rotate by (x * 180) around trans's z_axis;
+            rotate by (y * 180) around -trans's x_axis;
+        end;
+    end;    // clipped_volume
+
+    if clipping then
+        clipped_volume;
+        parallelogram with
+
+            // slice orientation
+            rotate by (x * 180) around trans's z_axis;
+            rotate by (y * 180) around -trans's x_axis;
+            render_mode is wireframe;
+            color = white;
+        end;
+        {
+        cross_section density_field's density with
+            threshold = static threshold;
+            edges is all;
+
+            // slice orientation
+            scale by 1.5 along <0 0 1>;
+            rotate by (x * 180) around trans's z_axis;
+            rotate by (y * 180) around -trans's x_axis;
+            section_x_axis = trans's x_axis;
+            section_y_axis = trans's y_axis;
+        end;
+        }
+    else
+        volume density_field's density with
+            threshold = static threshold;
+            capping is static capping;
+        end;
+    end;
+end;    // isosurface
+
+
+
+
+picture slicer_picture with
+    eye = <0 -8 4>;
+    field_of_view = 35;
+    projection is perspective;
+    render_mode is shaded;
+    shading is vertex;
+    window_name is "Slicer!";
+    background = black;
+    if do_shading then
+        render_mode is shaded;
+    else
+        render_mode is wireframe;
+    end;
+is
+    scalar x = orientation dot <1 0 0>;
+    scalar y = orientation dot <0 1 0>;
+
+    shape orbital is
+        isosurface with
+            slice_orientation = static slice_orientation;
+            scale by 1.5 along <0 0 1>;
+            edges is outline;
+            threshold = static threshold;
+            clipping is static clipping;
+        end;
+    end;    // orbital
+
+
+    shape scene is
+        orbital with
+            material is aluminum;
+        end;
+        axes with
+            magnify by 1.5;
+        end;
+    end;    // scene
+
+
+    distant_light from <.3 -.5 1>;
+    distant_light from <-1 -2 1>;
+    scene with
+        rotate by x * 180 around <0 0 1>;
+        rotate by y * 180 around <-1 0 0>;
+    end;
+end;    // slicer_picture
+
+
+picture instruments_picture with
+    window_name is "Instruments";
+    background = black;
+is
+    static toggle type clipping_switch labelled "clipping"
+        controls clipping;
+    static toggle type shading_switch labelled "shading"
+        controls do_shading;
+    static crosshair type crosshair labelled "slice_orientation"
+        controls slice_orientation;
+    static button_meter type threshold_meter labelled "threshold"
+        controls threshold from .4 to .8 in 20;
+    scalar aspect_ratio = height / width;
+
+    distant_light from <-3 -.5 1>;
+    clipping_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .8 0>;
+    end;
+    shading_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .5 0>;
+    end;
+    render_mode is wireframe;
+    crosshair instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+    threshold_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.65 0>;
+    end;
+end;    // instruments_picture
+
+
+anim slicer_anim
+with
+    double_buffer is on;
+    width = 384;
+    height = 384;
+is
+    integer slicer_width = width;
+    integer instrument_width = trunc (width / 3);
+    integer total_width = slicer_width + instrument_width;
+    boolean first_frame is true;
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging orientation);
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+        default_cursor is arrow;
+    end;
+
+    while true do
+        if mouse_down or first_frame or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = instrument_width;
+                h_center = (screen_width div 2) +
+                    ((slicer_width div 2) + 5);
+                ortho_view;
+            end;
+        end;
+
+        slicer_picture with
+            aspect_ratio = 3 / 4;
+            width = slicer_width;
+            h_center = (screen_width div 2) -
+                ((instrument_width div 2) + 5);
+        end;
+
+        interaction update;
+
+        first_frame is false;
+    end;
+end;    // slicer_anim

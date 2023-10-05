@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         combinatorics.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{           Contains various combinatoric utilities.            }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+scalar question factorial
+	of integer i;
+is
+	if i <= 1 then
+		answer 1;
+	else
+		answer i * factorial of (i - 1);
+	end;
+end;    // factorial
+
+scalar question binomial_coefficient
+	of integer n;
+	choose integer m;
+is
+	answer (factorial of n) /
+		((factorial of (n - m)) * (factorial of m));
+end;    // binomial_coefficient

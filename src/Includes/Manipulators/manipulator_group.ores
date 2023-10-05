@@ -1,0 +1,304 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        manipulator_group.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/manipulation.ores";
+include "system/manipulator.ores";
+
+subject manipulator_group
+extends
+	reportable sendable addressable pressable_actor
+does
+	// constructor
+	//
+	verb new
+		using manipulator type manipulators[] is none;
+	end;
+
+	// constructing methods
+	//
+	verb add
+		manipulator type manipulator;
+	end;
+	
+	verb reset;
+	verb deselect;
+
+	// rendering
+	//      
+	shape instance;
+	
+	// touching methods
+	//
+	verb touch
+		from vector location;
+		towards vector direction;
+	end;
+
+	boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;
+
+	boolean question is_handle_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;
+	
+	// pressing methods
+	//
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	end;
+
+	verb release
+		from vector location;
+		towards vector direction;
+	end;
+	
+	// reporting methods
+	//
+	verb report;
+
+	verb send
+		message type message;
+	end;
+
+	verb address
+		receivable type recipient;
+	end;
+has
+	// attributes
+	//
+	struct manipulator_entry has
+		manipulator type manipulator is none;
+		manipulator_entry type next is none;
+	end;
+
+	// manipulator group state information
+	//
+	manipulator_entry type list is none;    
+	manipulator type selected_manipulator is none;
+	manipulator type nearest_manipulator is none;
+	sender type sender;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		using manipulator type manipulators[] is none;
+	is
+		for each manipulator type manipulator in manipulators do
+			add manipulator;
+		end;
+	end;    // new
+	
+	//
+	// constructing methods
+	//
+
+	verb add
+		manipulator type manipulator;
+	is
+		manipulator_entry type manipulator_entry;
+		manipulator_entry's manipulator is manipulator;
+		manipulator_entry's next is list;
+		list is manipulator_entry;
+	end;    // add
+	
+	verb reset is
+		for each manipulator_entry type manipulator_entry and its next in list do  
+			manipulator_entry's manipulator reset;
+		end;
+	end;    // reset
+	
+	verb deselect is
+		for each manipulator_entry type manipulator_entry and its next in list do  
+			manipulator_entry's manipulator deselect;
+		end;
+	end;    // deselect
+
+	//
+	// actor methods
+	//
+	
+	verb update is
+		global touch (touchable type manipulator_group);
+	end;    // update
+
+	//
+	// rendering method
+	//
+
+	shape instance is
+		for each manipulator_entry type manipulator_entry and its next in list do  
+			manipulator_entry's manipulator instance;
+		end;    
+	end;    // instance
+	
+	//
+	// touching methods
+	//
+	
+	manipulator type question get_nearest_handled_manipulator 
+		from vector location;
+		towards vector direction;
+	is
+		scalar t_min = infinity;
+		manipulator type nearest_manipulator is none;
+			
+		// find nearest manipulator
+		//
+		nearest_manipulator is none;
+		for each manipulator_entry type manipulator_entry and its next in list do   
+			if manipulator_entry's manipulator is_handle_touched from location towards direction closer than t_min then
+				nearest_manipulator is manipulator_entry's manipulator;
+			end;
+		end;
+		
+		answer nearest_manipulator;
+	end;    // get_nearest_handled_manipulator
+				
+	verb touch
+		from vector location;
+		towards vector direction;
+	is
+		if some selected_manipulator then
+			selected_manipulator touch from location towards direction;
+		else
+			// touch all manipulators
+			//
+			for each manipulator_entry type manipulator_entry and its next in list do
+				manipulator_entry's manipulator touch from location towards direction;   
+			end;
+
+			// find nearest manipulator that has its handles touched
+			//
+			nearest_manipulator is get_nearest_handled_manipulator
+				from location towards direction;
+			
+			// highlight all manipulators with their bounds touched
+			//
+			if some nearest_manipulator then
+				for each manipulator_entry type manipulator_entry and its next in list do
+					if manipulator_entry's manipulator isn't nearest_manipulator then
+						manipulator_entry's manipulator deselect;
+					end;
+				end;
+			else
+				for each manipulator_entry type manipulator_entry and its next in list do
+					if manipulator_entry's manipulator's touched then
+						manipulator_entry's manipulator deselect;
+						manipulator_entry's manipulator's touched is true;
+					end;
+				end;
+			end;
+			
+			report;
+		end;
+	end;    // touch
+	
+	boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	is
+		for each manipulator_entry type manipulator_entry and its next in list do
+			if manipulator_entry's manipulator's is_touched
+				from location towards direction closer than min_t
+			then
+				answer true;
+			end;
+		end;
+		answer false;         
+	end;    // is_touched
+		
+	boolean question is_handle_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	is
+		for each manipulator_entry type manipulator_entry and its next in list do
+			if manipulator_entry's manipulator is_handle_touched
+				from location towards direction closer than min_t
+			then
+				answer true;
+			end;
+		end;
+		answer false;       
+	end;    // is_handle_touched
+		  
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	is
+		selected_manipulator is get_nearest_handled_manipulator
+			from location towards direction;
+		if some selected_manipulator then
+			for each manipulator_entry type manipulator_entry and its next in list do
+				if manipulator_entry's manipulator isn't selected_manipulator then
+					manipulator_entry's manipulator deselect;
+				end;
+			end;             
+			selected_manipulator press from location towards direction with
+				double_click is static double_click;
+			end;
+		end;
+	end;    // press
+		   
+	verb release
+		from vector location;
+		towards vector direction;
+	is
+		if some selected_manipulator then
+			selected_manipulator release from location towards direction;
+			selected_manipulator is none;
+		end;
+	end;    // release
+	
+	//
+	// reporting methods
+	//
+	
+	verb report is
+		if some nearest_manipulator then
+			if reportable type nearest_manipulator then
+				(addressable type nearest_manipulator) address sender's recipient;
+				(reportable type nearest_manipulator) report;
+			else
+				send (new text_message of empty_string);
+			end;
+		else
+			send (new text_message of empty_string);
+		end;
+	end;    // report
+	
+	verb send
+		message type message;
+	is
+		sender send message;
+	end;    // send
+	
+	verb address
+		receivable type recipient;
+	is
+		sender address recipient;
+	end;    // address
+end;    // manipulator_group

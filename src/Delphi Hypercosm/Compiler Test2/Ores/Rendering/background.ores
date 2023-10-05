@@ -1,0 +1,63 @@
+{***************************************************************}
+{                        background.ores                        }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{       Contains definitions for creating backgrounds.          }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/view_alignments.ores";
+
+
+shape view_plane
+    at scalar distance;
+is        
+    parallelogram with
+    	align_with_view at distance;
+    end;
+end;    // view_plane
+
+
+shape view_aligned_plane
+	at scalar distance;
+with
+	trans type trans;
+	get_view_trans into trans;
+is
+	view_plane at distance with
+		global trans = trans;
+	end;
+end;	// view_aligned_plane
+
+
+string type background_name is "background.jpg";
+    
+    
+shape default_background
+	named string type name is background_name;
+	at scalar distance;
+is
+    static string type background_name is background_name;
+    static material type background_material is constant_color white
+    	poster background_name;
+	
+	if some name then
+	
+		// create new background material
+		//    
+	    if not name matches background_name then
+	    	background_material is constant_color white poster name;
+	    	background_name is name;
+	    end; 
+	
+		// create background plane using background material
+		//	
+	    view_aligned_plane at distance with
+	        material is background_material;
+	    end;
+    end;
+end;    // default_background

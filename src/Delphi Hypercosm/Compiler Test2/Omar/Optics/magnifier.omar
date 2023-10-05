@@ -1,0 +1,148 @@
+{***************************************************************}
+{                          magnifier.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do magnify_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/solids.ores";
+
+
+shape magnifying_glass is
+    shape lens is
+        paraboloid with
+            top = <0 -.125 0>;
+            base = <0 -.025 0>;
+            radius = .475;
+        end;
+        paraboloid with
+            top = <0 .125 0>;
+            base = <0 .025 0>;
+            radius = .475;
+        end;
+        cylinder with
+            material is chalk colored white;
+            end1 = <0 -.025 0>;
+            end2 = <0 .025 0>;
+            radius = .474;
+        end;
+    end;    // lens
+
+
+    shape handle is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .8>;
+            radius = .1;
+        end;
+        disk with
+            center = <0 0 0>;
+            normal = <0 0 1>;
+            radius = .1;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 0 .8>;
+            end2 = <0 0 1>;
+            radius = .09;
+        end;
+    end;    // handle
+
+
+    shape rim is
+        cylinder with
+            end1 = <0 -.1 0>;
+            end2 = <0 .1 0>;
+            radius = .5;
+        end;
+        torus with
+            center = <0 -.1 0>;
+            normal = <0 1 0>;
+            inner_radius = .475;
+            outer_radius = .5;
+        end;
+        torus with
+            center = <0 .1 0>;
+            normal = <0 1 0>;
+            inner_radius = .475;
+            outer_radius = .5;
+        end;
+
+        {
+        ring with
+            center = 0 -.1 0; normal = 0 1 0;
+            inner_radius = .45; outer_radius = .5;
+        end;
+        ring with
+            center = 0 .1 0; normal = 0 1 0;
+            inner_radius = .45; outer_radius = .5;
+        end;
+        }
+
+        cylinder with
+            end1 = <0 -.1 0>;
+            end2 = <0 .1 0>;
+            radius = .475;
+        end;
+    end;    // rim
+
+    handle with
+        material is wood;
+        magnify the shader_trans by .2;
+    end;
+    rim with
+        material is golden;
+        move to <0 0 1.5>;
+    end;
+    transparent white lens with
+        render_mode is shaded;
+        material is silver;
+        move to <0 0 1.5>;
+    end;
+end;    // magnifying_glass
+
+
+shape tilted_magnifying_glass is
+    magnifying_glass with
+        move to <1 0 0>;
+        rotate by -75 around <0 1 0> about <.9 0 0>;
+    end;
+end;    // tilted_magnifying_glass
+
+
+picture magnify_picture with
+    eye = <1 -2 1.25>;
+    lookat = <0 0 .4>;
+    background = sky_blue;
+    fog_factor = 50;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+is
+    distant_light from <.5 -.5 1>;
+    tilted_magnifying_glass with material is golden; end;
+    flat checkered grey light green plane with
+        magnify by 10;
+    end;
+end;    // magnify_picture
+
+
+anim magnify_anim with
+    eye = <1 -3 2>;
+    lookat = <0 0 1>;
+    facets = 9;
+    double_buffer is on;
+is
+    mouse_controlled_shape magnifying_glass;
+end;    // magnify_anim

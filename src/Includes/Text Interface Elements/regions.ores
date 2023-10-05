@@ -1,0 +1,74 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            regions.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains several a class for creating and              }
+{        comparing regions.                                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "comparisons.ores";
+
+subject region
+does
+	// constructor
+	//
+	verb new
+		from vector v1;
+		to vector v2;
+	end;
+	verb expand
+		by region type region2;
+	end;
+	boolean question contains
+		vector v;
+	end;   
+has
+	// attributes
+	//
+	public vector vmin, vmax;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		from vector v1;
+		to vector v2;
+	is
+		vmin.x = smaller of v1.x and v2.x;
+		vmin.y = smaller of v1.y and v2.y;
+		vmin.z = smaller of v1.z and v2.z;
+		
+		vmax.x = larger of v1.x and v2.x;
+		vmax.y = larger of v1.y and v2.y;
+		vmax.z = larger of v1.z and v2.z;
+	end;
+	
+	verb expand
+		by region type region2;
+	is
+		vmin.x = smaller of vmin.x and region2's vmin.x;
+		vmin.y = smaller of vmin.y and region2's vmin.y;
+		vmin.z = smaller of vmin.z and region2's vmin.z;
+		
+		vmax.x = larger of vmax.x and region2's vmax.x;
+		vmax.y = larger of vmax.y and region2's vmax.y;
+		vmax.z = larger of vmax.z and region2's vmax.z;
+	end;    // expand
+		
+	boolean question contains
+		vector v;
+	is
+		answer 
+			(vmin.x <= v.x) and (v.x <= vmax.x) and 
+			(vmin.y <= v.y) and (v.y <= vmax.y) and
+			(vmin.z <= v.z) and (v.z <= vmax.z);
+	end;
+end;    // region
+
+type regions is region type[];

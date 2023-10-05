@@ -1,0 +1,54 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           icomparisons.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains several standard comparison procedures         }
+{       for integers.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+integer question ismaller
+	of integer i1;
+	and integer i2;
+is
+	if i1 < i2 then
+		answer i1;
+	else
+		answer i2;
+	end;
+end;    // ismaller
+
+integer question ilarger
+	of integer i1;
+	and integer i2;
+is
+	if i1 > i2 then
+		answer i1;
+	else
+		answer i2;
+	end;
+end;    // ilarger
+
+integer question ismallest
+	of integer integers[];
+is
+	integer i = integers[min integers];
+	for integer counter = min integers + 1 .. max integers do
+		i = ismaller of i and integers[counter];
+	end;
+	answer i;
+end;    // ismallest
+
+integer question ilargest
+	of integer integers[];
+is
+	integer i = integers[min integers];
+	for integer counter = min integers + 1 .. max integers do
+		i = ilarger of i and integers[counter];
+	end;
+	answer i;
+end;    // ilargest

@@ -1,0 +1,60 @@
+do translated_3ds_lathed_line_anim;
+
+include "system/3d.ores";
+include "system/3ds_line.ores";
+include "system/3ds_lathe.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape translated_3ds_lathed_line_scene with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+	static material type hyper_material is plastic poster "hyper.jpg";
+	
+	translated_3ds_line of [
+		translated_3ds_connected_spline through [
+			translated_3ds_corner_vertex at <7 0 0> 
+			translated_3ds_corner_vertex at <7 0 30>
+			translated_3ds_corner_vertex at <40 0 15> 
+			translated_3ds_corner_vertex at <15 0 50>
+			translated_3ds_corner_vertex at <30 0 40>
+			translated_3ds_corner_vertex at <7 0 75>
+			translated_3ds_corner_vertex at <20 0 65>
+			translated_3ds_corner_vertex at <0 0 100>
+		]] 
+	with
+	    steps = round (8 * tessellation);
+	    
+		translated_3ds_lathe with
+			degrees = 240 + sin(time * 90) * 120;
+			segments = round (8 * tessellation);
+			gen_mapping_coords is true;
+			cap_start is true;
+			cap_end is true;
+		end;
+		
+		magnify by .5;
+	    material is hyper_material;
+	end;
+end;    // translated_3ds_lathed_line_scene
+	
+	
+anim translated_3ds_lathed_line_anim with
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+	end;    // environment	
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_lathed_line_scene
+		within new static_shape of environment
+	    titled "3DS Lathed Line"
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_lathed_line_anim

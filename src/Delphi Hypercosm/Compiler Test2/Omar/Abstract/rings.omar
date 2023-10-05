@@ -1,0 +1,92 @@
+{***************************************************************}
+{                          rings.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ring_anim;
+
+
+include "system/3d.ores";
+include "system/time.ores";
+
+
+shape rings with
+    scalar t = 0;
+is
+    scalar angle;
+
+    angle = t;
+    ring with
+        inner_radius = .9;
+        outer_radius = 1;
+        rotate by angle around <1 0 0>;
+        rotate by t around <0 0 1>;
+        move to <-2 0 -1>;
+    end;
+    ring with
+        inner_radius = .9;
+        outer_radius = 1;
+        rotate by -angle around <1 0 0>;
+        rotate by t around <0 0 1>;
+        move to <0 0 -1>;
+    end;
+    ring with
+        inner_radius = .9;
+        outer_radius = 1;
+        rotate by angle around <1 0 0>;
+        rotate by t around <0 0 1>;
+        move to <2 0 -1>;
+    end;
+    ring with
+        inner_radius = .9;
+        outer_radius = 1;
+        rotate by angle around <1 0 0>;
+        rotate by -t around <0 0 1>;
+        move to <-2 0 1>;
+    end;
+    ring with
+        inner_radius = .9;
+        outer_radius = 1;
+        rotate by -angle around <1 0 0>;
+        rotate by -t around <0 0 1>;
+        move to <0 0 1>;
+    end;
+    ring with
+        inner_radius = .9;
+        outer_radius = 1;
+        rotate by angle around <1 0 0>;
+        rotate by -t around <0 0 1>;
+        move to <2 0 1>;
+    end;
+end;    // rings
+
+
+picture ring_picture with
+    scalar time = 0;
+    facets = 11;
+    eye = <0 -8 0>;
+is
+    distant_light from <.3 -.5 1>;
+    rings with
+        t = time;
+    end;
+end;    // ring_picture
+
+
+anim ring_anim with
+    double_buffer is on;
+is
+    timer type timer with
+        ticks_per_second = 300;
+    end;
+
+    while true do
+        ring_picture with
+            time = timer position;
+        end;
+    end;
+end;    // ring_anim

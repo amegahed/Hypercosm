@@ -1,0 +1,125 @@
+do translated_3ds_objects_anim;
+
+include "system/3d.ores";
+include "system/3ds_translator.ores";
+include "system/anims.ores";
+
+shape objects1 with
+	scalar tessellation = 1;
+is
+	translated_3ds_sphere with
+    	radius = 25;
+    	segments = round (16 * tessellation);
+    	smooth is true;
+    	hemi = 0;
+    	squash is false;
+    	slice_on is true;
+    	slice_from = 0;
+    	slice_to = 90;
+    	gen_mapping_coords is true;
+    	move to <-60 30 25>;
+    	color = cyan;
+    end;
+	translated_3ds_tube with
+	    radius1 = 25;
+	    radius2 = 20;
+	    height = 25;
+	    height_segments = round (5 * tessellation);
+	    cap_segments = round (1 * tessellation);
+	    sides = round (18 * tessellation);
+	    smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <0 30 0>;
+	    color = evergreen;
+	end;
+	translated_3ds_torus with
+	    radius = 20;
+	    radius2 = 5;
+	    rotation = 0;
+	    twist = 0;
+	    segments = round (24 * tessellation);
+	    sides = round (12 * tessellation);
+	    smoothing is all;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <60 30 10>;
+	    color = dark green;
+	end;
+end;	// objects1
+
+shape objects2 with
+	scalar tessellation = 1;
+is
+	translated_3ds_cone with
+	    radius1 = 25;
+	    radius2 = 0;
+	    height = 25;
+	    height_segments = round (5 * tessellation);
+	    sides = round (24 * tessellation);
+	    smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <-60 -30 0>;
+	    color = light green;
+    end;
+	translated_3ds_cylinder with
+	    radius = 25;
+	    height = 25;
+	    height_segments = round (5 * tessellation);
+	    cap_segments = round (1 * tessellation);
+	    sides = round (18 * tessellation);
+	    smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <0 -30 0>;
+	    color = hypercosm_green;
+	end;
+	translated_3ds_chamfer_cyl with
+	    radius = 25;
+	    height = 25;
+	    fillet = 5;
+		height_segments = round (1 * tessellation);
+		fillet_segments = round (3 * tessellation);
+		sides = round (12 * tessellation);
+		cap_segments = round (1 * tessellation);
+		smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    capping is true;
+	    move to <60 -30 0>;
+	    color = light blue;
+	end;
+end;	// objects2
+
+shape objects with
+    scalar tessellation = 1;
+is
+	objects1 with
+		tessellation = static tessellation;
+	end;
+	objects2 with
+		tessellation = static tessellation;
+	end;
+end;    // shapes
+
+anim translated_3ds_objects_anim 
+    args type args;
+with
+    lookat = <0 0 -2>;
+    args check;
+is
+	mouse_controlled_tessellated_shape objects titled "3DS Objects" with
+		auto_zoom is on;
+	end;
+end;	// translated_3ds_objects_anim

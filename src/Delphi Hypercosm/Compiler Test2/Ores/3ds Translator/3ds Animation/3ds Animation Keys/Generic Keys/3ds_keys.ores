@@ -1,0 +1,221 @@
+{***************************************************************}
+{                         3ds_keys.ores             			}
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   	Contains key definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_key.ores";
+include "system/3ds_interval.ores";
+
+
+subject translated_3ds_keys
+extends
+	translated_3ds_key type[]
+does
+	// methods for sorting keys in ascending order
+	//
+	verb sort;
+	
+	// methods for finding keys
+	//
+	translated_3ds_key type question get_first;
+	translated_3ds_key type question get_last;
+		
+	// methods for finding interpolation keys
+	//
+	translated_3ds_key type question get_prev
+		at translated_3ds_time type time;
+	end;
+	translated_3ds_key type question get_next
+		at translated_3ds_time type time;
+	end;
+	verb set_interval
+		translated_3ds_interval type interval;		
+		at translated_3ds_time type time;
+	end;
+	translated_3ds_interval type question get_interval
+		at translated_3ds_time type time;
+	end;
+	
+	// printable methods
+	//
+	verb print;
+is
+	//
+	// methods for sorting keys in ascending order
+	//
+	
+	
+	verb sort is
+		sort_objects translated_3ds_keys;
+	end;	// sort
+	
+
+	//
+	// methods for finding keys
+	//
+	
+		
+	translated_3ds_key type question get_first is
+		answer translated_3ds_keys[min translated_3ds_keys];
+	end;	// get_first	
+	
+
+	translated_3ds_key type question get_last is
+		answer translated_3ds_keys[max translated_3ds_keys];
+	end;	// get_last	
+	
+
+	//	
+	// methods for finding interpolation keys
+	//
+	
+
+	boolean question is_before
+		translated_3ds_time type time;
+	is
+		answer time < translated_3ds_keys[min translated_3ds_keys]'s time;
+	end;	// is_before
+	
+
+	boolean question is_after
+		translated_3ds_time type time;
+	is
+		answer time > translated_3ds_keys[max translated_3ds_keys]'s time;
+	end;	// is_after
+	
+				
+	translated_3ds_key type question get_prev
+		at translated_3ds_time type time;
+	is
+		if is_before time then
+			answer none;
+		elseif is_after time then
+			answer get_last;
+		else
+			integer counter = min translated_3ds_keys;
+			boolean found is false, done is false;
+			
+			while not found and not done do
+				if translated_3ds_keys[counter + 1]'s time > time then
+					found is true;
+				else
+					if counter = max translated_3ds_keys - 1 then
+						done is true;
+					else
+						counter = itself + 1;
+					end;
+				end;
+			end;
+			
+			answer translated_3ds_keys[counter];
+		end;
+	end;	// get_prev
+	
+	
+	translated_3ds_key type question get_next
+		at translated_3ds_time type time;
+	is
+		if is_before time then
+			answer get_first;
+		elseif is_after time then
+			answer none;
+		else
+			integer counter = min translated_3ds_keys;
+			boolean found is false, done is false;
+			
+			while not found and not done do
+				if translated_3ds_keys[counter]'s time > time then
+					found is true;
+				else
+					if counter = max translated_3ds_keys then
+						done is true;
+					else
+						counter = itself + 1;
+					end;
+				end;
+			end;
+			
+			answer translated_3ds_keys[counter];
+		end;
+	end;	// get_next
+	
+	
+	verb set_interval
+		translated_3ds_interval type interval;		
+		at translated_3ds_time type time;
+	is
+		translated_3ds_key type prev is none;
+		translated_3ds_key type next is none;
+		integer counter;
+		
+		// get prev
+		//
+		if is_before time then
+			prev is none;
+		elseif is_after time then
+			prev is get_last;
+		else
+			boolean found is false, done is false;
+			counter = min translated_3ds_keys;
+						
+			while not found and not done do
+				if translated_3ds_keys[counter + 1]'s time > time then
+					found is true;
+				else
+					if counter = max translated_3ds_keys - 1 then
+						done is true;
+					else
+						counter = itself + 1;
+					end;
+				end;
+			end;
+			
+			prev is translated_3ds_keys[counter];
+		end;
+						
+		// get next
+		//
+		if is_before time then
+			next is get_first;
+		elseif is_after time then
+			next is none;
+		else
+			next is translated_3ds_keys[counter + 1];
+		end;
+		
+		interval set from prev to next;
+	end;	// set_interval
+	
+	
+	translated_3ds_interval type question get_interval
+		at translated_3ds_time type time;
+	is
+		translated_3ds_interval type interval;
+		set_interval interval at time;
+		answer interval;
+	end;	// get_interval
+	
+	
+	//	
+	// printable methods
+	//
+	
+	
+	verb print is
+		for integer counter = min translated_3ds_keys .. max translated_3ds_keys do
+			translated_3ds_keys[counter] print;
+		end;
+	end;	// print
+end;	// translated_3ds_keys
+
+
+
+

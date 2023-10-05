@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            substrings.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       string handling utilities.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/string_utils.ores";
+
+string type string is "blah;;blah;here is some more stuff";
+
+verb example is
+	strings type substrings is string split by ";";
+	
+	for integer counter = min substrings .. max substrings do
+		write "substring[", counter, "] = ";
+		if some substrings[counter] then
+			write substrings[counter];
+		end;
+		write;
+	end;
+end;    // example

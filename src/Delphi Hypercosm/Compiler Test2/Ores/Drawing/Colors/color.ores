@@ -1,0 +1,53 @@
+{***************************************************************}
+{                            color.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a standard color triplet definition.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+type color is vector;
+
+
+const color type uncolored = <-1 -1 -1>;
+
+
+boolean question is_colored
+    color type color;
+is
+    answer color = uncolored;
+end;    // is_colored 
+
+
+color type question dark
+    color type color;
+is
+    answer color / 2;
+end;    // dark
+
+
+color type question light
+    color type color;
+is
+    answer (color + <1 1 1>) / 2;
+end;    // light
+
+
+color type question blend
+    color type color1;
+    to color type color2;
+    by scalar factor = .5;
+is
+    answer ((color1 * (1 - factor)) + (color2 * factor));
+end;    // blend
+
+
+color type question complement
+    of color type color;
+is
+    answer (<1 1 1> - color);
+end;    // complement

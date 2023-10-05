@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          case_else_stmt.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a case (when)    }
+{       statement with an "else" clause in the OMAR language.   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do case_else_stmt_example;
+
+enum situation is fire, flood, tornado, locusts;
+	
+verb case_else_stmt_example is
+	situation type situation is locusts;
+	write "In this case, ";
+		
+	// case-else statement
+	//
+	when situation is
+		fire:
+			write "drop!", ;
+		end;
+		flood:
+			write "swim!", ;
+		end;
+		tornado:
+			write "run!", ;
+		end;
+	else
+		write "pray!", ;
+	end;    // case
+end;    // case_else_stmt_example

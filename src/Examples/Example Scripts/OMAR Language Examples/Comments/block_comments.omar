@@ -1,0 +1,30 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          block_comments.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of block           }
+{       comments using the OMAR language.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do block_comment_example;
+
+{ This is a block comment. }
+
+{
+This is a block comment
+that spans multiple lines.
+}
+
+{
+This shows how block comments can enclose other {block comments}
+and also // line comments
+}
+
+verb block_comment_example
+is
+	write "ok!", ;
+end;    // block_comment_example

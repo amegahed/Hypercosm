@@ -1,0 +1,198 @@
+{***************************************************************}
+{                          click_clack.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do click_clack_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+
+
+subject click_clack
+extends
+    step_actor
+does
+    objective shape form with
+        scalar t = 0;
+        scalar string_radius = 0;
+    end;    // form
+
+    shape instance;
+is
+    objective shape ball with
+        scalar string_radius = 0;
+    is
+        // strings
+        //
+        if string_radius = 0 then
+            line [<0 -3 0> <0 0 -3> <0 3 0>];
+        else
+            cylinder with
+                material is chalk colored white;
+                end1 = <0 -3 0>;
+                end2 = <0 0 -3>;
+                radius = .05;
+            end;
+            cylinder with
+                material is chalk colored white;
+                end1 = <0 3 0>;
+                end2 = <0 0 -3>;
+                radius = .05;
+            end;
+        end;
+
+        sphere with
+            material is silver;
+            center = <0 0 -3>;
+            radius = 1;
+        end;
+    end;    // ball
+
+
+    objective shape click_clack_stand is
+
+        // top
+        cylinder with
+            end1 = <-4 -3 5>;
+            end2 = <4 -3 5>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 3 5>;
+            end2 = <4 3 5>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 3 5>;
+            end2 = <-4 -3 5>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 3 5>;
+            end2 = <4 -3 5>;
+            radius = .2;
+        end;
+
+        // legs
+        cylinder with
+            end1 = <-4 3 5>;
+            end2 = <-5 4 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 3 5>;
+            end2 = <5 4 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 -3 5>;
+            end2 = <5 -4 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 -3 5>;
+            end2 = <-5 -4 0>;
+            radius = .2;
+        end;
+    end;    // click_clack_stand
+
+
+    objective shape stationary_balls with
+        scalar string_radius = 0;
+    is
+        ball with
+            string_radius = static string_radius;
+            move to <-2 0 5>;
+        end;
+        ball with
+            string_radius = static string_radius;
+            move to <0 0 5>;
+        end;
+        ball with
+            string_radius = static string_radius;
+            move to <2 0 5>;
+        end;
+    end;    // stationary_balls
+
+
+    objective shape moving_balls with
+        scalar time = 0;
+        scalar string_radius = 0;
+    is
+        scalar angle;
+
+        angle = sin (time * 360) * 60;
+        if (angle < 0) then
+            ball with
+                string_radius = static string_radius;
+                rotate by angle around <0 -1 0>;
+                move to <-4 0 5>;
+            end;
+            ball with
+                string_radius = static string_radius;
+                move to <4 0 5>;
+            end;
+        else
+            ball with
+                string_radius = static string_radius;
+                move to <-4 0 5>;
+            end;
+            ball with
+                string_radius = static string_radius;
+                rotate by angle around <0 -1 0>;
+                move to <4 0 5>;
+            end;
+        end;
+    end;    // moving_balls
+
+
+    objective shape form with
+        scalar t = 0;
+        scalar string_radius = 0;
+    is
+        stationary_balls with
+            string_radius = static string_radius;
+        end;
+        moving_balls with
+            string_radius = static string_radius;
+            time = t;
+        end;
+        click_clack_stand with material is chalk colored brown; end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            t = steps / 20;
+        end;
+    end;    // instance
+end;    // click_clack
+
+
+anim click_clack_anim
+    args type args;
+with
+    double_buffer is on;
+    lookat = <0 0 1>;
+    eye = <8 -15 10>;
+    facets = 6;
+    args check;
+is
+    click_clack type click_clack;
+
+    shape scene is
+        plane with
+            magnify by 8;
+            render_mode is wireframe;
+        end;
+    end;    // scene
+
+    mouse_controlled_actor click_clack in scene;
+end;    // click_clack_anim

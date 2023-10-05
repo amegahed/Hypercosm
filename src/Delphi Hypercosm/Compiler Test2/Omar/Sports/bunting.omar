@@ -1,0 +1,431 @@
+{***************************************************************}
+{                          bunting.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bunting;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/native_sounds.ores";
+include "system/random.ores";
+include "system/bat.omar";
+include "system/baseball.omar";
+include "system/bleachers.omar";
+
+picture bunting_range with
+    scalar bat_height = 7;
+    scalar bat_angle = 0;
+    vector ball_loc = <0 0 6.8>;
+    vector ball_axis = <1 0 0>;
+is
+    vector point, normal;
+    scalar ball_x = ball_loc dot <1 0 0>,
+        ball_y = ball_loc dot <0 1 0>,
+        ball_z = ball_loc dot <0 0 1>;
+
+    distant_light from <0 -15 15>;
+
+    // bat
+    bat with
+        facets = 6;
+        magnify by .9;
+        move to <-6.1 0 bat_height>;
+        rotate by bat_angle around <0 0 1> about <0 0 bat_height>;
+    end;
+
+    // baseball
+    baseball with
+        facets = 6;
+        //rotate by (-(ball_loc dot <0 1 0>)*10) around <1 0 0>;
+        rotate by (12 * vlength of ball_axis) around ball_axis;
+        move to ball_loc;
+    end;
+
+    // ball shadow:
+    disk with
+        facets = 6;
+        color = <.2 .3 .2>;
+        radius = .5;
+        move to <ball_x ball_y .3>;
+    end;
+
+    // infield grass
+    parallelogram with
+        vertex = <0 4 0>;
+        side1 = <80 80 0>;
+        side2 = <-80 80 0>;
+        color = dark green;
+    end;
+    parallelogram with
+        vertex = <40 -45 0>;
+        side1 = <-180 180 0>;
+        side2 = <-50 -50 0>;
+        color = dark green;
+    end;
+    parallelogram with
+        vertex = <-40 -45 0>;
+        side1 = <180 180 0>;
+        side2 = <50 -50 0>;
+        color = dark green;
+    end;
+    // infield dirt
+    disk with
+        center = <0 90 -.12>;
+        radius = 140;
+        color = dark brown;
+    end;
+    // outfield grass
+    disk with
+        center = <0 -150 -.24>;
+        radius = 750;
+        umax = 180;
+        color = dark green;
+    end;
+
+    // wall
+    cylinder with
+        end1 = <0 -40 -3>;
+        end2 = <0 -40 15>;
+        radius = 450;
+        umin = 45;
+        umax = 135;
+        material is plastic colored dark dark blue;
+    end;
+    block with
+        vertex = <0 -70 0>;
+        side1 = <1 0 0>;
+        side2 = <0 480 0>;
+        side3 = <0 0 10>;
+        rotate by -42 around <0 0 1> about <0 -70 0>;
+        material is plastic colored dark white;
+    end;
+    block with
+        vertex = <0 -70 0>;
+        side1 = <1 0 0>;
+        side2 = <0 480 0>;
+        side3 = <0 0 10>;
+        rotate by 42 around <0 0 1> about <0 -70 0>;
+        material is plastic colored dark white;
+    end;
+
+    // stands:
+    // right side
+    bleachers with
+        length = 180;
+        height = 9;
+        depth = 30;
+        num_seats = 7;
+        move to <1 -30 8>;
+        rotate by -42 around <0 0 1> about <0 -70 0>;
+        //color = grey;
+        material is chalk colored light grey;
+    end;
+    // left side
+    bleachers with
+        length = 180;
+        height = 9;
+        depth = 30;
+        num_seats = 7;
+        rotate by 180 around <0 0 1>;
+        move to <-1 150 8>;
+        rotate by 42 around <0 0 1> about <0 -70 0>;
+        //color = grey;
+        material is chalk colored light grey;
+    end;
+
+    // foul line (1st base)
+    polygon [<6 6 .1> <7 5 .1> <300 300 .1> <301 299 .1>]
+    with
+        color = white;
+    end;
+    // foul line (3rd base)
+    polygon [<-6 6 .1> <-7 5 .1> <-300 300 .1> <-301 299 .1>]
+    with
+        color = white;
+    end;
+
+    // bases:
+    // 1st
+    block with
+        vertex = <90 88 0>;
+        side1 = <3 3 0>;
+        side2 = <-3 3 0>;
+        side3 = <0 0 .75>;
+        material is plastic colored white;
+    end;
+    // 2nd
+    block with
+        vertex = <0 180 0>;
+        side1 = <3 3 0>;
+        side2 = <-3 3 0>;
+        side3 = <0 0 .75>;
+        material is plastic colored white;
+    end;
+    // 3rd
+    block with
+        vertex = <-90 88 0>;
+        side1 = <3 3 0>;
+        side2 = <-3 3 0>;
+        side3 = <0 0 .75>;
+        material is plastic colored white;
+    end;
+
+    // pitcher's mound
+    sphere with
+        center = <0 82 -20>;
+        facets = 24;
+        radius = 21;
+        vmin = 70;
+        color = dark brown;
+    end;
+
+    // pitching machine:
+    block with
+        vertex = <-2 80 0>;
+        side1 = <4 0 0>;
+        side2 = <0 4 0>;
+        side3 = <0 0 8.5>;
+        material is metal colored light grey;
+    end;
+    cylinder with
+        facets = 4;
+        end1 = <0 75 7>;
+        end2 = <0 80 7>;
+        radius = .6;
+        umin = 180;
+        material is plastic colored dark red;
+    end;
+    disk with
+        facets = 4;
+        center = <0 79.9 7>;
+        normal = <0 1 0>;
+        radius = .6;
+        material is blackness;
+    end;
+
+    // batter's box:
+    parallelogram with
+        vertex = <-12 -5 .08>;
+        side1 = <24 0 0>;
+        side2 = <0 16 0>;
+        color = white;
+    end;
+    parallelogram with
+        vertex = <-11 -4 .14>;
+        side1 = <22 0 0>;
+        side2 = <0 14 0>;
+        color = dark brown;
+    end;
+    parallelogram with
+        vertex = <-6 -5.3 .16>;
+        side1 = <12 0 0>;
+        side2 = <0 16.3 0>;
+        color = dark brown;
+    end;
+
+    // home plate:
+    block with
+        vertex = <-1.75 1.75 0>;
+        side1 = <3.5 0 0>;
+        side2 = <0 3.5 0>;
+        side3 = <0 0 .2>;
+        material is plastic colored white;
+    end;
+    block with
+        vertex = <-1.75 1.75 0>;
+        side1 = <1.75 -1.75 0>;
+        side2 = <1.75 1.75 0>;
+        side3 = <0 0 .2>;
+        material is plastic colored white;
+    end;
+
+end;
+
+
+
+anim bunting with
+    eye = <-6 -36 12>;
+    //eye = <0 -100 25>;
+    //lookat = <-3 20 -7>;
+    field_of_view = 75;
+    double_buffer is on;
+    //background = <.45 .5 .9>; //dusk
+    background = <.5 .6 1>; //sky blue
+    //background = <.8 .8 .9>; //fog
+    //fog_factor = 400;
+    width = 600;
+    height = 360;
+is
+    scalar bat_radius = .4, ball_radius = .5;
+    scalar gravity = .12;
+    scalar g = gravity;
+
+    // sounds
+    sound type pitchSound named "thudhit.wav";
+    sound type hitSound named "sharp0.wav";
+    sound type bounceSound named "bounce.wav";
+
+    vector mouse_loc;
+    scalar mouse_x, mouse_y;
+    scalar bat_height = 7;
+    scalar bat_angle = 0;
+
+    scalar pitch_speed = 80/15;    //** (80/pitch_speed) should be an integer **
+    scalar ball_speed = pitch_speed;
+    scalar delta_x = 0, delta_y = 0, delta_z = 0, ball_speed_xy;
+    scalar ball_x = 0, ball_y = -40, ball_z = 7;
+    scalar look_x = 0, look_y = -40;
+    scalar ball_angle;
+    vector ball_loc;
+
+    scalar hit_z = bat_radius + ball_radius;
+    scalar hit_y, hit_lat, hit_long;
+    boolean ball_hit is false;
+    boolean ball_ready is true;
+
+    scalar seconds;
+    scalar ready_time = 0;
+    scalar pitch_delay = 1;
+
+    set_cursor to autotrack;
+
+    seed = trunc get_seconds_since_midnight;
+    //write seed," ",;
+
+    while true do
+        mouse_loc = get_mouse;
+        mouse_x = (mouse_loc dot <1 0 0>);
+        mouse_y = (mouse_loc dot <0 1 0>);
+        if Abs mouse_x < .5 then
+            bat_angle = mouse_x * 100;
+        else
+            bat_angle = 50 * (Abs mouse_x) / mouse_x;
+        end;
+        if Abs mouse_y < .5 then
+            bat_height = (mouse_y*4)+7.7;
+        else
+            bat_height = ((Abs mouse_y)/mouse_y)*2 + 7.7;
+        end;
+
+        seconds = get_seconds;
+
+        // pitch the ball
+        if seconds - ready_time >= pitch_delay then
+            pitchSound play;
+            ready_time = seconds;
+            ball_speed = pitch_speed;
+            delta_x = 0;
+            delta_y = 0;
+            delta_z = (random 2.6 to 5.2) * ball_speed / 80;
+            g = gravity/4;
+            ball_x = 0;
+            ball_y = 80;
+            ball_z = 7;
+            ball_ready is false;
+            look_x = 0;
+            look_y = 80;
+        // prepare to pitch
+        elseif ball_ready or ball_y < -33 or ball_speed < .4 then
+            ball_x = 0;
+            ball_y = 80;
+            ball_z = 7;
+            ball_ready is true;
+            ball_hit is false;
+            look_x = .8*look_x;
+            look_y = .8*(look_y - 80) + 80;
+        // ball is in motion
+        else
+            ball_z = itself + delta_z;
+
+            if ball_hit then
+                ball_x = itself + delta_x;
+                ball_y = itself + delta_y;
+                delta_z = itself - g;
+
+                // If ball is on ground
+                if ball_z = ball_radius and delta_z = 0 then
+                    ball_speed = .97 * ball_speed;
+                    delta_x = .98 * delta_x;
+                    delta_y = .98 * delta_y;
+
+                // If ball is still bouncing
+                elseif ball_z < ball_radius then
+                    bounceSound play;
+                    ball_speed = .8 * ball_speed;
+                    delta_x = .9 * delta_x;
+                    delta_y = .9 * delta_y;
+                    delta_z = (random .15 to .2) *
+                          -delta_z * ball_speed;
+                    ball_z = (2*ball_radius) - ball_z;
+
+                    if delta_z < .2 then
+                        delta_z = 0;
+                        ball_z = ball_radius;
+                        g = 0;
+                    end;
+                end;
+            else
+                ball_y = itself - ball_speed;
+                delta_z = itself - g;
+            end;
+
+            // follow ball unless it's a strike ball going past
+            //   the viewer
+            if ball_x <> 0 or ball_y > -20 then
+                look_x = ball_x;
+                look_y = ball_y;
+            end;
+            ready_time = seconds;
+        end;
+
+        // handle ball-bat collision
+        if Abs(ball_y) < 1 then
+            hit_y = ball_z - bat_height;
+            if (Abs hit_y) < hit_z then
+                hitSound play;
+                ball_hit is true;
+                g = gravity;
+
+                if delta_z = 0 then
+                    ball_angle = 90;
+                else ball_angle = Atan (ball_speed/-delta_z);
+                end;
+                if ball_angle < 0 then
+                    ball_angle = itself + 180;
+                end;
+
+                hit_lat = Acos (hit_y/hit_z);
+
+                ball_y = hit_z * Sin (hit_lat);
+
+                hit_lat = 2*hit_lat - ball_angle;
+                hit_long = 90 + bat_angle;
+
+                ball_speed = .5 * ball_speed;
+                delta_z = Cos (hit_lat) * ball_speed;
+                ball_speed_xy = Sin (hit_lat) * ball_speed;
+                delta_x = Cos (hit_long) * ball_speed_xy;
+                delta_y = Sin (hit_long) * ball_speed_xy;
+            end;
+        end;
+
+        ball_loc = <ball_x ball_y ball_z>;
+        lookat = <look_x look_y 7>;
+
+        //Draw:
+        bunting_range with
+            bat_height = static bat_height;
+            bat_angle = static bat_angle;
+            ball_loc = static ball_loc;
+            ball_axis = <-ball_y ball_x 0>;
+        end;
+
+        check_keys;
+    end;
+//  mouse_controlled_picture bunting_range;
+end;

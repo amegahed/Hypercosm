@@ -1,0 +1,46 @@
+{***************************************************************}
+{                          string_test.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "strings.ores";
+
+
+verb test is
+    string type string1 = "hello";
+    string type string2 = "hello world";
+
+    write "string1 = ", string1, ;
+    write "string2 = ", string2, ;
+
+    write "testing...", ;
+    if string1 matches string2 then
+        write "string1 = string2", ;
+    else
+        write "string1 <> string2", ;
+    end;
+    if string2 matches string1 then
+        write "string2 = string1", ;
+    else
+        write "string2 <> string1", ;
+    end;
+    if string1 matches "hello" then
+        write "string1 = 'hello'", ;
+    else
+        write "string1 <> 'hello'", ;
+    end;
+
+    write "testing string concatinating function:", ;
+    write "result = ", string1 plus string2, ;
+
+    write "testing string concatinating procedure:", ;
+    string1 add string2;
+    write "result = ", string1, ;
+end;    // test

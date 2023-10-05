@@ -1,0 +1,133 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		      pipes.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains various forms of shape definitions	for			}
+{		modelling pipe shapes.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/grouping_shapes.ores";
+
+
+shape pipe
+    through vector vertices[];
+with
+    scalar radius = 1;
+    boolean joint_spheres is true;
+is
+    for integer counter = min vertices .. max vertices - 1 do
+        vector start = vertices[counter];
+        vector finish = vertices[counter + 1];
+
+        cylinder with
+            end1 = start;
+            end2 = finish;
+            radius = static radius;
+        end;
+
+        if joint_spheres and (counter <> max vertices - 1) then
+            sphere with
+                center = finish;
+                radius = static radius;
+            end;
+        end;
+    end;
+end;    // pipe
+
+
+shape pipeline
+    through vector vertices[];
+with
+    scalar radius = 1;
+    scalar offset = 0;
+    scalar spacing = 1;
+    scalar globule_radius = .5;
+is
+    shape globule is
+        sphere with
+            radius = globule_radius;
+        end;
+    end;    // globule
+
+
+    pipe through vertices with
+        radius = static radius;
+        edges is silhouette;
+        render_mode is wireframe;
+    end;    //
+
+    for integer counter = min vertices .. max vertices - 1 do
+        vector start = vertices[counter];
+        vector finish = vertices[counter + 1];
+
+        linear_row from start to finish of globule with
+            offset = static offset;
+            spacing = static spacing;
+            edges is silhouette;
+        end;
+    end;
+end;    // pipeline
+
+
+shape s_pipe
+    from vector start = <-3 0 1>;
+    to vector finish = <2 0 3>;
+with
+    scalar radius = .1;
+    scalar vertical_offset = .5;
+    scalar factor = .5;
+is
+    vector middle = start * (1 - factor) + finish * factor;
+    vector points[1..6];
+
+    points[1] = start;
+    points[2] = start - <0 0 vertical_offset>;
+    points[3] = <(middle dot <1 0 0>) (middle dot <0 1 0>)
+        (start dot <0 0 1> - vertical_offset)>;
+    points[4] = <(middle dot <1 0 0>) (middle dot <0 1 0>)
+        (finish dot <0 0 1> + vertical_offset)>;
+    points[5] = finish + <0 0 vertical_offset>;
+    points[6] = finish;
+
+    pipe through points with
+        radius = static radius;
+    end;
+end;    // s_pipe
+
+
+shape s_pipeline
+    from vector start = <-3 0 1>;
+    to vector finish = <2 0 3>;
+with
+    scalar radius = .1;
+    scalar vertical_offset = .5;
+    scalar globule_radius = .075;
+    scalar spacing = 1;
+    scalar factor = .5;
+    scalar offset = 0;
+is
+    vector middle = start * (1 - factor) + finish * factor;
+    vector points[1..6];
+
+    points[1] = start;
+    points[2] = start - <0 0 vertical_offset>;
+    points[3] = <(middle dot <1 0 0>) (middle dot <0 1 0>)
+        (start dot <0 0 1> - vertical_offset)>;
+    points[4] = <(middle dot <1 0 0>) (middle dot <0 1 0>)
+        (finish dot <0 0 1> + vertical_offset)>;
+    points[5] = finish + <0 0 vertical_offset>;
+    points[6] = finish;
+
+    pipeline through points with
+        radius = static radius;
+        globule_radius = static globule_radius;
+        spacing = static spacing;
+        offset = static offset;
+    end;
+end;    // s_pipeline

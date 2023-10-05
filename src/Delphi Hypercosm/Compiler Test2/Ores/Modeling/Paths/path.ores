@@ -1,0 +1,110 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     path.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard subjects for creating paths or        }
+{       trails behind moving points.                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+include "system/rendering.ores";
+
+
+subject path
+extends
+	renderable object
+does
+	// constructor
+	//
+    verb new
+        at vector location = <0 0 0>;
+    with
+        integer steps = 10;
+    end;    // new
+
+	// animation method
+	//
+    verb step
+        enum mode is absolute, relative;
+        to vector location;
+        in mode type mode is absolute;
+    end;    // step
+
+	// renderable method
+	//
+    shape instance;
+has
+	// attributes
+	//
+    vector path_points[];
+    integer steps;
+is
+	//
+	// constructor
+	//
+	
+	
+    verb new
+        at vector location = <0 0 0>;
+    with
+        integer steps = 10;
+    is
+        // allocate path
+        //
+        dim path_points[0..steps];
+        with path do
+            its steps = steps;
+        end;
+
+        // initialize path
+        //
+        for integer counter = 0..steps do
+            path_points[counter] = location;
+        end;
+    end;    // new
+
+
+	//
+	// animation method
+	//
+	
+	
+    verb step
+        enum mode is absolute, relative;
+        to vector location;
+        in mode type mode is absolute;
+    is
+        // advance path
+        //
+        when mode is
+            absolute:
+                for integer counter = 1..steps do
+                    path_points[counter - 1] = path_points[counter];
+                end;
+                path_points[steps] = location;
+            end;
+            relative:
+                for integer counter = 1..steps do
+                    path_points[counter - 1] = path_points[counter] - location;
+                end;
+                path_points[steps] = <0 0 0>;
+            end;
+        end;
+    end;    // step
+
+
+	//
+	// renderable method
+	//
+	
+	
+    shape instance is
+        line path_points;
+    end;    // instance
+end;    // path

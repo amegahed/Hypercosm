@@ -1,0 +1,57 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     multidim_array_operators.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of the         }
+{       "min", "max", and "num" array operators on              }
+{       multi-dimensional arrays and arrays of arrays           }
+{       in the OMAR language.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do multidim_array_operators_example;
+
+// Single dimensional array
+//
+integer a[1..10];
+
+// Arrays of arrays
+//
+integer b[1..10][1..20];
+integer c[1..10][1..20][1..30];
+
+// Multi-dimensional arrays
+//
+integer d[1..10, 1..20];
+integer e[1..10, 1..20, 1..30];
+
+verb multidim_array_operators_example
+is
+	// Find min, max of a single dimensional array
+	//
+	write "single dimensional array:", ;
+	write "min, max a = ", min a, " .. ", max a, ;
+	write;
+	
+	// Find min, max of arrays of arrays
+	//
+	write "arrays of arrays:", ;
+	write "min, max b = ", min b, " .. ", max b, ;
+	write "min, max b[1] = ", min b[1], " .. ", max b[1], ;
+	write "min, max c = ", min c, " .. ", max c, ;
+	write "min, max c[1] = ", min c[1], " .. ", max c[1], ;
+	write "min, max c[1][1] = ", min c[1][1], " .. ", max c[1][1], ;
+	write;
+	
+	// Find min, max of multidimensional arrays
+	//
+	write "multidimensional arrays:", ;
+	write "min, max d = ", min d, " .. ", max d, ;
+	write "min, max d[] = ", min d[], " .. ", max d[], ;
+	write "min, max e = ", min e, " .. ", max e, ;
+	write "min, max e[] = ", min e[], " .. ", max e[], ;
+	write "min, max e[,] = ", min e[,], " .. ", max e[,], ;
+end;    // multidim_array_operators_example

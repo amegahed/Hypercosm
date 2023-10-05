@@ -1,0 +1,21 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         grouping_shapes.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard shapes for grouping other shapes      }
+{       together in useful formations.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/arrangement.ores";
+include "system/array.ores";
+include "system/circle_row.ores";
+include "system/circular_row.ores";
+include "system/helical_row.ores";
+include "system/linear_row.ores";
+include "system/loop_row.ores";
+include "system/row.ores";

@@ -1,0 +1,119 @@
+do slices_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_translator.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+shape shapes1 is
+	translated_3ds_sphere with
+    	radius = 25;
+    	segments = 16;
+    	smooth is true;
+    	hemi = 0;
+    	squash is false;
+    	slice_on is true;
+    	slice_from = 0;
+    	slice_to = 90;
+    	gen_mapping_coords is true;
+    	move to <-60 30 25>;
+    	color = cyan;
+    end;
+	translated_3ds_tube with
+	    radius1 = 25;
+	    radius2 = 20;
+	    height = 25;
+	    height_segments = 5;
+	    cap_segments = 1;
+	    sides = 18;
+	    smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <0 30 0>;
+	    color = evergreen;
+	end;
+	translated_3ds_torus with
+	    radius = 20;
+	    radius2 = 5;
+	    rotation = 0;
+	    twist = 0;
+	    segments = 24;
+	    sides = 12;
+	    smoothing is all;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <60 30 10>;
+	    color = dark green;
+	end;
+end;
+
+
+shape shapes2 is
+	translated_3ds_cone with
+	    radius1 = 25;
+	    radius2 = 0;
+	    height = 25;
+	    height_segments = 5;
+	    sides = 24;
+	    smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <-60 -30 0>;
+	    color = light green;
+    end;
+	translated_3ds_cylinder with
+	    radius = 25;
+	    height = 25;
+	    height_segments = 5;
+	    cap_segments = 1;
+	    sides = 18;
+	    smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    move to <0 -30 0>;
+	    color = hypercosm;
+	end;
+	translated_3ds_chamfer_cyl with
+	    radius = 25;
+	    height = 25;
+	    fillet = 5;
+		height_segments = 1;
+		fillet_segments = 3;
+		sides = 12;
+		cap_segments = 1;
+		smooth is true;
+	    slice_on is true;
+	    slice_from = 0;
+	    slice_to = 90;
+	    gen_mapping_coords is true;
+	    capping is true;
+	    move to <60 -30 0>;
+	    color = light blue;
+	end;
+end;	// sliced_shapes
+
+
+anim slices_anim with
+	mipmapping is on;
+	interpolation is on;
+is
+	shape scene is
+		material is plastic poster "hyper.jpg";
+		shapes1;
+		shapes2;
+	end;
+	
+	mouse_controlled_shape scene titled "3DS Slices" with
+		auto_camera is on;
+	end;
+end;	// slices_anim

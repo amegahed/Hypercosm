@@ -1,0 +1,17 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         native_devices.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains includes for the common peripheral devices.    }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_keyboard.ores";
+include "native_mouse.ores";

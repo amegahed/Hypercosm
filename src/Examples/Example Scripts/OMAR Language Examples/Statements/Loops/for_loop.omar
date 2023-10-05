@@ -1,0 +1,26 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             for_loop.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a for loop       }
+{       in the OMAR language.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do for_loop_example;
+
+verb for_loop_example is
+	long product = 1;
+	integer multiplies = 5;
+	
+	write "using a for loop to compute a the factorial of 5:", ;
+	
+	for integer counter = 1 .. multiplies do
+		product = itself * counter;
+	end;
+	
+	write multiplies, " factorial = ", product, ;
+end;    // for_loop_example

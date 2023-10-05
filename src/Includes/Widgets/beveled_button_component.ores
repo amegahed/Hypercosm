@@ -1,0 +1,285 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     beveled_button_component.ores      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains a subject definition for a 3D button widget.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 1999 Hypercosm, Inc.             }
+{***************************************************************}
+
+// The button sets its value to true whenever it is selected.  The code
+// that uses that value is responsible for setting it back to false.
+//
+// See OMAR/Widgets/widget_panel.omar for an example of its use.
+//
+
+include "widget_panel.ores";
+include "bevels.ores";
+
+// widget_panel_components are special interface elements that behave like
+// flat 2D elements, even though they can be drawn as arbitrary 3D shapes.
+// All of the mouse click locations are in the range <-1 -1 0> to <1 1 0>.
+//
+subject beveled_button_component
+extends
+	widget_panel_component object
+does
+	// constructor
+	//
+	verb new
+		controls boolean reference value refers to none;
+	with
+		scalar knob_radius = 0.7;
+		scalar bevel_width = 0.15;
+		material type ring_material is plastic colored blue;
+		material type knob_material is plastic colored red;
+		material type lit_knob_material is plastic colored yellow;
+		material type disabled_ring_material is plastic colored dark blue;
+		material type disabled_knob_material is plastic colored dark red;
+	end;
+	
+	verb enable;
+	verb disable;
+	boolean question is_enabled;
+	
+	// widget_panel_component interface methods:
+	//
+	
+	// in_region should answer true if a click at the given location
+	// should be handled by this component.  For most components,
+	// in_region can simply compare the location against the bounds of
+	// the component's "hotspot" region.
+	//
+	boolean question in_region
+		at vector location;
+	end;
+	
+	// write_id is used for debugging purposes only, and should write out
+	// some kind of indentifying name for the component.
+	//
+	verb write_id;
+	
+	// instance should draw the component.
+	//
+	shape instance
+		component_highlight_style type highlight;
+	end;
+	
+	// start_track will be called when a mouse click occurs and the
+	// in_region question answered true.
+	//
+	verb start_track
+		at vector location;
+		boolean is_double_click;
+		widget_panel_track_manager type manager;
+	end;
+	
+	// continue_track will be called if the mouse button is still being
+	// held down from a click that was accepted.
+	//
+	verb continue_track
+		boolean on_plane;
+		at vector location;
+	end;
+	
+	// end_track will be called when the mouse button is released from
+	// a click that was accepted.
+	//
+	verb end_track
+		boolean on_plane;
+		at vector location;
+		boolean selected;
+	end;
+	
+	// record_press is called when the button is selected.  Subclasses can
+	// override this method to make the button do different things.
+	//
+	protected verb record_press;
+has
+	// attributes
+	//
+	public boolean reference value;
+	
+	// private attributes
+	//
+	boolean internal_value;
+	boolean enabled is true;
+	scalar knob_radius;
+	scalar bevel_width;
+	material type ring_material is none;
+	material type knob_material is none;
+	material type lit_knob_material is none;
+	material type disabled_ring_material is none;
+	material type disabled_knob_material is none;
+	
+	widget_panel_track_manager type cur_manager is none;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		controls boolean reference value refers to none;
+	with
+		scalar knob_radius = 0.7;
+		scalar bevel_width = 0.15;
+		material type ring_material is plastic colored blue;
+		material type knob_material is plastic colored red;
+		material type lit_knob_material is plastic colored yellow;
+		material type disabled_ring_material is plastic colored dark blue;
+		material type disabled_knob_material is plastic colored dark red;
+	is
+		beveled_button_component's knob_radius = knob_radius;
+		beveled_button_component's bevel_width = bevel_width;
+		beveled_button_component's ring_material is ring_material;
+		beveled_button_component's knob_material is knob_material;
+		beveled_button_component's lit_knob_material is lit_knob_material;
+		beveled_button_component's disabled_ring_material is disabled_ring_material;
+		beveled_button_component's disabled_knob_material is disabled_knob_material;
+		
+		if value refers to none then
+			beveled_button_component's value refers to internal_value;
+			internal_value is false;
+		else
+			beveled_button_component's value refers to value;
+		end;
+	end;    // new
+	
+	verb enable
+	is
+		enabled is true;
+	end;    // enable
+	
+	verb disable
+	is
+		enabled is false;
+		
+		if some cur_manager then
+			cur_manager drop_track;
+		end;
+	end;    // disable
+	
+	boolean question is_enabled
+	is
+		answer enabled;
+	end;    // is_enabled
+	
+	boolean question in_region
+		at vector location;
+	is
+		if not enabled then
+			answer no;
+		end;
+		
+		answer ((location.x * location.x) + (location.y * location.y)) <=
+			(knob_radius * knob_radius);
+	end;    // in_region
+	
+	verb write_id
+	is
+		write "beveled_button_component",;
+	end;    // write_id
+	
+	shape instance
+		component_highlight_style type highlight;
+	is
+		material type cur_ring_material is none;
+		material type cur_knob_material is none;
+		boolean pressed;
+		
+		if enabled then
+			cur_ring_material is ring_material;
+			
+			when highlight is
+				over:
+					cur_knob_material is lit_knob_material;
+					pressed is false;
+				end;
+				
+				tracking_not_over:
+					cur_knob_material is knob_material;
+					pressed is false;
+				end;
+				
+				tracking_and_over:
+					cur_knob_material is lit_knob_material;
+					pressed is true;
+				end;
+			else
+				cur_knob_material is knob_material;
+				pressed is false;
+			end;
+		else
+			cur_ring_material is disabled_ring_material;
+			cur_knob_material is disabled_knob_material;
+			pressed is false;
+		end;
+		
+		if some cur_ring_material then
+			torus with
+				vmin = 0;
+				vmax = 180;
+				inner_radius = 1 - (2 * (1 - knob_radius));
+				outer_radius = 1;
+				material is cur_ring_material;
+			end;
+			disk with
+				material is cur_ring_material;
+			end;
+		end;
+		
+		if some cur_knob_material then
+			half_beveled_cylinder with
+				end1 = <0 0 0.001>;
+				
+				radius = knob_radius;
+				bevel_width = beveled_button_component's bevel_width;
+				capped is true;
+				material is cur_knob_material;
+				
+				if pressed then
+					end2 = <0 0 (bevel_width + (1 - knob_radius))>;
+				else
+					end2 = <0 0 1>;
+				end;
+			end;
+		end;
+	end;    // instance
+	
+	verb start_track
+		at vector location;
+		boolean is_double_click;
+		widget_panel_track_manager type manager;
+	is
+		cur_manager is manager;
+	end;    // start_track
+	
+	verb continue_track
+		boolean on_plane;
+		at vector location;
+	is
+		// nothing to do
+	end;    // continue_track
+	
+	verb end_track
+		boolean on_plane;
+		at vector location;
+		boolean selected;
+	is
+		cur_manager is none;
+		
+		if selected then
+			record_press;
+		end;
+	end;    // end_track
+	
+	verb record_press
+	is
+		if not (value refers to none) then
+			value is true;
+		end;
+	end;    // record_press
+end;    // beveled_button_component

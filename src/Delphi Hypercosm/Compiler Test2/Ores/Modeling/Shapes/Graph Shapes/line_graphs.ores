@@ -1,0 +1,138 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		   line_graphs.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard shapes for creating simple line		}
+{		graphs through a set of points in a 2 dimensional		}
+{		plane.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/shapes.ores";
+include "system/comparisons.ores";
+include "system/arrows.ores";
+
+
+shape line_graph
+	through scalar x_values[];
+	at scalar y_values[];
+with
+	// graph orientation
+	//
+	vector x_axis = <1 0 0>;
+	vector y_axis = <0 0 1>;
+
+	// graph domain range
+	//
+	scalar x_min = smallest of x_values;
+	scalar x_max = largest of x_values;
+	scalar y_min = smallest of y_values;
+	scalar y_max = largest of y_values;
+		
+	// rendering parameters
+	//
+	boolean centered is true;
+	boolean show_axes is true;
+	boolean show_domain is true;
+is
+	scalar x_size = (x_max - x_min);
+	scalar y_size = (y_max - y_min);
+	scalar x_center = (x_min + x_max) / 2;
+	scalar y_center = (y_min + y_max) / 2;
+	
+	vector origin = x_axis * x_min + y_axis * y_min;
+	vector center = x_axis * x_center + y_axis * y_center;
+	vector vertices[min x_values .. max x_values];
+	
+	static material type domain_material is glass colored blue;
+	
+	for integer counter = min vertices .. max vertices do
+		vertices[counter] = x_axis * x_values[counter] +
+			y_axis * y_values[counter];
+	end;
+	
+	if centered then
+		move to -center;
+	end;
+	
+	line vertices;
+	
+	if show_axes then
+		arrow from origin to origin + x_axis * x_size with
+			arrow_head_width = itself * x_size;
+			head_color = red;
+		end;
+		arrow from origin to origin + y_axis * y_size with
+			arrow_head_width = itself * y_size;
+			head_color = green;
+		end;
+	end;
+	
+	if show_domain then
+		parallelogram with
+			vertex = origin;
+			side1 = x_axis * x_size;
+			side2 = y_axis * y_size;
+			material is domain_material;
+		end;
+	end;
+end;    // line_graph
+
+
+shape function_graph
+	of scalar question f
+		of scalar x;
+	end;
+	in integer steps = 100;
+with
+	// graph orientation
+	//
+	vector x_axis = <1 0 0>;
+	vector y_axis = <0 0 1>;
+
+	// graph domain range
+	//
+	scalar x_min = -1;
+	scalar x_max = 1;
+	scalar y_min = -1;
+	scalar y_max = 1;
+		
+	// rendering parameters
+	//
+	boolean centered is true;
+	boolean show_axes is true;
+	boolean show_domain is true;
+is
+	scalar x_values[1 .. steps];
+	scalar y_values[1 .. steps];
+	scalar range = (x_max - x_min);
+	
+	for integer counter = 1 .. steps do
+		scalar t = (counter - 1) / (steps - 1);
+		x_values[counter] = x_min + range * t;
+		y_values[counter] = f of x_values[counter];
+	end;
+	
+	line_graph through x_values at y_values with
+		x_axis = static x_axis;
+		y_axis = static y_axis;
+	
+		// graph domain range
+		//
+		x_min = static x_min;
+		x_max = static x_max;
+		y_min = static y_min;
+		y_max = static y_max;
+			
+		// rendering parameters
+		//
+		centered is static centered;
+		show_axes is static show_axes;
+		show_domain is static show_domain;
+	end;
+end;	// function_graph

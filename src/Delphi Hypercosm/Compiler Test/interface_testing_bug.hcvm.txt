@@ -1,0 +1,265 @@
+Hypercosm 0.99
+bgn 13 3 3 15 7 108 4 4 0 0 0 6
+tyd
+cls 0 1 1
+nil
+nil
+nil
+sbs
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+tyd
+cls 0 1 3
+nil
+nil
+nil
+sbs
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+tyd
+cls 0 2 0
+trf 1
+nil
+nil
+sbs
+nil
+ind 0 0
+fdr
+erf 3
+fid 2
+nil
+nil
+nil
+cdd 1 0
+gid 1
+nil
+con 0 1 0 2 2 0
+trf 3
+std 0 0
+lid 1
+nil
+nil
+std 0 0
+lid 1
+nil
+nil
+nil
+ind 0 0
+lid 2
+ina
+its
+ili 0
+nil
+nil
+nil
+nil
+nil
+ina
+sdr
+lid 1
+fid 2
+lid 2
+nil
+cdd 1 0
+gid 3
+nil
+pro 0 2 0 1 1 1
+trf 3
+std 0 0
+lid 1
+nil
+nil
+std 0 0
+lid 1
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+bis
+stw
+cax
+abl 1
+sab 1 19
+nil
+cli 116
+cli 104
+cli 105
+cli 110
+cli 103
+cli 32
+cli 119
+cli 105
+cli 116
+cli 104
+cli 32
+cli 118
+cli 97
+cli 108
+cli 117
+cli 101
+cli 32
+cli 61
+cli 32
+nil
+bis
+inw
+sdr
+lid 1
+fid 2
+bis
+nlw
+nil
+nil
+nil
+nil
+crf 1
+nil
+cdd 1 0
+gid 5
+nil
+pro 0 0 0 1 0 0
+nil
+nil
+nil
+nil
+nil
+nil
+std 0 0
+lid 1
+snw
+trf 3
+sms
+crf 1
+gid 1
+spa
+lid 1
+nit
+trf 3
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+ift
+tqr
+trf 2
+lid 1
+nil
+bis
+stw
+cax
+abl 1
+sab 1 23
+nil
+cli 102
+cli 111
+cli 117
+cli 110
+cli 100
+cli 32
+cli 112
+cli 114
+cli 105
+cli 110
+cli 116
+cli 97
+cli 98
+cli 108
+cli 101
+cli 32
+cli 116
+cli 104
+cli 105
+cli 110
+cli 103
+cli 58
+cli 32
+nil
+dms
+crf 2
+gid 1
+spa
+lid 1
+nid 0 1 1
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+bis
+stw
+cax
+abl 1
+sab 1 27
+nil
+cli 102
+cli 111
+cli 117
+cli 110
+cli 100
+cli 32
+cli 110
+cli 111
+cli 110
+cli 32
+cli 112
+cli 114
+cli 105
+cli 110
+cli 116
+cli 97
+cli 98
+cli 108
+cli 101
+cli 32
+cli 116
+cli 104
+cli 105
+cli 110
+cli 103
+cli 58
+cli 32
+nil
+bis
+stw
+cax
+abl 1
+sab 1 1
+nil
+cli 63
+nil
+bis
+nlw
+nil
+nil
+nil
+nil
+sms
+crf 3
+gid 5
+nil
+nil
+nil
+nil
+nil
+nil
+end

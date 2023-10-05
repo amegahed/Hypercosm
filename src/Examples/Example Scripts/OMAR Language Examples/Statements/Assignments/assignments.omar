@@ -1,0 +1,73 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            assignments.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of the         }
+{       assignment statement using the OMAR language.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do assignment_stmt_example;
+
+include "system/day_of_the_week.ores";      // for enum type
+
+// enumerated typed variables
+//
+boolean boolean_value;
+char char_value;
+day_of_the_week type day;
+
+// integer typed variables
+//
+byte byte_value;
+short short_value;
+integer integer_value;
+long long_value;
+
+// scalar typed variables
+//
+scalar scalar_value;
+double double_value;
+complex complex_value;
+vector vector_value;
+
+// reference typed variables
+//
+object type thing is none;
+integer reference ref;
+verb action;
+	
+verb assignment_stmt_example is
+	write "Performing a series of assignments...", ;
+	
+	// boolean assignments
+	//
+	boolean_value is false;
+	char_value is "a";
+	day is monday;
+	
+	// integer assignments
+	//
+	byte_value = 1;
+	short_value = 2;
+	integer_value = 3;
+	long_value = 4;
+	
+	// scalar assignments
+	//
+	scalar_value = 1.0;
+	double_value = 2.0;
+	complex_value = <0 1>;
+	vector_value = <0 0 0>;
+	
+	// reference assignments
+	//
+	thing is none;
+	ref refers to none;
+	action does none;
+	
+	write "ok!", ;
+end;    // assignment_stmt_example

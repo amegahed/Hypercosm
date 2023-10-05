@@ -1,0 +1,37 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         multicoloring.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an definition for a generalized user           }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/colors.ores";
+
+adjective multicolored
+does
+	// color querying methods
+	//
+	color type question get_foreground;
+	color type question get_background;
+end;    // multicolored
+
+adjective multicolorable
+extends
+	multicolored
+does
+	// color setting methods
+	//
+	verb set_foreground
+		to color type foreground;
+	end;
+
+	verb set_background
+		to color type background;
+	end;
+end;    // multicolorable

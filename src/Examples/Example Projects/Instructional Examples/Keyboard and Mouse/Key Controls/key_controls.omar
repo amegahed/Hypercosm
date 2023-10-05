@@ -1,0 +1,113 @@
+{***************************************************************}
+{                       key_controls.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do thing_anim;
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/renderable_text.ores";
+include "system/arrow_shapes.ores";
+include "system/time.ores";
+include "system/text_utils.ores";
+
+shape thing is
+	block;
+	cylinder with
+		end1 = <-1.5 0 0>;
+		end2 = <1.5 0 0>;
+		radius = .5;
+	end;
+	axes with
+		magnify by 1.5;
+	end;
+end;    // thing
+
+picture thing_picture is
+	static trans type current_trans;
+	static integer local_right_key = char_to_key of "a";
+	static integer local_left_key = char_to_key of "d";
+	static integer local_up_key = char_to_key of "w";
+	static integer local_down_key = char_to_key of "s";
+	static integer global_right_key = char_to_key of "l";
+	static integer global_left_key = char_to_key of "j";
+	static integer global_up_key = char_to_key of "i";
+	static integer global_down_key = char_to_key of "k";
+	distant_light from <.3 -.5 1>;
+	
+	axes with
+		magnify by 2;
+	end;
+	overlay_text "A/D - spin around local z-axis" at <-.9 .8 0> with
+		horizontal_alignment is left;
+	end;
+	overlay_text "W/S - spin around local x-axis" at <-.9 .7 0> with
+		horizontal_alignment is left;
+	end;
+	overlay_text "J/L - spin around world z-axis" at <.1 .8 0> with
+		horizontal_alignment is left;
+	end;
+	overlay_text "I/K - spin around world x-axis" at <.1 .7 0> with
+		horizontal_alignment is left;
+	end;
+		
+	if key_down local_right_key then
+		rotate the current_trans
+			   by 180 * get_clamped_frame_duration
+			   around -current_trans's z_axis;
+	end;
+	if key_down local_left_key then
+		rotate the current_trans
+			   by -180 * get_clamped_frame_duration
+			   around -current_trans's z_axis;
+	end;
+	if key_down local_down_key then
+		rotate the current_trans
+			   by 180 * get_clamped_frame_duration
+			   around current_trans's x_axis;
+	end;
+	if key_down local_up_key then
+		rotate the current_trans
+			   by -180 * get_clamped_frame_duration
+			   around current_trans's x_axis;
+	end;
+	if key_down global_right_key then
+		rotate the current_trans
+			   by 180 * get_clamped_frame_duration
+			   around <0 0 1>;
+	end;
+	if key_down global_left_key then
+		rotate the current_trans
+			   by -180 * get_clamped_frame_duration
+			   around <0 0 1>;
+	end;
+	if key_down global_down_key then
+		rotate the current_trans
+			   by 180 * get_clamped_frame_duration
+			   around <1 0 0>;
+	end;
+	if key_down global_up_key then
+		rotate the current_trans
+			   by -180 * get_clamped_frame_duration
+			   around <1 0 0>;
+	end;
+	
+	thing with
+		trans = current_trans;
+	end;
+end;    // thing_picture
+
+anim thing_anim with
+	double_buffer is on;
+	eye = <0 -8 0>;
+	lookat = <0 0 .5>;
+is    
+	while true do
+		thing_picture;
+	end;
+end;    // thing_anim

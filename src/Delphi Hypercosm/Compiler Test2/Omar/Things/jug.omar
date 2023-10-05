@@ -1,0 +1,76 @@
+{***************************************************************}
+{                          jug.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do jug_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape jug is
+        color = beige;
+
+    disk with
+        radius = .75;
+    end;
+    torus with
+        center = <0 0 .25>;
+        inner_radius = .5;
+        outer_radius = 1;
+        vmin = -90;
+        vmax = 0;
+        scale by 2 along <0 0 1>;
+    end;
+    cylinder with
+        end1 = <0 0 .5>;
+        end2 = <0 0 2.5>;
+    end;
+    cone with
+        end1 = <0 0 2.5>;
+        end2 = <0 0 3.5>;
+        radius1 = 1;
+        radius2 = .25;
+    end;
+    cylinder with
+        end1 = <0 0 3.5>;
+        end2 = <0 0 4>;
+        radius = .25;
+    end;
+
+    // handle
+    //
+    torus with
+        center = <.25 0 3>;
+        inner_radius = .55;
+        outer_radius = .75;
+        normal = <0 -1 0>;
+        umin = -30;
+        umax = 90;
+    end;
+end;    // jug
+
+
+anim jug_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    args check;
+is
+    shape environment is
+        plane with
+            magnify by 5;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_shape jug in environment;
+end;    // jug_anim

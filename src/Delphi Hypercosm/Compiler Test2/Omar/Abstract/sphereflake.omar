@@ -1,0 +1,78 @@
+{***************************************************************}
+{                          sphereflake.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sphereflake_picture;
+
+
+include "system/3d.ores";
+shape sphereflake with
+    integer level = 8;
+is
+    const scalar factor = .5;
+
+
+    shape miniflake is
+        sphereflake with
+            level = static level - 1;
+            magnify by .5;
+            move to <0 0 (1 + factor)>;
+        end;
+    end;    // miniflake
+
+    if level mod 3 = 0 then
+        color = light red;
+    elseif level mod 2 = 1 then
+        color = light orange;
+    else
+        color = light aqua;
+    end;
+
+    sphere with material is metal colored color; end;
+
+    if level > 1 then
+        miniflake with material is metal colored color; end;
+        miniflake with
+            material is metal colored color;
+            rotate by 180 around <1 0 0>;
+        end;
+        miniflake with
+            material is metal colored color;
+            rotate by 90 around <1 0 0>;
+        end;
+        miniflake with
+            material is metal colored color;
+            rotate by -90 around <1 0 0>;
+        end;
+        miniflake with
+            material is metal colored color;
+            rotate by 90 around <0 1 0>;
+        end;
+        miniflake with
+            material is metal colored color;
+            rotate by -90 around <0 1 0>;
+        end;
+    end;
+end;    // sphereflake
+
+
+picture sphereflake_picture with
+    eye = <1 -2.75 2>;
+    field_of_view = 70;
+    render_mode is shaded;
+    shading is face;
+    background = black;
+    facets = 0;
+    reflections is on;
+    shadows is on;
+is
+    distant_light from <.3 -.5 1>;
+    sphereflake with
+    level = 7;
+    end;
+end;    // sphereflake_picture

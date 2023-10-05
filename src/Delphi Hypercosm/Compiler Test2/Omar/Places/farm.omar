@@ -1,0 +1,97 @@
+{***************************************************************}
+{                          farm.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do miles_o_corn;
+
+
+include "system/3d.ores";
+include "system/barn.omar";
+include "system/corn.omar";
+
+
+shape barnyard is
+    small_silo with
+        move to <-1.5 -2 0>;
+    end;
+    large_silo with
+        move to <-2 -2.5 0>;
+    end;
+    barn with material is chalk colored red; end;
+end;    // barnyard
+
+
+shape cornfield with
+    integer level = 4;
+is
+    scalar offset;
+
+    if level = 0 then
+        corn_plant with
+            move to <10 10 0>;
+        end;
+        corn_plant with
+            rotate by 27 around <0 0 1>;
+            move to <-10 10 0>;
+        end;
+        corn_plant with
+            rotate by 176 around <0 0 1>;
+            move to <10 -10 0>;
+        end;
+        corn_plant with
+            rotate by -35 around <0 0 1>;
+            move to <-10 -10 0>;
+        end;
+    else
+        offset = 20 * 2 ^ (level - 1);
+        cornfield with
+            level = static level - 1;
+            move to <offset offset 0>;
+        end;
+        cornfield with
+            level = static level - 1;
+            move to <(-offset) offset 0>;
+        end;
+        cornfield with
+            level = static level - 1;
+            move to <offset (-offset) 0>;
+        end;
+        cornfield with
+            level = static level - 1;
+            move to <(-offset) (-offset) 0>;
+        end;
+        if (level = 4) then
+            barnyard with
+                magnify by 70;
+                rotate by 90 around <0 0 1>;
+            end;
+        end;
+    end;
+end;    // cornfield
+
+
+picture miles_o_corn with
+    field_of_view = 70;
+    eye = <280 -100 100>;
+    lookat = <0 0 25>;
+    fog_factor = 2000;
+    background = <.7 .7 1.0>;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+is
+    distant_light from <.3 -.5 1>;
+    cornfield with
+        level = 8;
+    end;
+    plane with
+        material is chalk colored brown;
+        magnify by 50;
+    end;
+end;    // miles_o_corn

@@ -1,0 +1,211 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     parseable_checklist_trees.ores     3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition to parse hierarchical       }
+{       checklists.                                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/checklist_trees.ores";
+include "system/text_file_resources.ores";
+include "system/parsing.ores";
+
+subject parseable_checklist_tree
+extends
+	checklist_tree
+does
+	// constructor
+	//
+	verb new
+		parsed from strings type text is none;
+		input from string type filename is none;
+	end;
+
+	verb parse
+		from strings type text;
+	end;
+
+	verb input
+		from string type filename;
+	end;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		parsed from strings type text is none;
+		input from string type filename is none;
+	is
+		checklist_tree new;
+		
+		if some text and some filename then
+			write "Error - can't input checklist from text and also from file.", ;
+		else
+			if some text then
+				parse from text;
+			elseif some filename then
+				input from filename;
+			end;
+		end;
+	end;    // new
+	
+	objective string type question parse_quotated_string
+		of strings type text;
+		at integer reference line_number, char_number; 
+	is
+		string type quotated_string;
+		 
+		if get_char of text at line_number char_number is double_quote then
+			integer line_number1, char_number1;
+			integer line_number2, char_number2;
+			
+			// scan past first double quote
+			//
+			get_next_char of text at line_number char_number;
+			
+			line_number1 = line_number;
+			char_number1 = char_number;
+			while get_char of text at line_number char_number isn't double_quote do
+				line_number2 = line_number;
+				char_number2 = char_number;
+				get_next_char of text at line_number char_number;
+			end;
+			quotated_string is get_string of text at line_number1 char_number1 
+				to line_number2 char_number2;
+				
+			// scan past last double quote
+			//
+			get_next_char of text at line_number char_number; 
+		else
+			write "Parse error - expected double quote at line #", 
+				line_number, ", char number #", char_number, ".", ;
+				
+			line_number = max text;
+			char_number = max text[line_number];
+		end;
+		
+		answer quotated_string;
+	end;    // parse_quotated_string
+	
+	objective verb expand
+		strings type reference strings;
+		by integer number;
+	is
+		string type strings2[min strings .. max strings + number];
+		
+		for integer counter = min strings .. max strings do
+			strings2[counter] is strings[counter];
+		end;
+		
+		strings is strings2;
+	end;    // expand
+		
+	objective strings type question parse_quotated_strings
+		of strings type text;
+		at integer reference line_number, char_number; 
+	is
+		strings type quotated_strings;
+		boolean done is false;
+		
+		while not done do
+			string type string;
+			
+			scan_through_whitespace of text at line_number char_number;
+			string is parse_quotated_string of text at line_number char_number;
+			
+			if some string then
+				expand quotated_strings by 1;
+				quotated_strings[max quotated_strings] is string;
+			end;
+ 
+			scan_through_whitespace of text at line_number char_number;           
+			if get_char of text at line_number char_number is "," then
+			
+				// scan through comma delimiter
+				//
+				get_next_char of text at line_number char_number;
+			else
+				done is true;
+			end;
+		end;
+		
+		answer quotated_strings;
+	end;    // parse_quotated_strings
+				 
+	objective verb parse_tree
+		checklist_tree type tree;
+		from strings type text;
+		at integer reference line_number, char_number; 
+	is
+		const char opening_brace is "{";
+		const char closing_brace is "}";
+		string type name;
+		
+		// parse name of tree
+		//       
+		scan_through_whitespace of text at line_number char_number;
+		tree's name is parse_quotated_string of text at line_number char_number;
+		
+		if some tree's name then 
+			   
+			// parse description of tree
+			//
+			scan_through_whitespace of text at line_number char_number;
+			if get_char of text at line_number char_number is ":" then
+				get_next_char of text at line_number char_number;
+				scan_through_whitespace of text at line_number char_number;
+				tree's description is parse_quotated_strings of text at line_number char_number;
+			end;
+			
+			// parse subtrees
+			//
+			scan_through_whitespace of text at line_number char_number;
+			if get_char of text at line_number char_number is opening_brace then
+
+				// scan past opening brace
+				//
+				get_next_char of text at line_number char_number;
+				scan_through_whitespace of text at line_number char_number;
+								
+				while get_char of text at line_number char_number isn't closing_brace do
+					checklist_tree type subtree;
+					parse_tree subtree from text at line_number char_number;
+					scan_through_whitespace of text at line_number char_number;
+					tree add subtree;
+				end;
+				
+				// scan past closing brace
+				//
+				get_next_char of text at line_number char_number;
+			end;
+		end;
+	end;    // parse_tree
+	
+	verb parse
+		from strings type text;
+	is
+		integer line_number = 1, char_number = 1;
+		parse_tree parseable_checklist_tree from text at line_number char_number;
+	end;    // parse
+	
+	verb input
+		from string type filename;
+	is
+		text_resource type checklist_resource named filename;  
+		
+		// wait for file to download
+		//
+		while checklist_resource download_status is downloading do
+		end;
+	   
+		// parse checklist from file
+		//
+		parse from checklist_resource get_lines;  
+	end;    // input
+end;    // parseable_checklist_tree

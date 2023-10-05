@@ -1,0 +1,866 @@
+{***************************************************************}
+{                          dragster.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do dragster_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/shaders.ores";
+include "system/common_materials.ores";
+
+
+subject dragster
+extends
+    timed_actor
+does
+    objective shape seat;
+    objective shape fuselage;
+    objective shape form with
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+has
+    public scalar speed = 10;
+is
+    objective shape rear_bulkhead is
+        parallelogram with
+            vertex = <0 -2 0>;
+            side1 = <0 4 0>;
+            side2 = <0 0 1.5>;
+        end;
+        triangle <0 -2 1.5> <0 2 1.5> <0 0 2.25>;
+    end;    // rear_bulkhead
+
+
+    objective shape nose is
+        parallelogram with
+            vertex = <0 -1 0>;
+            side1 = <0 2 0>;
+            side2 = <0 0 1>;
+        end;
+        triangle <0 -1 1> <0 1 1> <0 0 1.25>;
+        triangle <0 -1 0> <0 1 0> <-3 0 0>;
+        triangle <0 -1 0> <0 -1 1> <-3 0 0>;
+        triangle <0 1 0> <0 1 1> <-3 0 0>;
+        triangle <0 -1 1> <0 0 1.25> <-3 0 0>;
+        triangle <0 1 1> <0 0 1.25> <-3 0 0>;
+        cylinder with
+            end1 = <-1.5 5 0>;
+            end2 = <-1.5 -5 0>;
+            radius = 1.5;
+            scale by .1 along <0 0 1>;
+        end;
+        sphere with
+            scale by .1 along <0 1 0>;
+            scale by .1 along <0 0 1>;
+            move to <-1.5 5 0>;
+            radius = 1.5;
+        end;
+        sphere with
+            scale by .1 along <0 1 0>;
+            scale by .1 along <0 0 1>;
+            move to <-1.5 -5 0>;
+            radius = 1.5;
+        end;
+    end;    // nose
+
+
+    objective shape canopy_frame is
+        cylinder with
+            end1 = <0 0 2.25>;
+            end2 = <2 -1 3.25>;
+            radius = .1;
+        end;
+                cylinder with
+            end1 = <0 0 2.25>;
+            end2 = <2 1 3.25>;
+            radius = .1;
+        end;
+                cylinder with
+            end1 = <2 -1 3.25>;
+            end2 = <5 -2 1.5>;
+            radius = .1;
+        end;
+                cylinder with
+            end1 = <2 1 3.25>;
+            end2 = <5 2 1.5>;
+            radius = .1;
+        end;
+                cylinder with
+            end1 = <2 1 3.25>;
+            end2 = <2 -1 3.25>;
+            radius = .1;
+        end;
+        end;    // canopy_frame
+
+
+    objective shape canopy is
+        triangle <0 0 2.25> <2 -1 3.25> <2 1 3.25>;
+        triangle <0 0 2.25> <2 1 3.25> <5 2 1.5>;
+        triangle <0 0 2.25> <2 -1 3.25> <5 -2 1.5>;
+    end;    // canopy
+
+
+    objective shape fuselage is
+        transparent white canopy;
+        canopy_frame with
+            material is aluminum;
+        end;
+
+        rear_bulkhead;
+        nose with
+            move to <-20 0 0>;
+        end;
+
+        // side triangles
+        triangle <-20 -1 0> <0 -2 0> <0 -2 1.5>;
+        triangle <-20 1 0> <0 2 0> <0 2 1.5>;
+        triangle <-20 -1 0> <-20 -1 1> <0 -2 1.5>;
+        triangle <-20 1 0> <-20 1 1> <0 2 1.5>;
+
+        // top triangles
+        triangle <-20 1 1> <-20 0 1.25> <0 2 1.5>;
+        triangle <-20 -1 1> <-20 0 1.25> <0 -2 1.5>;
+        triangle <-20 0 1.25> <0 -2 1.5> <0 0 2.25>;
+        triangle <-20 0 1.25> <0 2 1.5> <0 0 2.25>;
+
+        // canopy brace
+        triangle <0 -2 1.5> <5 -2 1.5> <0 0 2.25>;
+        triangle <0 2 1.5> <5 2 1.5> <0 0 2.25>;
+
+        // rear sides
+        parallelogram with
+            vertex = <0 -2 0>;
+            side1 = <18.5 0 0>;
+            side2 = <0 0 1.5>;
+        end;
+        parallelogram with
+            vertex = <0 2 0>;
+            side1 = <18.5 0 0>;
+            side2 = <0 0 1.5>;
+        end;
+        parallelogram with
+            vertex = <0 -2 0>;
+            side1 = <18.5 0 0>;
+            side2 = <0 4 0>;
+        end;
+        parallelogram with
+            vertex = <18.5 -2 0>;
+            side1 = <0 4 0>;
+            side2 = <0 0 1.5>;
+        end;
+    end;    // fuselage
+
+
+    objective shape front_tire is
+        ring with
+            center = <0 -1.5 0>;
+            normal = <0 1 0>;
+            inner_radius = 21;
+            outer_radius = 22;
+        end;    // front
+        ring with
+            center = <0 1.5 0>;
+            normal = <0 1 0>;
+            inner_radius = 21;
+            outer_radius = 22;
+        end;    // back
+        cylinder with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            radius = 23;
+        end;    // outside
+        cylinder with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            radius = 20;
+        end;    // inside
+        cone with
+            end1 = <0 -1.5 0>;
+            end2 = <0 -.5 0>;
+            radius1 = 22;
+            radius2 = 23;
+        end;    // front-top edge
+        cone with
+            end1 = <0 -1.5 0>;
+            end2 = <0 -.5 0>;
+            radius1 = 21;
+            radius2 = 20;
+        end;    // front-bottom edge
+        cone with
+            end1 = <0 1.5 0>;
+            end2 = <0 .5 0>;
+            radius1 = 22;
+            radius2 = 23;
+        end;    // back-top edge
+        cone with
+            end1 = <0 1.5 0>;
+            end2 = <0 .5 0>;
+            radius1 = 21;
+            radius2 = 20;
+        end;    // back-bottom edge
+    end;    // front_tire
+
+
+    objective shape spike is
+        cone with
+            material is plastic colored light red;
+            end1 = <1 0 0>;
+            end2 = <1.5 -1.5 0>;
+            radius1 = .1;
+            radius2 = 0;
+        end;
+    end;    // spike
+
+
+    objective shape front_wheel is
+        front_tire with
+            material is rubber;
+            magnify by .1;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 -.4 0>;
+            radius1 = 2;
+            radius2 = 0;
+        end;
+        sphere with
+            center = <0 -.2 0>;
+            radius = .3;
+        end;
+        spike with
+            rotate by 0 around <0 1 0>;
+        end;
+        spike with
+            rotate by 90 around <0 1 0>;
+        end;
+        spike with
+            rotate by 180 around <0 1 0>;
+        end;
+        spike with
+            rotate by 270 around <0 1 0>;
+        end;
+    end;    // front_wheel
+
+
+    objective shape front_axle is
+        front_wheel with
+            material is aluminum;
+            move to <0 -4 0>;
+        end;
+        front_wheel with
+            material is aluminum;
+            rotate by 180 around <0 0 1>;
+            move to <0 4 0>;
+        end;
+        cylinder with
+            end1 = <0 -4 0>;
+            end2 = <0 4 0>;
+            radius = .2;
+        end;
+    end;    // front_axle
+
+
+    objective shape rear_tire is
+        cylinder with
+            end1 = <0 -.3 0>;
+            end2 = <0 .3 0>;
+            radius = 1;
+        end;
+        cone with
+            end1 = <0 -.3 0>;
+            end2 = <0 -.4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        cone with
+            end1 = <0 .3 0>;
+            end2 = <0 .4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        ring with
+            center = <0 -.4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        ring with
+            center = <0 .4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        cone with
+            end1 = <0 .4 0>;
+            end2 = <0 .35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;
+        cone with
+            end1 = <0 -.4 0>;
+            end2 = <0 -.35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;    // whitewall
+    end;    // rear_tire
+
+
+    objective shape unit_nut is
+        extrude [[1 0] [.5 .866] [-.5 .866] [-1 0] [-.5 -.866]
+            [.5 -.866]]
+        with
+            rotate by 90 around <1 0 0>;
+        end;
+
+        sphere with
+            radius = .5;
+            scale by .5 along <0 0 1>;
+            move to <0 0 .5>;
+        end;
+    end;    // unit_nut
+
+
+    objective shape nut is
+        unit_nut with
+            material is aluminum;
+            magnify by .05;
+        end;
+    end;    // nut
+
+
+    objective shape hubcap is
+        scalar angle = 0;
+
+        disk with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            radius = .5;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 .05 0>;
+            radius1 = .45;
+            radius2 = .55;
+        end;
+
+        // bearing cap
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 -.15 0>;
+            radius1 = .2;
+            radius2 = .1;
+        end;
+        disk with
+            center = <0 -.15 0>;
+            normal = <0 1 0>;
+            radius = .1;
+        end;
+        while angle < 360 do
+            nut with
+                move to <0 0 .05>;
+                rotate by 90 around <1 0 0>;
+                move to <.3 0 0>;
+                rotate by angle around <0 1 0>;
+            end;
+            angle = itself + 30;
+        end;
+    end;    // hubcap
+
+
+    objective shape rear_wheel is
+        rear_tire with
+            material is rubber;
+        end;
+        hubcap with
+            material is titanium;
+            move to <0 -.35 0>;
+        end;
+        disk with
+            center = <0 .35 0>;
+            normal = <0 1 0>;
+            radius = .5;
+        end;
+    end;    // rear wheel
+
+
+    objective shape rear_axle is
+        rear_wheel with
+            material is aluminum;
+            scale by -1 along <0 1 0>;
+            magnify by 5;
+            move to <0 5 0>;
+        end;
+        rear_wheel with
+            material is aluminum;
+            magnify by 5;
+            move to <0 -5 0>;
+        end;
+        cylinder with
+            end1 = <0 5 0>;
+            end2 = <0 -5 0>;
+            radius = .5;
+        end;
+    end;    // rear_axle
+
+
+    objective shape spoiler is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 8>;
+            radius = 3;
+            scale by .1 along <0 1 0>;
+            move to <0 -2.3 0>;
+            skew from <0 -2 8> to <6 -2 8>;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 8>;
+            radius = 3;
+            scale by .1 along <0 1 0>;
+            move to <0 2.3 0>;
+            skew from <0 2 8> to <6 2 8>;
+        end;
+        cylinder with
+            end1 = <6 -8 0>;
+            end2 = <6 8 0>;
+            radius = 4.5;
+            scale by .1 along <0 0 1>;
+            move to <0 0 8>;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 2>;
+            radius1 = 4.5;
+            radius2 = 0;
+            scale by .1 along <0 1 0>;
+            skew from <0 0 2> to <10 0 2>;
+            move to <6 -8 8>;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 2>;
+            radius1 = 4.5;
+            radius2 = 0;
+            scale by .1 along <0 1 0>;
+            skew from <0 0 2> to <10 0 2>;
+            move to <6 8 8>;
+        end;
+    end;    // spoiler
+
+
+    objective shape little_wheel is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 -.2 0>;
+            radius = .3;
+        end;
+        disk with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            radius = .3;
+        end;
+        disk with
+            center = <0 -.2 0>;
+            normal = <0 1 0>;
+            radius = .3;
+        end;
+    end;    // little_wheel
+
+
+    objective shape wheelie_bars is
+        cylinder with
+            end1 = <0 -2 0>;
+            end2 = <12 -2 -2>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 2 0>;
+            end2 = <12 2 -2>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 -2 1.5>;
+            end2 = <12 -2 -2>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 2 1.5>;
+            end2 = <12 2 -2>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <12 -2.5 -2>;
+            end2 = <12 2.5 -2>;
+            radius = .1;
+        end;
+        little_wheel with
+            material is rubber;
+            move to <12 -2.5 -2>;
+        end;
+        little_wheel with
+            material is rubber;
+            scale by -1 along <0 1 0>;
+            move to <12 2.5 -2>;
+        end;
+    end;    // wheelie_bars
+
+
+    objective shape unit_cube is
+        block with
+            vertex = <-.5 -.5 -.5>;
+            side1 = <1 0 0>;
+            side2 = <0 1 0>;
+            side3 = <0 0 1>;
+        end;
+    end;    // unit_cube
+
+
+    objective shape piston is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius = .52;
+        end;
+        disk with
+            center = <0 0 .95>;
+            normal = <0 0 1>;
+            radius = .6;
+        end;
+        disk with
+            center = <0 0 .85>;
+            normal = <0 0 1>;
+            radius = .62;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <1 -1 0>;
+            radius = .2;
+        end;
+    end;    // piston
+
+
+    objective shape piston_row is
+        piston with
+            move to <-2.5 0 0>;
+        end;
+        piston with
+            move to <-1.5 0 0>;
+        end;
+        piston with
+            move to <-.5 0 0>;
+        end;
+        piston with
+            move to <.5 0 0>;
+        end;
+        piston with
+            move to <1.5 0 0>;
+        end;
+        piston with
+            move to <2.5 0 0>;
+        end;
+        cylinder with
+            end1 = <-1.5 -1 0>;
+            end2 = <4 -1 0>;
+            radius = .2;
+        end;
+        cone with
+            end1 = <4 -1 0>;
+            end2 = <8 -1 2>;
+            radius1 = .2;
+            radius2 = .5;
+        end;
+        sphere with
+            center = <-1.5 -1 0>;
+            radius = .2;
+        end;
+        unit_cube with
+            scale by 6.5 along <1 0 0>; // length
+            scale by 1.5 along <0 1 0>; // width
+            scale by .8 along <0 0 1>;  // height
+        end;
+        unit_cube with
+            scale by 6 along <1 0 0>;
+            scale by .5 along <0 1 0>;
+            scale by .3 along <0 0 1>;
+            move to <0 0 1>;
+        end;
+    end;    // piston_row
+
+
+    objective shape engine is
+        piston_row with
+            rotate by 30 around <1 0 0>;
+            move to <0 -.2 0>;
+        end;
+        piston_row with
+            rotate by 30 around <1 0 0>;
+            scale by -1 along <0 1 0>;
+            move to <0 .2 0>;
+        end;
+        cylinder with
+            end1 = <-3.25 0 -.1>;
+            end2 = <3.25 0 -.1>;
+            radius = .8;
+        end;
+        disk with
+            center = <-3.25 0 -.1>;
+            normal = <1 0 0>;
+            radius = .8;
+        end;
+        disk with
+            center = <3.25 0 -.1>;
+            normal = <1 0 0>;
+            radius = .8;
+        end;
+    end;    // engine
+
+
+    objective shape seat is
+        static shape seat_back is
+            sphere with
+                center = <0 -5 20>;
+                radius = 3;
+            end;
+            sphere with
+                center = <0 5 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <0 0 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 -5 0>;
+                end2 = <0 -5 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 5 0>;
+                end2 = <0 5 20>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <0 5 20>;
+                end2 = <0 -5 20>;
+                radius = 3;
+            end;
+        end;    // seat_back
+
+        cylinder with
+            end1 = <8 5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 -5 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 0 0>;
+            end2 = <8 0 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <-8 -5 0>;
+            radius = 3;
+        end;    // front of seat
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <8 5 0>;
+            radius = 3;
+        end;    // side of seat
+        cylinder with
+            end1 = <-8 -5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;    // side of seat
+
+        // tilt seat back
+        seat_back with
+            rotate by 15 around <0 1 0>;
+            move to <8 0 0>;
+        end;
+    end;    // seat
+
+
+    objective shape car with
+        scalar t = 0;
+    is
+        {
+        move to 0 0 4.5;
+        rotate by -5 around 0 1 0 about 15 0 0;
+        }
+
+        engine with
+            material is aluminum;
+            magnify by 1.7;
+            scale by 1.5 along <0 0 1>;
+            move to <13 0 2>;
+        end;
+        seat with
+            material is chalk colored brown;
+            magnify by .2;
+            move to <4 0 .5>;
+        end;
+        wheelie_bars with
+            material is aluminum;
+            move to <18.5 0 0>;
+        end;
+        front_axle with
+            material is aluminum;
+            rotate by t * 10 around <0 -1 0>;
+            move to <-17 0 .5>;
+        end;
+        rear_axle with
+            material is aluminum;
+            rotate by t * 5 around <0 -1 0>;
+            move to <15 0 .5>;
+        end;
+
+        fuselage with
+            material is plastic colored light red;
+            scale by 1.5 along <0 0 1>;
+        end;
+        spoiler with
+            material is plastic colored light red;
+            rotate by -10 around <0 1 0>;
+            move to <15 0 .5>;
+        end;
+    end;    // car
+
+
+    objective shape form with
+        scalar t = 0;
+    is
+        car with
+            t = static t;
+            move to <0 0 4.5>;
+            rotate by -5 around <0 1 0> about <15 0 0>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            t = speed * time;
+        end;
+    end;    // instance
+end;    // dragster
+
+
+shape finish_line is
+    parallelogram with
+        vertex = <-4 -50 0>;
+        side1 = <8 0 0>;
+        side2 = <0 100 0>;
+    end;
+end;    // finish_line
+
+
+picture dragster_picture with
+    eye = <-42 -42 20>;
+    lookat = <0 0 5>;
+    field_of_view = 50;
+    render_mode is shaded;
+    facets = 8;
+
+    {
+    projection = orthographic;
+    eye = 0 -50 0;
+    lookat = 0 0 0;
+    field_of_view = 30;
+    }
+is
+    distant_light from <.3 -.5 1>;
+    dragster type's form with
+        material is plastic colored orange;
+        move to <2 0 0>;
+    end;
+    flat speckled grey plane with
+        magnify by 30;
+    end;
+end;    // dragster_picture
+
+
+picture racing_dragsters with
+    eye = <-45 -45 20>;
+    lookat = <0 0 5>;
+    field_of_view = 50;
+    render_mode is shaded;
+    projection is fisheye;
+    background = sky_blue;
+    ambient = background * .3;
+    fog_factor = 1000;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    save_pictures is off;
+is
+    distant_light from <.3 -.5 1> with
+        color = light yellow;
+        brightness = 1;
+    end;
+    dragster type's form with
+        material is metal colored light purple;
+        move to <2 0 0>;
+    end;
+    dragster type's form with
+        material is metal colored light red;
+        move to <30 25 0>;
+    end;
+
+    block with
+        color = dark grey;
+        scale by 200 along <1 0 0>;
+        scale by 40 along <0 1 0>;
+        scale by .1 along <0 0 1>;
+        move to <0 25 0>;
+        magnify the shader_trans by 10;
+    end;
+
+    plane with
+        color = light brown;
+        magnify by 30;
+        magnify the shader_trans by 10;
+    end;
+end;    // racing_dragsters
+
+
+anim dragster_anim
+    args type args;
+with
+    eye = <-42 -42 20>;
+    lookat = <0 0 5>;
+    double_buffer is on;
+    args check;
+is
+    dragster type dragster;
+
+    mouse_controlled_actor dragster;
+end;    // dragster_anim

@@ -1,0 +1,63 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        checklist_selector.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a checklist           }
+{       selector user interface component.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do checklist_selector_anim;
+
+include "system/3d.ores";
+include "system/checklist_selector.ores";
+include "system/checklist_labels.ores";
+ 
+anim checklist_selector_anim with
+	double_buffer is true;
+is
+	strings type checklist is [
+		"This"
+		"That"
+		"Other Thing"
+		"Yet Another Thing"
+		"Last Thing"
+	];
+	
+	checklist_selector type checklist_selector
+		of checklist labelled (get_numbered_checklist_labels to num checklist)
+		at <1 0 0> aligned to middle_right
+		using (new text_display of "steps" at <-1 .8 0> aligned to middle_left)
+	with
+		show_checkboxes is true;
+	end;
+	
+	text_display type warning_display of "steps skipped!"
+		at <0 0 0> aligned to middle_center
+	with
+		font_color set to red over white;
+		hidden is true;
+	end;
+		
+	verb checklist_action is
+		write "selected item is ", checklist_selector get_selected_step, ;
+		if checklist_selector steps_skipped then
+			warning_display set_visible to true;
+		else
+			warning_display set_visible to false;
+		end;
+	end;    // checklist_action
+	picture scene is
+		checklist_selector draw;
+		warning_display draw;
+	end;
+	
+	checklist_selector set_selection_action to (new action of checklist_action);
+	while true do
+		scene;
+		checklist_selector update;
+	end;
+end;    // checklist_selector_anim

@@ -1,0 +1,275 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             surfaces.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{                Contains standard surface shaders.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_shading.ores";
+include "system/native_rendering.ores";
+include "system/standard_colors.ores";
+
+shader unshaded
+	color type color;
+with
+	global color = color;
+is
+	if shadow_ray then
+		answer black;
+	else
+		answer color;
+	end;
+end;    // unshaded
+
+shader flat
+	color type color;
+with
+	global color = color;
+is
+	if shadow_ray then
+		answer black;
+	else
+		answer color * (diffuse + ambient);
+	end;
+end;    // flat
+
+shader semi_glossy
+	color type color;
+with
+	global color = color;
+is
+	color type diffuse_color, specular_color, reflected_color;
+
+	if shadow_ray then
+		answer black;
+	else
+		diffuse_color = (diffuse + ambient) * color * .8;
+		specular_color = specular 10 * .6;
+		reflected_color = reflect (white * .15);
+		answer diffuse_color + specular_color + reflected_color;
+	end;
+end;    // semi_glossy
+
+shader glossy
+	color type color;
+with
+	global color = color;
+is
+	color type diffuse_color, specular_color, reflected_color;
+
+	if shadow_ray then
+		answer black;
+	else
+		diffuse_color = (diffuse + ambient) * color * .7;
+		specular_color = specular 50;
+		reflected_color = reflect (white * .3);
+		answer diffuse_color + specular_color + reflected_color;
+	end;
+end;    // glossy
+
+shader metallic
+	color type color;
+with
+	global color = color;
+is
+	color type diffuse_color, specular_color, reflected_color;
+
+	if shadow_ray then
+		answer black;
+	else
+		diffuse_color = (diffuse + ambient) * color * .3;
+		specular_color = (specular 60 + specular 4) * color;
+		reflected_color = reflect (color * .4);
+		answer diffuse_color + specular_color + reflected_color;
+	end;
+end;    // metallic
+
+shader glassy
+	color type color;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	global color = color;
+is
+	const scalar index = 1.6;
+	color type diffuse_color, specular_color;
+	color type reflected_color, transmitted_color;
+
+	if shadow_ray or ray_inside then
+
+		// no reflection off interior surface of glass
+		//
+		answer refract index (color * .9);
+	else
+		diffuse_color = (diffuse + ambient) * .1;
+		specular_color = specular 40;
+		reflected_color = reflect (white * .1);
+		transmitted_color = refract index (color * .9);
+		answer diffuse_color + specular_color + reflected_color + transmitted_color;
+	end;
+end;    // glassy
+
+shader glassy_specular
+	color type color;
+	color type highlight_color;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	global color = color;
+is
+	const scalar index = 1.6;
+	color type diffuse_color, specular_color;
+	color type reflected_color, transmitted_color;
+
+	if shadow_ray or ray_inside then
+
+		// no reflection off interior surface of glass
+		//
+		answer refract index (color * .9);
+	else
+		diffuse_color = (diffuse + ambient) * .1;
+		specular_color = specular 40 * highlight_color;
+		reflected_color = reflect (highlight_color * .1);
+		transmitted_color = refract index (color * .9);
+		answer diffuse_color + specular_color + reflected_color + transmitted_color;
+	end;
+end;    // glassy_specular
+
+shader transparent
+	color type color;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	global color = color;
+is
+	const scalar index = 1;
+	color type diffuse_color, specular_color;
+	color type reflected_color, transmitted_color;
+
+	if shadow_ray or ray_inside then
+
+		// no reflection off interior surface of glass
+		//
+		answer refract index (color * .9);
+	else
+		diffuse_color = (diffuse + ambient) * .1;
+		specular_color = specular 40;
+		reflected_color = reflect (white * .1);
+		transmitted_color = refract index (color * .9);
+		answer diffuse_color + specular_color + reflected_color + transmitted_color;
+	end;
+end;    // transparent
+
+shader foggy
+	color type color;
+	factor scalar factor = 1;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	global color = color;
+is
+	color type transmitted_color;
+	scalar fog_density;
+
+	if ray_inside then
+		fog_density = sqr (1 - (1 / (1 + distance / factor)));
+		transmitted_color = refract 1 (white * (1 - fog_density));
+		answer transmitted_color + (color * fog_density);
+	else
+		answer refract 1 white;
+	end;
+end;    // foggy
+
+shader fuzzy
+	color type color;
+	factor scalar factor = 1;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	global color = color;
+is
+	color type transmitted_color;
+	scalar fuzz_density;
+	scalar fuzz_factor = 5;
+
+	if shadow_ray then
+		color = black;
+	end;
+	fuzz_density = abs (normal dot direction) ^ fuzz_factor / 2 * factor;
+	transmitted_color = refract 1 (white * (1 - fuzz_density));
+
+	answer transmitted_color + (color * fuzz_density);
+end;    // fuzzy
+
+shader fog_resistant
+	color type color;
+is
+	set_distance to 0;
+	answer color;
+end;    // fog_resistant
+
+shader mirror
+	color type color;
+with
+	global color = color;
+is
+	answer (reflect color + color) / 2;
+end;    // mirror
+
+shader invisible
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	color = <1 1 1>;
+is
+	answer refract 1 white;
+end;    // invisible
+
+shader ghost
+	color type color;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	color = <1 1 1>;
+is
+	// ghosts only show up in mirrors
+	//
+	if reflection_level = 0 then
+		answer refract 1 white;
+	else
+		answer color;
+	end;
+end;    // ghost
+
+shader vampire
+	color type color;
+with
+	render_mode is wireframe;
+	edges is silhouette;
+	color = <1 1 1>;
+is
+	// vampires dont show up in mirrors
+	//
+	if reflection_level > 0 then
+		answer refract 1 white;
+	else
+		answer color;
+	end;
+end;    // vampire
+
+shader shadowless
+	color type color;
+is
+	// if shadow ray then go through
+	//
+	if shadow_ray then
+		answer refract 1 white;
+	else
+		answer color;
+	end;
+end;    // shadowless

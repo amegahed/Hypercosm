@@ -1,0 +1,128 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         3ds_spot_light.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains spot light definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_lights.ores";
+include "system/native_shapes.ores";
+include "system/marks.ores";
+
+shape translated_3ds_spot_light
+	at vector location = <0 0 0>;
+	to vector direction = <0 0 -1>;
+with
+	// color and brightness
+	//
+	color type color = white;
+	scalar intensity = 1;
+	scalar falloff_size = 45;
+	scalar scale = 1;
+	
+	// state parameters
+	//
+	boolean on is true;
+	boolean shadow is false;
+	boolean visible is false;    
+is    
+	direction = normalized direction;
+	
+	if on then
+		spot_light towards direction with
+			brightness = sqrt intensity;
+			color = static color;
+			shadows is shadow;
+			angle = falloff_size;
+			magnify by scale;
+			move to location;
+		end;
+	end;
+	
+	// draw direct light icon if visible
+	//    
+	if visible then
+		mark at location of circle as drawn in three_d with
+			size = mark_size * scale;
+				
+			if on then
+				color = static color;
+			else
+				color = black;
+			end;
+		end;
+		
+		mark at location of x as drawn in three_d with
+			size = mark_size * scale * 2;
+			
+			if on then
+				color = static color;
+			else
+				color = black;
+			end;
+		end;
+		
+		line [(location + direction * scale) location] with
+			if on then
+				global color = static color;
+			else
+				global color = black;
+			end;
+		end;
+		
+		cone with
+			radius1 = 0;
+			radius2 = intensity * scale / 2;
+			end1 = location;
+			end2 = location + direction * scale;
+			
+			if on then
+				global color = static color;
+			else
+				global color = black;
+			end;
+			render_mode is wireframe;
+			edges is silhouette;
+		end;        
+	end;
+end;    // translated_3ds_spot_light
+
+shape translated_3ds_targeted_spot_light
+	at vector location = <0 0 0>;
+	to vector point;
+with
+	// color and brightness
+	//
+	color type color = white;
+	scalar intensity = 1;
+	scalar falloff_size = 45;
+	scalar scale = 1;
+	
+	// state parameters
+	//
+	boolean on is true;
+	boolean shadow is false;
+	boolean visible is false;
+is
+	translated_3ds_spot_light at location to (point - location) with
+	
+		// color and brightness
+		//
+		color = static color;
+		intensity = static intensity;
+		falloff_size = static falloff_size;
+		scale = static scale;
+		
+		// state parameters
+		//
+		on is static on;
+		shadow is static shadow;
+		visible is static visible;
+	end;
+end;    // translated_3ds_targeted_spot_light

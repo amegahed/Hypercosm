@@ -1,0 +1,2932 @@
+{***************************************************************}
+{                        simple_font.ores                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{      Contains the definition of Hypercosm's Simple font,      }
+{      which is composed of basic geometric shapes in order     }
+{      to minimize the size of files that use 3D text.          }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+
+include "native_math.ores";
+include "native_shapes.ores";
+include "native_rendering.ores";
+include "glyphs.ores";
+include "transformations.ores";
+
+
+subject simple_plain_set
+extends
+    glyph_set
+does
+    verb new;
+    scalar question glyph_spacing;
+    scalar question ascent_line;
+    scalar question base_line;
+    scalar question descent_line;
+is
+    integer facet_threshold = 4;    // If the global facets variable
+                                    // is less than facet_threshold,
+                                    // then full rings are drawn using
+                                    // two half rings.    
+
+    // glyph characteristics:
+    //
+    scalar question glyph_spacing is
+        answer 1;
+    end;
+    
+    scalar question ascent_line is
+        answer 3;
+    end;
+    
+    scalar question base_line is
+        answer -3;
+    end;
+    
+    scalar question descent_line is
+        answer -5;
+    end;
+
+
+    // glyphs:
+    
+    // A (uppercase)
+    //
+    objective shape upper_a with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2.2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <1.5 0 6>;
+        end;
+        parallelogram with
+            vertex = <2.2 0 -3>;
+            side1 = <-1 0 0>;
+            side2 = <-1.5 0 6>;
+        end;
+        parallelogram with
+            vertex = <-1 0 -2>;
+            side1 = <2 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // upper_a2
+    
+    
+    // B (uppercase)
+    //
+    objective shape upper_b with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.25>;
+            inner_radius = .75;
+            outer_radius = 1.75;
+            umin = -90;
+            umax = 90;
+            normal = <0 1 0>;
+            scale by (2/1.75) along <1 0 0> about center;
+        end;   
+        ring with
+            center = <0 0 -1.25>;
+            inner_radius = .75;
+            outer_radius = 1.75;
+            umin = -90;
+            umax = 90;
+            normal = <0 1 0>;
+            scale by (2/1.75) along <1 0 0> about center;
+        end;   
+    
+        polygon [<-2 0 3> <-1 0 3> <-1 0 -3> <-2 0 -3>];
+        polygon [<-1 0 3> <0 0 3> <0 0 2> <-1 0 2>];
+        polygon [<-1 0 .5> <0 0 .5> <0 0 -.5> <-1 0 -.5>];
+        polygon [<-1 0 -2> <0 0 -2> <0 0 -3> <-1 0 -3>];
+    end;    // upper_b2
+    
+    
+    // C (uppercase)
+    //
+    objective shape upper_c with
+        scalar depth = 0;
+    is
+        ring with
+            center = <.05 0 1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umax = 169.1193;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <.05 0 -1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umin = 190.8807;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <5.5125 0 0>;
+            inner_radius = 6.5125;
+            outer_radius = 7.5125;
+            umin = 169.1193;
+            umax = 190.8807;
+            normal = <0 -1 0>;
+        end;
+    end;    // upper_c2
+    
+    
+    // D (uppercase)
+    //
+    objective shape upper_d with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-1 0 2>;
+            side1 = <.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-1 0 -3>;
+            side1 = <.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        
+        ring with
+            center = <-.5 0 .6>;
+            inner_radius = 1.4;
+            outer_radius = 2.4;
+            umin = 18.9246;
+            umax = 90;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.5 0 -.6>;
+            inner_radius = 1.4;
+            outer_radius = 2.4;
+            umin = 270;
+            umax = 341.0754;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-2.25 0 0>;
+            inner_radius = 3.25;
+            outer_radius = 4.25;
+            umin = -18.9246;
+            umax = 18.9246;
+            normal = <0 -1 0>;
+        end;
+    end;    // upper_d2
+    
+    
+    // E (uppercase)
+    //
+    objective shape upper_e with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-.75 0 2>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-.75 0 -.5>;
+            side1 = <1.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-.75 0 -3>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // upper_e2
+    
+    
+    // F (uppercase)
+    //
+    objective shape upper_f with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.65 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-.65 0 2>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-.65 0 -.5>;
+            side1 = <1.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // upper_f2
+    
+    
+    // G (uppercase)
+    //
+    objective shape upper_g with
+        scalar depth = 0;
+    is
+        ring with
+            center = <.05 0 1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umax = 169.1193;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <.05 0 -1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umin = 190.8807;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <5.5125 0 0>;
+            inner_radius = 6.5125;
+            outer_radius = 7.5125;
+            umin = 169.1193;
+            umax = 190.8807;
+            normal = <0 -1 0>;
+        end;
+        
+        parallelogram with
+            vertex = <0 0 -.65>;
+            side1 = <2 0 0>;
+            side2 = <0 0 .8>;
+        end;
+        parallelogram with
+            vertex = <1 0 -1.05>;
+            side1 = <1 0 0>;
+            side2 = <0 0 .4>;
+        end;
+    end;    // upper_g2
+    
+    
+    // H (uppercase)
+    //
+    objective shape upper_h with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-1 0 -.5>;
+            side1 = <2 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <1 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end; 
+    end;    // upper_h2
+    
+    
+    // I (uppercase)
+    //
+    objective shape upper_i with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.55 0 -3>;
+            side1 = <1.1 0 0>;
+            side2 = <0 0 6>;
+        end;
+    end;    // upper_i2
+    
+    
+    // J (uppercase)
+    //
+    objective shape upper_j with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <1 0 -1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        ring with
+            center = <0 0 -1>;
+            inner_radius = 1;
+            outer_radius = 2;
+            umin = 195;
+            normal = <0 -1 0>;
+        end;        
+    end;    // upper_j2
+    
+    
+    // K (uppercase)
+    //
+    objective shape upper_k with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        polygon [<.75 0 3> <2 0 3> <-1 0 -1> <-1 0 .66667>];
+        parallelogram with
+            vertex = <2 0 -3>;
+            side1 = <-1.2 0 0>;
+            side2 = <-2 0 (10/3)>;
+        end;
+    end;    // upper_k2
+    
+    
+    // L (uppercase)
+    //
+    objective shape upper_l with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with  
+            vertex = <-.75 0 -3>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // upper_l2
+    
+    
+    // M (uppercase)
+    //
+    objective shape upper_m with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-1.8 0 3>;
+            side1 = <1 0 0>;
+            side2 = <1.3 0 -6>;
+        end;
+        parallelogram with
+            vertex = <.8 0 3>;
+            side1 = <1 0 0>;
+            side2 = <-1.3 0 -6>;
+        end; 
+        parallelogram with
+            vertex = <1.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end; 
+    end;    // upper_m2
+    
+    
+    // N (uppercase)
+    //
+    objective shape upper_n with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <1 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-1 0 3>;
+            side1 = <2 0 -3.8367>;
+            side2 = <0 0 -2.1633>;
+        end;
+    end;    // upper_n2
+    
+    
+    // O (uppercase)
+    //
+    objective shape upper_o with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umin = 10.8807;
+            umax = 169.1193;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-5.4625 0 0>;
+            inner_radius = 6.5125;
+            outer_radius = 7.5125;
+            umin = 349.1193;
+            umax = 10.8807;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <0 0 -1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umin = 190.8807;
+            umax = 349.1193;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <5.4625 0 0>;
+            inner_radius = 6.5125;
+            outer_radius = 7.5125;
+            umin = 169.1193;
+            umax = 190.8807;
+            normal = <0 -1 0>;
+        end;
+    end;    // upper_o2
+    
+    
+    // P (uppercase)
+    //
+    objective shape upper_p with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.9 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-.9 0 2>;
+            side1 = <1 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-.9 0 -1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 1>;
+        end;
+    
+        ring with
+            center = <.1 0 1>;
+            inner_radius = 1;
+            outer_radius = 2;
+            umin = -90;
+            umax = 90;
+            normal = <0 -1 0>;
+        end;
+    end;    // upper_p2
+    
+    
+    // Q (uppercase)
+    //
+    objective shape upper_q with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umin = 10.8807;
+            umax = 169.1193;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-5.4625 0 0>;
+            inner_radius = 6.5125;
+            outer_radius = 7.5125;
+            umin = 349.1193;
+            umax = 10.8807;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <0 0 -1.05>;
+            inner_radius = .95;
+            outer_radius = 1.95;
+            umin = 190.8807;
+            umax = 349.1193;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <5.4625 0 0>;
+            inner_radius = 6.5125;
+            outer_radius = 7.5125;
+            umin = 169.1193;
+            umax = 190.8807;
+            normal = <0 -1 0>;
+        end;
+        parallelogram with
+            vertex = <2 0 -3>;
+            side1 = <-1 0 0>;
+            side2 = <-1.5 0 2.75>;
+        end;
+    end;    // upper_q2
+    
+    
+    // R (uppercase)
+    //
+    objective shape upper_r with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-1 0 2>;
+            side1 = <1 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-1 0 -1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 1>;
+        end;
+    
+        ring with
+            center = <0 0 1>;
+            inner_radius = 1;
+            outer_radius = 2;
+            umin = -90;
+            umax = 90;
+            normal = <0 -1 0>;
+        end;
+    
+        parallelogram with
+            vertex = <2 0 -3>;
+            side1 = <-1.1 0 0>;
+            side2 = <-1.5 0 3>;
+        end;
+    end;    // upper_r2
+    
+    
+    // S (uppercase)
+    //
+    objective shape upper_s with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umax = 270;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <1 0 0> about center;
+            end;
+            ring with
+                center = <0 0 -1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = -180;
+                umax = 90;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <1 0 0> about center;
+            end;
+        else
+            ring with
+                center = <0 0 1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umax = 135;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <1 0 0> about center;
+            end;
+            ring with
+                center = <0 0 1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = 135;
+                umax = 270;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <1 0 0> about center;
+            end;
+            ring with
+                center = <0 0 -1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = -45;
+                umax = 90;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <1 0 0> about center;
+            end;
+            ring with
+                center = <0 0 -1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = -180;
+                umax = -45;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <1 0 0> about center;
+            end;
+        end;
+    end;    // upper_s2
+    
+    
+    // T (uppercase)
+    //
+    objective shape upper_t with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 2>;
+            side1 = <3.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 5>;
+        end;
+    end;    // upper_t2
+    
+    
+    // U (uppercase)
+    //
+    objective shape upper_u with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        parallelogram with
+            vertex = <1 0 -1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        ring with
+            center = <0 0 -1>;
+            inner_radius = 1;
+            outer_radius = 2;
+            umin = 180;
+            normal = <0 -1 0>;
+        end;
+    end;    // upper_u2
+    
+    
+    // V (uppercase)
+    //
+    objective shape upper_v with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 3>;
+            side1 = <1 0 0>;
+            side2 = <1.5 0 -6>;
+        end;
+        parallelogram with
+            vertex = <2 0 3>;
+            side1 = <-1 0 0>;
+            side2 = <-1.5 0 -6>;
+        end; 
+    end;    // upper_v2
+    
+    
+    // W (uppercase)
+    //
+    objective shape upper_w with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-3 0 3>;
+            side1 = <1 0 0>;
+            side2 = <1.25 0 -6>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 3>;
+            side1 = <1 0 0>;
+            side2 = <-1.25 0 -6>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 3>;
+            side1 = <1 0 0>;
+            side2 = <1.25 0 -6>;
+        end;
+        parallelogram with
+            vertex = <2 0 3>;
+            side1 = <1 0 0>;
+            side2 = <-1.25 0 -6>;
+        end;
+    end;    // upper_w2
+    
+    
+    // X (uppercase)
+    //
+    objective shape upper_x with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 3>;
+            side1 = <1.1 0 0>;
+            side2 = <2.9 0 -6>;
+        end;
+        parallelogram with
+            vertex = <2 0 3>;
+            side1 = <-1.1 0 0>;
+            side2 = <-2.9 0 -6>;
+        end;    
+    end;    // upper_x2
+    
+    
+    // Y (uppercase)
+    //
+    objective shape upper_y with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 3>;
+            side1 = <1 0 0>;
+            side2 = <1.5 0 -3.5>;
+        end;
+        parallelogram with
+            vertex = <2 0 3>;
+            side1 = <-1 0 0>;
+            side2 = <-1.5 0 -3.5>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 2.5>;
+        end;
+    end;    // upper_y2
+    
+    
+    // Z (uppercase)
+    //
+    objective shape upper_z with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 2>;
+            side1 = <4 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <2 0 2>;
+            side1 = <-1.2 0 0>;
+            side2 = <-2.8 0 -4>;
+        end;
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <4 0 0>;
+            side2 = <0 0 1>;
+        end;    
+    end;    // upper_z2
+    
+    
+    // a (lowercase)
+    //
+    objective shape lower_a with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <-.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;   
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+    
+        parallelogram with  
+            vertex = <1 0 1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -4>;
+        end;
+    end;    // lower_a2
+    
+    
+    // b (lowercase)
+    //
+    objective shape lower_b with
+        scalar depth = 0;
+    is
+        parallelogram with  
+            vertex = <-2 0 3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -6>;
+        end;
+        
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+    end;    // lower_b2
+    
+    
+    // c (lowercase)
+    //
+    objective shape lower_c with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1.5;
+                outer_radius = 2;
+                umin = 30;
+                umax = 330;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = .9703;
+                outer_radius = 1.75;
+                umin = asin (.4375/.9703);
+                umax = 360 - asin (.4375/.9703);
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 30;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                umax = 330;
+                normal = <0 -1 0>;
+            end;
+        end;
+
+        polygon [<(cos 30) 0 -.5> <(2 * cos 30) 0 0> <1.9365 0 -.5>];
+        polygon [<(cos 30) 0 -1.5> <(2 * cos 30) 0 -2> <1.9365 0 -1.5>];
+    end;    // lower_c2
+    
+    
+    // d (lowercase)
+    //
+    objective shape lower_d with
+        scalar depth = 0;
+    is
+        parallelogram with  
+            vertex = <1 0 3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -6>;
+        end;
+        
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <-.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;   
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;   
+    end;    // lower_d2
+    
+    
+    // e (lowercase)
+    //
+    objective shape lower_e with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1.5;
+                outer_radius = 2;
+                umax = 360 - atan (.7/.7905);
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.75;
+                umax = 360 - asin (.6125);
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1.058;
+                outer_radius = 2;
+                umin = 0;
+                umax = 175;
+                normal = <0 -1 0>;
+            end;   
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1.058;
+                outer_radius = 2;
+                umin = 175;
+                umax = 360 - atan (.7/.7905);
+                normal = <0 -1 0>;
+            end;
+        end;
+        
+        polygon [<.7905 0 -1.7> <1.497 0 -2.326> <sqrt(3.51) 0 -1.7>];
+        polygon [<-1.5 0 -.6> <1.5 0 -.6> <2 0 -1> <2 0 -1.2> <-1.5 0 -1.2>];        
+    end;    // lower_e2
+    
+    
+    // f (lowercase)
+    //
+    objective shape lower_f with
+        scalar depth = 0;
+    is
+        ring with
+            center = <.5 0 1.65>;
+            inner_radius = .25;
+            outer_radius = 1.25;
+            umin = 112.62;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <1 0 .45>;
+            inner_radius = 1.55;
+            outer_radius = 2.55;
+            umin = 75;
+            umax = 112.62;
+            normal = <0 -1 0>;
+        end;
+        
+        parallelogram with
+            vertex = <-.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4.65>;
+        end;
+        parallelogram with
+            vertex = <-1.25 0 0>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // lower_f2
+    
+    
+    // g (lowercase)
+    //
+    objective shape lower_g with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <-.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;   
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+    
+        parallelogram with  
+            vertex = <1 0 1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -4.2>;
+        end;
+        
+        ring with
+            center = <-.1 0 -3.2>;
+            inner_radius = 1.1;
+            outer_radius = 2.1;
+            umin = 210;
+            normal = <0 -1 0>;
+            scale by (1.8/2.1) along <0 0 1> about center;
+        end;
+    end;    // lower_g2
+    
+    
+    // h (lowercase)
+    //
+    objective shape lower_h with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 2.5>;
+        end;
+    
+        ring with
+            center = <0 0 -.5>;
+            inner_radius = .75;
+            outer_radius = 1.25;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <.25 0 -.5>;
+            inner_radius = .95;
+            outer_radius = 1.5;
+            umax = 144;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_h2
+    
+    
+    // i (lowercase)
+    //
+    objective shape lower_i with
+        scalar depth = 0;
+    is
+        disk with
+            center = <0 0 2.4>;
+            radius = .6;
+            normal = <0 -1 0>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+    end;    // lower_i2
+    
+    
+    // j (lowercase)
+    //
+    objective shape lower_j with
+        scalar depth = 0;
+    is
+        disk with
+            center = <.25 0 2.4>;
+            radius = .6;
+            normal = <0 -1 0>;
+        end;
+        parallelogram with
+            vertex = <-.25 0 -3.5>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4.5>;
+        end;
+        ring with
+            center = <-.75 0 -3.5>;
+            inner_radius = .5;
+            outer_radius = 1.5;
+            umin = 240;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_j2
+    
+    
+    // k (lowercase)
+    //
+    objective shape lower_k with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        polygon [<.6 0 1> <2 0 1> <-1 0 -2> <-1 0 -.6>];
+        parallelogram with
+            vertex = <2 0 -3>;
+            side1 = <-1.2 0 0>;
+            side2 = <-1.8 0 2.4>;
+        end;
+    end;    // lower_k2
+    
+    
+    // l (lowercase)
+    //
+    objective shape lower_l with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+    end;    // lower_l2
+    
+    
+    // m (lowercase)
+    //
+    objective shape lower_m with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 2.75>;
+        end; 
+        parallelogram with
+            vertex = <1.5 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 2.75>;
+        end;
+     
+        ring with
+            center = <-1 0 -.25>;
+            inner_radius = .5;
+            outer_radius = 1;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.75 0 -.25>;
+            inner_radius = .7;
+            outer_radius = 1.25;
+            umax = 145;
+            normal = <0 -1 0>;
+        end;
+    
+        ring with
+            center = <1 0 -.25>;
+            inner_radius = .5;
+            outer_radius = 1;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <1.25 0 -.25>;
+            inner_radius = .7;
+            outer_radius = 1.25;
+            umax = 145;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_m2
+    
+    
+    // n (lowercase)
+    //
+    objective shape lower_n with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        parallelogram with
+            vertex = <.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 2.5>;
+        end;
+    
+        ring with
+            center = <0 0 -.5>;
+            inner_radius = .75;
+            outer_radius = 1.25;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <.25 0 -.5>;
+            inner_radius = .95;
+            outer_radius = 1.5;
+            umax = 144;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_n2
+    
+    
+    // o (lowercase)
+    //
+    objective shape lower_o with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1.5;
+                outer_radius = 2;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.75;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+    end;    // lower_o2
+    
+    
+    // p (lowercase)
+    //
+    objective shape lower_p with
+        scalar depth = 0;
+    is
+        parallelogram with  
+            vertex = <-2 0 1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -6>;
+        end;
+        
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+    end;    // lower_p2
+    
+    
+    // q (lowercase)
+    //
+    objective shape lower_q with
+        scalar depth = 0;
+    is
+        parallelogram with  
+            vertex = <1 0 1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -6>;
+        end;
+        
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <-.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;   
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+    end;    // lower_q2
+    
+    
+    // r (lowercase)
+    //
+    objective shape lower_r with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.4 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        
+        ring with
+            center = <.6 0 -1>;
+            inner_radius = 1;
+            outer_radius = 1.5;
+            umin = 60;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <.85 0 ((.25 * sqrt_3) - 1)>;
+            inner_radius = .9;
+            outer_radius = (2 - (.25 * sqrt_3));
+            umin = 60;
+            umax = 155;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_r2
+    
+    
+    // s (lowercase)
+    //
+    objective shape lower_s with
+        scalar depth = 0;
+    is
+        ring with
+            center = <.65 0 -.22536>;
+            inner_radius = .2;
+            outer_radius = 1.1;
+            umax = 68.1677;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <0 0 -1.8479>;
+            inner_radius = 1.9479;
+            outer_radius = 2.8479;
+            umin = 68.1677;
+            umax = 111.8323;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.65 0 -.22536>;
+            inner_radius = .2;
+            outer_radius = 1.1;
+            umin = 111.8323;
+            umax = 260;
+            normal = <0 -1 0>;
+        end;
+    
+        parallelogram with
+            vertex = <-.77464 0 -1.45>;
+            side1 = <1.54928 0 0>;
+            side2 = <0 0 .9>;
+            rotate by 10 around <0 1 0> about <0 0 -1>;
+        end;
+        
+        rotate by 180 around <0 1 0> about <0 0 -1>;
+        ring with
+            center = <.65 0 -.22536>;
+            inner_radius = .2;
+            outer_radius = 1.1;
+            umax = 68.1677;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <0 0 -1.8479>;
+            inner_radius = 1.9479;
+            outer_radius = 2.8479;
+            umin = 68.1677;
+            umax = 111.8323;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.65 0 -.22536>;
+            inner_radius = .2;
+            outer_radius = 1.1;
+            umin = 111.8323;
+            umax = 260;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_s2
+    
+    
+    // t (lowercase)
+    //
+    objective shape lower_t with
+        scalar depth = 0;
+    is
+        polygon [<-.85 0 2> <.15 0 2.25> <.15 0 -1.5> <-.85 0 -1.5>];
+        parallelogram with
+            vertex = <-1.35 0 0>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+    
+        ring with
+            center = <.65 0 -1.5>;
+            inner_radius = .5;
+            outer_radius = 1.5;
+            umin = 180;
+            umax = 300;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_t2
+    
+    
+    // u (lowercase)
+    //
+    objective shape lower_u with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <.75 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 4>;
+        end;
+        parallelogram with
+            vertex = <-1.75 0 -1.5>;
+            side1 = <1 0 0>;
+            side2 = <0 0 2.5>;
+        end;
+        
+        ring with
+            center = <0 0 -1.5>;
+            inner_radius = .75;
+            outer_radius = 1.25;
+            umin = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.25 0 -1.5>;
+            inner_radius = .95;
+            outer_radius = 1.5;
+            umin = 180;
+            umax = 324;
+            normal = <0 -1 0>;
+        end;
+    end;    // lower_u2
+    
+    
+    // v (lowercase)
+    //
+    objective shape lower_v with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 1>;
+            side1 = <1.05 0 0>;
+            side2 = <1.475 0 -4>;
+        end;
+        parallelogram with
+            vertex = <2 0 1>;
+            side1 = <-1.05 0 0>;
+            side2 = <-1.475 0 -4>;
+        end; 
+    end;    // lower_v2
+    
+    
+    // w (lowercase)
+    //
+    objective shape lower_w with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2.5 0 1>;
+            side1 = <1 0 0>;
+            side2 = <1 0 -4>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 1>;
+            side1 = <1 0 0>;
+            side2 = <-1 0 -4>;
+        end;
+        parallelogram with
+            vertex = <-.5 0 1>;
+            side1 = <1 0 0>;
+            side2 = <1 0 -4>;
+        end;
+        parallelogram with
+            vertex = <1.5 0 1>;
+            side1 = <1 0 0>;
+            side2 = <-1 0 -4>;
+        end;
+    end;    // lower_w2
+    
+    
+    // x (lowercase)
+    //
+    objective shape lower_x with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 1>;
+            side1 = <1.2 0 0>;
+            side2 = <2.8 0 -4>;
+        end;
+        parallelogram with
+            vertex = <2 0 1>;
+            side1 = <-1.2 0 0>;
+            side2 = <-2.8 0 -4>;
+        end;    
+    end;    // lower_x2
+    
+    
+    // y (lowercase)
+    //
+    objective shape lower_y with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 1>;
+            side1 = <1.05 0 0>;
+            side2 = <1.475 0 -4>;
+        end;
+        parallelogram with
+            vertex = <2 0 1>;
+            side1 = <-1.05 0 0>;
+            side2 = <-2.2125 0 -6>;
+        end; 
+    end;    // lower_y2
+    
+    
+    // z (lowercase)
+    //
+    objective shape lower_z with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.8 0 .1>;
+            side1 = <3.6 0 0>;
+            side2 = <0 0 .9>;
+        end;
+        parallelogram with
+            vertex = <.5 0 .1>;
+            side1 = <1.3 0 0>;
+            side2 = <-2.3 0 -2.2>;
+        end;
+        parallelogram with
+            vertex = <-1.8 0 -3>;
+            side1 = <3.6 0 0>;
+            side2 = <0 0 .9>;
+        end;    
+    end;    // lower_z2
+
+
+    // 0 (zero)
+    //
+    objective shape zero with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.3>;
+            inner_radius = .7;
+            outer_radius = 1.7;
+            umin = 4.4052;
+            umax = 175.5948;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-16.875 0 0>;
+            inner_radius = 17.625;
+            outer_radius = 18.625;
+            umin = 355.5948;
+            umax = 4.4052;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <0 0 -1.3>;
+            inner_radius = .7;
+            outer_radius = 1.7;
+            umin = 184.4052;
+            umax = 355.5948;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <16.875 0 0>;
+            inner_radius = 17.625;
+            outer_radius = 18.625;
+            umin = 175.5948;
+            umax = 184.4052;
+            normal = <0 -1 0>;
+        end;
+    end;    // zero        
+
+    
+    // 1
+    //
+    objective shape one with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.2 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        
+        ring with
+            center = <-1.2 0 3>;
+            inner_radius = 1;
+            outer_radius = 2;
+            umin = 270;
+            normal = <0 -1 0>;
+            //scale by 1.2 along <0 0 1> about center;
+        end;
+     end;   // one
+
+
+    // 2
+    //
+    objective shape two with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = -36.0319;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+        else
+            ring with
+                center = <0 0 1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = 72;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 1.25>;
+                inner_radius = .75;
+                outer_radius = 1.75;
+                umin = -36.0319;
+                umax = 72;
+                normal = <0 -1 0>;
+            end;
+        end;
+                
+        parallelogram with
+            vertex = <(-.75 * cos 36.0319) 0 (-3 + .75 * sin 36.0319)>;
+            side1 = <(-cos 36.0319) 0 (sin 36.0319)>;
+            side2 = <(2.5 * cos 36.0319) 0 ((2.5 * cos 36.0319)/(tan 36.0319))>;
+        end;
+        
+        ring with
+            center = <0 0 -3>;
+            inner_radius = .75;
+            outer_radius = 1.75;
+            umin = 143.9681;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        
+        parallelogram with
+            vertex = <-1 0 -3>;
+            side1 = <2.75 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // two
+
+    // 3
+    //
+    objective shape three with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.2947>;
+            inner_radius = .7053;
+            outer_radius = 1.7053;
+            umin = 0;
+            umax = 165;
+            normal = <0 -1 0>;
+        end;            
+        ring with
+            center = <0 0 1.2947>;
+            inner_radius = .7053;
+            outer_radius = 1.7053;
+            umin = -90;
+            umax = 0;
+            normal = <0 -1 0>;
+            scale by (.6347/.7053) along <0 0 1> about center;
+        end;            
+
+        polygon [<-.4 0 -.28> <-.3 0 .66> <0 0 .66> <0 0 -.24>];
+
+        ring with
+            center = <0 0 -1.0737>;
+            inner_radius = .9263;
+            outer_radius = 1.9263;
+            umin = 0;
+            umax = 90;
+            normal = <0 -1 0>;
+            scale by (.8337/.9263) along <0 0 1> about center;
+        end;
+        ring with
+            center = <0 0 -1.0737>;
+            inner_radius = .9263;
+            outer_radius = 1.9263;
+            umin = -165;
+            umax = 0;
+            normal = <0 -1 0>;
+        end;
+    end;    // three
+
+
+    // 4
+    //
+    objective shape four with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <.25 0 -3>;
+            side1 = <1 0 0>;
+            side2 = <0 0 6>;
+        end;
+        parallelogram with
+            vertex = <-2 0 -2>;
+            side1 = <4 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <.25 0 3>;
+            side1 = <1 0 0>;
+            side2 = <-2.25 0 -4>;
+        end;
+    end;    // four
+
+
+    // 5
+    //
+    objective shape five with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.4 0 2>;
+            side1 = <3.15 0 0>;
+            side2 = <0 0 1>;
+        end;
+        parallelogram with
+            vertex = <-1.75 0 0>;
+            side1 = <.9859 0 0>;
+            side2 = <0 0 3.0265>;
+            rotate by -7.595 around <0 -1 0> about vertex;
+        end;
+        ring with
+            center = <.1 0 -1>;
+            inner_radius = 1.2;
+            outer_radius = 1.7;
+            umax = 135;
+            normal = <0 -1 0>;
+            scale by (2/1.7) along <0 0 1> about center;
+        end;
+        ring with
+            center = <0 0 -1>;
+            inner_radius = 1.1634;
+            outer_radius = 1.8;
+            umax = 131.62;
+            normal = <0 -1 0>;
+            scale by (1.5727/1.9361) along <1 0 0> about <-.7727 0 0>;
+        end;
+        ring with
+            center = <-.075 0 -1.125>;
+            inner_radius = .875;
+            outer_radius = 1.875;
+            umin = -165;
+            umax = 0;
+            normal = <0 -1 0>;
+            scale by (2/1.875) along <0 0 1> about <0 0 -3>;
+        end;
+    end;    // five
+
+
+    // 6
+    //
+    objective shape six with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.3>;
+            inner_radius = .7;
+            outer_radius = 1.7;
+            umin = 12;
+            umax = 175.5948;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <16.875 0 0>;
+            inner_radius = 17.625;
+            outer_radius = 18.625;
+            umin = 175.5948;
+            umax = 184.4052;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <0 0 -1.3>;
+            inner_radius = .7;
+            outer_radius = 1.7;
+            umin = 184.4052;
+            umax = 341.0754;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.875 0 -1>;
+            inner_radius = 1.625;
+            outer_radius = 2.625;
+            umin = -18.9246;
+            umax = 18.9246;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <(-.02 * cos 18.9246) 0 (-.7 - .02 * sin 18.9246)>;
+            inner_radius = .72;
+            outer_radius = 1.22;
+            umin = 18.9246;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <(.25 * cos 18.9246) 0 (-.7 + .25 * sin 18.9246)>;
+            inner_radius = .9;
+            outer_radius = 1.45;
+            umin = 18.9246;
+            umax = 150;
+            normal = <0 -1 0>;
+        end;
+    end;    // six
+
+
+    // 7
+    //
+    objective shape seven with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 2>;
+            side1 = <3.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        
+        ring with
+            center = <7 0 -3>;
+            inner_radius = 7.25;
+            outer_radius = 8.25;
+            umin = 136.3972;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+    end;    // seven
+
+
+    // 8
+    //
+    objective shape eight with
+        scalar depth = 0;
+    is
+        ring with
+            center = <0 0 1.2947>;
+            inner_radius = .7053;
+            outer_radius = 1.7053;
+            umin = 0;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;            
+        ring with
+            center = <0 0 1.2947>;
+            inner_radius = .7053;
+            outer_radius = 1.7053;
+            umin = -180;
+            umax = 0;
+            normal = <0 -1 0>;
+            scale by (.6347/.7053) along <0 0 1> about center;
+        end;            
+        ring with
+            center = <0 0 -1.0737>;
+            inner_radius = .9263;
+            outer_radius = 1.9263;
+            umin = 0;
+            umax = 180;
+            normal = <0 -1 0>;
+            scale by (.8337/.9263) along <0 0 1> about center;
+        end;
+        ring with
+            center = <0 0 -1.0737>;
+            inner_radius = .9263;
+            outer_radius = 1.9263;
+            umin = -180;
+            umax = 0;
+            normal = <0 -1 0>;
+        end;
+    end;    // eight
+
+
+    // 9
+    //
+    objective shape nine with
+        scalar depth = 0;
+    is
+        six with
+            rotate by 180 around <0 1 0>;
+        end;
+    end;    // nine
+
+
+    // . (period)
+    //
+    objective shape period with
+        scalar depth = 0;
+    is
+        disk with
+            center = <0 0 -2.4>;
+            radius = .6;
+            normal = <0 -1 0>;
+        end;
+    end;    // period
+    
+    
+    // : (colon)
+    //
+    objective shape colon with
+        scalar depth = 0;
+    is
+        period;
+        
+        disk with
+            center = <0 0 .4>;
+            radius = .6;
+            normal = <0 -1 0>;
+        end;
+    end;    // colon
+    
+    
+    // , (comma)
+    //
+    objective shape comma with
+        scalar depth = 0;
+    is
+        disk with
+            center = <0 0 -2.4>;
+            radius = .6;
+            normal = <0 -1 0>;
+        end;
+        
+        ring with
+            center = <-1.4 0 -2.4>;
+            inner_radius = 1.6;
+            outer_radius = 2;
+            umin = 300;
+            normal = <0 -1 0>;
+        end;
+    end;    // comma
+    
+    
+    // ; (semi-colon)
+    //
+    objective shape semi_colon with
+        scalar depth = 0;
+    is
+        comma;
+        
+        disk with
+            center = <0 0 .4>;
+            radius = .6;
+            normal = <0 -1 0>;
+        end;
+    end;    // semi_colon
+    
+    
+    // - (hyphen)
+    //
+    objective shape hyphen with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.25 0 -1>;
+            side1 = <2.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+    end;    // hyphen
+    
+    
+    // + (plus sign)
+    //
+    objective shape plus with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 -.5>;
+            side1 = <3.5 0 0>;
+            side2 = <0 0 1>;
+        end;
+        
+        parallelogram with
+            vertex = <-.5 0 -1.75>;
+            side1 = <1 0 0>;
+            side2 = <0 0 3.5>;
+        end;
+    end;    // plus
+    
+    
+    // = (equal sign)
+    //
+    objective shape equal with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 .25>;
+            side1 = <3.5 0 0>;
+            side2 = <0 0 .75>;
+        end;
+        
+        parallelogram with
+            vertex = <-1.75 0 -1.25>;
+            side1 = <3.5 0 0>;
+            side2 = <0 0 .75>;
+        end;
+    end;    // equal
+    
+    
+    // ? (question mark)
+    //
+    objective shape question_mark with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 1.1>;
+                inner_radius = .9;
+                outer_radius = 1.9;
+                umin = -67.38;
+                umax = 175;
+                normal = <0 -1 0>;
+            end;
+        else
+            ring with
+                center = <0 0 1.1>;
+                inner_radius = .9;
+                outer_radius = 1.9;
+                umin = 53.81;
+                umax = 175;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 1.1>;
+                inner_radius = .9;
+                outer_radius = 1.9;
+                umin = -67.38;
+                umax = 53.81;
+                normal = <0 -1 0>;
+            end;
+        end;
+        
+        ring with
+            center = <.875 0 -1>;
+            inner_radius = .375;
+            outer_radius = 1.375;
+            umin = 112.62;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+    
+        parallelogram with
+            vertex = <-.5 0 -1.4>;
+            side1 = <1 0 0>;
+            side2 = <0 0 .4>;
+        end;
+        
+        period;
+    end;    // question_mark
+    
+    
+    // ! (exclamation mark)
+    //
+    objective shape exclamation with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.5 0 2>;
+            side1 = <1 0 0>;
+            side2 = <0 0 1>;
+        end;
+        polygon [<-.5 0 2> <.5 0 2> <.25 0 -1.4> <-.25 0 -1.4>];
+
+        period;
+    end;    // exclamation
+
+
+    // ( (left round bracket)
+    //
+    objective shape left_paren with
+        scalar depth = 0;
+    is
+        ring with
+            center = <8.011 0 -.65>;
+            inner_radius = 7.911;
+            outer_radius = 8.44;
+            umin = 152.861;
+            umax = 207.139;
+            normal = <0 -1 0>;
+        end;
+        
+        ring with
+            center = <5.094 0 -.65>;
+            inner_radius = 5.494;
+            outer_radius = 5.994;
+            umin = 140.034;
+            umax = 219.966;
+            normal = <0 -1 0>;
+        end;
+        
+        triangle <.97 0 -4.258> <1.1 0 -4.5> <.5 0 -4.5>;
+        triangle <.97 0 2.958> <1.1 0 3.2> <.5 0 3.2>;
+    end;    // left_paren
+
+
+    // ) (right round bracket)
+    //
+    objective shape right_paren with
+        scalar depth = 0;
+    is
+        left_paren with
+            rotate by 180 around <0 1 0> about <0 0 -.65>;
+        end;
+    end;    // right_paren
+
+
+    // [ (left square bracket)
+    //
+    objective shape left_bracket with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.65 0 -4.5>;
+            side1 = <.8 0 0>;
+            side2 = <0 0 7.5>;
+        end;
+        parallelogram with
+            vertex = <.15 0 2.3>;
+            side1 = <.7 0 0>;
+            side2 = <0 0 .7>;
+        end;
+        parallelogram with
+            vertex = <.15 0 -4.5>;
+            side1 = <.7 0 0>;
+            side2 = <0 0 .7>;
+        end;
+    end;    // left_bracket
+
+
+    // ] (right square bracket)
+    //
+    objective shape right_bracket with
+        scalar depth = 0;
+    is
+        left_bracket with
+            rotate by 180 around <0 0 1>;
+        end;
+    end;    // right_bracket
+
+
+    // { (left curly brace)
+    //
+    objective shape left_curly with
+        scalar depth = 0;
+    is
+        ring with
+            center = <1 0 1.6>;
+            inner_radius = .6;
+            outer_radius = 1.4;
+            umin = 90;
+            umax = 180;
+            normal = <0 -1 0>;
+        end;
+        parallelogram with
+            vertex = <-.4 0 .25>;
+            side1 = <.8 0 0>;
+            side2 = <0 0 1.35>;
+        end;
+        ring with
+            center = <-1 0 .25>;
+            inner_radius = .6;
+            outer_radius = 1.4;
+            umin = -90;
+            umax = 0;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-1 0 -1.75>;
+            inner_radius = .6;
+            outer_radius = 1.4;
+            umin = 0;
+            umax = 90;
+            normal = <0 -1 0>;
+        end;
+        parallelogram with
+            vertex = <-.4 0 -3.1>;
+            side1 = <.8 0 0>;
+            side2 = <0 0 1.35>;
+        end;
+        ring with
+            center = <1 0 -3.1>;
+            inner_radius = .6;
+            outer_radius = 1.4;
+            umin = 180;
+            umax = 270;
+            normal = <0 -1 0>;
+        end;
+    end;    // left_curly
+
+
+    // } (right curly brace)
+    //
+    objective shape right_curly with
+        scalar depth = 0;
+    is
+        left_curly with
+            rotate by 180 around <0 0 1>;
+        end;
+    end;    // right_curly
+
+
+    // < (left angle bracket/less than sign)
+    //
+    objective shape less_than with
+        scalar depth = 0;
+    is
+        lower_v with
+            move to <0 0 1>;
+            rotate by -90 around <0 -1 0>;
+        end;
+    end;    // less_than
+
+
+    // > (right angle bracket/greater than sign)
+    //
+    objective shape greater_than with
+        scalar depth = 0;
+    is
+        lower_v with
+            move to <0 0 1>;
+            rotate by 90 around <0 -1 0>;
+        end;
+    end;    // greater_than
+
+
+    // ' (apostrophe/single quote)
+    //
+    objective shape apostrophe with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.5 0 2.4>;
+            side1 = <1 0 0>;
+            side2 = <0 0 .6>;
+        end;
+        polygon [<-.5 0 2.4> <.5 0 2.4> <.25 0 1> <-.25 0 1>];
+    end;    // apostrophe
+    
+    
+    // " (double quote)
+    //
+    objective shape double_quote with
+        scalar depth = 0;
+    is
+        apostrophe with
+            move to <-.7 0 0>;
+        end;
+        apostrophe with
+            move to <.7 0 0>;
+        end;
+    end;    // double_quote
+
+
+    // ` (back quote/accent grave)
+    //
+    objective shape back_quote with
+        scalar depth = 0;
+    is
+        polygon [<-1 0 3.2> <.1 0 3.2> <.7 0 1.8> <-.1 0 1.8>];
+    end;    // back_quote
+
+
+    // ~ (tilde)
+    //
+    objective shape tilde with
+        scalar depth = 0;
+    is
+        scalar x1, x2, z1, z2;
+        
+        for integer i = -5 .. 4 do
+            x1 = i/2.5;
+            x2 = (i + 1)/2.5;
+            z1 = (-.375 * sin (90 * x1)) + .125 * x1;
+            z2 = (-.375 * sin (90 * x2)) + .125 * x2;
+            
+            polygon [<x1 0 (z1 + .45)> <x2 0 (z2 + .45)>
+                     <x2 0 (z2 - .45)> <x1 0 (z1 - .45)>];
+        end; 
+    end;    // tilde
+
+
+    // @ (at)
+    //
+    objective shape at with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <.25 0 -1>;
+                inner_radius = 3.2;
+                outer_radius = 4;
+                umin = 60;
+                umax = 315;
+                normal = <0 -1 0>;
+            end;
+        else
+            ring with
+                center = <.25 0 -1>;
+                inner_radius = 3.2;
+                outer_radius = 4;
+                umin = 187.5;
+                umax = 315;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <.25 0 -1>;
+                inner_radius = 3.2;
+                outer_radius = 4;
+                umin = 60;
+                umax = 187.5;
+                normal = <0 -1 0>;
+            end;
+        end;
+        ring with
+            center = <.7124 0 -.1991>;
+            inner_radius = 2.2752;
+            outer_radius = 3.0752;
+            umin = -59.703;
+            umax = 60;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <1.6584 0 -1.8182>;
+            inner_radius = .4;
+            outer_radius = 1.2;
+            umin = 260;
+            umax = 300.297;
+            normal = <0 -1 0>;
+        end;
+
+        ring with
+            center = <2.21215 0 -2>;
+            inner_radius = .7;
+            outer_radius = 1.21215;
+            umin = 180;
+            umax = 270;
+            normal = <0 -1 0>;
+            scale by (1/1.21215) along <0 0 1> about center;
+            scale by (2/2.21215) along <1 0 0>;
+            skew from <0 0 -2.21215> to <.13892 0 -2.21215> about <0 0 -3>;
+            move to <-.55 0 0>;
+        end;
+        
+        scale by (2/2.21215) along <1 0 0>;
+        skew from <0 0 -2.21215> to <.13892 0 -2.21215> about <0 0 -3>;
+        move to <-.55 0 0>;
+
+        if facets >= facet_threshold then
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 1.5;
+                normal = <0 -1 0>;
+                scale by (2/1.75) along <0 0 1> about center;
+            end;
+            ring with
+                center = <-.15 0 -1>;
+                inner_radius = 1.2;
+                outer_radius = 1.85;
+                normal = <0 -1 0>;
+                scale by (2/1.85) along <0 0 1> about center;
+            end;   
+        else
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <0 0 -1>;
+                inner_radius = 1;
+                outer_radius = 2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+        parallelogram with  
+            vertex = <1 0 1>;
+            side1 = <1 0 0>;
+            side2 = <0 0 -3>;
+        end;
+        ring with
+            center = <2.21215 0 -2>;
+            inner_radius = .21215;
+            outer_radius = .7;
+            umin = 180;
+            umax = 270;
+            normal = <0 -1 0>;
+        end;
+    end;    // at
+
+
+    // # (pound sign)
+    //
+    objective shape pound with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 .6>;
+            side1 = <4 0 0>;
+            side2 = <0 0 .9>;
+        end;
+        parallelogram with
+            vertex = <-2 0 -1.5>;
+            side1 = <4 0 0>;
+            side2 = <0 0 .9>;
+        end;
+        
+        parallelogram with
+            vertex = <-1.8 0 -3>;
+            side1 = <.9 0 0>;
+            side2 = <1 0 6>;
+        end;        
+        parallelogram with
+            vertex = <-.1 0 -3>;
+            side1 = <.9 0 0>;
+            side2 = <1 0 6>;
+        end;
+    end;    // pound
+
+
+    // $ (dollar sign)
+    //
+    objective shape dollar with
+        scalar depth = 0;
+    is
+        upper_s with
+            magnify by .95;
+        end;
+        
+        parallelogram with
+            vertex = <-.3 0 -3.4>;
+            side1 = <.6 0 0>;
+            side2 = <0 0 6.6>;
+        end;
+    end;    // dollar
+
+
+    // % (percent sign)
+    //
+    objective shape percent with
+        scalar depth = 0;
+    is
+        if facets >= facet_threshold then
+            ring with
+                center = <-1.5 0 1.8>;
+                inner_radius = .6;
+                outer_radius = 1.2;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <1.5 0 -1.8>;
+                inner_radius = .6;
+                outer_radius = 1.2;
+                normal = <0 -1 0>;
+            end;
+        else
+            ring with
+                center = <-1.5 0 1.8>;
+                inner_radius = .6;
+                outer_radius = 1.2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <-1.5 0 1.8>;
+                inner_radius = .6;
+                outer_radius = 1.2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <1.5 0 -1.8>;
+                inner_radius = .6;
+                outer_radius = 1.2;
+                umax = 180;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <1.5 0 -1.8>;
+                inner_radius = .6;
+                outer_radius = 1.2;
+                umin = 180;
+                normal = <0 -1 0>;
+            end;
+        end;
+                
+        parallelogram with
+            vertex = <-2 0 -3>;
+            side1 = <.75 0 0>;
+            side2 = <3.25 0 6>;
+        end;
+    end;    // percent 
+
+
+    // ^ (caret)
+    //
+    objective shape caret with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.75 0 0>;
+            side1 = <.9 0 0>;
+            side2 = <1.3 0 3>;
+        end;
+        parallelogram with
+            vertex = <.85 0 0>;
+            side1 = <.9 0 0>;
+            side2 = <-1.3 0 3>;
+        end;
+    end;    // caret
+
+
+    // & (ampersand)
+    //
+    objective shape ampersand with
+        scalar depth = 0;
+    is
+        if facets > facet_threshold then
+            ring with
+                center = <-.2 0 1.55>;
+                inner_radius = .55;
+                outer_radius = 1.45;
+                umin = -60;
+                umax = 210;
+                normal = <0 -1 0>;
+            end;
+        else
+            ring with
+                center = <-.2 0 1.55>;
+                inner_radius = .55;
+                outer_radius = 1.45;
+                umin = -60;
+                umax = 75;
+                normal = <0 -1 0>;
+            end;
+            ring with
+                center = <-.2 0 1.55>;
+                inner_radius = .55;
+                outer_radius = 1.45;
+                umin = 75;
+                umax = 210;
+                normal = <0 -1 0>;
+            end;
+        end;
+        
+        parallelogram with
+            vertex = <.075 0 (1.55 + .55 * sin (-60))>;
+            side1 = <.9 0 0>;
+            side2 = <0 0 -sqrt_3>;
+            rotate by -60 around <0 -1 0> about vertex;
+        end;
+        ring with
+            center = <-.575 0 -1.2646>;
+            inner_radius = .8;
+            outer_radius = 1.7;
+            umin = 120;
+            umax = 253.882;
+            normal = <0 -1 0>;
+        end;
+        ring with
+            center = <-.325 0 -.3995>;
+            inner_radius = 1.7005;
+            outer_radius = 2.6005;
+            umin = 253.882;
+            umax = 348;
+            normal = <0 -1 0>;
+        end;
+        parallelogram with
+            vertex = <(-.2 + 1.45 * cos 210) 0 .825>;
+            side1 = <.9 0 0>;
+            side2 = <0 0 -1>;
+            rotate by 30 around <0 -1 0> about vertex;
+        end;
+        parallelogram with
+            vertex = <(.3 + 1.45 * cos 210) 0 (.825 + sin (-60))>;
+            side1 = <.9 0 0>;
+            side2 = <0 0 -3>;
+            rotate by 40 around <0 -1 0> about vertex;
+        end;
+        parallelogram with
+            vertex = <.852 0 -2.2>;
+            side1 = <.9 0 0>;
+            side2 = <0 0 -1.2446>;
+            rotate by 50 around <0 -1 0> about vertex;
+        end;
+    end;    // ampersand
+
+
+    // * (asterisk)
+    //
+    objective shape asterisk with
+        scalar depth = 0;
+    is
+        for integer i = 1 .. 5 do
+            polygon [<-.45 0 3> <.45 0 3> <.25 0 1> <-.25 0 1>] with
+                rotate by (72 * i) around <0 1 0> about <0 0 1.2>;
+            end;
+        end;
+    end;    // asterisk
+
+
+    // _ (underscore)
+    //
+    objective shape underscore with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-2 0 -4.5>;
+            side1 = <4 0 0>;
+            side2 = <0 0 .75>;
+        end;
+    end;    // exclamation
+
+
+    // \ (back slash)
+    //
+    objective shape back_slash with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <.4 0 -3>;
+            side1 = <.8 0 0>;
+            side2 = <-2 0 6>;
+        end;
+    end;    // back_slash
+
+
+    // | (vertical bar)
+    //
+    objective shape bar with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-.4 0 -5>;
+            side1 = <.8 0 0>;
+            side2 = <0 0 8.2>;
+        end;
+    end;    // bar
+
+
+    // / (forward slash)
+    //
+    objective shape forward_slash with
+        scalar depth = 0;
+    is
+        parallelogram with
+            vertex = <-1.2 0 -3>;
+            side1 = <.8 0 0>;
+            side2 = <2 0 6>;
+        end;
+    end;    // forward_slash
+    
+    
+    // CONSTRUCTOR
+    //
+    verb new is
+        dim none glyphs [0 .. 127];
+
+        new glyphs[ord "A"] of width 4 draws upper_a;
+        new glyphs[ord "B"] of width 4   draws upper_b;
+        new glyphs[ord "C"] of width 3.8 draws upper_c;
+        new glyphs[ord "D"] of width 4   draws upper_d;
+        new glyphs[ord "E"] of width 3.5 draws upper_e;
+        new glyphs[ord "F"] of width 3.3 draws upper_f;
+        new glyphs[ord "G"] of width 3.8 draws upper_g;
+        new glyphs[ord "H"] of width 4   draws upper_h;
+        new glyphs[ord "I"] of width 1.1 draws upper_i;
+        new glyphs[ord "J"] of width 4   draws upper_j;
+        new glyphs[ord "K"] of width 4   draws upper_k;
+        new glyphs[ord "L"] of width 3.5 draws upper_l;
+        new glyphs[ord "M"] of width 5   draws upper_m;
+        new glyphs[ord "N"] of width 4   draws upper_n;
+        new glyphs[ord "O"] of width 3.8 draws upper_o;
+        new glyphs[ord "P"] of width 3.8 draws upper_p;
+        new glyphs[ord "Q"] of width 3.8 draws upper_q;
+        new glyphs[ord "R"] of width 4   draws upper_r;
+        new glyphs[ord "S"] of width 3.5 draws upper_s;
+        new glyphs[ord "T"] of width 3   draws upper_t;
+        new glyphs[ord "U"] of width 4   draws upper_u;
+        new glyphs[ord "V"] of width 3.6 draws upper_v;
+        new glyphs[ord "W"] of width 5.2 draws upper_w;
+        new glyphs[ord "X"] of width 4   draws upper_x;
+        new glyphs[ord "Y"] of width 4   draws upper_y;
+        new glyphs[ord "Z"] of width 4   draws upper_z;
+
+        new glyphs[ord "a"] of width 4   draws lower_a;
+        new glyphs[ord "b"] of width 4   draws lower_b;
+        new glyphs[ord "c"] of width 3.6 draws lower_c;
+        new glyphs[ord "d"] of width 4   draws lower_d;
+        new glyphs[ord "e"] of width 3.6 draws lower_e;
+        new glyphs[ord "f"] of width 2.5 draws lower_f;
+        new glyphs[ord "g"] of width 4   draws lower_g;
+        new glyphs[ord "h"] of width 3.5 draws lower_h;
+        new glyphs[ord "i"] of width 1   draws lower_i;
+        new glyphs[ord "j"] of width 1.5 draws lower_j;
+        new glyphs[ord "k"] of width 4   draws lower_k;
+        new glyphs[ord "l"] of width 1   draws lower_l;
+        new glyphs[ord "m"] of width 5   draws lower_m;
+        new glyphs[ord "n"] of width 3.5 draws lower_n;
+        new glyphs[ord "o"] of width 3.6 draws lower_o;
+        new glyphs[ord "p"] of width 4   draws lower_p;
+        new glyphs[ord "q"] of width 4   draws lower_q;
+        new glyphs[ord "r"] of width 2.8 draws lower_r;
+        new glyphs[ord "s"] of width 3.4 draws lower_s;
+        new glyphs[ord "t"] of width 2.4 draws lower_t;
+        new glyphs[ord "u"] of width 3.5 draws lower_u;
+        new glyphs[ord "v"] of width 3.6 draws lower_v;
+        new glyphs[ord "w"] of width 4.6 draws lower_w;
+        new glyphs[ord "x"] of width 4   draws lower_x;
+        new glyphs[ord "y"] of width 3.6 draws lower_y;
+        new glyphs[ord "z"] of width 3.6 draws lower_z;
+
+        new glyphs[ord "0"] of width 3.5 draws zero;
+        new glyphs[ord "1"] of width 1.6 draws one;
+        new glyphs[ord "2"] of width 3.4 draws two;
+        new glyphs[ord "3"] of width 3.5 draws three;
+        new glyphs[ord "4"] of width 4   draws four;
+        new glyphs[ord "5"] of width 3.5 draws five;
+        new glyphs[ord "6"] of width 3.5 draws six;
+        new glyphs[ord "7"] of width 3.4 draws seven;
+        new glyphs[ord "8"] of width 3.6 draws eight;
+        new glyphs[ord "9"] of width 3.5 draws nine;
+
+        new glyphs[ord "`"] of width 1.4 draws back_quote;
+        new glyphs[ord "~"] of width 4   draws tilde;
+        new glyphs[ord "!"] of width .5  draws exclamation;
+        new glyphs[ord "@"] of width 7   draws at;
+        new glyphs[ord "#"] of width 4   draws pound;
+        new glyphs[ord "$"] of width 3.5 draws dollar;
+        new glyphs[ord "%"] of width 5   draws percent;
+        new glyphs[ord "^"] of width 3.4 draws caret;
+        new glyphs[ord "&"] of width 4   draws ampersand;
+        new glyphs[ord "*"] of width 3.5 draws asterisk;
+        new glyphs[ord "("] of width 1.4 draws left_paren;
+        new glyphs[ord ")"] of width 1.4 draws right_paren;
+        new glyphs[ord "-"] of width 2.5 draws hyphen;
+        new glyphs[ord "_"] of width 3.5 draws underscore;
+        new glyphs[ord "="] of width 3.5 draws equal;
+        new glyphs[ord "+"] of width 3.5 draws plus;
+        new glyphs[ord "["] of width 1.3 draws left_bracket;
+        new glyphs[ord "{"] of width 1.5 draws left_curly;
+        new glyphs[ord "]"] of width 1.3 draws right_bracket;
+        new glyphs[ord "}"] of width 1.5 draws right_curly;
+        new glyphs[92] of width 2 draws back_slash;
+        new glyphs[ord "|"] of width .8  draws bar;
+        new glyphs[ord ";"] of width .5  draws semi_colon;
+        new glyphs[ord ":"] of width .5  draws colon;
+        new glyphs[ord "'"] of width .3  draws apostrophe;
+        new glyphs[ord global double_quote] of width 2.2 draws double_quote;
+        new glyphs[ord ","] of width .5  draws comma;
+        new glyphs[ord "<"] of width 4   draws less_than;
+        new glyphs[ord "."] of width .5  draws period;
+        new glyphs[ord ">"] of width 4   draws greater_than;
+        new glyphs[ord "/"] of width 2   draws forward_slash;
+        new glyphs[ord "?"] of width 3.4 draws question_mark;
+    end;    // new
+end;    // simple_plain_set
+
+
+simple_plain_set type simple_plain_set;
+
+
+font_family type simple_font with
+    plain_set is simple_plain_set;
+end;

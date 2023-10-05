@@ -1,0 +1,852 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            airhockey.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       A virtual version of that classic game - just like      }
+{       the real thing (you still score on yourself) except     }
+{       that you'll never have to worry about pinching your     }
+{       fingers.                                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do airhockey;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/check_keys.ores";
+include "system/vectors.ores";
+include "system/native_sound.ores";
+include "paddle.omar";
+include "puck.omar";
+include "arena.omar";
+include "scoreboard.omar";
+include "room.omar";
+
+{***************************************************************}
+// GLOBAL DATA:
+
+const scalar score_board_height = 25;
+const scalar paddle_radius = arena_width / 20;
+const scalar puck_radius = 2.5;
+const scalar friction_factor = .995;
+const scalar bounce_friction = .94;
+const scalar opponent_speed = 25;       // Modify this to adjust
+										// game difficulty
+// colors
+//
+const color type player_color = red;
+const color type opponent_color = teal;
+const color type playing_light_color = light yellow;
+// sounds
+//
+const sound type opponent_goal named "oh.wav";
+const sound type player_goal named "applause.wav";
+const sound type puck_hit named "puck_hit.wav";
+const scalar high_impact = puck_radius * 4;
+// view settings
+//
+const vector entrance_eye = <(.45 * room_width) 0 (score_board_height*1.6)>;
+const vector playing_eye = <0 (-arena_length/2 - arena_wall_height*4) (arena_wall_height * 7)>;
+const vector playing_lookat = <0 (-arena_length/7) 0>;
+// scores
+//
+integer us = 0;
+integer them = 0;
+// game state
+//
+boolean opponent_serving is false;
+enum game_state is entering_room, dropping_puck, playing;
+game_state type game_state is entering_room;
+boolean game_light is off;
+color type game_light_color = playing_light_color;
+
+// puck and paddle data
+//
+struct puck_data has
+	vector location;
+	vector velocity;
+end;
+struct paddle_data has
+	vector cur_loc;
+	vector prev_loc;
+end;
+
+puck_data type puck_data;
+paddle_data type player, opponent;
+
+{***************************************************************}
+// INITIALIZATION PROCEDURES:
+verb initialize_puck_data with
+	enum server is player, opponent;
+	server type server is player;
+is
+	with puck_data do
+		its location = <0 0 score_board_height>;
+		if server is player then
+			its velocity = <(random from -.4 to .4) (-0.5) 0>;
+		elseif server is opponent then
+			its velocity = <(random from -.4 to .4) (0.5) 0>;
+		else
+			its location = <0 0 0>;
+			its velocity = <(random from -2 to 2) (random from -5 to 5) 0>;
+		end;
+	end;
+end;    // initialize_puck_data
+
+verb initialize_player is
+	with player do
+		its cur_loc = <0 (-arena_length / 2 + paddle_radius*2) 0>;
+		its prev_loc = <0 (-arena_length / 2 + paddle_radius*2) 0>;
+	end;
+end;    // initialize_player
+
+verb initialize_opponent is
+	with opponent do
+		its cur_loc = <0 (arena_length / 2 - paddle_radius*2) 0>;
+		its prev_loc = <0 (arena_length / 2 - paddle_radius*2) 0>;
+	end;
+end;    // initialize opponent
+
+{***************************************************************}
+// PADDLE UPDATE PROCEDURES:
+
+verb update_player is  
+	vector mouse_pos = get_mouse;
+	vector ray_location = get_transformed_point eye;
+	vector ray_direction = get_transformed_vector project mouse_pos;
+	vector location; 
+	vector direction;
+	
+	scalar x;
+	scalar y;
+	
+	shape extended_floor is
+		parallelogram with
+			vertex = <(-arena_width*10) (-arena_length*10) 0>;
+			side1 = <(arena_width*20) 0 0>;
+			side2 = <0 (arena_length*20) 0>;
+		end;
+	end;
+	
+	player's prev_loc = player's cur_loc;
+	
+	if ray_hits_shape from ray_location towards ray_direction into extended_floor
+		return at location towards direction
+	then
+		x = location.x;
+		y = location.y;
+		x = clamp x from (-arena_width/2 + paddle_radius) to (arena_width/2 - paddle_radius);
+		y = (clamp y from (-arena_length/2 + paddle_radius) to (-paddle_radius));
+		player's cur_loc = <x y 0>;
+	end;
+end;    // update_player
+
+verb update_opponent is
+	static scalar max_y = arena_length/2 - (paddle_radius + puck_radius);
+	static scalar min_y = paddle_radius;
+	static scalar max_x = goal_width/2;
+	static scalar min_x = -goal_width/2;
+	
+	scalar newx = 0, newy = max_y;
+	scalar padx = opponent's cur_loc.x;
+	scalar pady = opponent's cur_loc.y;
+	scalar puckx = puck_data's location.x;
+	scalar effective_puckx = clamp (puck_data's location.x) from min_x to max_x;
+	scalar pucky = puck_data's location.y;
+	scalar speed_adjust = clamp (get_frame_duration * opponent_speed) from 0.001 to 2;
+	
+	opponent's prev_loc = opponent's cur_loc;
+	if opponent_serving then
+		min_y = arena_length/4 + puck_radius;
+	else
+		min_y = paddle_radius;
+	end;
+	
+	if pucky > min_y and pucky < pady and (puck_data's velocity.y) > -puck_radius then
+		// offense:
+		newy = pady + speed_adjust * ((-arena_length/50) + (pucky - pady) / 6);
+		newx = padx + speed_adjust * ((puckx - padx) / 3);
+		opponent_serving is false;
+	else
+		// defense:
+		newy = pady + speed_adjust * (clamp ((max_y - pady) / 4) from 0 to (arena_length/20));
+		newx = padx + speed_adjust * ((effective_puckx - padx) / 3);
+	end;
+		
+	opponent's cur_loc = <newx newy 0>;
+end;    // update_opponent
+
+{***************************************************************}
+// PUCK UPDATE & COLLISION DETECTION PROCEDURES:
+
+boolean question puck_hits_paddle
+	of paddle_data type paddle;
+	from vector puck_loc = puck_data's location;
+	to vector puck_target = puck_data's location + puck_data's velocity;
+return
+	at vector point;
+	towards vector normal;
+is
+	scalar puckx1 = puck_loc.x;
+	scalar pucky1 = puck_loc.y;
+	scalar puckx2 = puck_target.x;
+	scalar pucky2 = puck_target.y;
+	
+	scalar padx1 = paddle's prev_loc.x;
+	scalar pady1 = paddle's prev_loc.y;
+	scalar padx2 = paddle's cur_loc.x;
+	scalar pady2 = paddle's cur_loc.y;
+	scalar ax = padx1 - puckx1;
+	scalar ay = pady1 - pucky1;
+	scalar bx = -padx1 + padx2 + puckx1 - puckx2;
+	scalar by = -pady1 + pady2 + pucky1 - pucky2;
+	
+	scalar d = paddle_radius + puck_radius;
+	
+	scalar a = (sqr bx) + (sqr by);
+	scalar b = 2*ax*bx + 2*ay*by;
+	scalar c = (sqr ax) + (sqr ay) - (sqr d);
+	
+	scalar det = (sqr b) - 4*a*c;
+	
+	scalar t, t1, t2;
+	
+	point = <0 0 0>;
+	normal = <0 0 0>;
+	
+	if a = 0 or det < 0 then
+		answer false;
+	end;
+	
+	t1 = (-b - sqrt det) / (2*a);
+	t2 = (-b + sqrt det) / (2*a);
+	t = t2;
+	if t1 > 0 then t = t1; end;
+	if 0 < t <= 1 then
+		vector paddle_center = paddle's prev_loc + (paddle's cur_loc - paddle's prev_loc)*t;
+		point = puck_loc + (puck_target - puck_loc) * t;
+		normal = (point - paddle_center) * <1 1 0>;
+				
+		answer true;
+	end;
+	
+	answer false;
+end;    // puck_hits_player
+	
+scalar question puck_hits_corner
+	vector corner_loc;
+	from scalar puckx1, pucky1;
+	to scalar puckx2, pucky2;
+is 
+	scalar cx = corner_loc.x;
+	scalar cy = corner_loc.y;
+	scalar ax = cx - puckx1;
+	scalar ay = cy - pucky1;
+	scalar bx = puckx1 - puckx2;
+	scalar by = pucky1 - pucky2;
+	
+	scalar a = (sqr bx) + (sqr by);
+	scalar b = 2*ax*bx + 2*ay*by;
+	scalar c = (sqr ax) + (sqr ay) - (sqr puck_radius);
+	
+	scalar det = (sqr b) - 4*a*c;
+	
+	scalar t, t1, t2;
+	
+	if a = 0 or det < 0 then
+		answer -1;
+	end;
+	
+	t1 = (-b - sqrt det) / (2*a);
+	t2 = (-b + sqrt det) / (2*a);
+	t = t2;
+	if t1 > 0 then t = t1; end;
+	answer t;
+end;    // puck_hits_corner
+
+boolean question puck_hits_wall
+	from vector puck_loc = puck_data's location;
+	to vector puck_target = puck_data's location + puck_data's velocity;
+return
+	at vector point;
+	towards vector normal;
+is
+	static scalar left_bound = -arena_width/2 + puck_radius;
+	static scalar right_bound = arena_width/2 - puck_radius;
+	static scalar front_bound = arena_length/2 - puck_radius;
+	static scalar back_bound = -arena_length/2 + puck_radius;
+	static scalar left_goal_bound = -goal_width/2 + puck_radius;
+	static scalar right_goal_bound = goal_width/2 - puck_radius;
+	// goal corners:
+	static vector flc = <(-goal_width/2) (arena_length/2) 0>;
+	static vector frc = <(goal_width/2) (arena_length/2) 0>;
+	static vector blc = <(-goal_width/2) (-arena_length/2) 0>;
+	static vector brc = <(goal_width/2) (-arena_length/2) 0>;
+	
+	// flags to prevent double corner bounces caused by precision errors
+	static boolean flc_flag is false;
+	static boolean frc_flag is false;
+	static boolean blc_flag is false;
+	static boolean brc_flag is false;
+	
+	scalar puckx1 = puck_loc.x;
+	scalar pucky1 = puck_loc.y;
+	scalar puckx2 = puck_target.x;
+	scalar pucky2 = puck_target.y;
+	scalar t;
+	scalar tleft, tright, tfront, tback;
+	scalar tgl = -1, tgr = -1;
+	
+	vector velocity = puck_target - puck_loc;
+	
+	// find times at which puck hits walls
+	if puckx2 - puckx1 = 0 then
+		tleft = -1;
+		tright = -1;
+	else
+		tleft = (left_bound - puckx1)/(puckx2 - puckx1);
+		tright = (right_bound - puckx1)/(puckx2 - puckx1);
+	end;
+	if pucky2 - pucky1 = 0 then
+		tfront = -1;
+		tback = -1;
+	else
+		tfront = (front_bound - pucky1)/(pucky2 - pucky1);
+		tback = (back_bound - pucky1)/(pucky2 - pucky1);
+	end;
+	// find times at which puck hits goal walls
+	if puckx2 - puckx1 = 0 then
+		tgl = -1;
+		tgr = -1;
+	else
+		tgl = (left_goal_bound - puckx1)/(puckx2 - puckx1);
+		tgr = (right_goal_bound - puckx1)/(puckx2 - puckx1);
+	end;
+	// check for collision around goal:
+	//
+	if (pucky2 - pucky1 >= 0 and tfront <= 1) or (pucky2 - pucky1 < 0 and tfront > 0) then
+		scalar tflc = puck_hits_corner flc from puckx1 pucky1 to puckx2 pucky2;
+		scalar tfrc = puck_hits_corner frc from puckx1 pucky1 to puckx2 pucky2;
+		scalar tf = 2;
+		if (0 < tfront <= 1) and abs (puckx1 + (puckx2 - puckx1)*tfront) >= goal_width/2 then
+			tf = tfront;
+		end;
+		
+		if not ((0 < tgl <= 1) and (pucky1 + (pucky2 - pucky1)*tgl) > arena_length/2) then
+			tgl = 2;
+		end;
+		if not ((0 < tgr <= 1) and (pucky1 + (pucky2 - pucky1)*tgl) > arena_length/2) then
+			tgr = 2;
+		end;
+		
+		if tflc > 0 and tflc <= 1 and tflc < tf and tflc < tgl and tflc < tgr and not (0 < tfrc < tflc) and flc_flag then
+			point = puck_loc + (puck_target - puck_loc) * tflc;
+			normal = point - flc;
+			flc_flag is false;
+			frc_flag is true;
+			answer true;
+		elseif tfrc > 0 and tfrc <= 1 and tfrc < tf and tfrc < tgl and tfrc < tgr and frc_flag then
+			point = puck_loc + (puck_target - puck_loc) * tfrc;
+			normal = point - frc;
+			flc_flag is true;
+			frc_flag is false;
+			answer true;
+		end;    
+		
+		flc_flag is true;
+		frc_flag is true;
+		
+		if tgl <= 1 and tgl < tf then
+			point = puck_loc + (puck_target - puck_loc) * tgl;
+			normal = <1 0 0>;
+			answer true;
+		elseif tgr <= 1 and tgr < tf then
+			point = puck_loc + (puck_target - puck_loc) * tgr;
+			normal = <-1 0 0>;
+			answer true;
+		elseif tf = 2 then
+			point = <0 0 0>;
+			normal = <0 0 0>;
+			answer false;
+		end;
+			
+	elseif (pucky2 - pucky1 <= 0 and tback <= 1) or (pucky2 - pucky1 > 0 and tback > 0) then
+		scalar tblc = puck_hits_corner blc from puckx1 pucky1 to puckx2 pucky2;
+		scalar tbrc = puck_hits_corner brc from puckx1 pucky1 to puckx2 pucky2;
+		scalar tb = 2;
+		if (0 < tback <= 1) and abs (puckx1 + (puckx2 - puckx1)*tback) >= goal_width/2 then
+			tb = tback;
+		end;
+		
+		if not ((0 < tgl <= 1) and (pucky1 + (pucky2 - pucky1)*tgl) < -arena_length/2) then
+			tgl = 2;
+		end;
+		if not ((0 < tgr <= 1) and (pucky1 + (pucky2 - pucky1)*tgl) < -arena_length/2) then
+			tgr = 2;
+		end;
+		
+		if tblc > 0 and tblc <= 1 and tblc < tb and tblc < tgl and tblc < tgr and not (0 < tbrc < tblc) and blc_flag then
+			point = puck_loc + (puck_target - puck_loc) * tblc;
+			normal = point - blc;
+			blc_flag is false;
+			brc_flag is true;
+			answer true;
+		elseif tbrc > 0 and tbrc <= 1 and tbrc < tb and tbrc < tgl and tbrc < tgr and brc_flag then
+			point = puck_loc + (puck_target - puck_loc) * tbrc;
+			normal = point - brc;
+			blc_flag is true;
+			brc_flag is false;
+			answer true;
+		end;    
+		
+		blc_flag is true;
+		brc_flag is true;
+		
+		if tgl <= 1 and tgl < tb then
+			point = puck_loc + (puck_target - puck_loc) * tgl;
+			normal = <1 0 0>;
+			answer true;
+		elseif tgr <= 1 and tgr < tb then
+			point = puck_loc + (puck_target - puck_loc) * tgr;
+			normal = <-1 0 0>;
+			answer true;
+		elseif tb = 2 then
+			point = <0 0 0>;
+			normal = <0 0 0>;
+			answer false;
+		end;
+	end;
+					
+	flc_flag is true;
+	frc_flag is true;
+	blc_flag is true;
+	brc_flag is true;
+	t = 2;
+	normal = <1 0 0>;
+	
+	if 0 < tleft <= 1 and tleft < t then
+		t = tleft;
+	end;
+	if 0 < tright <= 1 and tright < t then
+		t = tright;
+		normal = <-1 0 0>;
+	end;
+	if 0 < tfront <= 1 and tfront < t then
+		t = tfront;
+		normal = <0 -1 0>;
+	end;
+	if 0 < tback <= 1 and tback < t then
+		t = tback;
+		normal = <0 1 0>;
+	end;
+	
+	point = puck_loc + velocity * t;
+		
+	if 0 < t <= 1 then
+		answer true;
+	end;
+	
+	answer false;
+end;    // puck_hits_wall
+
+verb update_puck is
+	// goal corner locations
+	static vector flc = <(-goal_width/2) (arena_length/2) 0>;
+	static vector frc = <(goal_width/2) (arena_length/2) 0>;
+	static vector blc = <(-goal_width/2) (-arena_length/2) 0>;
+	static vector brc = <(goal_width/2) (-arena_length/2) 0>;
+	vector velocity, location, target;
+	vector wall_point, wall_normal;
+	vector player_point, player_normal;
+	vector opponent_point, opponent_normal;
+	vector bounce_normal = <0 0 0>;
+	boolean still_moving;
+	boolean possible_player_collision, possible_opponent_collision;
+	integer ctr;    
+	velocity = puck_data's velocity;
+	location = puck_data's location;
+		
+	// check for any number of collisions
+	//
+	still_moving is true;
+	possible_player_collision is true;
+	possible_opponent_collision is true;
+	ctr = 0;
+	
+	while still_moving do
+		ctr = itself + 1;
+		target = location + velocity;
+	
+		// handle player-puck collision
+		//
+		if possible_player_collision and puck_hits_paddle of player from location to target return at player_point towards player_normal then
+			scalar puck_speed = vlength of velocity; 
+			scalar remaining = (puck_speed - vlength of (player_point - location)) / puck_speed;
+			vector player_velocity = player's cur_loc - player's prev_loc;
+			vector velocity2;
+			if puck_data's velocity dot player_normal >= 0 then
+				velocity2 = velocity * remaining;
+			else
+				velocity2 = vreflect (velocity * remaining) across player_normal;
+			end;
+	
+			velocity = (velocity2 + (player_velocity parallel player_normal) * remaining) * bounce_friction;
+			location = player_point;
+	
+			puck_data's velocity = ((normalized velocity2) * (vlength of puck_data's velocity) +
+									(player_velocity parallel player_normal)) * bounce_friction;
+			bounce_normal = player_normal;
+			possible_player_collision is false;
+			
+		// handle opponent-puck collision
+		//
+		elseif possible_opponent_collision and puck_hits_paddle of opponent from location to target return at opponent_point towards opponent_normal then
+			scalar puck_speed = vlength of velocity; 
+			scalar remaining = (puck_speed - vlength of (opponent_point - location)) / puck_speed;
+			vector opponent_velocity = opponent's cur_loc - opponent's prev_loc;
+			vector velocity2;
+					
+			if puck_data's velocity dot opponent_normal >= 0 then
+				velocity2 = velocity * remaining;
+			else
+				velocity2 = vreflect (velocity * remaining) across opponent_normal;
+			end;
+	
+			velocity = (velocity2 + (opponent_velocity parallel opponent_normal) * remaining) * bounce_friction;
+			location = opponent_point;
+	
+			puck_data's velocity = ((normalized velocity2) * (vlength of puck_data's velocity) +
+									(opponent_velocity parallel opponent_normal)) * bounce_friction;
+			bounce_normal = opponent_normal;
+			possible_opponent_collision is false;
+		// handle wall collision
+		//
+		elseif puck_hits_wall from location to target return at wall_point towards wall_normal then
+			puck_data's velocity = (vreflect puck_data's velocity across wall_normal) * bounce_friction;
+			velocity = (normalized (puck_data's velocity) * vlength of (wall_point - location)) * bounce_friction;
+			location = wall_point;
+			bounce_normal = wall_normal;
+			
+			possible_player_collision is true;
+			possible_opponent_collision is true;
+		// no more bounces, move paddle if it intersects puck, move puck if it's outside walls
+		else
+			location = itself + velocity;
+		
+			if abs (location.x) > arena_width/2 - puck_radius then
+				location = itself * <((arena_width/2 - puck_radius*1.01) / abs(location.x)) 1 1>;
+			end;
+			
+			if abs (location.y) > arena_length/2 - puck_radius then               
+				if abs (location.x) > goal_width/2 then
+					location = itself * <1 ((arena_length/2 - puck_radius*1.01) / abs(location.y)) 1>;
+			
+				// check for intersection with goal corners
+				elseif vlength of (location - flc) < paddle_radius then
+					location = flc + normalized (location - flc) * paddle_radius * 1.01;
+				elseif vlength of (location - frc) < paddle_radius then
+					location = frc + normalized (location - frc) * paddle_radius * 1.01;
+				elseif vlength of (location - blc) < paddle_radius then
+					location = blc + normalized (location - blc) * paddle_radius * 1.01;
+				elseif vlength of (location - brc) < paddle_radius then
+					location = brc + normalized (location - brc) * paddle_radius * 1.01;
+				end;
+			end;
+			
+			if vlength of (player's cur_loc - location) < puck_radius + paddle_radius then
+				player's cur_loc = location + normalized (player's cur_loc - location) * (puck_radius + paddle_radius*1.01);
+				puck_data's velocity = itself * .5;
+			elseif vlength of (opponent's cur_loc - location) < puck_radius + paddle_radius then
+				opponent's cur_loc = location + normalized (opponent's cur_loc - location) * (puck_radius + paddle_radius*1.01);
+				puck_data's velocity = itself * .5;
+			end;
+			puck_data's location = location;
+			still_moving is false;
+			// Play sound for collisions
+			if ctr > 1 then
+				scalar impact = vlength of (puck_data's velocity parallel bounce_normal);
+				puck_hit set_volume to (impact / high_impact);
+				puck_hit play;
+			end;
+		end;
+	end;    // collision-handling loop  
+		
+	// handle player goal
+	//
+	if (puck_data's location.y) > (arena_length/2 + puck_radius) then
+		player_goal play;
+		us = itself + 1;
+		initialize_puck_data with server is opponent; end;
+		opponent_serving is true;
+		game_state is dropping_puck;
+		return;
+	end;
+	// handle opponent goal
+	//
+	if (puck_data's location.y) < (-arena_length/2 - puck_radius) then
+		opponent_goal play;
+		them = itself + 1;
+		initialize_puck_data with server is player; end;
+		game_state is dropping_puck;
+		return;
+	end;
+	
+	// restart if puck is out of bounds
+	//
+	if abs (puck_data's location.x) > arena_width/2 - puck_radius then
+		if (puck_data's location.y) > 0 then
+			initialize_puck_data with server is opponent; end;
+		else
+			initialize_puck_data with server is player; end;
+		end;
+		return;
+	end;    
+	// slow puck
+	puck_data's velocity = itself * friction_factor;
+	
+	check_keys;
+end;    // move_puck
+
+{***************************************************************}
+// MISCELLANEOUS UPDATES:
+verb update_arena is
+	// move the paddles
+	update_player;
+	update_opponent;
+	
+	// update the puck
+	update_puck;
+end;    // update_arena
+
+verb drop_puck is
+	static vector dropping_eye = <(arena_length/2) (-arena_length/6) (score_board_height*1.6)>;
+	static boolean flash_game_light is false;
+	static color type flash_color;
+	static integer drop_time = 3;
+	static stopwatch_timer type drop_timer with
+		paused is true;
+	end;
+	static scalar t = 0;
+	static scalar z_speed = 0;
+	static scalar z_accel = 18;
+	scalar factor;
+	scalar puckz = puck_data's location.z;
+	drop_timer update;
+	
+	// make sure player paddle isn't in drop area
+	//
+	if player's cur_loc.y > (-arena_length/6) and
+	   abs (player's cur_loc.x) < (arena_width/4) then
+		player's cur_loc.y = (-arena_length/6);
+		player's prev_loc.y = (-arena_length/6);
+	end;
+	if drop_timer is_paused then
+		if drop_timer get_time <> 0 then
+			flash_game_light is true;
+		end;
+		if opponent_serving then
+			flash_color = player_color;
+		else
+			flash_color = opponent_color;
+		end;
+		drop_timer reset;
+		drop_timer resume;
+	end;
+	
+	t = (drop_timer get_time) / drop_time;
+	if t > 1 then
+		t = 1;
+		drop_timer reset;
+	end;
+	// flash game light for winner
+	if t < .5 and flash_game_light then
+		game_light_color = flash_color;
+		if (trunc(t*20)) mod 2 = 0 then
+			game_light is on;
+		else
+			game_light is off;
+		end;
+	else
+		game_light is on;
+		game_light_color = playing_light_color;
+	end;
+	factor = (.5 + cos(360 * t)/2) ^ 3;
+	
+	eye = dropping_eye + (playing_eye - dropping_eye) * factor;
+	lookat = playing_lookat * factor;
+	
+	if t >= .5 and puckz > 0 then
+		z_speed = itself + (z_accel * get_frame_duration);
+		puck_data's location = puck_data's location + (puck_data's velocity * 1.2) - <0 0 z_speed>;
+  
+		if (puck_data's location.z) <= 0 then
+			puck_hit set_volume to .45;
+			puck_hit play;
+			puck_data's location = itself * <1 1 0>;
+			z_speed = 0;
+		end;
+	end;
+	
+	if puckz = 0 then
+		update_puck;
+	end; 
+	if t = 1 then
+		drop_timer pause;
+		dropping_eye = itself * <((random from (-arena_length/2) to (arena_length/2)) / (dropping_eye.x)) 1 1>;
+		game_state is playing;
+	end;
+end;    // drop_puck
+
+verb enter_room 
+is
+	// At game's opening, eye spirals around arena in three stages
+	//
+	static vector eye_at_t0 = entrance_eye;
+	static scalar eye_y_at_t1 = (.35 * room_width);
+	static scalar eye_x_at_t2 = (-.25 * room_width);
+	static vector eye_at_t3 = playing_eye;
+	static scalar seconds_pausing = 1.2;    // wait this long before starting;
+	static scalar entrance_time = 6;
+	static stopwatch_timer type enter_timer with
+		paused is true;
+	end;
+	static scalar t;
+	static scalar z_speed = 0;
+	static scalar z_accel = 18;
+	scalar factor;
+	scalar puckz = puck_data's location.z;
+	if enter_timer is_paused then
+		enter_timer set_time to -seconds_pausing;
+		enter_timer resume;
+		wood_texture finish_loading;
+	end;
+	
+	// t ranges from 0 to 3 during entrance sequence
+	//
+	t = 3 * (enter_timer get_time) / entrance_time;
+	if t < 0 then t = 0; end;
+	
+	if t > 3 then
+		t = 3;
+	end;
+	if t < 2 then
+		eye.x = eye_at_t0.x + (eye_x_at_t2 - eye_at_t0.x) * (.5 - cos(90 * t)/2);
+	else
+		eye.x = eye_x_at_t2 + (eye_at_t3.x - eye_x_at_t2) * (.5 - cos(180 * t)/2);
+	end;
+	if t < 1 then
+		eye.y = eye_at_t0.y + (eye_y_at_t1 - eye_at_t0.y) * (.5 - cos(180 * t)/2);
+	else
+		eye.y = eye_y_at_t1 + (eye_at_t3.y - eye_y_at_t1) * (.5 - sin(90 * t)/2);
+	end;
+	factor = (.5 - cos(60 * t)/2) ^ 3;
+	
+	eye.z = eye_at_t0.z + (eye_at_t3.z - eye_at_t0.z) * factor;
+	
+	lookat = playing_lookat * factor;
+	if enter_timer get_time > (entrance_time + seconds_pausing/2) then
+		game_light is on;
+		if enter_timer get_time > (entrance_time + seconds_pausing) then
+			enter_timer pause;
+			game_state is dropping_puck;
+		end;    
+	end;
+	
+	enter_timer update; 
+end;    // enter_room
+
+{***************************************************************}
+// PICTURE & ANIM:
+
+picture airhockey_picture is 
+	distant_light from <0 -1 1> with
+		brightness = 0.375;
+	end;
+	distant_light from <1 2 4> with
+		brightness = 0.25;
+	end;
+	if game_light then
+		point_light with
+			brightness = 25;
+			color = game_light_color;
+			move to <0 0 score_board_height>;
+		end;
+	end;
+			
+	arena;
+	
+	paddle with 
+		color = player_color;
+		radius = paddle_radius;
+		height = arena_wall_height;  
+		move to player's cur_loc;
+	end;
+	paddle with
+		color = opponent_color;
+		radius = paddle_radius;
+		height = arena_wall_height;   
+		move to opponent's cur_loc;
+	end;
+	puck with
+		radius = puck_radius;
+		move to puck_data's location;
+	end;
+	scoreboard with 
+		us = global us;
+		them = global them;
+		player_color = global player_color;
+		opponent_color = global opponent_color;
+		rope_height = room_height - table_height;
+		move to <0 0 score_board_height>;
+	end;
+	if game_state isn't playing then
+		legs with
+			material is wood_veneer;
+		end;
+	end;
+	room with
+		show_ceiling is (game_state is entering_room);
+		show_walls is (game_state is entering_room);
+	end;
+end;    // airhockey_picture
+
+anim airhockey
+	args type cmdline;
+with
+	eye = playing_eye;
+	lookat = playing_lookat;
+	facets = 7;
+	field_of_view = 95;
+	double_buffer is on;
+	cmdline check;
+is
+	initialize_puck_data;
+	initialize_player;
+	initialize_opponent;
+	
+	while true do
+		when game_state is
+			entering_room:
+				set_cursor to hidden;
+				enter_room;
+				airhockey_picture;
+			end;
+			dropping_puck:
+				set_cursor to arrow;
+				drop_puck;
+				airhockey_picture;
+			end;
+			playing:
+				set_cursor to open_hand;
+				update_arena;
+				airhockey_picture;
+			end;
+		end;
+		
+		check_keys;
+	end;
+end;    // airhockey

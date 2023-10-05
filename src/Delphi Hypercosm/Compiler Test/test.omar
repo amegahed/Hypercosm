@@ -1,0 +1,39 @@
+do test;
+
+
+adjective initializeable
+does
+    verb init;
+end;    // initializeable
+
+
+adjective printable
+does
+    verb print;
+end;    // printable
+
+
+subject thing
+extends
+    initializeable printable object
+does
+    verb init;
+    verb print;
+is
+    verb init is
+        write "init", ;
+    end;
+    
+    
+    verb print is
+        write "thing", ;
+    end;
+end;    // thing
+
+
+verb test is
+    thing type thing;
+    
+    thing init;
+    thing print;
+end;	// test

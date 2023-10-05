@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   text_parsing.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a selection of text parsing utilities			}
+{		for parsing characters.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/char_counting.ores";
+
+
+string type question get_text
+
+    // start
+    //    
+    from column integer char_number1;
+    on line integer line_number1;
+    
+    // finish
+    //
+    to column integer char_number2;
+    line integer line_number2;
+    
+    // source text
+    //
+    of strings type text;
+is
+    string type string;
+    integer chars = get_char_count from column char_number1 on line line_number1
+        to column char_number2 line line_number2 of text;
+        
+    if chars > 0 then
+        dim string[1 .. chars - 1];
+        for integer counter = 1 .. chars  - 1do
+        	parse_char string[counter] 
+        		at column char_number1 on line line_number1 of text;
+        end;
+    end;
+    
+    answer string;
+end;    // get_text

@@ -1,0 +1,48 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          group_parser.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a parser for parsing group           }
+{       definitions from an XML stream.                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2007 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/xml_reading.ores";
+include "objects_parser.ores";
+
+object_group type question parse_group
+	named string type reference group_name;
+	from xml_reading type xml_reader;
+is
+	object_group type group;
+	// parse start element
+	//  
+	xml_reader require start_element named "group";
+	
+	// parse attributes
+	//
+	for integer counter = 1 .. xml_reader get_attribute_count do
+		string type name is xml_reader get_attribute_name of counter;
+		string type value is xml_reader get_attribute_value of counter;
+		
+		if name matches "name" then
+			group_name = value;
+		end;
+	end;
+	xml_reader skip_element;
+			
+	// parse nested elements
+	//
+	parse_objects into group from xml_reader;
+	// parse end element
+	//          
+	xml_reader require end_element named "group";
+	xml_reader skip_element;
+	// return group
+	//      
+	answer group;
+end;    // parse_group

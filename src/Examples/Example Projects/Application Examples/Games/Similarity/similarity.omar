@@ -1,0 +1,1065 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            similarity.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the addictive game of          }
+{       similarity in which the goal is to score as many        }
+{       points as possible by selecting marbles of similar      }
+{       colors.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+{   Rules:
+  
+	Clicking on a marble group of two or more marbles of
+	the same color selects them and displays the score
+	they will give if they are clicked again.  Clicking on
+	them again will destroy the marbles and grant the points.
+	Any marbles above the destroyed marbles will fall down.
+	Any empty columns will collapse.
+	
+	The applet responds to the following keys:
+	-   Makes the graphics simpler (reducing facets), improving
+		the speed of the game.
+	+   Makes the graphics more complex (increasing facets),
+		improving the appearance of the game. 
+	t   Toggles texturing of the marbles. Not using textures may
+		speed up the game. 
+	r   Toggles rotating the marbles. Not rotating the marbles
+		may speed up the game. 
+	x   Activates "fast mode". In fast mode texturing of marbles
+		and rotating marbles is disabled, and the marbles are
+		drawn in low detail. 
+	z   Switches between cubes and marbles. 
+	The applet also responds to the key controls defined in
+	check_keys.ores:
+	w   Wireframe mode 
+	s   Shaded mode 
+	p   Point plot mode 
+	h   Hidden line mode 
+	a   In wireframe mode, show all edges 
+	o   In wireframe mode, show outline edges 
+	l   In wireframe mode, show silhouette edges 
+	f   In shaded mode, show face shading 
+	v   In shaded mode, show smooth shading  
+}
+do similarity;
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+include "system/paths.ores";
+include "system/native_sound.ores";
+include "system/native_devices.ores";
+include "system/string_utils.ores";
+include "sky_box.omar";
+include "display_text.omar";
+include "marble.omar";
+include "sky_banner.omar";
+
+sound type sound_good_move named "applause.wav";
+sound type sound_game_over named "cheering.wav";
+sound type sound_marble_destroy named "harpslidedown.wav";
+sound type sound_marble_select named "ting.wav";
+sound type sound_marble_click named "click.wav";
+
+material type game_over_material is constant_color yellow;
+material type score_material is constant_color white;
+
+vector question shift_location
+	from vector vector_source;
+	to vector vector_destination;
+	by scalar amount_done;
+is
+	vector distance_to_cover = vector_source - vector_destination;
+	distance_to_cover = distance_to_cover * amount_done;
+	answer vector_source - distance_to_cover;
+end;    // shift_location
+
+subject similarity_board
+extends
+	renderable object
+does
+	// constructor
+	//
+	verb new with
+		integer rows = 10;
+		integer columns = 10;
+		integer types = 5;
+	end;
+	// rendering method
+	//
+	shape instance;
+	
+	// pressing method
+	//             
+	verb press
+		from vector location;
+		towards vector direction;
+	end;
+	
+	// keystroke method
+	//
+	verb process_key_strokes;
+has
+	// similarity board attributes
+	//
+	enum board_state is
+		idle,           // Waiting for the user to select something
+		selected,       // Something is selected
+		destroying,     // Selected item is animating disappearing
+		falling_down,   // Marbles are falling after some disappear
+		falling_right,  // Marbles are sliding after some disappear
+		game_over       // Game over, man!
+		;
+	board_state type current_state is idle;
+	scalar started_state_time = 0;
+	// How many seconds does it take for a marble to fall one spot?
+	scalar duration_fall_one = .5;
+	
+	// How many seconds does it take to destroy the marbles selected?
+	scalar duration_destroy = .25;
+	
+	scalar duration_cycle_game_over = 3;
+	
+	// What to show when the game's over
+	string type strGameOver = "GAME OVER";
+	string type strGameOverAgain = "Press space bar to play again";
+	
+	// What to show when the board is totally empty
+	string type strPerfectGame = "PERFECT GAME";
+	
+	// Displayed when a game is over.  Set in code.
+	string type strBonusLine = " ";
+	integer game_over_marbles_left = 0;
+	integer rows = 10;
+	integer columns = 10;
+	integer types = 5;
+	similarity_marble type cells[,];
+	boolean something_selected is false;
+	integer number_selected = 0;
+	integer score = 0;
+	sky_box type sky_box with
+		size = 100;
+		seconds_per_revolution = 180;
+	end;
+	
+	sky_banner type sky_banner;
+is
+	vector selection_location;
+	  
+	verb set_state
+		board_state type new_state;
+	is
+		if new_state is game_over then
+			sound_game_over play;
+		elseif new_state is selected then
+			sound_marble_select play; 
+		end; 
+		current_state is new_state;
+		started_state_time = get_seconds;
+	end;    // set_state
+	
+	verb reset is        
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				integer my_typex = trunc (random from 1 to (types + 1));
+				similarity_marble type newcell
+					with my_type = my_typex; end;
+				
+				cells[row, column] is newcell;
+			end;
+		end;
+		set_state idle;
+		score = 0;
+	end;    // reset
+ 
+ 
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		integer rows = 10;
+		integer columns = 10;
+		integer types = 5;
+	is
+		similarity_board's rows = rows;
+		similarity_board's columns = columns;
+		similarity_board's types = types;
+		
+		dim none cells[1 .. rows, 1 .. columns];
+		
+		reset;
+	end;    // new
+	
+	verb debug_dump_grid
+	is  
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+			
+				similarity_marble type temp is cells[row, column];
+				
+				if temp is_selected then
+					write "[", temp get_type, "]";
+				else
+					write " ", temp get_type, " ";
+				end;
+			
+			end;            
+			write;
+		end;
+	end;    // debug_dump_grid
+	
+ 
+	boolean question is_column_empty
+		integer column;
+	is
+		for integer row = 1 .. rows do
+			if cells[row, column] get_type <> 0 then
+				answer false;
+			end;
+		end;
+		
+		answer true;
+	end;    // is_column_empty
+	
+	verb copy_cell
+		from integer source_row, source_column;
+		to integer destination_row, destination_column;
+	is
+		cells[destination_row, destination_column] copy_from cells[source_row, source_column];
+	end;    // copy_cell
+	
+	verb fall_down_one_row
+	is
+		for integer column = 1 .. columns do
+			boolean found_hole is false;
+			integer row = rows;
+			while row > 0 do
+				integer cell_type;
+				
+				if found_hole then
+					cells[row, column] rotate_marble by 90 around <0 1 0>;
+					copy_cell from row column to (row + 1) column;
+				end;
+				
+				cell_type = cells[row, column] get_type;
+				if cell_type = 0 then
+					found_hole is true;
+				end;
+				
+				row = row - 1;
+			end;
+			
+			if found_hole then
+				cells[1, column] set_type 0;
+			end;
+		end;
+	end;    // fall_down_one_row
+	
+	 
+	boolean question something_should_fall_down
+	is
+		for integer column = 1 .. columns do
+			boolean found_hole is false;
+			integer row = rows;
+			
+			while row > 0 do
+				integer cell_type = cells[row, column] get_type;
+				
+				if found_hole then
+					if cell_type <> 0 then
+						answer true;
+					end;
+				end;
+				if cell_type = 0 then
+					found_hole is true;
+				end;
+				
+				row = row - 1;
+			end;
+			
+		end;
+		
+		answer false;
+	end;    // something_should_fall_down
+	 
+	verb copy_column
+		from integer source;
+		to integer destination;
+	is
+		for integer row = 1 .. rows do
+			cells[row, source] rotate_marble by 90 around <1 0 0>;
+			copy_cell from row source to row destination;
+		end;
+	end;    // copy_column
+	
+	verb set_column
+		integer column;
+	with
+		integer my_type = 0;
+	is
+		for integer row = 1 .. rows do
+			cells[row, column] set_type my_type;
+		end;
+	end;    // set_column
+	
+	integer question marbles_left
+	is
+		integer count = 0;
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				if cells[row, column] get_type > 0 then
+					count = count + 1;
+				end;
+			end;
+		end;
+		answer count;
+	end;    // marbles_left
+	
+	
+	boolean question column_is_empty
+		integer column;
+	is
+		for integer row = 1 .. rows do
+			integer cell_type = cells[row, column] get_type;
+			if cell_type <> 0 then
+				answer false;
+			end;
+		end;
+		
+		answer true;
+	end;    // column_is_empty
+	
+	boolean question something_should_fall_right
+	is
+		boolean previous_column_empty is false;
+		
+		for integer column = 1 .. columns do
+			boolean this_column_empty is column_is_empty column;
+			if previous_column_empty and not this_column_empty then
+				answer true;
+			end;
+			
+			previous_column_empty is this_column_empty;
+		end;
+		
+		answer false;
+	end;    // something_should_fall_right
+	
+	
+	verb fall_right_one_column
+	is
+		boolean hole_found is false;
+		
+		for integer column = 1 .. columns do
+		
+			if hole_found then
+				copy_column from column to (column - 1);
+			end;
+		
+			if column_is_empty column then
+				hole_found is true;
+			end;
+		end;
+		
+		if hole_found then
+			set_column columns;
+		end;
+	end;    // fall_right_one_column
+	
+   
+	verb fall
+	is
+		while something_should_fall_down do
+			fall_down_one_row;
+		end;
+		
+		while something_should_fall_right do
+			fall_right_one_column;
+		end;
+	end;    // fall
+	
+  
+	verb deselect
+	is      
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				cells[row, column] deselect;
+			end;
+		end;
+		something_selected is false;        
+	end;    // deselect
+	
+	integer question select
+		integer row;
+		integer column;
+	is
+		similarity_marble type temp is none;
+		integer my_type;
+		integer number_selected = 1;
+		 
+		cells[row, column] select;
+		my_type = cells[row, column] get_type;
+		if row > 1 then
+			temp is cells[row - 1, column];
+			if not temp is_selected and temp get_type = my_type then
+				number_selected = number_selected +
+					select (row - 1) column;
+			end;
+		end;
+		
+		if column > 1 then
+			temp is cells[row, column - 1];
+			if not temp is_selected and temp get_type = my_type then
+				number_selected = number_selected +
+					select row (column - 1);
+			end;
+		end;
+		
+		if row < rows then
+			temp is cells[row + 1, column];
+			if not temp is_selected and temp get_type = my_type then
+				number_selected = number_selected +
+					select (row + 1) column;
+			end;
+		end;
+		
+		if column < columns then
+			temp is cells[row, column + 1];
+			if not temp is_selected and temp get_type = my_type then
+				number_selected = number_selected +
+					select row (column + 1);
+			end;
+		end;
+		
+		answer number_selected;
+	end;    // select
+	
+	
+	verb destroy_selected
+	is
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				if cells[row, column] is_selected then
+					cells[row, column] set_type 0;
+				end;
+			end;
+		end;
+		deselect;
+	end;    // destroy_selected
+ 
+	vector question cell_location
+		integer row;
+		integer column;
+	is
+		integer x_shift;
+		integer y_shift;
+		integer nX;
+		integer nY;
+		
+		x_shift = (rows - 1) div 2 + 1;
+		y_shift = (columns - 1) div 2 + 1;
+		
+		nX = (row - x_shift) * 2 - 1;
+		nY = (column - y_shift) * 2 - 1;
+		
+		answer <nX nY 0>;
+	end;    // cell_location
+ 
+   
+	boolean question press_cell
+		from vector location;
+		towards vector direction;
+		cellx integer x;
+		celly integer y;
+	is
+		vector v = cell_location x y;
+		objective shape thing is
+		// Using blocks instead of the actual shape because it gives the user "slop" to hit the marble with.
+			block with
+				move to v;
+			end;
+			{cells[x, y] instance with
+				move to v;
+			end;}
+		end;
+		
+		if cells[x, y] get_type = 0 then
+			answer false;   // This cell is empty, no clicking!
+		end;
+		if ray_hits_shape from location towards direction into thing then
+			answer true;
+		else
+			answer false;
+		end;
+	end;    // press_cell
+	
+   
+	objective integer question calculate_score
+		integer number_selectedx;
+	is
+		answer number_selectedx * number_selectedx; 
+	end;    // calculate_score
+	
+   
+	objective integer question game_over_bonus_score
+		integer remaining_marbles;
+	is
+		integer bonus[0..5] = [ 300 150 75 40 20 10 ];
+		if remaining_marbles > 5 then
+			answer 0;
+		end;
+		answer bonus[remaining_marbles];
+	end;    // game_over_bonus_score
+	
+  
+	boolean question hit_cell
+		from vector location;
+		towards vector direction;
+		integer reference x;
+		integer reference y;
+	is
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				if press_cell from location towards direction cellx row celly column then
+					x = row;
+					y = column;
+					answer true;
+				end;
+			end;
+		end;
+		
+		answer false;
+	end;    // hit_cell
+	
+	
+	verb press
+		from vector location;
+		towards vector direction;
+	is
+		if current_state is idle then
+			integer row, column;
+			if hit_cell from location towards direction row column then
+				number_selected = select row column;
+				something_selected is true;
+				
+				if number_selected = 1 then // Must select at least 2.
+					deselect;
+				else
+					write "Selected ", number_selected, " marbles worth ",
+					calculate_score number_selected, " points.",;
+					selection_location = cell_location row column;
+					set_state selected;
+				end;                        
+				return;
+			end;
+			
+		elseif current_state is selected then
+			integer row, column;
+			if hit_cell from location towards direction row column and
+				cells[row, column] is_selected
+			then
+				scalar new_points = calculate_score number_selected;
+				if new_points > 99 then
+					sound_good_move play;
+				else
+					sound_marble_destroy play;
+				end;
+								 
+				score = score + calculate_score number_selected;
+				write "SCORE: ", score,;
+				set_state destroying;
+			else
+				deselect;
+				set_state idle;
+			end;
+			
+		elseif current_state is destroying then
+			destroy_selected;
+			fall;
+			set_state idle;
+		
+		elseif current_state is falling_down then
+			fall;
+			set_state idle;
+			
+		elseif current_state is falling_right then
+			fall;
+			set_state idle;
+			
+		elseif current_state is game_over then
+			write "press while game_over ignored at ", get_time,;
+			
+		else
+			write "press while current_state is unknown ignored at ", get_time,;
+		end;
+	end;    // press
+   
+	
+	shape render_frame
+	with
+		scalar scale_selected_by = 1;
+	is
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				vector v = cell_location row column;
+				scalar scale_by = 1;
+				
+				if cells[row, column] is_selected then
+					scale_by = scale_selected_by;
+				end;
+				
+				cells[row, column] instance with
+					force_scale = scale_by;
+					move to v;
+				end;
+			end;
+		end;
+	end;    // render_frame
+	
+	
+	shape render_falling_down_frame
+	with
+		scalar percent_of_fall = 0.0;
+	is
+		for integer column = 1 .. columns do
+			vector last_move;
+			boolean found_hole is false;
+			integer row = rows;
+			
+			while row > 0 do
+				vector vtemp = cell_location row column;
+				vector v = vtemp;
+				integer cell_type;
+				
+				if found_hole then
+					v = shift_location from v to last_move by percent_of_fall;
+					if rotate_marbles then
+						cells[row, column] instance with
+							rotate by (90 * percent_of_fall) around <0 1 0>;
+							move to v;
+						end;
+					else
+						cells[row, column] instance with
+							move to v;
+						end;
+					end;
+				else
+					cells[row, column] instance with
+						move to v;
+					end;
+				end;
+				
+				cell_type = cells[row, column] get_type;
+				if cell_type = 0 then
+					found_hole is true;
+				end;
+				
+				last_move = vtemp;
+			
+				row = row - 1;
+			end;
+		end;
+	end;    // render_falling_down_frame
+	
+	shape render_falling_right_frame
+	with
+		scalar percent_of_fall = 0.0;
+	is
+		vector last_move[];
+		boolean hole_found is false;
+		
+		dim last_move[1..rows];
+		for integer row = 1 .. rows do
+			last_move[row] = <0 0 0>;
+		end;
+		
+		for integer column = 1 .. columns do
+			if hole_found then
+				for integer row = 1 .. rows do
+					vector start_location = cell_location row column;
+					vector now_location = shift_location
+						from start_location
+						to last_move[row] by percent_of_fall;
+					last_move[row] = start_location;
+					
+					if rotate_marbles then
+						cells[row, column] instance with
+							rotate by (90 * percent_of_fall) around <1 0 0>;
+							move to now_location;
+						end;
+					else
+						cells[row, column] instance with
+							move to now_location;
+						end;
+					end;
+				end;     
+			else
+				if column_is_empty column then
+					hole_found is true;
+				end;
+				
+				for integer row = 1 .. rows do
+					vector v = cell_location row column;
+					last_move[row] = v;
+					cells[row, column] instance with
+						move to v;
+					end;
+				end;
+			end;
+		end;
+	end;    // render_falling_right_frame
+			
+	boolean question game_over
+	is
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				if cells[row, column] get_type <> 0 then
+					integer number_selected = select row column;
+					deselect;
+					if number_selected > 1 then
+						answer false;
+					end;
+				end;
+			end;
+		end;
+		answer true;
+	end;    // game_over
+	
+	shape instance
+	is
+		if current_state is idle then
+			if game_over then
+				integer game_over_bonus;
+				game_over_marbles_left = marbles_left;
+				game_over_bonus = game_over_bonus_score game_over_marbles_left;
+				score = score + game_over_bonus;
+				
+				if game_over_bonus > 0 then
+					strBonusLine is none;
+					dim strBonusLine[1..7];
+					strBonusLine = "BONUS: ";
+					strBonusLine add integer_to_string of game_over_bonus;
+				end;
+								
+				set_state game_over;
+			end;
+			render_frame;
+		
+		elseif current_state is selected then
+			render_frame with
+				scale_selected_by = 1.5;
+			end;
+			
+		elseif current_state is destroying then
+			scalar time_passed = get_seconds - started_state_time;
+			scalar amount_done = time_passed / duration_destroy;
+			if amount_done >= 1 then
+				destroy_selected;
+				render_frame;
+				
+				if something_should_fall_down then
+					set_state falling_down;
+				elseif something_should_fall_right then
+					set_state falling_right;
+				else
+					set_state idle;
+				end;
+			else
+				render_frame with
+					scale_selected_by = 1 - amount_done;
+				end;
+			end;
+			
+		elseif current_state is falling_down then
+			scalar time_passed = get_seconds - started_state_time;
+			scalar amount_done = time_passed / duration_fall_one;
+			
+			if amount_done >= 1 then
+				sound_marble_click play;
+				
+				fall_down_one_row;
+				
+				if something_should_fall_down then // do another falling cycle
+					set_state falling_down;
+					render_frame;
+				else
+					render_frame;
+					if something_should_fall_right then
+						set_state falling_right;
+					else
+						set_state idle;
+					end;
+				end;
+			else
+				render_falling_down_frame with
+					percent_of_fall = amount_done;
+				end;
+			end;
+			
+		elseif current_state is falling_right then
+			scalar time_passed = get_seconds - started_state_time;
+			scalar amount_done = time_passed / duration_fall_one;
+			
+			if amount_done >= 1 then
+				boolean not_done;
+				
+				sound_marble_click play;
+				fall_right_one_column;
+				not_done is something_should_fall_right;
+				if not_done then // do another falling cycle
+					set_state falling_right;
+					render_frame;
+				else
+					render_frame;
+					set_state idle;
+				end;
+			else
+				render_falling_right_frame with
+					percent_of_fall = amount_done;
+				end;
+			end;
+			
+		elseif current_state is game_over then
+			scalar time_passed = get_seconds - started_state_time;
+			scalar amount_done = time_passed / duration_cycle_game_over;
+			scalar cycle_position = amount_done - (trunc amount_done);
+			scalar rotate_amount = -(360 * cycle_position);
+			
+			render_frame;
+			
+			show_word strGameOver with
+				magnify by 1.5;
+				rotate by rotate_amount around <0 1 0>;
+				move to <-2 1 10>;
+				material is game_over_material;
+			end;
+						 
+			show_word strGameOverAgain with
+				magnify by .5;
+				move to <4 1 10>;
+				material is game_over_material;
+			end;
+			
+			if game_over_marbles_left = 0 then
+				show_word strPerfectGame with
+					rotate by rotate_amount around <0 1 0>;
+					move to <0 1 10>;
+					material is game_over_material;
+				end;
+			end;
+			
+			show_word strBonusLine with
+				rotate by rotate_amount around <0 1 0>;
+				move to <2 1 10>;
+				material is game_over_material;
+			end;
+		else
+			write "Unknown state";
+		end;
+		
+		sky_box instance with
+			rotate by 90 around <0 1 0>;
+		end;
+		
+		sky_banner update;
+		sky_banner instance with
+			magnify by 20;
+			rotate by 90 around <0 1 0>;
+		end;
+		show_word "score" with
+			move to <-8.5 14 0>;
+			material is score_material;
+		end;
+		
+		show_number score at <-7.1 14 0> with
+			material is score_material;
+		end;
+		
+		if something_selected then
+			// The +<0 0 2.1> moves the score over the marbles.
+			show_number calculate_score number_selected at (selection_location + <0 0 2.1>);
+		end;
+	end;    // instance
+	
+ 
+	verb process_key_strokes
+	is
+		integer the_key = 999; // Arbitrary non-zero number
+		
+		while not (the_key = 0) do
+			char char_key;
+			the_key = get_key;
+			char_key is key_to_char of the_key;
+			when char_key is
+			
+				// z - Toggle square marbles
+				"z":
+					use_square_marbles is not use_square_marbles;   
+					write "z",;
+				end;
+				
+				// = - Use more facets
+				"=":
+					facets = facets + 1;
+					if facets > 7 then
+						facets = 7;
+						write "Facet limit hit",;
+					end;
+					write "Facets: ", facets,;
+				end;
+				
+				// - - Use less facets
+				"-":
+					facets = facets - 1;
+					if facets < 2 then
+						facets = 2;
+						write "Facet limit hit",;
+					end;
+					write "Facets: ", facets,;
+				end;
+				
+				// t - Toggle texturing
+				"t":
+					do_textures is not do_textures;
+					write "Textures: ", do_textures,;
+				end;
+				
+				// r - Toggle marble rotations
+				"r":
+					rotate_marbles is not rotate_marbles;
+					write "Rotations: ", rotate_marbles,;
+				end;
+				
+				// x - Super fast mode
+				"x":
+					write "Go faster stripes",;
+					do_textures is false;
+					rotate_marbles is false;
+					facets = 2;
+				end;
+				
+				// w,s,p,h - Render mode
+				"w":
+					render_mode is wireframe;
+				end;
+					
+				"s":
+					render_mode is shaded;
+				end;
+					
+				"p":
+					render_mode is pointplot;
+				end;
+					
+				"h":
+					render_mode is hidden_line;
+				end;
+				
+				// a,o,l - edge mode keys
+				"a":
+					edges is all;
+				end;
+				
+				"o":
+					edges is outline;
+				end;
+					
+				"l":
+					edges is silhouette;
+				end;
+		
+				// f,v - shading keys
+				"f":
+					shading is face;
+				end;
+					
+				"v":
+					shading is vertex;
+				end;
+				
+				" ":
+					reset;
+				end;
+			end;
+		end;
+	end;    // process_key_strokes
+end;    // similarity_board
+
+anim mouse_controlled_actor_a
+	similarity_board type the_board;
+with
+	scalar max_fps = 30;
+is
+	fps_limiter type fps_limiter with
+		max_fps = static max_fps;
+	end;
+	
+	picture actor_picture is
+		trans type transx with
+			origin = <1 0 35>;
+		end;
+		boolean done_processing_clicks is false;
+		
+		while not done_processing_clicks do
+			click type the_click;
+			mouse_button type the_click_button is none;
+			vector the_click_location = <1 2 3>;
+		
+			the_click is (get_click return with
+				the_click_button is button;
+				the_click_location = location;
+			);
+			
+			if the_click is down or the_click is double_click then
+				vector ray_location = get_transformed_point eye;
+				vector ray_direction = get_transformed_vector project 
+					the_click_location;
+					
+				the_board press from ray_location
+						towards ray_direction;
+			elseif the_click is up then
+			else
+				done_processing_clicks is true;
+			end;
+		end;
+		the_board instance; 
+		default_lights with         
+			trans = transx;
+		end;   
+	end;    // actor_picture
+	while true do
+		actor_picture;
+		the_board process_key_strokes;
+		fps_limiter update;
+	end;
+end;    // mouse_controlled_actor
+
+anim similarity
+	args type args;
+with
+	double_buffer is on;
+	eye = <0.1 3 31>;
+	lookat = <0 3 0>;
+	background = dark grey;
+	args check;
+is
+	similarity_board type board with
+		rows = 10;
+		columns = 10;
+	end;
+	
+	similarity_marble_materials_initialize;
+	mouse_controlled_actor_a board with
+		max_fps = 20;
+	end;
+	write "done!", ;
+end;    // similarity

@@ -1,0 +1,86 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          manipulation.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{          Contains some standard interfaces useful in          }
+{                   interactive applications.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/devices.ores";
+include "system/picking.ores";
+include "system/manipulation_behaviors.ores";
+
+verb touch
+	touchable type touchable;
+is
+	vector ray_location, ray_direction;
+	get_eye_ray at ray_location towards ray_direction;
+	touchable touch from ray_location towards ray_direction;
+end;    // touch_actor
+
+verb press
+	pressable type pressable;
+	using click type click is none;
+	at vector location = <0 0 0>;
+is
+	vector ray_location, ray_direction;
+	if click is none then    
+		click is (get_click of button 1 return with
+			static location = location);
+	end;
+	
+	while some click do
+		get_eye_ray through location at ray_location towards ray_direction;
+		
+		when click is
+			down:
+				pressable press
+					from ray_location towards ray_direction
+				with
+					double_click is false;
+				end;
+			end;
+			
+			double_click:
+				pressable press
+					from ray_location towards ray_direction
+				with
+					double_click is true;
+				end;
+			end;
+			
+			up:
+				pressable release
+					from ray_location towards ray_direction;
+			end;
+		end;
+		
+		click is (get_click of button 1 return with
+			static location = location;);
+	end;
+end;    // press
+
+verb manipulate
+	touchable type object;
+is
+	if pressable type object then
+		click type click;
+		vector location;
+		
+		click is (get_click of button 1 return with
+			static location = location);
+		
+		if some click then
+			press pressable type object using click at location;
+		else
+			touch object;       
+		end;
+	else
+		touch object;
+	end;
+end;    // manipulate

@@ -1,0 +1,70 @@
+{***************************************************************}
+{                          spline_test2.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bezier_spline_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/tangents.ores";
+include "system/spline_shapes.ores";
+include "system/arrow_shapes.ores";
+
+
+subject bezier_vectors
+extends
+    timed_actor
+does
+    verb new
+        at vector p1, p2;
+    end;
+    shape instance;
+has
+    vector p1, p2;
+is
+    verb new
+        at vector p1, p2;
+    is
+        bezier_vectors's p1 = p1;
+        bezier_vectors's p2 = p2;
+    end;    // new
+
+
+    shape instance is
+        scalar angle1 = time * 90;
+        scalar angle2 = time * 113;
+        scalar magnitude1 = 5;
+        scalar magnitude2 = 2 + sin (time * 360);
+
+        vector direction1 = <(cos angle1) (sin angle1) 0>;
+        vector direction2 = <(cos angle2) 0 (sin angle2)>;
+        vector m1 = direction1 * magnitude1;
+        vector m2 = direction2 * magnitude2;
+
+        bezier_curve from p1 (p1 + m1) p2 (p2 - m2) with
+            steps = 20;
+            show_tangents is true;
+        end;
+        arrow from p1 to p1 + m1 * .25 with color = red; end;
+        arrow from p2 to p2 + m2 * .25 with color = green; end;
+        axes;
+    end;
+end;    // bezier_vectors
+
+
+anim bezier_spline_anim
+    args type args;
+with
+    eye = <1 -5 3>;
+    double_buffer is on;
+    args check;
+is
+    bezier_vectors type bezier_vectors at <-1 0 0> <1 0 0>;
+    mouse_controlled_actor bezier_vectors;
+end;    // bezier_spline_anim

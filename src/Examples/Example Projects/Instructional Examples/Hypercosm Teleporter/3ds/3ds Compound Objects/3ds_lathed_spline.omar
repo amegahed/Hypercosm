@@ -1,0 +1,86 @@
+do translated_3ds_lathed_spline_anim;
+
+include "system/3d.ores";
+include "system/3ds_line.ores";
+include "system/3ds_lathe.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape lathed_spline with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+    static material type hyper_material is plastic poster "hyper.jpg";
+	color = <0.6 0.8941 0.7216>;
+	
+	translated_3ds_line of [
+		translated_3ds_connected_spline through [
+			translated_3ds_corner_vertex at <20 -50 0>
+			translated_3ds_corner_vertex at <20 -20 0>
+			translated_3ds_smooth_vertex at <-20 0 0> 
+			translated_3ds_smooth_vertex at <-10 25 0>
+		]
+	] with
+		steps = round (8 * tessellation);
+		optimize is true;
+		renderable is false;
+		thickness = 1;
+		gen_mapping_coords is false;
+		translated_3ds_lathe with
+			degrees = 240 + sin(time * 90) * 120;
+			segments = round (8 * tessellation);
+			cap_start is true;
+			cap_end is false;
+			capping_kind is morph;
+			output_kind is mesh;
+			gen_mapping_coords is true;
+			gen_mat_IDs is true;
+			use_shape_IDs is false;
+			smooth is true;
+			active is true;
+			
+			with trans do
+				its origin = <-50 -30 0>;
+				its x_axis = <0 0 0>;
+				its y_axis = <0 0 1>;
+				its z_axis = <0 1 0>;
+			end;
+		end;
+		
+	    material is hyper_material;
+	end;
+end;	// lathed_spline
+
+shape translated_3ds_lathed_spline_scene with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+	lathed_spline with
+		time = static time;
+		tessellation = static tessellation;
+		trans's y_axis = <0 0 1>;
+		trans's z_axis = <0 -1 0>;
+		trans's origin = <50 0 50>;
+		magnify by .35;
+	end;
+end;    // translated_3ds_lathed_spline_scene
+	
+	
+anim translated_3ds_lathed_spline_anim with
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_lathed_spline_scene
+		within new static_shape of environment 
+	    titled "3DS Lathed Spline"
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_lathed_spline_anim

@@ -1,0 +1,305 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            marble.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the colored marbles used       }
+{       in the similarity game.                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do similarity_marble_test;
+
+include "system/3d.ores";
+include "system/random.ores";
+include "system/anims.ores";
+include "system/printing.ores";
+
+texture type texture_similarity1 using new image named "marbleblue.jpg"; 
+material type material_similarity1 is (plastic textured texture_similarity1);
+texture type texture_similarity2 using new image named "marblegreen.jpg"; 
+material type material_similarity2 is (plastic textured texture_similarity2); 
+texture type texture_similarity3 using new image named "marbleyellow.jpg"; 
+material type material_similarity3 is (plastic textured texture_similarity3);  
+texture type texture_similarity4 using new image named "marblered.jpg"; 
+material type material_similarity4 is (plastic textured texture_similarity4); 
+texture type texture_similarity5 using new image named "marblepink.jpg"; 
+material type material_similarity5 is (plastic textured texture_similarity5); 
+
+material type similarity_marble_materials_textured[];
+material type similarity_marble_materials_colored[];
+
+verb similarity_marble_materials_initialize
+is
+	similarity_marble_materials_textured is none;
+	similarity_marble_materials_colored is none;   
+	dim none similarity_marble_materials_textured[1..5];
+	dim none similarity_marble_materials_colored[1..5];
+	
+	similarity_marble_materials_textured[1] is material_similarity1;
+	similarity_marble_materials_textured[2] is material_similarity2;
+	similarity_marble_materials_textured[3] is material_similarity3;
+	similarity_marble_materials_textured[4] is material_similarity4;
+	similarity_marble_materials_textured[5] is material_similarity5;
+	
+	similarity_marble_materials_colored[1] is chalk colored <0 0 1>; 
+	similarity_marble_materials_colored[2] is chalk colored <0 .5 0>;
+	similarity_marble_materials_colored[3] is chalk colored <1 1 0>;
+	similarity_marble_materials_colored[4] is chalk colored <1 0 0>;
+	similarity_marble_materials_colored[5] is chalk colored <1 0 .8>;
+end;    // similarity_marble_materials_initialize
+
+boolean do_textures is true;
+
+material type question get_marble_texture
+	integer marble_type;
+is
+	if do_textures then
+		texture_status type ts;
+		if marble_type = 1 then
+			ts is texture_similarity1 status;
+		elseif marble_type = 2 then
+			ts is texture_similarity2 status;
+		elseif marble_type = 3 then
+			ts is texture_similarity3 status;
+		elseif marble_type = 4 then
+			ts is texture_similarity4 status;
+		elseif marble_type = 5 then
+			ts is texture_similarity5 status;
+		end;    
+		if ts is loaded then
+			answer similarity_marble_materials_textured[marble_type];
+		end;
+	end;
+	
+	answer similarity_marble_materials_colored[marble_type];
+end;    // get_marble_texture
+
+boolean use_square_marbles is false;
+boolean rotate_marbles is true;
+
+subject similarity_marble
+extends
+	printing object
+does
+	// constructor
+	//
+	verb new with
+		integer my_type = 1;
+		boolean selected is false;
+	end;
+	// animation methods
+	//    
+	verb rotate_marble
+		by scalar bamount;
+		around vector varound;
+	end;
+	verb set_type
+		integer new_type;
+	end;
+	
+	// selection methods
+	//
+	verb select;
+	verb deselect;
+	// query methods
+	//    
+	integer question get_type;
+	boolean question is_selected;
+		
+	// rendering method
+	//
+	shape instance with
+		scalar force_scale = 1.0;
+	end;
+		
+	// copy method
+	//
+	verb copy_from
+		similarity_marble type src;
+	end;
+	
+	// printing method
+	//
+	verb print;
+has
+	// similarity marble attributes
+	//
+	public trans type my_trans;
+	trans type my_cube_trans;
+	integer my_type = 0;
+	boolean selected is false;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		integer my_type = 1;
+		boolean selected is false;
+	is
+		scalar rotate_x = random from 0 to 360;
+		scalar rotate_y = random from 0 to 360;
+		scalar rotate_z = random from 0 to 360; 
+		integer cube_rotate_x = trunc (random from 0 to 4);
+		integer cube_rotate_y = trunc (random from 0 to 4);
+		integer cube_rotate_z = trunc (random from 0 to 4);
+		
+		similarity_marble's my_type = my_type;
+		similarity_marble's selected is selected;
+		rotate the my_trans by rotate_x around <1 0 0>; 
+		rotate the my_trans by rotate_y around <0 1 0>; 
+		rotate the my_trans by rotate_z around <0 0 1>; 
+		
+		rotate the my_cube_trans by cube_rotate_x * 90 around <1 0 0>; 
+		rotate the my_cube_trans by cube_rotate_y * 90 around <0 1 0>; 
+		rotate the my_cube_trans by cube_rotate_z * 90 around <0 0 1>;
+	end;    // new
+	
+	//
+	// animation methods
+	//
+	
+		
+	verb set_type
+		integer new_type;
+	is
+		similarity_marble's my_type = new_type;
+	end;    // set_type
+	
+ 
+	verb rotate_marble
+		by scalar bamount;
+		around vector varound;
+	is
+		if rotate_marbles then
+			rotate the my_trans by bamount around varound; 
+			rotate the my_cube_trans by bamount around varound; 
+		end;
+	end;    // rotate_marble   
+	
+	// 
+	// selection methods
+	//
+	
+		
+	verb select is
+		selected is true;
+	end;    // select
+	
+	verb deselect is
+		selected is false;
+	end;    // deselect
+	
+	//
+	// query methods
+	//
+	
+	
+	integer question get_type
+	is
+		answer my_type;
+	end;    // get_type
+   
+	boolean question is_selected
+	is
+		answer selected;
+	end;    // is_selected  
+	
+	
+	//
+	// rendering method
+	//
+	
+		  
+	shape instance with
+		scalar force_scale = 1.0;
+	is
+		if my_type > 0 then
+			scalar this_scale = 1;
+			
+			this_scale = this_scale * force_scale;
+			if use_square_marbles then
+				block with
+					if rotate_marbles then
+						global trans = my_cube_trans;
+					end;                    
+						material is get_marble_texture my_type;
+					magnify by this_scale; 
+				end;
+			else
+				sphere with
+					if rotate_marbles then
+						global trans = my_trans;
+					end;
+					material is get_marble_texture my_type;
+					radius = this_scale;
+				end;
+			end;
+		end;
+	end;    // instance
+	
+	//
+	// copy method
+	//
+	
+					
+	verb copy_from
+		similarity_marble type src;
+	is
+		my_trans = src's my_trans;
+		set_type src get_type;
+	end;    // copy_from
+	
+	//
+	// printing method
+	//
+	
+	   
+	verb print is
+		my_trans print;
+	end;    // print
+end;    // similarity_marble
+
+anim similarity_marble_test
+is
+	shape similarity_marble_test_shape is  
+		similarity_marble type m1;
+		similarity_marble type m2;
+		similarity_marble type m3;
+		similarity_marble type m4;
+		similarity_marble type m5;
+		
+		m1 set_type 1;
+		m2 set_type 2;
+		m3 set_type 3;
+		m4 set_type 4;
+		m5 set_type 5;
+		
+		m1 instance with
+			move to <3 3 0>;
+		end;
+		m2 instance with
+			move to <-3 3 0>;
+		end;
+		m3 instance with
+			move to <-3 -3 0>;
+		end;
+		m4 instance with
+			move to <3 -3 0>;
+		end;
+		m5 instance with
+			move to <0 0 0>;
+		end;
+	end;    // similarity_marble_test_shape
+	
+	do_textures is true;
+	similarity_marble_materials_initialize;
+	
+	mouse_controlled_shape similarity_marble_test_shape with
+		auto_camera is on;
+	end;
+end;    // similarity_marble_test

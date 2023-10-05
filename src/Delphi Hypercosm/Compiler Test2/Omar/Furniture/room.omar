@@ -1,0 +1,353 @@
+{***************************************************************}
+{                          room.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do room_picture;
+
+
+include "system/3d.ores";
+include "system/coffee_table.omar";
+include "system/vase.omar";
+
+
+shape unit_block is
+    block with
+        vertex = <0 0 0>;
+        side1 = <1 0 0>;
+        side2 = <0 1 0>;
+        side3 = <0 0 1>;
+        move to <-.5 -.5 -.5>;
+    end;
+end;    // unit_block
+
+
+shape my_cube is
+    block with
+        vertex = <0 0 0>;
+        side1 = <1 0 0>;
+        side2 = <0 1 0>;
+        side3 = <0 0 1>;
+    end;
+end;    // my_cube
+
+
+shape track_lite is
+    shape track_lite_tube is
+        paraboloid with
+            top = <0 0 1>;
+            base = <0 0 0>;
+            radius = 1;
+            color = white;
+        end;
+        sphere with
+            scale by .2 along <0 0 1>;
+            move to <0 0 .8>;
+            radius = .4;
+        end;    // light
+        point_light;
+        spot_light towards <0 0 -1> with
+            brightness = 30;
+            angle = 60;
+        end;
+        cylinder with
+            end1 = <0 0 4>;
+            end2 = <0 0 0>;
+            radius = 1;
+        end;
+        sphere with
+            radius = 1;
+            scale by .2 along <0 0 1>;
+            move to <0 0 4>;
+        end;
+    end;    // track_lite_tube
+
+
+    shape track_lite_crossbar is
+        cylinder with
+            end1 = <0 -1 0>;
+            end2 = <0 1 0>;
+            radius = .2;
+        end;
+        disk with
+            center = <0 -1 0>;
+            normal = <0 1 0>;
+            radius = .2;
+        end;
+        disk with
+            center = <0 1 0>;
+            normal = <0 1 0>;
+            radius = .2;
+        end;
+        unit_block with
+            scale by 1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+            scale by .4 along <0 0 1>;
+            move to <.5 -.95 0>;
+        end;
+        unit_block with
+            scale by 1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+            scale by .4 along <0 0 1>;
+            move to <.5 .95 0>;
+        end;
+        unit_block with
+            scale by .1 along <1 0 0>;
+            scale by 2 along <0 1 0>;
+            scale by .4 along <0 0 1>;
+            move to <.95 0 0>;
+        end;
+    end;    // track_lite_crossbar
+
+    track_lite_tube with
+        rotate by 40 around <0 1 0>;
+        move to <0 0 -2>;
+        color = red;
+    end;
+    track_lite_crossbar with
+        magnify by 1.5;
+        scale by 1.5 along <1 0 0>;
+        color = white;
+    end;
+end;    // track_lite
+
+
+shape wall is
+    unit_block with
+        color = grey;
+        scale by 100 along <0 1 0>;
+        scale by 50 along <0 0 1>;
+        move to <0 0 25>;
+    end;
+end;    // wall
+
+
+shape footing is
+    unit_block with
+        scale by 100 along <0 1 0>;
+        scale by 4 along <0 0 1>;
+        move to <1 0 2>;
+    end;
+end;    // footing
+
+
+shape tile1 is
+    my_cube with
+        scale by 10 along <0 1 0>;
+        move to <0 0 0>;
+    end;
+    my_cube with
+        scale by 9 along <1 0 0>;
+        move to <1 0 0>;
+    end;
+    my_cube with
+        scale by 7 along <0 1 0>;
+        move to <3 3 0>;
+    end;
+    my_cube with
+        scale by 6 along <1 0 0>;
+        move to <4 3 0>;
+    end;
+    my_cube with
+        scale by 7 along <1 0 0>;
+        move to <1 7 0>;
+    end;
+    my_cube with
+        scale by 6 along <0 1 0>;
+        move to <7 1 0>;
+    end;
+end;    // tile1
+
+
+shape tile4 is
+    tile1;
+    tile1 with
+        move to <10 0 0>;
+    end;
+    tile1 with
+        move to <0 10 0>;
+    end;
+    tile1 with
+        move to <10 10 0>;
+    end;
+end;    // tile4
+
+
+shape tile16 is
+    tile4;
+    tile4 with
+        move to <20 0 0>;
+    end;
+    tile4 with
+        move to <0 20 0>;
+    end;
+    tile4 with
+        move to <20 20 0>;
+    end;
+end;    // tile16
+
+
+shape tile64 is
+    tile16;
+    tile16 with
+        move to <40 0 0>;
+    end;
+    tile16 with
+        move to <0 40 0>;
+    end;
+    tile16 with
+        move to <40 40 0>;
+    end;
+end;    // tile64
+
+
+shape v_blind is
+    shape v_blind_slice is
+        unit_block with
+            scale by 10 along <1 0 0>;
+            scale by 2 along <0 1 0>;
+            scale by .2 along <0 0 1>;
+        end;
+    end;    // v_blind_slice
+
+
+    integer counter;
+
+    cylinder with
+        end1 = <4.5 -.6 0>;
+        end2 = <4.5 -.6 8>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <4.5 .6 0>;
+        end2 = <4.5 .6 8>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <-4.5 -.6 0>;
+        end2 = <-4.5 -.6 8>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <-4.5 .6 0>;
+        end2 = <-4.5 .6 8>;
+        radius = .1;
+    end;
+    counter = 0;
+    while counter <= 8 do
+        v_blind_slice with
+            rotate by 20 around <1 0 0>;
+            move to <0 0 counter>;
+        end;
+        counter = counter + 1;
+    end;
+end;    // v_blind
+
+
+picture room_picture with
+    lookat = <-5 0 0>;
+    eye = <65 10 20>;
+    field_of_view = 100;
+    projection is fisheye;
+    facets = 0;
+is
+
+    distant_light from <.3 -.5 1> with
+        brightness = .5;
+    end;
+
+    // back wall
+    //
+    wall with
+        move to <-15 0 0>;
+    end;
+    footing with
+        move to <-15 0 0>;
+    end;
+
+    // left wall
+    //
+    wall with
+        scale by .5 along <0 0 1>;
+        rotate by 90 around <0 0 1>;
+        move to <32 -49 0>;
+    end;
+    footing with
+        rotate by 90 around <0 0 1>;
+        move to <32 -49 0>;
+    end;
+
+    // right wall
+    //
+    wall with
+        rotate by 90 around <0 0 1>;
+        move to <32 49 0>;
+    end;
+    footing with
+        rotate by 90 around <0 0 1>;
+        move to <32 47 0>;
+    end;
+
+    // front wall
+    //
+    {wall with move to 70 0 0; end;}
+    wall with
+        move to <80 0 0>;
+    end;
+    v_blind with
+        rotate by 180 around <0 0 1>;
+        scale by .7 along <0 0 1>;
+        magnify by 5;
+        move to <0 -56 20>;
+    end;
+    v_blind with
+        rotate by 180 around <0 0 1>;
+        scale by .7 along <0 0 1>;
+        magnify by 5;
+        move to <52 -56 20>;
+    end;
+    tile64 with
+        material is chalk colored grey;
+        scale by .001 along <0 0 1>;
+    end;
+    tile64 with
+        material is chalk colored grey;
+        scale by .001 along <0 0 1>;
+        scale by -1 along <0 1 0>;
+    end;
+    tile64 with
+        material is chalk colored grey;
+        scale by .001 along <0 0 1>;
+        scale by -1 along <1 0 0>;
+    end;
+    tile64 with
+        material is chalk colored grey;
+        scale by .001 along <0 0 1>;
+        scale by -1 along <0 1 0>;
+        scale by -1 along <1 0 0>;
+    end;
+    coffee_table with
+        material is chalk colored brown;
+        magnify by 2;
+        move to <25 10 0>;
+    end;
+    unit_block with
+        scale by 150 along <1 0 0>;
+        scale by 150 along <0 1 0>;
+        move to <0 0 48>;
+    end;
+    vase with
+        material is plastic colored red;
+        magnify by .5;
+        move to <30 -20 4>;
+    end;
+    track_lite with
+        rotate by -90 around <0 1 0>;
+        magnify by 3;
+        move to <0 -20 25>;
+    end;
+end;    // room_picture

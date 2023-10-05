@@ -1,0 +1,162 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            crosshair.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains a subject definition for a crosshair widget.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "interactions.ores";
+include "futura_l.ores";
+include "picking.ores";
+
+subject crosshair
+extends
+	mouse_state_filter object
+does
+	// constructor
+	//
+	verb new
+		labelled string type label;
+		controls vector reference value refers to none;
+	end;
+
+	// querying methods
+	//
+	boolean question accept_click at vector location; end;
+	boolean question in_region at vector location; end;
+
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public vector reference value;
+	public boolean mouse_is_over is false;
+	public mouse_state type mouse_state is none;    // allocated in new
+	
+	// private attributes
+	//
+	string type label;
+	vector internal_value = <0 0 0>;
+	vector previous_location = <0 0 0>;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		labelled string type label;
+		controls vector reference value refers to none;
+	is
+		crosshair's label is label;
+		if value refers to none then
+			crosshair's value refers to internal_value;
+		else
+			crosshair's value refers to value;
+		end;
+		mouse_state is (new mouse_state type with filter is crosshair;);
+	end;    // new
+
+	//
+	// querying methods
+	//
+
+	boolean question accept_click
+		at vector location;
+	is
+		answer in_region at location;
+	end;    // accept_click
+
+	boolean question in_region
+		at vector location;
+	is
+		if mouse_state's down then
+			answer yes;
+		else
+			answer (xy_plane_touched at location with
+				restrict_to_bounds is true;
+				min_bounds = <(-0.9) (-0.5) 0>;
+				max_bounds = <0.9 0.9 0>;);
+		end;
+	end;    // in_region
+
+	//
+	// rendering methods
+	//
+
+	objective shape face is
+		parallelogram with
+			magnify by .999;
+			color = white;
+		end;
+		parallelogram with
+			scale by .9 along <1 0 0>;
+			scale by .15 along <0 1 0>;
+			move to <0 -.75 .1>;
+			color = light grey;
+		end;
+		parallelogram with
+			scale by .9 along <1 0 0>;
+			scale by .7 along <0 1 0>;
+			move to <0 .2 .1>;
+		end;
+	end;    // face
+
+	shape instance is
+		scalar x;
+		scalar y;
+
+		if some mouse_state then
+			mouse_state update;
+			if mouse_state's location <> previous_location then
+				previous_location = mouse_state's location;
+				if not (value refers to none) then
+					vector plane_location;
+					if (xy_plane_touched at mouse_state's location
+							return plane_location) then
+						x = clamp (plane_location.x / .81) from -1 to 1;
+						y = clamp ((plane_location.y - .2) / .63) from -1 to 1;
+						value = <x y value.z>;
+					end;
+				end;
+			end;
+		end;
+
+		mouse_is_over is in_region at get_mouse;
+		if value refers to none then
+			x = 0;
+			y = 0;
+		else
+			x = (value dot <1 0 0>) * .9;
+			y = (value dot <0 1 0>) * .9;
+		end;
+
+		face;
+		futura_l_word label with
+			move to <0 -.75 .2>;
+		end;
+		line [(<-1 y 0>) (<1 y 0>)] with
+			scale by .9 along <1 0 0>;
+			scale by .7 along <0 1 0>;
+			move to <0 .2 .1>;
+		end;
+		line [(<x -1 0>) (<x 1 0>)] with
+			scale by .9 along <1 0 0>;
+			scale by .7 along <0 1 0>;
+			move to <0 .2 .1>;
+		end;
+		disk with
+			radius = .1;
+			move to <x y 0>;
+			scale by .9 along <1 0 0>;
+			scale by .7 along <0 1 0>;
+			move to <0 .2 .1>;
+		end;
+	end;    // instance
+end;    // crosshair

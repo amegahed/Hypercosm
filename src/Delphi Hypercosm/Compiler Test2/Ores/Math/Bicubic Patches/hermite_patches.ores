@@ -1,0 +1,251 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm        hermite_patches.ores	 		3d      }
+{ |/  \|					    	  					To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of basis matrices for 			}
+{		hermite bicubic patches.								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+subject bicubic_basis
+extends
+	vector[,]
+does
+    // basis setting methods
+    //
+    verb set
+        through vector vertices[0..1, 0..1]; 
+        towards vector row_tangents[0..1, 0..1], column_tangents[0..1, 0..1];
+        twisting by vector twists[0..1, 0..1];
+    end;
+    
+    // basis modifying methods
+    //
+    verb set_vertices
+        to vector_grid type vertices;
+    end;
+    verb set_row_tangents
+        to vector_grid type row_tangents;
+    end;
+    verb set_column_tangents
+        to vector_grid type column_tangents;
+    end;
+    verb set_twists
+        to vector_grid type twists;
+    end;
+    
+    // basis querying methods
+    //
+	vector[,] question get_vertices;
+	vector[,] question get_row_tangents;
+	vector[,] question get_column_tangents;
+	vector[,] question get_twists;
+	
+	// printable method
+	//
+	verb print;
+	verb print2;
+is
+    //   This structure lays out the bicubic    
+    //   surface patch parameters as follows: 
+    //
+    //   [r0, c0]        columns      [r0, c3]
+    //   |-----------------------------------|
+    //   |        |        |        |        |
+    //   |      basis      |      basis      |
+    //   |   [0..1,0..1]   |   [0..1,2..3]   |
+    //   |------  =  ------|------  =  ------|
+    //   |     vertices    | column tangents |
+    //   |   [0..1,0..1]   |   [0..1,0..1]   |
+    // r |                 |                 |
+    // o |--------|--------|--------|--------|
+    // w |        |        |        |        |
+    // s |      basis      |      basis      |
+    //   |   [2..3,0..1]   |   [2..3,2..3]   |
+    //   |------  =  ------|------  =  ------|
+    //   |   row tangents  |      twists     |
+    //   |   [0..1,0..1]   |   [0..1,0..1]   |
+    //   |                 |                 |
+    //   |--------|--------|--------|--------|
+    //   [r3, c0]        rows       [r3, c3]
+    
+
+    //
+    // basis setting methods
+    //
+    
+    
+    verb set
+        through vector vertices[0..1, 0..1]; 
+        towards vector row_tangents[0..1, 0..1], column_tangents[0..1, 0..1];
+        twisting by vector twists[0..1, 0..1];
+    is
+        set_vertices to vertices;
+        set_row_tangents to row_tangents;
+        set_column_tangents to column_tangents;
+        set_twists to twists;
+    end;    // set
+    
+
+    //
+    // basis modifying methods
+    //
+    
+        
+    verb set_vertices
+        to vector_grid type vertices;
+    is
+        bicubic_basis[0..1, 0..1] = vertices[0..1, 0..1];         
+    end;    // set_vertices
+    
+    
+    verb set_row_tangents
+        to vector_grid type row_tangents;
+    is
+        bicubic_basis[2..3, 0..1] = row_tangents[0..1, 0..1];
+    end;    // set_row_tangents
+    
+    
+    verb set_column_tangents
+        to vector_grid type column_tangents;
+    is
+        bicubic_basis[0..1, 2..3] = column_tangents[0..1, 0..1]; 
+    end;    // set_column_tangents
+    
+    
+    verb set_twists
+        to vector_grid type twists;
+    is
+        bicubic_basis[2..3, 2..3] = twists[0..1, 0..1]; 
+    end;    // set_twists
+    
+
+    //  
+    // basis querying methods
+    //
+    
+         
+	vector[,] question get_vertices is
+		vector vertices[0..1, 0..1]; 
+    	vertices[0..1, 0..1] = bicubic_basis[0..1, 0..1];
+    	answer vertices;
+	end;	// get_vertices
+	
+	
+	vector[,] question get_row_tangents is
+		vector row_tangents[0..1, 0..1]; 
+    	row_tangents[0..1, 0..1] = bicubic_basis[2..3, 0..1];
+    	answer row_tangents;
+	end;	// get_row_tangents
+	
+	
+	vector[,] question get_column_tangents is
+		vector column_tangents[0..1, 0..1]; 
+    	column_tangents[0..1, 0..1] = bicubic_basis[0..1, 2..3];
+    	answer column_tangents;
+	end;	// get_column_tangents
+	
+	
+	vector[,] question get_twists is
+		vector twists[0..1, 0..1]; 
+    	twists[0..1, 0..1] = bicubic_basis[2..3, 2..3];
+    	answer twists;
+	end;	// get_twists
+	
+
+    //
+	// printable method
+	//
+	
+	
+	verb print is
+	    vector vertices[,] is get_vertices;
+	    vector row_tangents[,] is get_row_tangents;
+	    vector column_tangents[,] is get_column_tangents;
+	    vector twists[,] is get_twists;
+	    
+	    write "bicubic basis:", ;
+	    for integer i = min vertices .. max vertices do
+	        for integer j = min vertices[] .. max vertices[] do
+	            write "vertices[", i, ", ", j, "] = ", vertices[i, j], ;
+	        end;
+	    end;
+	    for integer i = min vertices .. max vertices do
+	        for integer j = min vertices[] .. max vertices[] do
+	            write "row tangents[", i, ", ", j, "] = ", row_tangents[i, j], ;
+	        end;
+	    end;	    
+	    for integer i = min vertices .. max vertices do
+	        for integer j = min vertices[] .. max vertices[] do
+	            write "column tangents[", i, ", ", j, "] = ", column_tangents[i, j], ;
+	        end;
+	    end;
+	    for integer i = min vertices .. max vertices do
+	        for integer j = min vertices[] .. max vertices[] do
+	            write "twists[", i, ", ", j, "] = ", twists[i, j], ;
+	        end;
+	    end;	    
+	end;    // print
+	
+	
+	verb print2 is
+	    write "[", ;
+	    for integer i = min bicubic_basis .. max bicubic_basis do
+	        for integer j = min bicubic_basis[] .. max bicubic_basis[] do
+	            write "<", bicubic_basis[i, j], ">", " ";
+	        end;
+	        write;
+	    end;
+	    write "]", ;
+	end;    // print2
+end;	// bicubic_basis
+
+
+bicubic_basis type question new_bicubic_basis
+    of vector basis_vectors[,];
+is
+    vector bicubic_basis[0..3, 0..3];
+    bicubic_basis[0..3, 0..3] = basis_vectors[..,..];
+    answer bicubic_basis; 
+end;    //  new_bicubic_basis
+
+
+bicubic_basis type question hermite_bicubic
+    through vector vertices[0..1, 0..1]; 
+    towards vector row_tangents[0..1, 0..1], column_tangents[0..1, 0..1];
+    twisting by vector twists[0..1, 0..1];
+is
+    bicubic_basis type bicubic_basis;
+    
+    dim bicubic_basis[0..3, 0..3];
+    bicubic_basis set through vertices 
+        towards row_tangents column_tangents
+        twisting by twists;
+
+    answer bicubic_basis;
+end;    // hermite_bicubic
+
+
+
+    
+
+//
+// The Ferguson bicubic patch (also called an F-patch) is a bicubic 
+// surface patch with no twisting
+//
+
+
+bicubic_basis type question ferguson_bicubic
+    through vector vertices[0..1, 0..1]; 
+    towards vector row_tangents[0..1, 0..1], column_tangents[0..1, 0..1];
+is
+    vector twists[0..1, 0..1] = [[<0 0 0> <0 0 0>] [<0 0 0> <0 0 0>]];
+
+    answer hermite_bicubic through vertices towards row_tangents
+        column_tangents twisting by twists;
+end;    // ferguson_bicubic

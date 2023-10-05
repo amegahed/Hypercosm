@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             anims.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard animation subjects, which can be      }
+{       used to animate objects using standard user             }
+{       interactions.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/mouse_controlled_picture.ores";
+include "system/mouse_controlled_shape.ores";
+include "system/mouse_controlled_animated_shape.ores";
+include "system/mouse_controlled_actor.ores";

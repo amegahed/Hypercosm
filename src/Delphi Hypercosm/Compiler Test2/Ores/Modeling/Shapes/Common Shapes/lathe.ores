@@ -1,0 +1,51 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		    lathe.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		lathe.  A lathe is a shape which has been				}
+{		turned around an axis like the leg of a table.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+
+
+shape lathe
+    scalar param[, ];
+with
+    scalar umin = 0;
+    scalar umax = 360;
+is
+    integer h_min = min param[];
+    integer h_max = max param[];
+
+    if (h_max - h_min + 1 = 2) then
+        integer v_min = min param;
+        integer v_max = max param;
+
+        for integer v_counter = v_min..v_max - 1 do
+            scalar h1 = param[v_counter, h_min];
+            scalar r1 = param[v_counter, h_max];
+            scalar h2 = param[v_counter + 1, h_min];
+            scalar r2 = param[v_counter + 1, h_max];
+
+            cone with
+                end1 = <0 0 h1>;
+                end2 = <0 0 h2>;
+                radius1 = r1;
+                radius2 = r2;
+                umin = static umin;
+                umax = static umax;
+            end;
+        end;
+    else
+        write "error - the lathe shape must take an ", ;
+        write "        array of height, radius pairs.", ;
+    end;
+end;    // lathe

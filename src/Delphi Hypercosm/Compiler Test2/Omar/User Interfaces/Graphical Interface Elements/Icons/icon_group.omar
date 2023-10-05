@@ -1,0 +1,46 @@
+do icon_group_anim;
+
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/icon_group.ores";
+include "system/check_keys.ores";
+
+
+anim icon_group_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+    verb wireframe_action is
+        write "wireframe!", ;
+    end;
+    verb shaded_action is
+        write "shaded!", ;
+    end;
+        
+	icon_group type wireframe_icon titled "Wireframe" at <-.8 .8 0> 
+	    poster "wireframe_icon.gif"
+		selecting (new action of wireframe_action)
+		with deselectable is false; end;
+	icon_group type shaded_icon titled "Shaded" at <-.8 .5 0> 
+	    poster "smooth_icon.gif" linked to wireframe_icon
+		selecting (new action of shaded_action)
+		with deselectable is false; end;
+		
+			
+	picture scene is
+		sphere;
+		wireframe_icon overlay at 10;
+		shaded_icon overlay at 10;
+		default_lights;
+		default_background at 100;
+		check_keys;
+	end;	// scene
+
+	while true do
+		scene;
+	end;
+end;	// icon_group_anim

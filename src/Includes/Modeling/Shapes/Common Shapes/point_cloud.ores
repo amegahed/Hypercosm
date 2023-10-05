@@ -1,0 +1,26 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          point_cloud.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       point cloud.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_shapes.ores";
+include "system/random.ores";
+
+shape point_cloud with
+	integer particles = 10;
+is
+	vector location[1..particles];
+	for each vector point in location do
+		point = vrandom <-1 -1 -1> to <1 1 1>;
+	end;
+	
+	points location;
+end;    // point_cloud

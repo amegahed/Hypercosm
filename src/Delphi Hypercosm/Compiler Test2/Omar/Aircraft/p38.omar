@@ -1,0 +1,574 @@
+{***************************************************************}
+{                          p38.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do p38_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/surfaces.ores";
+
+
+subject p38
+extends
+    step_actor
+does
+    objective shape form with
+        scalar prop_angle = 0;
+        boolean gear_down is false;
+    end;    // form
+
+    shape instance;
+is
+    objective shape canopy is
+        sphere with
+            radius = 1;
+            rotate by 90 around <0 1 0>;
+            scale by 1.2 along <1 0 0>;
+            scale by .8 along <0 0 1>;
+            scale by .5 along <0 1 0>;
+            umin = 90;
+            umax = 270;
+        end;    // outer surface
+        cone with
+            material is chalk colored white;
+            end1 = <.5 0 0>;
+            end2 = <.6 0 0>;
+            radius1 = .87;
+            radius2 = .8;
+            scale by 1.2 along <1 0 0>;
+            scale by .8 along <0 0 1>;
+            scale by .5 along <0 1 0>;
+            umin = 0;
+            umax = 180;
+        end;    // front canopy brace
+        cone with
+            material is chalk colored white;
+            end1 = <-.5 0 0>;
+            end2 = <-.6 0 0>;
+            radius1 = .87;
+            radius2 = .8;
+            scale by 1.2 along <1 0 0>;
+            scale by .8 along <0 0 1>;
+            scale by .5 along <0 1 0>;
+            umin = 180;
+            umax = 0;
+        end;    // rear canopy brace
+        cone with
+            end1 = <-.5 0 0>;
+            end2 = <-2 0 0>;
+            radius1 = .866;
+            radius2 = 0;
+            scale by 1.2 along <1 0 0>;
+            scale by .8 along <0 0 1>;
+            scale by .5 along <0 1 0>;
+            umin = 180;
+            umax = 0;
+        end;
+    end;    // canopy
+
+
+    objective shape fuselage is
+        sphere with
+            radius = .8;
+            rotate by 90 around <0 1 0>;
+            scale by 1.8 along <1 0 0>;
+            skew from <0 0 1> to <.5 0 1>;
+            rotate by 8 around <0 1 0>;
+        end;
+        paraboloid with
+            top = <1.4 0 0>;
+            base = <.4 0 0>;
+            radius = (sin 60) * .8;
+            scale by 1.8 along <1 0 0>;
+            skew from <0 0 1> to <.5 0 1>;
+            rotate by 8 around <0 1 0>;
+        end;
+        cone with
+            end1 = <-.5 0 0>;
+            end2 = <-2 0 0>;
+            radius1 = .866 * .8;
+            radius2 = 0;
+            scale by 1.8 along <1 0 0>;
+            skew from <0 0 1> to <.5 0 1>;
+            rotation of <0 8 0>;
+        end;
+        glassy white canopy with
+            magnify by 1.1;
+            move to <-1.4 0 .4>;
+        end;
+    end;    // fuselage
+
+
+    objective shape left_wing is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 8 0>;
+            radius1 = 1.65;
+            radius2 = .5;
+            scale by .12 along <0 0 1>;
+            rotate by 5 around <1 0 0>;
+        end;
+        sphere with
+            center = <0 8 0>;
+            radius = .5;
+            scale by .12 along <0 0 1>;
+            rotate by 5 around <1 0 0>;
+        end;
+    end;    // left_wing
+
+
+    objective shape wings is
+        left_wing;
+        left_wing with
+            scale by -1 along <0 1 0>;
+        end;
+    end;    // wings
+
+
+    objective shape tail is
+        sphere with
+            radius = 1;
+            scale by .2 along <0 1 0>;
+            scale by 1.5 along <0 0 1>;
+        end;
+        paraboloid with
+            top = <0 0 1.366>;
+            base = <0 0 .5>;
+            radius = .866;
+            scale by .2 along <0 1 0>;
+            scale by 1.5 along <0 0 1>;
+        end;
+    end;    // tail
+
+
+    objective shape horizontal_stabilizer is
+        cylinder with
+            end1 = <0 -2.4 0>;
+            end2 = <0 2.4 0>;
+            radius = .8;
+            scale by .15 along <0 0 1>;
+        end;
+        sphere with
+            center = <0 -2.4 0>;
+            radius = .8;
+            scale by .15 along <0 0 1>;
+        end;
+        sphere with
+            center = <0 2.4 0>;
+            radius = .8;
+            scale by .15 along <0 0 1>;
+        end;
+    end;    // horizontal_stabilizer
+
+
+    objective shape prop_blade is
+        sphere with
+            center = <0 0 2.5>;
+            radius = 1;
+            scale by .05 along <1 0 0>;
+            scale by .2 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            rotate by 45 around <0 0 1>;
+        end;
+        cone with
+            end1 = <0 0 2.5>;
+            end2 = <0 0 0>;
+            radius1 = .866;
+            radius2 = 0;
+            scale by .05 along <1 0 0>;
+            scale by .2 along <0 1 0>;
+            scale by .5 along <0 0 1>;
+            rotate by 45 around <0 0 1>;
+        end;
+    end;    // prop_blade
+
+
+    objective shape prop is
+        paraboloid with
+            material is plastic colored yellow;
+            top = <1 0 0>;
+            base = <0 0 0>;
+            radius = .55;
+        end;    // spinner
+        prop_blade with
+            move to <.5 0 0>;
+        end;
+        prop_blade with
+            rotate by 120 around <1 0 0>;
+            move to <.5 0 0>;
+        end;
+        prop_blade with
+            rotate by -120 around <1 0 0>;
+            move to <.5 0 0>;
+        end;
+    end;    // prop
+
+
+    objective shape radiator is
+        cone with
+            end1 = <.4 0 0>;
+            end2 = <0 0 0>;
+            radius1 = .4;
+            radius2 = .5;
+            scale by .6 along <0 1 0>;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <-.8 0 0>;
+            radius1 = .5;
+            radius2 = .3;
+            scale by .6 along <0 1 0>;
+        end;
+    end;    // radiator
+
+
+    objective shape engine with
+        scalar prop_angle = 0;
+    is
+        prop with
+            material is plastic colored red;
+            rotate by prop_angle around <1 0 0>;
+            move to <1.2 0 .2>;
+        end;
+        sphere with
+            radius = 1;
+            rotate by 90 around <0 1 0>;
+            scale by 1.2 along <1 0 0>;
+        end;
+        cone with
+            end1 = <-.5 0 0>;
+            end2 = <-9.8 0 0>;
+            radius1 = .866;
+            radius2 = 0;
+            skew from <-10 0 0> to <-10 0 .8>;
+        end;
+        cone with
+            end1 = <.5 0 0>;
+            end2 = <1.2 0 0>;
+            radius1 = .866;
+            radius2 = .6;
+            skew from <1.2 0 0> to <1.2 0 .2> about <.5 0 0>;
+        end;
+        radiator with
+            move to <-5 -.5 .3>;
+        end;
+        radiator with
+            move to <-5 .5 .3>;
+        end;
+        tail with
+            move to <-9 0 1>;
+        end;
+    end;    // engine
+
+
+    objective shape tire is
+        cylinder with
+            end1 = <0 -.3 0>;
+            end2 = <0 .3 0>;
+            radius = 1;
+        end;
+        cone with
+            end1 = <0 -.3 0>;
+            end2 = <0 -.4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        cone with
+            end1 = <0 .3 0>;
+            end2 = <0 .4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        ring with
+            center = <0 -.4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        ring with
+            center = <0 .4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        cone with
+            end1 = <0 .4 0>;
+            end2 = <0 .35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;    // whitewall
+        cone with
+            end1 = <0 -.4 0>;
+            end2 = <0 -.35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;    // whitewall
+    end;    // tire
+
+
+    objective shape hubcap is
+        disk with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            radius = .5;
+        end;
+        cone with
+            end1 = <0 -.1 0>;
+            end2 = <0 0 0>;
+            radius1 = .1;
+            radius2 = .35;
+        end;
+    end;    // hubcap
+
+
+    objective shape wheel is
+        tire with material is chalk colored grey; end;
+        hubcap with
+            move to <0 -.35 0>;
+        end;
+        hubcap with
+            rotate by 180 around <0 0 1>;
+            move to <0 .35 0>;
+        end;
+    end;    // wheel
+
+
+    objective shape rear_landing_gear is
+        wheel;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 -1 0>;
+            radius = .15;
+        end, with
+            end1 = <0 -1 0>;
+            end2 = <0 -1 1.2>;
+            radius = .15;
+        end, with
+            end1 = <0 -1 1.2>;
+            end2 = <0 0 1.2>;
+            radius = .15;
+        end, with
+            end1 = <0 0 1.2>;
+            end2 = <0 0 4>;
+            radius = .15;
+        end, with
+            end1 = <0 0 1.5>;
+            end2 = <0 0 4>;
+            radius = .2;
+        end, with
+            end1 = <0 0 1.5>;
+            end2 = <0 -1 4>;
+            radius = .15;
+        end, with
+            end1 = <0 0 1.5>;
+            end2 = <0 1 4>;
+            radius = .15;
+        end;
+    end;    // rear_landing_gear
+
+
+    objective shape front_landing_gear is
+        wheel;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 -1 0>;
+            radius = .1;
+        end, with
+            end1 = <0 -1 0>;
+            end2 = <0 -1 1.2>;
+            radius = .1;
+        end, with
+            end1 = <0 -1 1.2>;
+            end2 = <0 0 1.2>;
+            radius = .1;
+        end, with
+            end1 = <0 0 1.2>;
+            end2 = <0 0 7>;
+            radius = .1;
+        end, with
+            end1 = <0 0 1.5>;
+            end2 = <0 0 7>;
+            radius = .2;
+        end, with
+            end1 = <0 0 1.5>;
+            end2 = <0 -1 7>;
+            radius = .1;
+        end, with
+            end1 = <0 0 1.5>;
+            end2 = <0 1 7>;
+            radius = .1;
+        end;
+    end;    // front_landing_gear
+
+
+    objective shape guns is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <.8 0 0>;
+            radius = .03;
+        end, with
+            end1 = <0 .2 0>;
+            end2 = <.6 .2 0>;
+            radius = .03;
+        end, with
+            end1 = <.2 .2 -.2>;
+            end2 = <.6 .2 -.2>;
+            radius = .03;
+        end;
+    end;    // guns
+
+
+    objective shape form with
+        scalar prop_angle = 0;
+        boolean gear_down is false;
+    is
+        fuselage with
+            scale by 1.1 along <0 0 1>;
+            rotate by -5 around <0 1 0>;
+            move to <.5 0 -.2>;
+        end;
+        wings with
+            rotate by -5 around <0 1 0>;
+            move to <-1.7 0 .1>;
+        end;
+        horizontal_stabilizer with
+            move to <-8.7 0 .55>;
+            rotate by -5 around <0 1 0>;
+        end;
+        engine with
+            prop_angle = static prop_angle;
+            move to <-.5 3 0>;
+            scale by .8 along <0 1 0>;
+            scale by .8 along <0 0 1>;
+            scale by .9 along <1 0 0>;
+            rotate by -5 around <0 1 0>;
+        end;
+        engine with
+            prop_angle = -static prop_angle;
+            move to <-.5 -3 0>;
+            scale by .8 along <0 1 0>;
+            scale by .8 along <0 0 1>;
+            scale by .9 along <1 0 0>;
+            rotate by -5 around <0 1 0>;
+        end;
+        guns with
+            material is chalk colored white;
+            rotate by -5 around <0 1 0>;
+            move to <2.2 0 0>;
+        end;
+        if gear_down then
+            rear_landing_gear with
+                material is chalk colored white;
+                magnify by .5;
+                rotate by -15 around <0 1 0>;
+                move to <-2.2 2.1 -2>;
+            end;    // right rear landing gear
+            rear_landing_gear with
+                material is chalk colored white;
+                magnify by .5;
+                rotate by -15 around <0 1 0>;
+                scale by -1 along <0 1 0>;
+                move to <-2.2 -2.1 -2>;
+            end;    // left rear landing gear
+            front_landing_gear with
+                material is chalk colored white;
+                magnify by .3;
+                rotate by -30 around <0 1 0>;
+                move to <2.5 0 -2.2>;
+            end;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            prop_angle = steps * 30;
+            color = dark green;
+        end;
+    end;    // instance
+end;    // p38
+
+
+shape landing_p38 with
+    scalar prop_angle = 0;
+is
+    p38 type's form with
+        prop_angle = static prop_angle;
+        move to <3.7 0 2.5>;
+        gear_down is true;
+    end;
+end;    // landing_p38
+
+
+picture p38_picture with
+    scalar prop_angle = 0;
+
+
+    // eye = <30 1 0>;                // front view
+    // eye = <5 -20 5>;               // side view
+    eye = <8 -16 10>;
+    field_of_view = 55;
+    lookat = <0 0 2>;
+    render_mode is shaded;
+    shading is pixel;
+    background = sky_blue;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+is
+    distant_light from <.3 -.5 1>;
+
+    landing_p38 with
+        material is metal colored white;
+        prop_angle = static prop_angle;
+    end;
+    plane with color = brown; end;
+end;    // p38_picture
+
+
+anim swooping_p38 with
+    double_buffer is on;
+is
+    p38 type p38;
+
+
+    picture p38_picture with
+        render_mode is wireframe;
+    is
+        p38 instance;
+    end;    // p38_picture
+
+
+    scalar angle = 0;
+
+    while true do
+        p38_picture with
+            eye = <(sin angle * 10) (cos angle * 40) (sin (2 *
+                angle) * 20)>;
+        end;
+        p38 step;
+        angle = angle + 2;
+    end;
+end;    // swooping_p38
+
+
+anim p38_anim
+    args type args;
+with
+    double_buffer is on;
+    background = sky_blue;
+    args check;
+is
+    p38 type p38;
+
+    mouse_controlled_actor p38;
+end;    // p38_anim

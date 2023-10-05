@@ -1,0 +1,23 @@
+do bendsensor_test;
+
+
+include "system/native_bend_sensors.ores";
+
+
+verb bendsensor_test is
+    while true do  
+        { 
+        integer[] sensor_readings is bendsensors get_sensor_readings; 
+        
+        for integer counter = min sensor_readings .. max sensor_readings do
+            write "sensor readings[", counter, "] is ", sensor_readings[counter], ;
+        end;
+        }
+           
+        scalar[] bends is bendsensors get_bend_readings; 
+        
+        for integer counter = min bends .. max bends do
+            write "bendsensors bends[", counter, "] is ", bends[counter], ;
+        end;
+    end;
+end;    // fob_test

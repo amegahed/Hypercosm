@@ -1,0 +1,210 @@
+{***************************************************************}
+{                          union_chair.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do union_chair_anim;
+
+
+include "system/3d.ores";
+include "system/solids.ores";
+include "system/anims.ores";
+
+
+shape union_chair is
+    shape pattern_element is
+        shape stuff is
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <0 0 1>;
+                radius = .01;
+            end;
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <.1 0 .5>;
+                radius = .01;
+            end;
+            cylinder with
+                end1 = <.1 0 .5>;
+                end2 = <0 0 1>;
+                radius = .01;
+            end;
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <-.1 0 .5>;
+                radius = .01;
+            end;
+            cylinder with
+                end1 = <-.1 0 .5>;
+                end2 = <-.1 0 1>;
+                radius = .01;
+            end;
+        end;    // stuff
+
+        stuff with
+            scale by 5 along <1 0 0>;
+        end;
+    end;    // pattern_element
+
+
+    shape chair_pattern with
+        integer steps = 12;
+    is
+        for integer counter = 1..steps do
+            pattern_element with
+                rotate by counter / steps * 360 around
+                    <0 1 0>;
+            end;
+        end;
+    end;    // chair_pattern
+
+
+    shape chair_back is
+                torus with
+                        inner_radius = 20;
+                        outer_radius = 23;
+                        normal = <0 1 0>;
+            magnify by .04;
+            move to <0 0 1.5>;
+        end;
+        chair_pattern with
+            magnify by .8;
+            move to <0 0 1.5>;
+        end;
+        cylinder with
+            end1 = <-.6 0 0>;
+            end2 = <-.9 0 1.5>;
+            radius = .075;
+        end;
+        cylinder with
+            end1 = <.6 0 0>;
+            end2 = <.9 0 1.5>;
+            radius = .075;
+        end;
+    end;    // chair_back
+
+
+        shape chair_arm with
+                scalar radius = .07;
+        is
+        cylinder with
+                        end1 = <.8 .8 2.5>;
+            end2 = <1 0 2.5>;
+                        radius = static radius;
+        end;
+        cylinder with
+            end1 = <1 0 2.5>;
+            end2 = <.8 -.6 2.5>;
+                        radius = static radius;
+        end;
+        cylinder with
+                        end1 = <.8 -.6 2.5>;
+            end2 = <.6 -.6 1.5>;
+                        radius = static radius;
+        end;
+                sphere with
+                        move to <.8 -.6 2.5>;
+                        radius = static radius;
+                end;
+    end;    // chair_arm
+
+    // base
+    //
+        torus with
+                inner_radius = 20;
+                outer_radius = 23;
+                normal = <0 1 0>;
+                umin = -45;
+                umax = 225;
+        rotate by 90 around <1 0 0>;
+        magnify by .06;
+        move to <0 0 .05>;
+    end;
+
+    // legs
+    //
+    cylinder with
+        end1 = <.9 .9 0>;
+        end2 = <.6 .6 1.5>;
+        radius = .075;
+    end;
+    cylinder with
+        end1 = <-.9 .9 0>;
+        end2 = <-.6 .6 1.5>;
+        radius = .075;
+    end;
+    cylinder with
+        end1 = <.9 -.9 0>;
+        end2 = <.6 -.6 1.5>;
+        radius = .075;
+    end;
+    cylinder with
+        end1 = <-.9 -.9 0>;
+        end2 = <-.6 -.6 1.5>;
+        radius = .075;
+    end;
+
+    // chair seat
+    //
+        torus with
+                inner_radius = 20;
+                outer_radius = 23;
+                normal = <0 1 0>;
+        rotate by 90 around <1 0 0>;
+        magnify by .04;
+        move to <0 0 1.5>;
+    end;
+    chair_pattern with
+        rotate by 90 around <1 0 0>;
+        magnify by .8;
+        move to <0 0 1.5>;
+    end;
+
+    // chair back
+    //
+    chair_back with
+        rotate by -10 around <1 0 0>;
+                move to <0 .6 1.5>;
+    end;
+
+    // char arms
+    //
+    chair_arm;
+    chair_arm with
+        scale by -1 along <1 0 0>;
+    end;
+end;    // union_chair
+
+
+anim union_chair_anim
+    args type args;
+with
+    eye = <3 -10 5>;
+    lookat = <0 0 1.5>;
+    field_of_view = 50;
+
+    {
+    eye = 10 0 0;
+    projection is orthographic;
+    field_of_view = 10;
+    }
+
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        union_chair with
+            material is plastic colored red;
+        end;
+        plane with
+            magnify by 2;
+            render_mode is wireframe;
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // union_chair_anim

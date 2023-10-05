@@ -1,0 +1,100 @@
+{***************************************************************}
+{                          shaded_polygon.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do shaded_polygon_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.ores";
+include "system/arrow_shapes.ores";
+
+shape labelled_shaded_polygon
+is
+	shape shaded_polygon_primitive is
+		shaded_polygon [<-.2 -1.2 0> <1.2 -.8 0> <1 .2 0>
+			<-.4 1 0> <-1.2 -.4 0>] [<-.4 -1.4 .8> <1.4 .4 .8> <1.2 1
+			.8> <-.6 1.2 .8> <-1.4 -.6 .8>]
+		with
+			move to <0 0 -.01>;
+		end;
+	end;
+	
+	shaded_polygon_primitive with
+		material is glass colored shaded_polygon_color;
+		render_mode is shaded_line;
+	end;
+	
+	arrow from <-.2 -1.2 0> to <-.4 -1.4 .8>;
+	arrow from <1.2 -.8 0> to <1.4 .4 .8>;
+	arrow from <1 .2 0> to <1.2 1 .8>;
+	arrow from <-.4 1 0> to <-.6 1.2 .8>;
+	arrow from <-1.2 -.4 0> to <-1.4 -.6 .8>;
+	mark at <-.2 -1.2 0>;
+	mark at <1.2 -.8 0>;
+	mark at <1 .2 0>;
+	mark at <-.4 1 0>;
+	mark at <-1.2 -.4 0>;
+	futura_l_word "VERTEX" with
+		move to <-.2 -1.2 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <1.2 -.8 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <1 .2 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <-.4 1 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <-1.2 -.4 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "NORMAL" with
+		move to <-.4 -1.4 .8>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "NORMAL" with
+		move to <1.4 .4 .8>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "NORMAL" with
+		move to <1.2 1 .8>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "NORMAL" with
+		move to <-.6 1.2 .8>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "NORMAL" with
+		move to <-1.4 -.6 .8>;
+		move to <0 .1 0>;
+	end;
+end;    // labelled_shaded_polygon
+
+shape shaded_polygon_scene is
+	labelled_shaded_polygon;
+	axes;
+end;    // shaded_polygon_scene
+	
+	
+anim shaded_polygon_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	window_name is "The Shaded Polygon Primitive";
+	args check;
+is
+	mouse_controlled_shape shaded_polygon_scene;
+end;    // shaded_polygon_anim

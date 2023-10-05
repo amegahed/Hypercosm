@@ -1,0 +1,60 @@
+
+<HTML>
+<HEAD>
+<meta http-equiv=Content-Type content="text/html;  charset=ISO-8859-1">
+<TITLE>test</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<SCRIPT LANGUAGE="JavaScript">
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+function GetPlugin()
+{
+	return InternetExplorer ? window.HyperX1 : window.document.HyperX1;
+}
+function Red()
+{
+	GetPlugin().SendMessage("Red");
+}
+function Green()
+{
+	GetPlugin().SendMessage("Green");
+}
+function Blue()
+{
+	GetPlugin().SendMessage("Blue");
+}
+function Orange()
+{
+	GetPlugin().SendMessage("Orange");
+}
+function ReceiveMessage(Message)
+{
+	//alert(Message);
+}
+</SCRIPT>
+
+<BODY bgcolor="#FFFFFF">
+<!-- URL's used in the movie-->
+<!-- text used in the movie-->
+<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+ WIDTH="500" HEIGHT="40" id="test" ALIGN="">
+	 <PARAM NAME=movie VALUE="test.swf">
+	 <PARAM NAME=quality VALUE=high>
+	 <PARAM NAME=bgcolor VALUE=#FFFFFF>
+<EMBED
+	src="test.swf"
+	quality=high
+	bgcolor=#FFFFFF
+	WIDTH="500"
+	HEIGHT="40"
+	NAME="test"
+	ALIGN=""
+ 	TYPE="application/x-shockwave-flash"
+ 	PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">
+ </EMBED>
+</OBJECT>
+<br>
+<!--HypercosmAppletBegin-->
+<!--HypercosmAppletEnd-->
+</BODY>
+</HTML>

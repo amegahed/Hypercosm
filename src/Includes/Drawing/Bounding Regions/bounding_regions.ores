@@ -1,0 +1,98 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        bounding_regions.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains several a class for creating and              }
+{        comparing arbitrary bounding regions.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/region_bounding.ores";
+include "system/region_extents.ores";
+
+subject bounding_region
+extends
+	region_containing region_boundable printable object
+does
+	// constructor
+	//
+	verb new
+		of region_bounding type bounds_array[];
+	end;
+	
+	// region containing methods
+	//
+	boolean question contains
+		pixel type pixel;
+	end;
+	
+	// region bounding methods
+	//
+	region_bounding type question get_bounds;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	region_bounding type bounds_array[];
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of region_bounding type bounds_array[];
+	is
+		bounding_region's bounds_array is bounds_array;
+	end;    // new
+	
+	//
+	// region containing methods
+	//
+	
+	boolean question contains
+		pixel type pixel;
+	is
+		for each region_bounding type bounds in bounds_array do
+			if bounds contains pixel then
+				answer true;
+			end;
+		end;
+		answer false;
+	end;    // contains
+	
+	//
+	// region bounding methods
+	//
+
+	region_bounding type question get_bounds is
+		region_extents type extents;
+		for each region_bounding type bounds in bounds_array do
+			extents expand to bounds;
+		end;
+		answer extents;
+	end;    // get_bounds   
+			
+	//
+	// printing methods
+	//
+	
+	verb print is
+		write "bounding region containing:", ;
+		for each region_bounding type bounds in bounds_array do
+			if printable type bounds then
+				(printable type bounds) print;
+			else
+				write "?", ;
+			end;
+		end;
+	end;    // print
+end;    // bounding_region
+
+type bounding_regions is bounding_region type[];

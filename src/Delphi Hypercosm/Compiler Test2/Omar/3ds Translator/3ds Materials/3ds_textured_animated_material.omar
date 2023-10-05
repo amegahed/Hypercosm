@@ -1,0 +1,58 @@
+do textured_animated_material_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_teapot.ores";
+include "system/3ds_textured_animated_material.ores";
+include "system/3ds_linear_color_controller.ores";
+include "system/3ds_constant_color_controller.ores";
+include "system/3ds_time_conversion.ores";
+include "system/arrow_shapes.ores";
+
+
+anim textured_animated_material_anim
+is
+	translated_3ds_linear_color_controller type spectrum_color_controller of [
+		red orange yellow green blue violet
+	] at converted_3ds_ticks_array_from_seconds_array of [
+		1.0 2.0 3.0 4.0 5.0 6.0 7.0
+	];
+	
+	translated_3ds_textured_animated_material type material with
+	    self_illum_color_controller is static spectrum_color_controller;
+	    
+	    // mapping parameters
+	    //
+	    mapping's illumination_map is new texture using new image named "hyper.jpg";
+	end;
+	
+	shape thing is
+		translated_3ds_teapot with		
+		    radius = 25;
+		    smooth is true;
+		    body is true;
+		    handle is true;
+		    spout is true;
+		    lid is true;
+		    gen_mapping_coords is true;
+		end;
+	end;	// thing
+		
+	shape scene with
+		scalar time = 0;
+	is
+		thing with
+			material apply at (converted_3ds_ticks_from_seconds of time);
+		end;
+				
+		axes with
+			magnify by 25;
+		end;
+	end;	// scene
+	
+	mouse_controlled_animated_shape scene titled "3DS Textured Animated Material" with
+		auto_camera is on;
+		duration = 7;
+	end;
+end;	// textured_animated_material_anim

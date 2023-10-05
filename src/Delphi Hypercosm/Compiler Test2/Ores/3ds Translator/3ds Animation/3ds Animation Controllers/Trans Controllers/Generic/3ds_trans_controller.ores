@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   3ds_trans_controller.ores        3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/trans.ores";
+include "system/3ds_time.ores";
+
+
+abstract subject translated_3ds_trans_controller
+does
+    // transform about origin
+    //
+	abstract verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	end;
+	
+	// apply transform using pivot
+	//
+	final verb apply
+		to trans type reference trans;
+		at translated_3ds_time type time;
+	with
+	    trans type pivot_trans;
+	    trans type parent_pivot_trans;
+	end;
+is
+    //
+	// apply transform using pivot
+	//
+	
+	
+	verb apply
+		to trans type reference trans;
+		at translated_3ds_time type time;
+	with
+	    trans type pivot_trans;
+	    trans type parent_pivot_trans;
+	is
+		trans transform from pivot_trans;		
+		transform trans at time;
+		trans transform from parent_pivot_trans;
+	end;	// apply
+end;	// translated_3ds_trans_controller
+
+
+
+
+

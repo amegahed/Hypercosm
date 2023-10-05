@@ -1,0 +1,146 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         3ds_scale_value.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains scaling definitions that correspond to         }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/quaternions.ores";
+include "system/printing.ores";
+
+{***************************************************************}
+{                             scaling                           }
+{***************************************************************}
+{       This class is used to store arbitrary non-uniform       }
+{       scaling in an arbitrary coordinate system. The          }
+{       scale value gives the scaling along the x, y, and       }
+{       z axes and the quaternion defines the axis system       }
+{       in which scaling is to be applied.                      }
+{***************************************************************}
+
+subject translated_3ds_scale_value
+extends
+	printable object
+does
+	// constructor
+	//
+	verb new
+		of vector scaling = <1 1 1>;
+		in quat type quat is unit_quat;
+	end;
+	
+	// arithmetic function methods
+	//
+	translated_3ds_scale_value type question plus
+		translated_3ds_scale_value type scale_value2;
+	end;
+	translated_3ds_scale_value type question minus
+		translated_3ds_scale_value type scale_value2;
+	end;
+	translated_3ds_scale_value type question scaled
+		by scalar s;
+	end;
+	
+	// transforming methods
+	//
+	verb apply
+		to trans type reference trans;
+	end;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public vector scaling;
+	public quat type quat;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of vector scaling = <1 1 1>;
+		in quat type quat is unit_quat;
+	is
+		with translated_3ds_scale_value do
+			its scaling = scaling;
+			its quat = quat;
+		end;
+	end;    // new
+	
+	//
+	// arithmetic function methods
+	//
+	
+	translated_3ds_scale_value type question plus
+		translated_3ds_scale_value type scale_value2;
+	is
+		translated_3ds_scale_value type sum;
+		with sum do
+			its scaling = scaling + scale_value2's scaling;
+			its quat is quat plus scale_value2's quat;
+		end;
+		answer sum;
+	end;    // plus
+	
+	translated_3ds_scale_value type question minus
+		translated_3ds_scale_value type scale_value2;
+	is
+		translated_3ds_scale_value type difference;
+		with difference do
+			its scaling = scaling - scale_value2's scaling;
+			its quat is quat minus scale_value2's quat;
+		end;
+		answer difference;
+	end;    // minus
+	
+	translated_3ds_scale_value type question scaled
+		by scalar s;
+	is
+		translated_3ds_scale_value type result;
+		with result do
+			its scaling = scaling * s;
+			its quat is quat scaled by s;
+		end;
+		answer result;
+	end;    // scaled
+	
+	//
+	// transforming methods
+	//
+			
+	verb apply 
+		to trans type reference trans;
+	is
+		axes type axes;
+		
+		// convert quat to axes
+		//
+		quat get_axes axes;
+		
+		// apply axes to trans
+		//
+		scale the trans by (scaling.x) along axes's x_axis;
+		scale the trans by (scaling.y) along axes's y_axis;
+		scale the trans by (scaling.z) along axes's z_axis;
+	end;    // apply
+	
+	//
+	// printing methods
+	//
+	
+	verb print is
+		write "scaling: <", scaling, "> in quat: ";
+		quat print;
+	end;    // print
+end;    // translated_3ds_scale_value
+
+const translated_3ds_scale_value type unit_translated_3ds_scale_value;

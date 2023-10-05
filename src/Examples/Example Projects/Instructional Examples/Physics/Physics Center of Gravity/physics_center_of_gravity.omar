@@ -1,0 +1,193 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    physics_center_of_gravity.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of force         }
+{       and torque in the physics engine.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2010 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the 'a' key to shift the object's CG left         }
+{     - Press the 'd' key to shift the object's CG right        }
+{     - Press the 's' key to fire a projectile                  }
+{                                                               }
+{***************************************************************}
+do physics_center_of_gravity_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "system/glass.ores";
+include "physics_test_projectile.ores";
+
+// box shape definition
+//
+scalar box_height = 2;
+scalar box_length = 4;
+scalar box_width = 8;
+
+shape box_shape is
+	block with
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+		material is glass colored red;
+	end;
+end;
+static_shape type static_box_shape of box_shape;
+
+// pedestal shape definition
+//
+scalar pedestal_height = 4;
+scalar pedestal_radius = 1;
+
+shape pedestal_shape is
+	cylinder with
+		end1 = <0 -(pedestal_height/2) 0>;
+		end2 = <0 (pedestal_height/2) 0>;
+		radius = pedestal_radius;
+	end;
+end;
+static_shape type static_pedestal_shape of pedestal_shape;
+
+anim physics_center_of_gravity_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+	auto_pivot is true;
+is
+	trans type box_trans, eye_trans;
+	vector current_cg_offset = <0 0 0>;
+	physics_actor type box_actor is none;
+	renderable_physics_scene type physics;
+
+	verb draw is
+		string type cg_string is "current center of gravity offset: <";
+					
+		// display on screen instructions
+		//
+		overlay_text "Press 'a' to shift the box's cg left." at <0 .9 0>;
+		overlay_text "Press 'd' to shift the box's cg right" at <0 .85 0>;
+		overlay_text "Press 's' to shoot a projectile." at <0 .8 0>;
+				
+		// display cg information
+		// 
+		cg_string add vector_to_string of current_cg_offset to 3;
+		cg_string add ">";
+		overlay_text cg_string at <0 -.85 0>;
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+		vector cg_shift = <0 0 0>;
+		
+		// press 'a' to shift the center of gravity left
+		//
+		if key_down char_to_key of "a" then
+			cg_shift = (get_frame_duration * <-1 0 0>);
+		end;
+			
+		// press 'd' to shift the center of gravity right
+		//
+		if key_down char_to_key of "d" then
+			cg_shift = (get_frame_duration * <1 0 0>);
+		end;
+		// if input gave us some cg shift value, apply it
+		//
+		if not cg_shift = <0 0 0> then
+			// Since the physics actor's transformation is defined in terms of the CG, it will be 
+			// shifted when the CG is shifted. In order for the actor to remain staitonary, we must
+			// shift is transformation to account for the shift in CG
+			//
+			trans type box_actor_trans;
+			box_actor get_trans box_actor_trans;
+			box_actor_trans's origin = itself + (box_actor_trans get_transformed_direction cg_shift);
+			box_actor set_trans to box_actor_trans;
+			// Update the current cg offset and apply it to the physics actor
+			//
+			current_cg_offset = itself + cg_shift;
+			box_actor set_cg_offset to current_cg_offset;
+		end;            
+		// fire a projectile, only if we just pressed the key this frame
+		//
+		if key_down char_to_key of "s" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to physics;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+	end;    // check_keys
+	
+		
+	verb update is 
+		current_cg_offset = box_actor get_cg_offset;
+		draw;
+		check_keys;
+	end;    // update
+	
+	shape scene with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+		
+		// Display the current cg
+		//
+		trans type box_actor_trans;
+		box_actor get_trans box_actor_trans;
+		box_actor_trans's origin = itself + box_actor_trans get_transformed_direction current_cg_offset;
+		sphere with
+			trans = box_actor_trans;
+			radius = .5;
+			material is constant_color yellow;
+		end;
+		physics instance;
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // scene
+	
+	// add the box shape
+	//
+	box_actor is (new renderable_physics_box_actor rendering static_box_shape with
+		trans's origin = <0 0 (box_height/2 + pedestal_height)>;
+		mass = 10;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	);
+	physics add_physics_actor box_actor;
+	
+	// add the pedestal shape
+	//
+	physics add_physics_actor (new renderable_physics_cylinder_actor rendering static_pedestal_shape with
+		trans's y_axis = <0 0 1>;
+		trans's z_axis = <0 -1 0>;
+		trans's origin = <0 0 (pedestal_height/2)>;
+		height = pedestal_height;
+		radius = pedestal_radius;
+		state is static_state);
+	   
+	// add the plane shape
+	//
+	physics add_physics_actor (new renderable_physics_plane_actor rendering none);
+	// turn on proxy rendering aka debug mode
+	//                        
+	physics set_render_proxies to true; 
+	// run!
+	//
+	mouse_controlled_animated_shape scene doing update;
+end;    // physics_center_of_gravity_anim

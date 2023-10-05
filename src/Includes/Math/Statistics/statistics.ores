@@ -1,0 +1,83 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           statistics.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard statistical functions for        }
+{       scalar sets.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/math.ores";
+include "system/sorting.ores";
+
+scalar question sum
+	of scalar set[];
+is
+	scalar sum = 0;
+	
+	for each scalar s in set do
+		sum = itself + s;
+	end;
+	
+	answer sum;
+end;    // sum
+		
+scalar question product
+	of scalar set[];
+is
+	scalar product = 1;
+	
+	for each scalar s in set do
+		product = itself * s;
+	end;
+	
+	answer product;
+end;    // product
+
+scalar question mean
+	of scalar set[];
+is
+	answer (sum of set) / num set;
+end;    // mean
+
+scalar question median
+	of scalar set[];
+is
+	scalar temp_set[] = set;    // Makes a temporary copy for sorting
+	
+	sort_scalars temp_set;
+	
+	if num set mod 2 = 0 then
+		answer (temp_set[min set + num set div 2] +
+				temp_set[min set + num set div 2 - 1]) / 2;
+	else
+		answer temp_set[min set + num set div 2];
+	end;
+end;    // median
+
+scalar question variance
+	of scalar set[];
+is
+	scalar set_mean = mean of set;
+	scalar sum_of_squares = 0;
+	
+	for each scalar s in set do
+		sum_of_squares = itself + sqr (s - set_mean);
+	end;
+	
+	answer sum_of_squares / (num set - 1);
+end;    // variance
+
+//
+// standard deviation for a scalar set:
+//
+
+scalar question std_dev
+	of scalar set[];
+is
+	answer sqrt (variance of set);
+end;    // std_dev

@@ -1,0 +1,79 @@
+{***************************************************************}
+{                        trigonometry.ores                      }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{               Contains some standard math functions.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_math.ores";
+include "system/constants.ores";
+
+
+// This "arctan" function is provided as a useful alternative to the
+// native "atan" function. The arctan function takes two parameters 
+// (the numerator and denominator of the atan argument) and handles
+// appropriately the case of a zero denominator.
+// 
+scalar question arctan
+    scalar y, x;
+is
+    if (x <> 0) then
+        scalar th = atan (y / x);
+                
+        if (x < 0) then
+            th = itself + 180;
+        end;
+        if (th < 0) then
+            th = itself + 360;
+        end;
+        
+        answer th;
+    else
+        if (y >= 0) then
+            answer 90;
+        else
+            answer 270;
+        end;
+    end;
+end;    // arctan
+
+
+//
+// angle normalizing functions
+//
+
+ 
+scalar question normalized_positive_angle
+    of scalar angle;
+is
+    // map angle to range of 0 to 360
+    //
+    if angle < 0 then
+        angle = itself + 360 * (trunc (-angle / 360) + 1);
+    elseif angle > 360 then
+        angle = itself - 360 * (trunc (angle / 360) + 1);
+    end;
+    
+    answer angle;
+end;    // normalized_positive_angle
+
+ 
+scalar question normalized_angle
+    of scalar angle;
+is
+    angle = normalized_positive_angle of angle;
+    
+    // map angle to rangle of -180 to 180
+    //
+    if angle > 180 then
+        angle = itself - 360;
+    end;
+    
+    answer angle;
+end;    // normalized_angle
+

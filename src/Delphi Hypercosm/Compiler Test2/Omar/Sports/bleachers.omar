@@ -1,0 +1,107 @@
+{***************************************************************}
+{                          bleachers.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bleachers_anim;
+
+include "system/3d.ores";
+//include "system/shapes.ores";
+include "system/anims.ores";
+
+shape bleachers with
+    scalar length = 120;
+    scalar height = 15;
+    scalar depth = 40;
+    integer num_seats = 18;
+    boolean front_foot_step is true;
+    boolean side_boards is true;
+is
+    scalar seat_step = height/(num_seats+1);
+    scalar seat_depth;
+    scalar curx = 0, curz = 0;
+
+    if front_foot_step then
+        seat_depth = depth / (num_seats*2);
+        block with
+            vertex = <0 0 0>;
+            side1 = <seat_depth 0 0>;
+            side2 = <0 length 0>;
+            side3 = <0 0 (seat_step/8)>;
+        end;
+        curx = seat_depth;
+    else
+        seat_depth = depth / (num_seats*2 - 1);
+    end;
+
+    //side boards
+    if side_boards then
+{       extrude [[curx 0] [curx seat_step] [depth (height-seat_step)]
+            [depth 0]]
+        with
+            height = seat_depth/4;
+        end;
+        extrude [[curx 0] [curx seat_step] [depth (height-seat_step)]
+            [depth 0]]
+        with
+            height = seat_depth/4;
+            move to <0 length 0>;
+        end;
+}       polygon [<curx 0 0> <curx 0 seat_step>
+             <depth 0 (height-seat_step)> <depth 0 0>];
+        polygon [<curx length 0> <curx length seat_step>
+             <depth length (height-seat_step)> <depth length 0>];
+    end;
+
+    for integer counter = 1 .. num_seats do
+        block with
+            vertex = <curx 0 curz>;
+            side1 = <seat_depth 0 0>;
+            side2 = <0 length 0>;
+            side3 = <0 0 (seat_step*2)>;
+        end;
+        block with
+            vertex = <(curx - seat_depth/16) 0 (curz + seat_step*2)>;
+            side1 = <(seat_depth + seat_depth/8) 0 0>;
+            side2 = <0 length 0>;
+            side3 = <0 0 (seat_step/8)>;
+            //material is wood;
+            material is chalk colored <.6 .5 .3>;
+        end;
+        curx = itself + seat_depth;
+
+        if counter <> num_seats then
+            block with
+                vertex = <curx 0 curz>;
+                side1 = <(seat_depth*2) 0 0>;
+                side2 = <0 length 0>;
+                side3 = <0 0 seat_step>;
+            end;
+        end;
+        curx = itself + seat_depth;
+        curz = itself + seat_step;
+    end;
+
+end;
+
+anim bleachers_anim
+with
+    eye = <0 -80 10>;
+    lookat = <0 5 5>;
+    double_buffer is on;
+is
+    shape scene is
+        bleachers with
+            move to <-20 -60 0>;
+            rotate by 60 around <0 0 1>;
+            color = grey;
+            //material is wood;
+        end;
+    end;
+
+    mouse_controlled_shape scene;
+end;

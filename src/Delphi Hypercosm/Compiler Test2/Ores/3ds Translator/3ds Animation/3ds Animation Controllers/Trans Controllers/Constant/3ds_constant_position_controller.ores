@@ -1,0 +1,58 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  3ds_constant_position_controller.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_position_controller.ores";
+include "system/3ds_constant_point3_controller.ores";
+
+
+subject translated_3ds_constant_position_controller 
+extends
+	renderable translated_3ds_position_controller
+does
+    // constructor
+    //
+	verb new
+		of vector position;
+	end;
+	
+	// renderable method
+	//
+	shape instance;
+is
+    //
+    // constructor
+    //
+    
+    
+	verb new
+		of vector position;
+	is
+		translated_3ds_position_controller new controlled by 
+			new translated_3ds_constant_point3_controller of position;
+	end;	// new
+	
+
+    //
+	// renderable method
+	//
+	
+	
+	shape instance is
+		(translated_3ds_constant_point3_controller type controller) instance;
+	end;	// instance
+end;	// translated_3ds_constant_position_controller
+
+
+
+

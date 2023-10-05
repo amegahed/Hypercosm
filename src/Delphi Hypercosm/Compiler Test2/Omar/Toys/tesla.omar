@@ -1,0 +1,124 @@
+{***************************************************************}
+{                          tesla.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tesla_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+include "system/lightning.omar";
+include "system/random.ores";
+
+
+subject tesla_globe
+extends
+    step_actor
+does
+    shape instance;
+    verb step;
+has
+    integer seed = 0;
+is
+    objective shape sphere_o_lightning with
+        integer seed = global seed;
+        integer bolts = 4;
+    is
+        for integer counter = 1..bolts do
+            vector v = (vrandom <-1 -1 -1> to <1 1 1>) * 360;
+            lightning with
+                seed = static seed;
+                magnify by 1.2;
+                move to <0 0 .3>;
+                rotation of v;
+            end;
+            lightning with
+                seed = global seed;
+                magnify by 1.2;
+                move to <0 0 .3>;
+                rotation of v + <180 0 0>;
+            end;
+        end;
+    end;    // sphere_o_lightning
+
+
+    objective shape tesla_thing is
+
+        // base part
+        //
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .1>;
+        end;
+        block with
+            move to <0 0 1.1>;
+        end;
+        cylinder with
+            material is aluminum;
+            end1 = <0 0 2.1>;
+            end2 = <0 0 2.2>;
+        end;
+        disk with
+            move to <0 0 2.2>;
+        end;
+
+        // glass globe part
+        //
+        transparent white sphere with
+            vmin = -60;
+            radius = 1.5;
+            move to <0 0 3.5>;
+            edges is silhouette;
+            render_mode is wireframe;
+        end;
+
+        // electrode thing
+        //
+        cylinder with
+            end1 = <0 0 2.2>;
+            end2 = <0 0 3.5>;
+            radius = .1;
+        end;
+        sphere with
+            material is aluminum;
+            center = <0 0 3.5>;
+            radius = .3;
+        end;
+    end;    // tesla_thing
+
+
+    shape instance is
+        tesla_thing with
+            material is plastic colored dark grey;
+        end;
+        sphere_o_lightning with
+            seed = tesla_globe's seed;
+            move to <0 0 3.5>;
+        end;
+    end;    // instance
+
+
+    verb step is
+        seed = global seed;
+    end;    // step
+end;    // tesla_globe
+
+
+anim tesla_anim
+    args type args;
+with
+    eye = <2 -12 4>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    args check;
+is
+    tesla_globe type tesla_globe;
+
+    mouse_controlled_actor tesla_globe;
+end;    // tesla_anim

@@ -1,0 +1,419 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  3ds_prism.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains prism definitions that correspond to 		    }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_textureable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+include "system/polygon_meshes.ores";
+
+
+final subject translated_3ds_prism
+extends
+    translated_3ds_collapsable translated_3ds_texturable_object
+does
+    // constructor
+    //
+	verb new with
+	
+    	// geometry parameters
+    	//
+        scalar side1_length = 1;
+        scalar side2_length = 1;
+        scalar side3_length = 1;
+        scalar height = 5;
+        
+        // tessellation parameters
+        //
+    	integer side1_segments = 1;
+    	integer side2_segments = 1;
+    	integer side3_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	end;
+
+    // attributes setting methods
+    //
+	verb set with
+	
+    	// geometry parameters
+    	//
+        scalar side1_length = 1;
+        scalar side2_length = 1;
+        scalar side3_length = 1;
+        scalar height = 5;
+        
+        // tessellation parameters
+        //
+    	integer side1_segments = 1;
+    	integer side2_segments = 1;
+    	integer side3_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	end;
+		
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_prism type question get;
+	reference verb recycle;	
+has
+	// geometry attributes
+	//
+    scalar side1_length;
+    scalar side2_length;
+    scalar side3_length;
+    scalar height;
+    
+    // tessellation attributes
+    //
+	integer side1_segments;
+	integer side2_segments;
+	integer side3_segments;
+	integer height_segments;
+	
+private	
+	// recycling attributes
+	//
+	translated_3ds_prism type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_prism type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+	
+    	// geometry parameters
+    	//
+        scalar side1_length = 1;
+        scalar side2_length = 1;
+        scalar side3_length = 1;
+        scalar height = 5;
+        
+        // tessellation parameters
+        //
+    	integer side1_segments = 1;
+    	integer side2_segments = 1;
+    	integer side3_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+
+		if verbose_recycling then
+			write "new 3ds prism", ;
+		end;
+				    
+		with translated_3ds_prism do
+		
+        	// set geometry attributes
+        	//
+            its side1_length = side1_length;
+            its side2_length = side2_length;
+            its side3_length = side3_length;
+            its height = height;
+            
+            // set tessellation attributes
+            //
+        	its side1_segments = side1_segments;
+        	its side2_segments = side2_segments;
+        	its side3_segments = side3_segments;
+        	its height_segments = height_segments;
+	    end;
+	end;	// new	
+
+
+	//
+    // attributes setting methods
+    //
+    
+    
+	verb set with
+	
+    	// geometry parameters
+    	//
+        scalar side1_length = 1;
+        scalar side2_length = 1;
+        scalar side3_length = 1;
+        scalar height = 5;
+        
+        // tessellation parameters
+        //
+    	integer side1_segments = 1;
+    	integer side2_segments = 1;
+    	integer side3_segments = 1;
+    	integer height_segments = 1;
+    	
+    	// texturing parameters
+    	//
+    	boolean gen_mapping_coords is false;
+	is
+		with translated_3ds_prism do
+		
+        	// set geometry attributes
+        	//
+            its side1_length = side1_length;
+            its side2_length = side2_length;
+            its side3_length = side3_length;
+            its height = height;
+            
+            // set tessellation attributes
+            //
+        	its side1_segments = side1_segments;
+        	its side2_segments = side2_segments;
+        	its side3_segments = side3_segments;
+        	its height_segments = height_segments;
+        	
+            // set texturing parameters
+            //
+	        its gen_mapping_coords is gen_mapping_coords;
+	    end;	
+	end;	// set
+	
+	
+    //
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;		
+	    
+    	scalar angle = acos ((sqr side3_length - sqr side1_length - sqr side2_length)
+    		/ (-2 * side1_length * side2_length));
+    	vector point[1..3], center;
+    	
+    	side1_length = abs side1_length;
+    	side2_length = abs side2_length;
+    	side3_length = abs side3_length;
+    	
+    	point[1] = <0 0 0>;
+    	point[2] = <side1_length 0 0>;
+    	point[3] = point[2] + <(-side2_length * cos angle) (side2_length * sin angle) 0>;
+    	center = (point[1] + point[2] + point[3]) / 3;
+    	
+    	// sides
+    	//
+		editable_mesh add_element (get_rectangular_grid_mesh with
+
+    		// geometry parameters
+    		//
+    	    vertex = point[1];
+    	    side1 = point[2] - point[1];
+    	    side2 = <0 0 height>;
+    	    
+    	    // tessellation parameters
+    	    //		    
+    	    h_steps = side1_segments;
+    	    v_steps = height_segments;
+    	    
+    	    // rendering parameters
+    	    //	
+    	    one_sided is true;
+    	    reversed is (height < 0);
+    	    
+    	    // texturing parameters
+    	    //
+    	    textured is gen_mapping_coords;		    
+		);    	
+
+		editable_mesh add_element (get_rectangular_grid_mesh with
+
+    		// geometry parameters
+    		//
+    	    vertex = point[2];
+    	    side1 = point[3] - point[2];
+    	    side2 = <0 0 height>;
+    	    
+    	    // tessellation parameters
+    	    //	    
+    	    h_steps = side2_segments;
+    	    v_steps = height_segments;
+    	    
+    	    // rendering parameters
+    	    //	    
+    	    one_sided is true;
+    	    reversed is (height < 0);
+    	    
+    	    // texturing parameters
+    	    //
+    	    textured is gen_mapping_coords;	    
+		);    	
+    	
+		editable_mesh add_element (get_rectangular_grid_mesh with
+
+    		// geometry parameters
+    		//
+    	    vertex = point[3];
+    	    side1 = point[1] - point[3];
+    	    side2 = <0 0 height>;
+    	    
+    	    // tessellation parameters
+    	    //
+    	    h_steps = side3_segments;
+    	    v_steps = height_segments;
+    	    
+    	    // rendering parameters
+    	    //
+    	    one_sided is true;
+    	    reversed is (height < 0);  
+    	    
+    	    // texturing parameters
+    	    //
+    	    textured is gen_mapping_coords;  
+		); 
+        
+        // bottom face
+        //
+		editable_mesh add_element (get_triangle_mesh
+			of point[1] point[2] point[3]
+		with
+		    one_sided is true;
+		    reversed is (height > 0);
+		    textured is gen_mapping_coords;
+		); 
+        				
+        // top face
+        //      
+        for each vector v in point do
+        	v = itself + <0 0 height>;
+        end;
+        
+		editable_mesh add_element (get_triangle_mesh 
+			of point[1] point[2] point[3]
+		with
+		    one_sided is true;
+		    reversed is (height < 0);
+		    textured is gen_mapping_coords;
+		); 
+		
+		recycle;
+		answer editable_mesh;
+	end;	// get_collapsed
+	
+		
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_prism type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_prism type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_prism;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_prism;
+		
+		translated_3ds_prism is none;
+	end;		// recycle			
+end;    // translated_3ds_prism
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_prism with
+
+	// geometry parameters
+	//
+    scalar side1_length = 1;
+    scalar side2_length = 1;
+    scalar side3_length = 1;
+    scalar height = 5;
+    
+    // tessellation parameters
+    //
+	integer side1_segments = 1;
+	integer side2_segments = 1;
+	integer side3_segments = 1;
+	integer height_segments = 1;
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+    
+    // modifier stack
+    //
+	translated_3ds_prism type translated_3ds_prism is translated_3ds_prism type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_prism;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_prism set with
+	
+    	// set geometry parameters
+    	//
+        side1_length = static side1_length;
+        side2_length = static side2_length;
+        side3_length = static side3_length;
+        height = static height;
+        
+        // set tessellation parameters
+        //
+    	side1_segments = static side1_segments;
+    	side2_segments = static side2_segments;
+    	side3_segments = static side3_segments;
+    	height_segments = static height_segments;
+    	
+    	// set texturing parameters
+    	//
+    	gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_prism

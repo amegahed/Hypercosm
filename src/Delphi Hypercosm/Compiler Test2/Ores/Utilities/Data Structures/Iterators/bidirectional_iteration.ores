@@ -1,0 +1,25 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	 bidirectional_iteration.ores 		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of iteration behaviors    			}
+{		for immutable ("read-only") collections.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+adjective bidirectional_iterable
+does
+    // relative iterator navigation method
+    //
+    verb to_prev;
+    
+    // this method returns the current element and also 
+    // advances to the prev available element.
+    //
+    object type question prev;
+end;    // bidirectional_iterable

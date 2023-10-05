@@ -1,0 +1,85 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             knight.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of a chess piece.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do knight_anim;
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/anims.ores";
+
+shape knight is
+	shape knighthead is
+		extrude [[.05 0] [.07 .35] [.37 .39] [.44 .33] [.47 .37] [.40 .46]
+			[.46 .53] [.43 .58] [.36 .53] [.07 .65] [-.02 .80]
+			[-.17 .73] [-.29 .84] [-.30 .67] [-.35 .43] [-.25 0]]
+		with
+			height = .2;
+			magnify by 20;
+			move to <2 0 0>;
+		end;
+		// eyes
+		//
+		sphere with
+			center = <1 -2 14>;
+			radius = 1;
+		end;
+		sphere with
+			center = <1 2 14>;
+			radius = 1;
+		end;
+	end;    // knighthead
+	
+	color = white;
+	cylinder with
+		end1 = <0 0 0>;
+		end2 = <0 0 1>;
+		radius = 8;
+	end;
+	disk with
+		radius = 8;
+	end;
+	hyperboloid1 with
+		end1 = <0 0 1>;
+		end2 = <0 0 5>;
+		radius1 = 8;
+		radius2 = 5;
+	end;
+	sphere with
+		radius = 6.5;
+		scale by .3 along <0 0 1>;
+		move to <0 0 5>;
+	end;
+	cone with
+		end1 = <0 0 5>;
+		end2 = <0 0 10>;
+		radius1 = 5;
+		radius2 = 3;
+	end;
+	rod with
+		end1 = <0 0 10>;
+		end2 = <0 0 12>;
+		radius = 5;
+	end;
+	knighthead with
+		move to <0 0 12>;
+	end;
+end;    // knight
+
+anim knight_anim
+	args type args;
+with
+	eye = <20 -60 40>;
+	lookat = <0 0 12.5>;
+	double_buffer is on;
+	args check;
+is
+	mouse_controlled_shape knight;
+end;    // knight_anim

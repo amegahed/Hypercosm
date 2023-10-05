@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             complex.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of usage of        }
+{       the complex data type in the OMAR language.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do complex_example;
+
+complex i = <0 1>;
+complex i_times_2 = <0 1> * 2;
+complex half_i = i / 2;
+	
+	
+verb complex_example is
+	write "This example declares, assigns, and prints", ;
+	write "values for a series of complex variables:", ;
+	write;
+	
+	write "i = ", i, ;
+	write "i * 2 = ", i_times_2, ;
+	write "i / 2 = ", half_i, ;
+end;    // complex_example

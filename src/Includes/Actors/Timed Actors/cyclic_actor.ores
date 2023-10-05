@@ -1,0 +1,81 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          cyclic_actor.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/acting.ores";
+include "system/printing.ores";
+include "system/timers.ores";
+
+abstract subject cyclic_actor
+extends
+	actable printable cycle_timer
+does
+	// constructor
+	//
+	verb new
+		at scalar time = 0;    
+		lasting scalar duration = 1;
+	with
+		boolean paused is false;
+		boolean autostop is false;
+		boolean autoreverse is false;
+	end; 
+	
+	// acting method
+	//
+	verb act;
+	
+	// rendering method
+	//
+	abstract shape instance;
+	
+	// printing method
+	//
+	verb print;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at scalar time = 0;    
+		lasting scalar duration = 1;
+	with
+		boolean paused is false;
+		boolean autostop is false;
+		boolean autoreverse is false;
+	is
+		// call superclass constructor
+		//
+		cycle_timer new at time lasting duration with
+			paused is static paused;
+			autostop is static autostop;
+			autoreverse is static autoreverse;
+		end;
+	end;    // new
+	
+	//
+	// acting method
+	//
+	
+	verb act is
+		update;
+	end;    // act
+	
+	//
+	// printing method
+	//
+	   
+	verb print is
+		write "cyclic actor with time = ", time, ;
+	end;    // print
+end;    // cyclic_actor

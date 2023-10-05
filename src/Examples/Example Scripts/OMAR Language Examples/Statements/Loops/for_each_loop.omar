@@ -1,0 +1,24 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           for_each_loop.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a "for each"     }
+{       loop that can be used to automatically loop over        }
+{       the elements of an array in the OMAR language.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do for_each_loop_example;
+
+verb for_each_loop_example is
+	char name[] = "Freida Froglegs";
+	
+	write "Writing out the characters of a string using a for each loop:", ;
+	
+	for each char ch in name do                 // Implicitly finds min and max of array
+		write ch;                               // Implicit array dereference
+	end;
+end;    // for_each_loop_example

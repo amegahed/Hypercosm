@@ -1,0 +1,203 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           densities.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard subjects for creating            }
+{       volumetric fields.                                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+subject density_field
+does
+	// constructor
+	//
+	verb new
+		using scalar question f
+			at vector v;
+		end;    // f
+		from vector density_min = <-1 -1 -1>;
+		to vector density_max = <1 1 1>;
+	with
+		integer x_steps = 10, y_steps = 10, z_steps = 10;
+	end;    // new
+
+	// querying methods
+	//
+	scalar question interpolated
+		at vector point;
+	end;    // interpolate
+has
+	// attributes
+	//
+	public scalar density[, , ];
+is
+	//
+	// constructor
+	//
+
+	verb new
+		using scalar question f
+			at vector v;
+		end;    // f
+		from vector density_min = <-1 -1 -1>;
+		to vector density_max = <1 1 1>;
+	with
+		integer x_steps = 10, y_steps = 10, z_steps = 10;
+	is
+		vector density_range = density_max - density_min;
+		scalar x_cube_size = density_range dot <1 0 0> / x_steps;
+		scalar y_cube_size = density_range dot <0 1 0> / y_steps;
+		scalar z_cube_size = density_range dot <0 0 1> / z_steps;
+		scalar x_offset = density_min dot <1 0 0>;
+		scalar y_offset = density_min dot <0 1 0>;
+		scalar z_offset = density_min dot <0 0 1>;
+		scalar x, y, z;
+
+		// allocate density array
+		//
+		dim density[0..z_steps, 0..y_steps, 0..x_steps];
+
+		// init density values
+		//
+		for integer z_counter = 0..z_steps do
+			for integer y_counter = 0..y_steps do
+				for integer x_counter = 0..x_steps do
+					x = x_counter * x_cube_size + x_offset;
+					y = y_counter * y_cube_size + y_offset;
+					z = z_counter * z_cube_size + z_offset;
+					density[z_counter, y_counter, x_counter] = f at <x y z>;
+				end;
+			end;
+		end;
+	end;    // new
+
+	//
+	// querying methods
+	//
+
+	scalar question interpolated
+		at vector point;
+	is
+		integer xmin = min density[, ], xmax = max density[, ];
+		integer ymin = min density[], ymax = max density[];
+		integer zmin = min density, zmax = max density;
+		scalar x, y, z;
+		integer x1, y1, z1;
+		integer x2, y2, z2;
+		scalar d[0..1, 0..1, 0..1];
+		scalar d1, d2;
+
+		// point in range [-1..1]
+		//
+		x = point dot <1 0 0>;
+		y = point dot <0 1 0>;
+		z = point dot <0 0 1>;
+
+		// point in range [0..1]
+		//
+		x = (x + 1) / 2;
+		y = (y + 1) / 2;
+		z = (z + 1) / 2;
+
+		// point in range of array
+		//
+		x = xmin + (xmax - xmin) * x;
+		y = ymin + (ymax - ymin) * y;
+		z = zmin + (zmax - zmin) * z;
+		x1 = trunc clamp x from xmin to (xmax - 1);
+		y1 = trunc clamp y from ymin to (ymax - 1);
+		z1 = trunc clamp z from zmin to (zmax - 1);
+		x2 = x1 + 1;
+		y2 = y1 + 1;
+		z2 = z1 + 1;
+		d[0, 0, 0] = density[z1, y1, x1];
+		d[0, 0, 1] = density[z1, y1, x2];
+		d[0, 1, 0] = density[z1, y2, x1];
+		d[0, 1, 1] = density[z1, y2, x2];
+		d[1, 0, 0] = density[z2, y1, x1];
+		d[1, 0, 1] = density[z2, y1, x2];
+		d[1, 1, 0] = density[z2, y2, x1];
+		d[1, 1, 1] = density[z2, y2, x2];
+
+		// interpolate between nearest neighbors
+		//
+		for integer z_counter = 0..1 do
+			for integer y_counter = 0..1 do
+
+				// interpolate in x
+				//
+				d1 = d[z_counter, y_counter, 0] * (x2 - x);
+				d2 = d[z_counter, y_counter, 1] * (x - x1);
+				d[z_counter, y_counter, 0] = d1 + d2;
+			end;
+
+			// interpolate in y
+			//
+			d1 = d[z_counter, 0, 0] * (y2 - y);
+			d2 = d[z_counter, 1, 0] * (y - y1);
+			d[z_counter, 0, 0] = d1 + d2;
+		end;
+
+		// interpolate in z
+		//
+		d1 = d[0, 0, 0] * (z2 - z);
+		d2 = d[1, 0, 0] * (z - z1);
+
+		answer d1 + d2;
+	end;    // interpolate
+end;    // density_field
+
+subject density_field2
+does
+	// constructor
+	//
+	verb new
+		using scalar question f
+			at vector v;
+		end;    // f
+		from vector density_min = <-1 -1 -1>;
+		to vector density_max = <1 1 1>;
+	with
+		integer x_steps = 10, y_steps = 10;
+	end;    // new
+has
+	// attributes
+	//
+	public scalar density[, ];
+is
+	//
+	// constructor
+	//
+
+	verb new
+		using scalar question f
+			at vector v;
+		end;    // f
+		from vector density_min = <-1 -1 -1>;
+		to vector density_max = <1 1 1>;
+	with
+		integer x_steps = 10, y_steps = 10;
+	is
+		vector density_range = density_max - density_min;
+		vector x_offset = (density_range parallel <0 0 1>) / x_steps;
+		vector y_offset = (density_range perpendicular <0 0 1>) / y_steps;
+		vector point;
+
+		// allocate density array
+		//
+		dim density[0..y_steps, 0..x_steps];
+
+		// init density values
+		//
+		for integer y_counter = 0..y_steps do
+			for integer x_counter = 0..x_steps do
+				point = density_min + x_offset * x_counter + y_offset * y_counter;
+				density[y_counter, x_counter] = f at point;
+			end;
+		end;
+	end;    // new
+end;    // density_field2

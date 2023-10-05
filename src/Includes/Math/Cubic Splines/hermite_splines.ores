@@ -1,0 +1,75 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        hermite_splines.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{           Contains hermite spline definition utilities.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/polynomials.ores";
+include "system/vpolynomials.ores";
+
+polynomials type hermite_blending_functions is new_polynomials of [
+	[2 -3 0 1]
+	[-2 3 0 0]
+	[1 -2 1 0]
+	[1 -1 0 0]
+];  // hermite_blending_functions
+
+scalar[] question get_hermite_blends
+	at scalar t;
+is
+	scalar hermite_blends[0..3];
+	scalar t_squared = t * t;
+	scalar t_cubed = t * t_squared;
+
+	// vertex blending factors
+	//
+	hermite_blends[0] = 2 * t_cubed - 3 * t_squared + 1;
+	hermite_blends[1] = -2 * t_cubed + 3 * t_squared; 
+
+	// tangent blending factors
+	//
+	hermite_blends[2] = t_cubed - 2 * t_squared + t;
+	hermite_blends[3] = t_cubed - t_squared;
+	
+	answer hermite_blends;    
+end;    // get_hermite_blends
+
+polynomial type question get_hermite_cubic
+	from scalar s1, m1;
+	to scalar s2, m2;
+is
+	polynomial type hermite_cubic;
+	dim hermite_cubic[0..3];
+
+	// find polynomial coefficients
+	//
+	hermite_cubic[3] = (s1 - s2) * 2 + (m1 + m2);
+	hermite_cubic[2] = (s2 - s1) * 3 - (m1 * 2) - m2; 
+	hermite_cubic[1] = m1;
+	hermite_cubic[0] = s1;
+	
+	answer hermite_cubic;
+end;    // get_hermite_cubic
+
+vpolynomial type question get_hermite_vcubic
+	from vector v1, m1;
+	to vector v2, m2;
+is
+	vpolynomial type hermite_vcubic;
+	dim hermite_vcubic[0..3];
+
+	// find polynomial coefficients
+	//
+	hermite_vcubic[3] = (v1 - v2) * 2 + (m1 + m2);
+	hermite_vcubic[2] = (v2 - v1) * 3 - (m1 * 2) - m2; 
+	hermite_vcubic[1] = m1;
+	hermite_vcubic[0] = v1;
+
+	answer hermite_vcubic;
+end;    // get_hermite_vcubic

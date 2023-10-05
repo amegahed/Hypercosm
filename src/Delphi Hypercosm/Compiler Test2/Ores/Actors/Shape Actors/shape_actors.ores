@@ -1,0 +1,16 @@
+{***************************************************************}
+{                         shape_actors.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/shape_actor.ores";
+include "system/animated_shape_actor.ores";
+include "system/cyclic_shape_actor.ores";

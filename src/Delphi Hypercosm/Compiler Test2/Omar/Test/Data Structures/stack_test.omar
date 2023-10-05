@@ -1,0 +1,96 @@
+{***************************************************************}
+{                          stack_test.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/linked_stacks.ores";
+include "system/array_stacks.ores";
+include "system/printing.ores";
+
+
+abstract subject figure
+extends
+	printable object
+does
+    verb print;
+has
+    vector color;
+is
+    verb print is
+        write "figure", ;
+    end;    // print
+end;    // figure
+
+
+subject circle
+extends
+    figure
+does
+    verb print;
+has
+    scalar radius = 1;
+is
+    verb print is
+        write "circle with radius = ", radius, ;
+    end;    // print
+end;    // circle
+
+
+subject square
+extends
+    figure
+does
+    verb print;
+has
+    scalar size = 1;
+is
+    verb print is
+        write "square with size = ", size, ;
+    end;    // print
+end;    // square
+
+
+verb test is
+    circle type circle, circle2;
+    square type square, square2;
+    linked_stack type circle_stack;
+    linked_stack type square_stack;
+    array_stack type shape_stack;
+
+    // create circle stack
+    //
+    circle_stack push circle, circle2;
+
+    // create square stack
+    //
+    square_stack push square, square2;
+
+    // create shape stack
+    //
+    shape_stack push circle, square, circle2, square2;
+
+    // pop items from circle stack
+    //
+    write "circle stack:", ;
+    write "circle stack height = ", circle_stack height, ;
+    circle_stack print;
+
+    // pop items from square stack
+    //
+    write "square stack:", ;
+    write "square stack height = ", square_stack height, ;
+    square_stack print;
+
+    // pop items from shape stack
+    //
+    write "shape stack:", ;
+    write "shape stack height = ", shape_stack height, ;
+    shape_stack print;
+end;    // test

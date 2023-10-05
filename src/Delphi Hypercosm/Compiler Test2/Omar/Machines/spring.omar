@@ -1,0 +1,74 @@
+{***************************************************************}
+{                          spring.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do spring_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/check_keys.ores";
+
+
+shape spring with
+    scalar turns = 1.0;
+    scalar height = 1;
+    scalar inner_radius = .9;
+    scalar outer_radius = 1;
+is
+    integer segments = trunc (turns * 2 + 1);
+    scalar sweep = turns * 360 / segments;
+    scalar step = height / segments;
+    scalar x = cos sweep;
+    scalar y = sin sweep;
+
+    shape segment is
+        torus with
+            umin = 0;
+            umax = sweep;
+            inner_radius = static inner_radius;
+            outer_radius = static outer_radius;
+            skew from <x y 0> to <x y step> about <1 0 0>;
+        end;
+    end;    // segment
+
+    move to <0 0 (-height / 2)>;
+    for integer counter = 1..segments do
+        segment;
+        move to <0 0 step>;
+        rotate by sweep around <0 0 1>;
+    end;
+end;    // spring
+
+
+picture spring_picture with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+is
+    scalar twist = abs (get_mouse dot <1 0 0>) * 4;
+    scalar h = abs (get_mouse dot <0 1 0>) * 3;
+
+        default_lights;
+    spring with
+        turns = twist;
+        height = h;
+    end;
+end;    // spring_picture
+
+
+anim spring_anim
+    args type args;
+with
+    double_buffer is on;
+    args check;
+is
+    while true do
+        spring_picture;
+                check_keys;
+    end;
+end;    // spring_anim

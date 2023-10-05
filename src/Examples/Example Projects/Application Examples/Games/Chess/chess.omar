@@ -1,0 +1,349 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             chess.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an interactive chess game.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do chess_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/actors.ores";
+include "system/check_keys.ores";
+include "system/arrow_shapes.ores";
+include "system/infinite_plane.ores";
+include "system/above_plane.ores";
+include "chess_set.omar";
+
+subject chess_game
+extends
+	pressable_actor
+does
+	// constructor
+	//
+	verb new with
+		material type dark_material is black_marble;
+		material type light_material is white_marble;
+		scalar thickness = .1;
+	end;    // new
+	// rendering methods
+	//
+	shape instance;
+	// interaction methods
+	//
+	verb touch
+		from vector location;
+		towards vector direction;
+	end; 
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	end;
+	verb release
+		from vector location;
+		towards vector direction;
+	end;    // release
+has
+	// attributes
+	//
+	enum chess_mode is selecting, done;
+	chess_set type chess_set is none;
+	// white always goes first
+	//
+	chess_color type chess_color is white;
+	chess_mode type mode is none;
+	chess_piece type selected_piece is none;
+	vector selection_point;
+	scalar selection_height;
+	
+	// user interface elements
+	//
+	text_display type text_display at <0 .9 0> with
+		font set_size to get_default_title_text_size;
+	end;
+is
+	verb start is
+		chess_set init;
+		text_display set_text to "White Player Starts";
+	end;    // start
+	
+	//
+	// constructor
+	//
+	
+		
+	verb new with
+		material type dark_material is black_marble;
+		material type light_material is white_marble;
+		scalar thickness = .1;
+	is
+		// build chess set
+		//
+		new chess_set with
+			dark_material is static dark_material;
+			light_material is static light_material;
+			thickness = static thickness;
+		end;
+		
+		start;
+	end;    // new
+	
+	//
+	// attribute querying methods
+	//
+	
+	
+	boolean question piece_hit
+		chess_piece type reference chess_piece;
+		in vector direction;
+		at vector reference location;
+	is
+		objective shape thing is
+			(renderable type chess_piece) instance with
+				move to <0 0 chess_set's thickness>;
+			end;
+		end;
+		answer ray_hits_shape from location towards direction into thing
+			return at location towards direction;
+	end;    // piece_hit
+	
+	boolean question select_piece
+		chess_piece type reference chess_piece;
+		of chess_color type chess_color;
+		in vector direction;
+		at vector reference location;
+	is
+		for integer row = 1 .. 8 do
+			for integer column = 1 .. 8 do
+				chess_set get_piece chess_piece at row column;
+				if chess_piece isn't none then
+					if chess_color is chess_piece's chess_color then
+						if piece_hit chess_piece in direction at location then
+							answer true;
+						end;
+					end;
+				end;
+			end;
+		end;
+		answer false;
+	end;    // select_piece
+
+	//
+	// rendering methods
+	//
+	
+	
+	shape instance
+	is
+		integer key;
+		static material type error_material is glass colored red;
+		if mode is selecting then
+			material type piece_material is none;
+			color type arrow_color;
+			integer new_row, new_column;
+			simulation type current_simulation is none;
+			interaction type current_interaction is none;
+			vector ray_location = get_transformed_point eye;
+			vector ray_direction = get_transformed_vector project get_mouse;
+			
+			// find intersection with horizontal selection plane
+			//
+			scalar t = (selection_height - ray_location dot <0 0 1>) /
+				(ray_direction dot <0 0 1>);
+			vector drag_point = ray_location + ray_direction * t;
+			vector drag = drag_point - selection_point;
+			scalar drag_length = vlength of drag;
+			current_simulation is (global simulation);
+			current_interaction is (global interaction);
+			
+			chess_set find_position of new_row new_column at drag_point;
+	
+			if selected_piece valid_move to new_row new_column of
+				chess_set's chess_pieces
+			then
+			   when chess_color is
+					black:
+						piece_material is chess_set's dark_material;
+					end;
+					white:
+						piece_material is chess_set's light_material;
+					end;
+				end;            
+				arrow_color = green;
+			else
+				piece_material is error_material;
+				arrow_color = red;
+			end;
+			if drag_length > .5 then
+				vector direction = normalized drag * (drag_length - .5); 
+				
+				arrow from selection_point to selection_point + direction with
+					color = arrow_color;
+				end;
+			end;
+			(renderable type selected_piece) instance with
+				material is piece_material;
+				move to drag + <0 0 (chess_set's thickness + .01)>;
+			end;
+			if some current_interaction then
+				(mouse_interaction type current_interaction) override;
+				set_cursor to arrow;
+			end;
+		end;
+		key = get_key;
+		while key <> 0 do
+			if key = char_to_key of "r" then
+				start;
+				mode is none;
+				chess_color is white;
+			end;
+			key = get_key;
+		end;
+		chess_set instance;
+		text_display draw;
+	end;    // instance
+
+	//
+	// interaction methods
+	//
+	
+	
+	verb touch
+		from vector location;
+		towards vector direction;
+	is
+		simulation type current_simulation is none;
+		mouse_interaction type current_interaction is none; 
+		current_simulation is (global simulation);
+		current_interaction is mouse_interaction type (global interaction);
+		
+		if (mode is none) and (some current_interaction) and not (current_interaction is_tracking) then
+			if select_piece selected_piece of chess_color in direction at location then
+				current_interaction override;
+				set_cursor to arrow;
+			end;
+		end;
+	end;    // touch
+	
+	verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	is
+		if mode is none then
+			if select_piece selected_piece of chess_color in direction at location then
+				selection_point = location;
+				selection_height = selection_point dot <0 0 1>;
+				mode is selecting;
+			end;
+		elseif mode is done then
+			start;
+			mode is none;
+			chess_color is white;
+		end;
+	end;    // press
+	
+	verb release
+		from vector location;
+		towards vector direction;
+	is
+		if mode is selecting then
+			integer new_row, new_column;
+			// find intersection with horizontal selection plane
+			//
+			scalar t = (selection_height - location dot <0 0 1>) /
+				(direction dot <0 0 1>);
+			vector drag_point = location + direction * t;
+			chess_set find_position of new_row new_column at drag_point;
+			if selected_piece valid_move to new_row new_column of
+				chess_set's chess_pieces
+			then
+				chess_piece type captured_piece is none;
+				chess_set get_piece captured_piece at new_row new_column;
+				chess_set delete_piece at new_row new_column;
+				selected_piece move to new_row new_column of
+					chess_set's chess_pieces;
+				// does pawn get promoted to queen?
+				//
+				if pawn_piece type selected_piece then
+					boolean promotion;
+					when chess_color is
+						black:
+							promotion is new_row = 1;
+						end;
+						white:
+							promotion is new_row = 8;
+						end;
+					end;
+					if promotion then
+						chess_set delete_piece at new_row new_column;
+						chess_set add_queen at new_row new_column
+							to chess_color;
+					end;
+				end;
+				// next turn
+				//
+				chess_color is enemy_color of chess_color;
+				when chess_color is
+					black:
+						text_display set_text to "Go Black Player!";
+					end;
+					white:
+						text_display set_text to "Go White Player!";
+					end;
+				end;
+				mode is none;
+				// is game over?
+				//
+				if some captured_piece then
+					if chess_set's black_pieces = 0 or
+						chess_set's white_pieces = 0 or
+						king_piece type captured_piece
+					then
+						mode is done;
+						text_display set_text to "Game Over";
+					end;
+				end;
+			else
+				mode is none;
+			end;
+			selected_piece is none;
+		end;
+	end;    // release
+end;    // chess_game
+
+anim chess_anim
+	args type args;
+with
+	eye = <0 -12 10>;
+	lookat = <0 0 0>;
+	facets = 8;
+	show_controls is false;
+	constraints is [new above_plane_constraint];
+	args check;
+is
+	chess_game type game;
+	material type ground_material is plastic colored black poster "grid.png";
+	
+	shape scene with
+		scalar time = 0;
+	is
+		game instance;
+		infinite_plane to 100 with
+			material is ground_material;
+		end;
+	end;    // scene
+	
+	verb update is
+		game update;
+	end;
+	mouse_controlled_animated_shape scene doing update;
+end;    // chess_anim

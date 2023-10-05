@@ -1,0 +1,64 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            printing.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard printing related behavior        }
+{       definitions and utilities.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+
+{***************************************************************}
+{                       printing behaviors                      }
+{***************************************************************}
+
+adjective scribable
+does
+	string type question to_string;
+end;    // scribable
+
+adjective printable
+does
+	verb print;
+end;    // printable
+
+{***************************************************************}
+{                        printing utilities                     }
+{***************************************************************}
+
+string type question to_string
+	of object type item;
+is
+	if scribable type item then
+		scribable type scribable is scribable type item;
+		answer scribable to_string;
+	else
+		answer "?";
+	end;
+end;    // to_string
+
+{***************************************************************}
+{                        printing methods                       }
+{***************************************************************}
+
+verb print
+	object type item;
+is
+	if printable type item then
+		(printable type item) print;
+	else
+		write to_string of item;
+	end;
+end;    // print
+
+verb println
+	object type item;
+is
+	print item;
+	write;
+end;    // println

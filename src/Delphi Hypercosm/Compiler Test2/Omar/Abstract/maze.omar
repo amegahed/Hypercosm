@@ -1,0 +1,338 @@
+{***************************************************************}
+{                          maze.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do maze_anim;
+
+
+include "system/3d.ores";
+include "system/comparisons.ores";
+include "system/random.ores";
+include "system/text.ores";
+
+
+subject maze
+does
+
+    verb new 
+        of integer walls[][][];
+    with
+        vector start_position = <1 1 0>;
+        vector end_position = <9 9 0>;
+        material type wall_material is chalk poster "stone.jpg";
+        material type sky_material is constant_color <.9 .9 .9> poster "stucco.jpg";
+    end;
+
+    shape draw;
+    
+    vector question move_eye
+        from vector location;
+        by vector velocity;
+    with
+        scalar wall_cushion = .49;
+    end;
+
+has
+    vector start_position;
+    vector end_position;
+    material type wall_material;
+    material type sky_material;
+    boolean x_walls[,];
+    boolean y_walls[,];
+is
+
+    verb new
+        of integer walls[][][];
+    with
+        vector start_position = <1 1 0>;
+        vector end_position = <9 9 0>;
+        material type wall_material is chalk poster "stone.jpg";
+        material type sky_material is constant_color light grey poster "stucco.jpg";
+    is
+        integer max_x = -max_integer, min_x = max_integer;
+        integer max_y = -max_integer, min_y = max_integer;
+        
+        integer dx, dy, x, y;
+        
+        maze's start_position = <start_position.x start_position.y .5>;
+        maze's end_position = <end_position.x end_position.y .5>;
+        maze's wall_material is wall_material;
+        maze's sky_material is sky_material;
+        
+
+        for integer i = min walls .. max walls do
+            for integer j = min walls[i] .. max walls[i] do
+                if walls[i][j][1] > max_x then
+                    max_x = walls[i][j][1];
+                end;
+                if walls[i][j][1] < min_x then
+                    min_x = walls[i][j][1];
+                end;
+                if walls[i][j][2] > max_y then
+                    max_y = walls[i][j][2];
+                end;
+                if walls[i][j][2] < min_y then
+                    min_y = walls[i][j][2];
+                end;
+            end;
+        end;
+        
+        dim x_walls[(min_x+1) .. max_x, min_y .. max_y];
+        dim y_walls[min_x .. max_x, (min_y+1) .. max_y];
+        
+        for each boolean wall in x_walls do
+            wall is false;
+        end;
+        for each boolean wall in y_walls do
+            wall is false;
+        end;
+        
+        for integer i = min walls .. max walls do
+            for integer j = min walls[i] .. (max walls[i] - 1) do
+                x = walls[i][j][1];
+                y = walls[i][j][2];
+                dx = walls[i][j+1][1] - x;
+                dy = walls[i][j+1][2] - y;
+                
+                if dx <> 0 and dy <> 0 then
+                    write "Ignoring bad wall: all walls must be along either x or y axis",;
+                else
+                    while dx > 0 do
+                        x = itself + 1;
+                        x_walls[x, y] is true;
+                        dx = walls[i][j+1][1] - x;
+                    end;
+                    while dx < 0 do
+                        x_walls[x, y] is true;
+                        x = itself - 1;
+                        dx = walls[i][j+1][1] - x;
+                    end;
+                    while dy > 0 do
+                        y = itself + 1;
+                        y_walls[x, y] is true;
+                        dy = walls[i][j+1][2] - y;
+                    end;
+                    while dy < 0 do
+                        y_walls[x, y] is true;
+                        y = itself - 1;
+                        dy = walls[i][j+1][2] - y;
+                    end;
+                end;
+            end;
+        end;
+    end;    // new
+    
+    
+    // All walls sections are 1x1 units in size--this keeps the
+    // textures regular in appearance.
+    shape draw
+    is
+        static color type end_color = <1 1 1>;
+        scalar time = get_seconds;
+
+        for integer x = min x_walls .. max x_walls do
+            for integer y = min x_walls[] .. max x_walls[] do
+                if x_walls[x,y] then
+                    parallelogram with
+                        vertex = <x y 0>;
+                        side1 = <-1 0 0>;
+                        side2 = <0 0 1>;
+                        material is wall_material;
+                    end;
+                end;
+            end;
+        end;
+        
+        for integer x = min y_walls .. max y_walls do
+            for integer y = min y_walls[] .. max y_walls[] do
+                if y_walls[x,y] then
+                    parallelogram with
+                        vertex = <x y 0>;
+                        side1 = <0 -1 0>;
+                        side2 = <0 0 1>;
+                        material is wall_material;
+                    end;        parallelogram with
+            vertex = <(min y_walls) (min x_walls[]) 0>;
+            side1 = <(num x_walls) 0 0>;
+            side2 = <0 (num y_walls[]) 0>;
+            material is wood;
+        end;
+
+                end;
+            end;
+        end;
+        
+//        write "min_x: ", min y_walls, "  min_y: ", min x_walls[],;
+//        write "xlen: ", num x_walls, "  ylen: ", num y_walls[],;
+        parallelogram with
+            vertex = <(min y_walls) (min x_walls[]) 0>;
+            side1 = <(num x_walls) 0 0>;
+            side2 = <0 (num y_walls[]) 0>;
+            material is wood;
+        end;
+        sphere with
+            center = <(min y_walls + (num x_walls)/2) (min x_walls[] + (num y_walls[])/2) 0>;
+            radius = sqrt (sqr ((num x_walls)/2) + sqr ((num y_walls[])/2)) + 1.2;
+            vmin = 0;
+            scale by .5 along <0 0 1>;
+            rotate by (10 * time) around <0 0 1> about center;
+            material is sky_material;
+        end;
+
+        text "START" with
+            size = .25;
+            material is constant_color orange;
+            rotate by (180 * time) around <0 0 1>;
+            move to <start_position.x start_position.y .5>;
+        end;
+        if (round (time*8) mod 3 <> 0) then
+            text "GOAL!" with
+                size = .25;
+                material is constant_color end_color;
+                rotate by 180 around <0 1 0>;
+                direct from <0 -1 0> to (eye - end_position);
+                move to <end_position.x end_position.y .5>;
+            end;
+        else
+            scalar rand_val = random 0 to 2;
+            end_color = <(smaller of 1 and rand_val) 
+                         (smaller of 1 and (2 - rand_val)) 0>;
+        end;
+    end;    // draw
+
+
+    vector question move_eye
+        from vector location;
+        by vector velocity;
+    with
+        scalar wall_cushion = .49;
+    is
+        scalar x1 = location.x;
+        scalar y1 = location.y;
+        scalar dx;
+        scalar dy;
+        scalar x2, y2;
+        scalar relx1, rely1, relx2, rely2;
+        integer cx = iceiling x1;
+        integer fx = ifloor x1;
+        integer cy = iceiling y1;
+        integer fy = ifloor y1;
+        
+        if vlength of velocity >= (1 - wall_cushion) then
+            velocity = .999 * (1 - wall_cushion) * normalize velocity;
+        end;
+
+       
+        relx1 = x1 - ifloor x1;
+        rely1 = y1 - ifloor y1;
+        
+        dx = velocity.x;
+        dy = velocity.y;
+        
+        relx2 = relx1 + dx;
+        rely2 = rely1 + dy;
+        
+        if relx2 > (1 - wall_cushion) and y_walls[cx, cy] then        
+            relx2 = 1 - wall_cushion;
+        elseif relx2 < wall_cushion and y_walls[fx, cy] then
+            relx2 = wall_cushion;
+        end;
+        
+        if rely2 > (1 - wall_cushion) and x_walls[cx, cy] then
+            rely2 = 1 - wall_cushion;
+        elseif rely2 < wall_cushion and x_walls[cx, fy] then
+            rely2 = wall_cushion;
+        end;
+                
+        answer <(fx + relx2) (fy + rely2) location.z>;
+    end;    // move_eye
+end;
+
+
+maze type maze1 of [[[0 0] [0 8] [8 8] [8 0] [0 0]]
+        [[1 1] [1 3] [2 3] [2 5] [1 5] [1 7] [3 7] [3 5] [7 5]
+        [7 1] [5 1] [5 3] [6 3] [6 4] [3 4] [3 1] [1 1]]];
+
+maze type maze of [[[1 15] [4 15] [4 12] [11 12] [11 1] [8 1] [8 4] [1 4] [1 15]]
+        [[1 6] [2 6] [2 5] [4 5] [4 6] [6 6]] [[5 6] [5 7] [2 7]] [[9 5] [11 5]]
+        [[3 6] [3 8]] [[8 5] [8 4] [10 4]] [[5 5] [7 5] [7 7]] [[7 6] [10 6] [10 7]]
+        [[9 7] [11 7]] [[2 8] [2 9] [4 9] [4 8] [7 8] [7 10] [6 10]]
+        [[6 7] [6 8]] [[6 9] [6 11] [4 11] [4 10]] [[2 10] [5 10] [5 9]]
+        [[2 12] [4 12]] [[6 11] [8 11] [8 7]] [[10 8] [9 8] [9 11] [10 11]]
+        [[9 10] [11 10]]]
+        with
+            start_position = <2.5 13.5 0>;
+            end_position = <9.5 2.5 0>;
+        end;
+
+
+
+picture maze_picture with
+is
+    distant_light from <-1 1 4>;
+
+    maze draw;
+
+    overlay_text "I = forward     K = back     J = turn left     L = turn right" at <0 -.9 0> with
+        v_align is bottom;
+        size = 12;
+    end;
+end;    // maze_picture
+
+
+
+
+anim maze_anim with
+    double_buffer is on;
+    field_of_view = 75;
+    facets = 4;
+    background = lavender;
+    fog_factor = 4;
+is
+    vector viewer_location = <3.5 14.5 .5>;
+    scalar viewer_direction = 225;
+    scalar speed = 0;
+    scalar x_direction, y_direction;
+    scalar last_time = get_seconds;
+    scalar time, time_elapsed;
+    vector velocity;
+
+    while true do
+        time = get_seconds;
+        time_elapsed = time - last_time;
+        last_time = time;
+        
+        if key_down char_to_key "j" then
+            viewer_direction = viewer_direction + (100 * time_elapsed);
+        end;
+        if key_down char_to_key "l" then
+            viewer_direction = viewer_direction - (100 * time_elapsed);
+        end;
+        if key_down char_to_key "i" then
+            speed = speed + (.5 * time_elapsed);
+        end;
+        if key_down char_to_key "k" then
+            speed = speed - (.5 * time_elapsed);
+        end;
+        x_direction = cos viewer_direction;
+        y_direction = sin viewer_direction;
+        velocity = (<x_direction y_direction 0>) * speed;
+        viewer_location = maze move_eye from viewer_location by velocity;
+        speed = speed * .8;
+        if (abs speed < .02) then
+            speed = 0;
+        end;
+        
+        set_manual_near_far_planes on;
+        
+        maze_picture with
+            eye = viewer_location;
+            lookat = eye + (.52 * <x_direction y_direction 0>);
+        end;
+    end;
+end;    // maze_anim

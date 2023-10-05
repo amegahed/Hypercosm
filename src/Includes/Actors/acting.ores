@@ -1,0 +1,42 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            acting.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/rendering.ores";
+
+//
+// Any subject that implements this interface may be considered
+// to be an actor. Actors have no specific fields but they must
+// implement the methods of this interface. 
+//
+
+adjective actable
+extends
+	renderable
+does
+	// acting methods
+	//
+	verb act;
+end;    // actable
+
+abstract subject actor
+extends
+   actable object
+does
+	// rendering methods
+	//
+	abstract shape instance;
+	
+	// acting methods
+	//
+	abstract verb act;
+end;    // actor

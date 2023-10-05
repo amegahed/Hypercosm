@@ -1,0 +1,95 @@
+{***************************************************************}
+{                          atom.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do atom_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+
+
+subject atom
+extends
+    timed_actor
+does
+    objective shape electrons with
+        scalar t = 0;
+    end;    // electrons
+
+    objective shape form with
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+is
+    objective shape electron with
+        scalar t = 0;
+    is
+        circle;
+        sphere with
+            radius = .1;
+            move to <1 0 0>;
+            rotate by t * 360 around <0 0 1>;
+        end;
+    end;    // electron
+
+
+    objective shape electrons with
+        scalar t = 0;
+    is
+        electron with
+            t = static t;
+        end;
+        electron with
+            t = static t + (1 / 3);
+            rotate by 60 around <0 1 0>;
+        end;
+        electron with
+            t = static t + (2 / 3);
+            rotate by -60 around <0 1 0>;
+        end;
+    end;    // electrons
+
+
+    objective shape form with
+        scalar t = 0;
+    is
+
+        // nucleus
+        //
+        sphere with
+            radius = .2;
+        end;
+        electrons with
+            t = static t;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            t = time;
+        end;
+    end;    // instance
+end;    // atom
+
+
+anim atom_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <1 -4 2>;
+    args check;
+is
+    atom type atom;
+
+    mouse_controlled_actor atom;
+end;    // atom_anim

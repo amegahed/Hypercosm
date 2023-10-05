@@ -1,0 +1,220 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  string_parsing.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a selection of text parsing utilities			}
+{		for parsing strings.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/char_parsing.ores";
+include "system/char_counting.ores";
+include "system/text_parsing.ores";
+include "system/string_utils.ores";
+include "system/whitespace_parsing.ores";
+
+   
+verb parse_string
+	string type reference string;
+
+    // text position
+    //    
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+    of strings type text;
+is
+    integer string_length;
+
+	// initialize string
+	//
+   	string is none;
+   		
+	// scan through whitespace
+	//
+	scan_through_whitespace at column char_number on line line_number of text;
+	
+	// lookahead
+	//
+	string_length = get_text_length 
+		at column char_number on line line_number of text;
+				
+	// scan through chars
+	//   
+    if string_length > 0 then
+
+    	dim string[1 .. string_length];
+    	
+    	for integer counter = 1 .. string_length do
+    		char ch;
+    		
+    		parse_char ch at column char_number on line line_number of text;
+    		string[counter] is ch;
+    	end; 
+    end;
+end;    // parse_string
+
+
+verb parse_char_string
+	string type reference string;
+
+    // text position
+    //      
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+    of strings type text;
+is
+    integer string_length;
+
+	// initialize string
+	//
+   	string is none;
+   		
+	// scan through whitespace
+	//
+	scan_through_whitespace at column char_number on line line_number of text;
+	
+	// lookahead
+	//
+	string_length = get_char_text_length 
+		at column char_number on line line_number of text;
+				
+	// scan through chars
+	//   
+    if string_length > 0 then
+
+    	dim string[1 .. string_length];
+    	
+    	for integer counter = 1 .. string_length do
+    		char ch;
+    		
+    		parse_char ch at column char_number on line line_number of text;
+    		string[counter] is ch;
+    	end; 
+    end;
+end;    // parse_char_string
+
+
+verb parse_quotated_string
+	string type reference string;
+
+    // text position
+    //    
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+    of strings type text;
+is
+	char ch;
+	boolean done is false;
+	
+	// initialize string
+	//
+   	string is none;
+   		
+	// scan through whitespace
+	//
+	scan_through_whitespace at column char_number on line line_number of text;
+	
+	// lookahead
+	//
+	parse_char ch at column char_number on line line_number of text;
+	
+	if ch is double_quote then
+		integer char_number1, line_number1;
+		integer char_number2, line_number2;
+
+		// mark start of quote
+		//	
+		char_number1 = char_number;
+		line_number1 = line_number;	
+		
+		while not done do
+			
+			// mark end of quote
+			//
+			char_number2 = char_number;
+			line_number2 = line_number;
+					
+			parse_char ch at column char_number on line line_number of text;
+			if ch is double_quote or ch is null then
+				done is true;
+			end;
+		end;
+		
+		string is get_text from column char_number1 on line line_number1
+			to column char_number2 line line_number2 of text;
+	else
+		string is none;
+	end;
+end;	// parse_quotated_string
+
+
+verb skip_string
+
+    // text position
+    //  
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+	of strings type text;
+is
+	string type string;
+	parse_string string at column char_number on line line_number of text;
+end;	// skip_string
+
+
+string type question get_next_string
+
+    // text position
+    //     
+    at column integer char_number;
+    on line integer line_number;
+   
+    // source text
+    //
+    of strings type text;    
+is
+	string type string;
+	parse_string string at column char_number on line line_number of text;
+	answer string;
+end;	// get_next_string
+
+
+verb match_string
+	string type string;
+
+    // text position
+    //    
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+    of strings type text;
+is
+	if string matches get_next_string at column char_number on line line_number of text then
+		skip_string at column char_number on line line_number of text;
+	else
+		string type error_string is "Expected ";
+		error_string add quotated string;
+		parse_error error_string 
+			at column char_number on line line_number of text;
+	end;
+end;	// match_string
+    
+

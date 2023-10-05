@@ -1,0 +1,66 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          bezier_curve.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       bezier curve.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/bezier_splines.ores";
+include "system/segmented_spline.ores";
+include "system/arrows.ores";
+include "system/native_shapes.ores";
+
+shape bezier_curve
+	using vector v1, v2, v3, v4;
+with
+	integer steps = 10;
+	boolean show_control_hull is false;
+	boolean show_control_points is false;
+	boolean show_control_vertices is false;
+is
+	vpolynomial type vpolynomial is get_bezier_vcubic using v1 v2 v3 v4;
+	segmented_spline type segmented_spline is vpolynomial get_values in steps;
+
+	if show_control_hull then
+		line [v1 v2 v3 v4] with
+			color = white;
+		end;
+	end;
+	
+	if show_control_points or show_control_vertices then
+		scalar size = vlength of (v4 - v1) / 25;
+		
+		if show_control_vertices then
+			sphere with
+				center = v1;
+				radius = size;
+				color = red;
+			end;
+			sphere with
+				center = v4;
+				radius = size;
+				color = green;
+			end;
+		end;
+		if show_control_points then
+			sphere with
+				center = v2;
+				radius = size;
+				color = orange;
+			end;
+			sphere with
+				center = v3;
+				radius = size;
+				color = yellow;
+			end;
+		end;
+	end;
+
+	line segmented_spline;
+end;    // bezier_curve

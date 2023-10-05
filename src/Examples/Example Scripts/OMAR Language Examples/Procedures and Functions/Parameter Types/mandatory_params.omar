@@ -1,0 +1,49 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        mandatory_params.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of mandatory parameters in the OMAR             }
+{       language.                                               }
+{                                                               }
+{       Mandatory parameters are very similar to the            }
+{       stadard parameters used in languages such as            }
+{       C, Java, or Pascal.   They are listed immediately       }
+{       following the name of the method declaration and        }
+{       whenever the method is called, values for the           }
+{       parameters must be provided for each of the             }
+{       parameters in the same order that they are              }
+{       declared in the method declaration.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do mandatory_params_example;
+
+include "system/math.ores";     // for "round" function
+
+scalar question average
+	integer a, b;               // mandatory parameter declarations
+is
+	answer (a + b) / 2;
+end;    // average
+	
+verb mandatory_params_example is
+	scalar a;
+	
+	a = average 30 40;
+	write "averge of 30 and 40 = ", a, ;
+	a = average -10 40; 
+	write "average of -10 and 40 = ", a, ;
+		
+	a = average (round 3.5) 40;
+	write "average of (round 3.5) and 40 = ", a, ;
+	
+	{
+	a = average 3.5 40;                 // Compile Error! - 3.5 is not an integer
+	a = average (sqrt 10) 40;           // Compile Error! - sqrt 10 is not an integer
+	a = average 30 40 15;               // Compile Error! - too many parameters
+	}
+end;    // mandatory_params_example

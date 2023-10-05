@@ -1,0 +1,163 @@
+do spherical_mapping_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_box.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_spherical_mapping.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim spherical_mapping_anim
+is
+	material type hyper_material is plastic poster "hyper.jpg";
+	material type tie_dye_material is plastic poster "tie_dye.jpg";
+	material type flag_material is plastic textured (new texture
+		using (new image named "flag.gif") with
+		interpolation is off; wraparound is off);
+		
+	shape spherical_mapping_shapes with
+		translated_3ds_xyz_alignment type alignment is z;
+	is
+		translated_3ds_sphere with		
+		    radius = 25;
+		    segs = 24;
+		    gen_mapping_coords is true;
+
+			modifier_stack push (new translated_3ds_spherical_mapping with
+				length = 50; width = 50; height = 50; 
+				u_tile = 1; v_tile = 1; w_tile = 1;
+				u_flip is false; v_flip is false; w_flip is false;
+				alignment is static alignment;
+				with trans do
+					its origin = <0 0 0>;
+					its x_axis = <1 0 0>;
+					its y_axis = <0 1 0>;
+					its z_axis = <0 0 1>;
+				end;
+			);
+			
+		    material is flag_material;
+		    move to <-75 0 25>;
+		end;
+		
+		translated_3ds_box with
+		    length = 50;
+		    width = 50;
+		    height = 50;
+		    length_segs = 4;
+		    width_segs = 4;
+		    height_segs = 4;
+		    gen_mapping_coords is true;
+		    
+			modifier_stack push (new translated_3ds_spherical_mapping with
+				length = 50; width = 50; height = 50;
+				u_tile = 1; v_tile = 1; w_tile = 1;
+				u_flip is false; v_flip is false; w_flip is false;
+				alignment is static alignment;
+				with trans do
+					its origin = <0 0 25>;
+					its x_axis = <1 0 0>;
+					its y_axis = <0 1 0>;
+					its z_axis = <0 0 1>;
+				end;
+			);
+			
+			material is flag_material;    
+		end;
+
+		translated_3ds_cylinder with		
+		    radius = 25;
+		    height = 50;
+		    segments = 4;
+		    cap_segments = 4;
+		    gen_mapping_coords is true;
+		    
+			modifier_stack push (new translated_3ds_spherical_mapping with
+				length = 50; width = 50; height = 50;
+				u_tile = 1; v_tile = 1; w_tile = 1;
+				u_flip is false; v_flip is false; w_flip is false;
+				alignment is static alignment;
+				with trans do
+					its origin = <0 0 25>;
+					its x_axis = <1 0 0>;
+					its y_axis = <0 1 0>;
+					its z_axis = <0 0 1>;
+				end;
+			);
+			
+			move to <75 0 0>;
+			material is flag_material;
+		end;
+	end;	// spherical_mapping_shapes
+	
+	
+	shape scene is
+		spherical_mapping_shapes with
+			alignment is z;
+			move to <0 -75 0>;
+		end;
+		spherical_mapping_shapes with
+			alignment is y;
+			move to <0 0 0>;
+		end;
+		spherical_mapping_shapes with
+			alignment is x;
+			move to <0 75 0>;
+		end;
+	end;	// scene
+	
+	
+	shape labels is
+		futura_l_word "Z aligned" with
+			size = 25;
+			rotate by 90 around <1 0 0>;
+			move to <0 -75 75>;
+		end;
+		futura_l_word "Y aligned" with
+			size = 25;
+			rotate by 90 around <1 0 0>;
+			move to <0 0 75>;
+		end;
+		futura_l_word "X aligned" with
+			size = 25;
+			rotate by 90 around <1 0 0>;
+			move to <0 75 75>;
+		end;	
+	end;	// labels
+	
+	
+	shape environment is
+		plane with
+			magnify by 150;
+			render_mode is wireframe;
+		end;
+		
+		axes with
+			magnify by 25;
+			move to <0 -125 1>;
+		end;
+		axes with
+			magnify by 25;
+			move to <0 125 1>;
+		end;
+		axes with
+			magnify by 25;
+			move to <-125 0 1>;
+		end;
+		axes with
+			magnify by 25;
+			move to <125 0 1>;
+		end;
+		
+		labels;
+	end;	// environment	
+	
+	mouse_controlled_shape scene in environment
+		titled "3DS Spherical Mapping"
+	with
+		auto_camera is on;
+	end;
+end;	// spherical_mapping_anim

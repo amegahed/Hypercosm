@@ -1,0 +1,78 @@
+{***************************************************************}
+{                          jack.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do jack_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape jack is
+    shape jack_part is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = .1;
+            radius2 = .05;
+        end;
+        sphere with
+            center = <0 0 1>;
+            radius = .15;
+        end;
+    end;    // jack_part
+
+
+    shape vertical_jack is
+        jack_part;
+        jack_part with
+            rotate by 180 around <1 0 0>;
+        end;
+        jack_part with
+            rotate by 90 around <0 1 0>;
+        end;
+        jack_part with
+            rotate by -90 around <0 1 0>;
+        end;
+        jack_part with
+            rotate by 90 around <1 0 0>;
+        end;
+        jack_part with
+            rotate by -90 around <1 0 0>;
+        end;
+    end;    // vertical_jack
+
+    vertical_jack with
+        rotate by 45 around <0 1 0>;
+        rotate by 35 around <1 0 0>;
+        move to <0 0 .75>;
+        color = white;
+    end;
+end;    // jack
+
+
+anim jack_anim
+    args type args;
+with
+    eye = <2 -3 2>;
+    lookat = <0 0 .5>;
+    facets = 6;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        jack with material is metal; end;
+        plane with
+            magnify by 4;
+            render_mode is wireframe;
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // jack_anim

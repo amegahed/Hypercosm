@@ -1,0 +1,443 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		      mesh.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains generalized mesh geometry definitions.     	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/trans.ores";
+include "system/texture_mapping.ores";
+include "system/rendering.ores";
+include "system/volume_bounding.ores";
+include "system/printing.ores";
+include "system/recycling.ores";
+include "system/mesh_topology.ores";
+include "system/mesh_geometry.ores";
+include "system/native_shapes.ores";
+
+
+adjective meshable extends transformable texturable renderable printable;
+
+
+subject mesh
+extends
+    transformable texturable renderable volume_boundable scribable printable object
+does
+	// constructor
+	//
+	verb new with
+	
+		// mesh component parameters
+		//
+		mesh_topology type topology is none;
+		mesh_geometry type geometry is none;
+		
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	end;	// new
+
+	// attributes setting methods
+	//
+	verb set with
+	
+		// mesh component parameters
+		//
+		mesh_topology type topology is none;
+		mesh_geometry type geometry is none;
+		
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	end;	// set
+	
+	// attributes querying methods
+	//
+	boolean question is_valid;
+		
+    // transformable methods
+    //
+    verb transform
+        from trans type trans;
+    end;
+    
+	// texturable methods
+	//
+	verb apply
+	    texture_mapping type texture_mapping;
+	end;    // apply
+		
+	// renderable methods
+	//
+	shape instance;
+	
+	// boundable methods
+	//
+	volume_bounding type question get_bounds;
+
+	// querying methods
+	//
+	vector[] question get_vertices;		// returns array of vertices
+	vector[,] question get_edges;		// returns pairs of vertices
+	vector[][] question get_faces;		// returns groups of vertices
+
+	// scribable method
+	//
+	string type question to_string;
+	
+	// printable methods
+	//
+	verb print;
+has
+	// mesh component attributes
+	//
+	public mesh_topology type topology is none;
+	public mesh_geometry type geometry is none;
+	
+	// rendering flag attributes
+	//
+	public boolean smoothing is true;
+	public boolean mending is false;
+	public boolean closed is false;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+	
+		// mesh component parameters
+		//
+		mesh_topology type topology is none;
+		mesh_geometry type geometry is none;
+		
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	is
+		set with
+			topology is static topology;
+			geometry is static geometry;
+			smoothing is static smoothing;
+			mending is static mending;
+			closed is static closed;
+		end;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set with
+	
+		// mesh component parameters
+		//
+		mesh_topology type topology is none;
+		mesh_geometry type geometry is none;
+		
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	is
+		with mesh do
+		
+			// set mesh component attributes
+			//
+			its topology is topology;
+			its geometry is geometry;
+			
+			// set rendering flag attributes
+			//
+			its smoothing is smoothing;
+			its mending is mending;
+			its closed is closed;
+		end;
+	end;	// set
+	
+
+	//
+	// attributes querying methods
+	//
+	
+	
+	boolean question is_valid is
+		if topology is none or geometry is none then
+			answer false;
+		else
+			answer topology is_valid and geometry is_valid;
+		end;
+	end;	// is_valid
+	
+			
+	//
+    // transformable methods
+    //
+    
+    
+    verb transform
+        from trans type trans;
+    is
+    	geometry transform from trans;
+    end;    // transform
+    
+    
+    //
+	// texturable methods
+	//
+	
+	
+	verb apply
+	    texture_mapping type texture_mapping;
+	is
+		geometry apply texture_mapping;
+	end;    // apply
+	
+	
+	//
+	// renderable methods
+	//
+	
+		
+	shape instance is
+	
+	    // create mesh
+	    //
+	    global mesh (geometry's vertices) (topology's edges) (topology's face_indices) with
+	    
+	        // geometry and texturing parameters
+	        //
+	    	normals is geometry's normals;
+	    	texcoords is geometry's texcoords;
+	    	
+	    	// rendering parameters
+	    	//
+	        smoothing is static smoothing;
+	        mending is false;
+	        closed is static closed;
+	    end;
+	end;	// instance
+	
+
+	//
+	// boundable methods
+	//
+	
+	
+	volume_bounding type question get_bounds is
+		answer geometry get_bounds;
+	end;	// get_bounds
+	
+
+	//
+	// querying methods
+	//
+	
+	
+	vector[] question get_vertices		// returns array of vertices
+	is
+		answer geometry's vertices;
+	end;	// get_vertices
+	
+	
+	vector[,] question get_edges		// returns pairs of vertices
+	is
+		vector edges[1 .. num topology's edges, 1 .. 2];
+		
+		for integer counter = 1 .. num topology's edges do
+			edges[counter, 1] = geometry's vertices[topology's edges[counter, 1]];
+			edges[counter, 2] = geometry's vertices[topology's edges[counter, 2]];
+		end;
+		
+		answer edges;
+	end;	// get_edges
+	
+
+	vector[] question get_face
+		of integer face_indices[];
+	is
+		vector face[1 .. num face_indices];
+		
+		for integer counter = 1 .. num face_indices do
+			integer edge_index = face_indices[counter];
+			integer vertex_index = topology's edges[edge_index, 1];
+			
+			face[counter] = geometry's vertices[vertex_index];
+		end;
+		
+		answer face;
+	end;	// get_face
+	
+		
+	vector[][] question get_faces		// returns groups of vertices
+	is
+		integer faces_indices[][] is topology get_faces_indices;
+		vector faces[1 .. num faces_indices][];
+		
+		for integer counter = 1 .. num faces do
+			faces[counter] is get_face of faces_indices[counter];
+		end;
+		
+		answer faces;
+	end;	// get_faces
+	
+
+	//
+	// scribable method
+	//
+	
+	
+	string type question to_string is
+		answer "mesh";
+	end;	// to_string
+	
+			
+	//
+	// printable methods
+	//
+	
+			
+	verb print is
+		if is_valid then
+		    topology print;
+		    geometry print;
+	    else
+	    	write "invalid mesh", ;
+			if topology is none then
+	    		write "topology is none", ;
+	    	else
+	    		topology print;
+	    	end;
+	    	if geometry is none then
+	    		write "geometry is none", ;
+	    	else
+	    		geometry print;
+	    	end;
+	    end;
+	end;	// print
+end;	// mesh
+
+
+{***************************************************************}
+{					recycle whenever possible!					}
+{***************************************************************}
+
+
+subject recycleable_mesh
+extends
+	recycleable mesh
+does
+	// constructor
+	//
+	verb new with
+	
+		// mesh component parameters
+		//
+		mesh_topology type topology is none;
+		mesh_geometry type geometry is none;
+		
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	end;	// new
+	
+	// recycling methods
+	//
+	objective recycleable_mesh type question get;
+	reference verb recycle;
+is
+    // recycling free list
+    //
+    singly_linked_list type free_list;
+
+
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+	
+		// mesh component parameters
+		//
+		mesh_topology type topology is none;
+		mesh_geometry type geometry is none;
+		
+		// rendering flag parameters
+		//
+		boolean smoothing is true;
+		boolean mending is false;
+		boolean closed is false;
+	is
+		// call superclass constructor
+		//
+		mesh new with
+			topology is static topology;
+			geometry is static geometry;
+			smoothing is static smoothing;
+			mending is static mending;
+			closed is static closed;
+		end;
+	end;	// new
+	
+	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective recycleable_mesh type question get is
+		if free_list is_empty then
+			if verbose_recycling then
+				write "new recycleable mesh", ;
+			end;
+			answer new recycleable_mesh;
+		else
+			answer recycleable_mesh type free_list removed_first;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// recycle mesh topology and geometry components
+		//
+		if some topology then
+			if recycleable_mesh_topology type topology then
+				recycleable_mesh_topology type recycleable_mesh_topology is 
+					recycleable_mesh_topology type topology;
+				recycleable_mesh_topology recycle;
+			end;
+		end;
+		if some geometry then
+			if recycleable_mesh_geometry type geometry then
+				recycleable_mesh_geometry type recycleable_mesh_geometry is
+					recycleable_mesh_geometry type geometry;
+				recycleable_mesh_geometry recycle;
+			end;
+		end;
+		
+		// add to free list
+		//
+	    free_list add_first recycleable_mesh;
+	    recycleable_mesh is none;
+	end;		// recycle    
+end;	// recycleable_mesh

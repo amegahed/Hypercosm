@@ -1,0 +1,226 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		     messages.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a base class for sending and receiving        }
+{        simple messages.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_mouse.ores";
+
+
+abstract subject message
+extends
+    printable object
+has
+    public message type next is none;
+end;    // message
+
+
+subject text_message
+extends
+    message
+does
+    verb new
+        of string type text is none;
+    end;
+    verb print;
+has
+    public string type text is none;
+is
+    verb new
+        of string type text is none;
+    is
+        text_message's text is text;
+    end;    // new
+    
+    
+    verb print is
+        write text;
+    end;    // print
+end;    // text_message
+
+
+subject mouse_over_message
+extends
+    text_message
+does
+    verb new
+        of string type text is none;
+        at vector location = get_mouse;
+    end;
+    verb print;
+has
+    public vector location;
+is
+    verb new
+        of string type text is none;
+        at vector location = get_mouse;
+    is
+        text_message new of text;
+        mouse_over_message's location = location;
+    end;    // new
+    
+    
+    verb print is
+        write "mouse over message of '", text, "' at ", location, ;
+    end;    // print
+end;    // mouse_over_message
+
+
+{***************************************************************}
+{               sending and receiving messages                  }
+{***************************************************************}
+{                                                               }
+{       Two different mechanisms are provided for sending       }
+{       and receiving messages.                                 }
+{                                                               }
+{       The first model involves "senders" and "receivers".     }
+{       In this model, it is the sender that initiates the      }
+{       communication and the receiver must respond.            }
+{                                                               }
+{       The second model involves "listeners" and               }
+{       "broadcasters".   In this model, the broadcaster        }
+{       passively sends messages to nobody in particular        }
+{       and listeners may choose to receive the messages.       }
+{                                                               }
+{***************************************************************}
+
+
+//
+// message senders and receivers
+//
+
+
+adjective receivable
+does
+    verb receive
+        message type message;
+    end;
+end;    // receivable
+
+
+adjective sendable
+does
+    verb send
+        message type message;
+    end;
+end;    // sendable
+
+
+adjective addressable
+does
+    verb address
+        receivable type recipient;
+    end;
+end;    // addressable
+
+    
+subject sender
+extends
+    sendable addressable object
+does
+    verb send
+        message type message;
+    end;
+    verb address
+        receivable type recipient;
+    end;
+has
+    public receivable type recipient is none;
+is   
+    verb send
+        message type message;
+    is       
+        if some recipient then
+            recipient receive message;
+        end;
+    end;    // send
+    
+    
+    verb address
+        receivable type recipient;
+    is
+        sender's recipient is recipient;
+    end;    // address
+end;    // sender
+
+
+//
+// message broadcasters and listeners
+//
+
+
+adjective broadcastable
+does
+    message type question broadcast;
+end;	// broadcastable
+
+
+adjective listenable
+does
+    verb tune_in
+        to broadcastable type broadcaster;
+    end;
+    verb listen;
+    verb receive
+        message type message;
+    end;
+end;    // listenable
+
+
+subject broadcaster
+extends
+    broadcastable object
+does
+    verb send
+        message type message;
+    end;
+    message type question broadcast;
+has
+    message type message is none;
+is
+    verb send
+        message type message;
+    is
+        broadcaster's message is message;
+    end;    // send
+    
+    
+    message type question broadcast is
+        answer message;
+    end;    // broadcast
+end;    // broadcaster
+    
+
+abstract subject listener
+extends
+    receivable listenable object
+does
+    verb tune_in
+        to broadcastable type broadcaster;
+    end;
+    verb listen;
+    abstract verb receive
+        message type message;
+    end;
+has
+    broadcastable type broadcaster;
+is
+    verb tune_in
+        to broadcastable type broadcaster;
+    is
+        listener's broadcaster is broadcaster;
+    end;    // tune_in
+    
+    
+    verb listen is
+        receive broadcaster broadcast;
+    end;    // listen
+end;    // listener

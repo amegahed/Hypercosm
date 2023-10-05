@@ -1,0 +1,113 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            window.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a window user         }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do windows_anim;
+
+include "system/3d.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/check_keys.ores";
+include "system/icon.ores";
+include "system/selector_group.ores";
+include "system/windows.ores";
+
+anim windows_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	verb select_rotate is
+		write "selecting rotate", ;
+	end;
+	verb select_zoom is
+		write "selecting zoom", ;
+	end;
+	verb select_pan is
+		write "selecting pan", ;
+	end;
+	verb select_help is
+		write "selecting help", ;
+	end;
+	verb select_smooth is
+		write "selecting smooth", ;
+	end;
+	verb select_flat is
+		write "selecting flat", ;
+	end;
+	verb select_outline is
+		write "selecting outline", ;
+	end;
+	verb select_wireframe is
+		write "select wireframe", ;
+	end;
+	
+	icon type rotate_icon
+		labelled "Rotate"
+		selecting (new action of select_rotate)
+		poster "rotate_icon.gif";
+		
+	icon type zoom_icon
+		labelled "Zoom"
+		selecting (new action of select_zoom)
+		poster "zoom_icon.gif";
+	
+	icon type pan_icon
+		labelled  "Pan"
+		selecting (new action of select_pan)
+		poster "pan_icon.gif";
+	
+	components type navigation_icons is [rotate_icon zoom_icon pan_icon];
+	selector_group type navigation_selector containing navigation_icons;
+		
+	icon type help_icon
+		labelled "Help"
+		selecting (new action of select_help)
+		poster "help_icon.gif";
+			
+	icon type smooth_icon
+		labelled "Smooth"
+		selecting (new action of select_smooth)
+		poster "smooth_icon.gif";
+		
+	icon type flat_icon
+		labelled "Flat"
+		selecting (new action of select_flat)
+		poster "flat_icon.gif";
+		
+	icon type outline_icon
+		labelled "Outline"
+		selecting (new action of select_outline)
+		poster "outline_icon.gif";
+		
+	icon type wireframe_icon
+		labelled "Lines"
+		selecting (new action of select_wireframe)
+		poster "wireframe_icon.gif";
+	
+	components type render_mode_icons is [smooth_icon flat_icon outline_icon wireframe_icon];
+	selector_group type render_mode_selector containing render_mode_icons;
+	components type components is [navigation_selector help_icon render_mode_selector];
+	window type window of <.5 .5 0> containing components;
+	
+	picture scene is
+		sphere;
+		default_lights;
+		default_background at 100;
+		window overlay at 10;
+	end;    // scene
+	
+	while true do
+		scene;
+		check_keys;
+	end;
+end;    // windows_anim

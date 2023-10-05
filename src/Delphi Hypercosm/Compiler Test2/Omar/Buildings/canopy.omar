@@ -1,0 +1,77 @@
+{***************************************************************}
+{                          canopy.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do canopy_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/bumps.ores";
+include "system/solids.ores";
+include "system/surfaces.ores";
+
+
+shape canopy is
+    shape pillar is
+        block with
+            scale by .1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+        end;
+    end;    // pillar
+
+    // base
+    block with
+        scale by .2 along <0 0 1>;
+    end;
+    pillar with
+        move to <.9 0 1>;
+    end;
+    pillar with
+        move to <-.9 0 1>;
+    end;
+    pillar with
+        move to <0 .9 1>;
+    end;
+    pillar with
+        move to <0 -.9 1>;
+    end;
+    sphere with
+        vmax = 90;
+        vmin = 0;
+        move to <0 0 2>;
+    end;
+end;    // canopy
+
+
+picture canopy_picture with
+    eye = <3 -6 4>;
+    lookat = <0 0 1>;
+    roll = 30;
+    render_mode is shaded;
+    shading is face;
+    background = sky_blue;
+    facets = 0;
+    shadows is on;
+is
+    distant_light from <2 -2 1>;
+    flat bumpy bricked canopy;
+end;    // canopy_picture
+
+
+anim canopy_anim
+    args type args;
+with
+    double_buffer is on;
+    shading is pixel;
+    eye = <3 -6 4>;
+    lookat = <0 0 1>;
+    args check;
+is
+    mouse_controlled_shape canopy;
+end;    // canopy_anim

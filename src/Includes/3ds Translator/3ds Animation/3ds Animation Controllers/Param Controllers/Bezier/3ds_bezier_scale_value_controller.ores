@@ -1,0 +1,113 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm 3ds_bezier_scale_value_controller.ores 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_keys.ores";
+include "system/3ds_bezier_scale_key.ores";
+include "system/3ds_key_controller.ores";
+include "system/3ds_scale_value_controlling.ores";
+
+subject translated_3ds_bezier_scale_value_controller 
+extends
+	translated_3ds_scale_value_controllable translated_3ds_key_controller
+does
+	// constructor
+	//
+	verb new
+		of translated_3ds_scale_value type values[];
+		from translated_3ds_scale_value type in_tangents[];
+		to translated_3ds_scale_value type out_tangents[];
+		at translated_3ds_time type times[];
+	end;
+	
+	// getting method
+	//
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type t;
+	end;
+is
+	//
+	// objective querying methods
+	//
+
+	objective translated_3ds_keys type question bezier_scale_keys
+		of translated_3ds_scale_value type values[];
+		from translated_3ds_scale_value type in_tangents[];
+		to translated_3ds_scale_value type out_tangents[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_keys type keys;
+		
+		// create array of keys
+		//
+		if some values then
+			integer key_number = num values;
+			dim none keys[1 .. key_number];
+			for integer counter = 1 .. key_number do
+				keys[counter] is new translated_3ds_bezier_scale_key
+					of values[counter] from in_tangents[counter] to out_tangents[counter]
+					at times[counter];
+			end;
+		end;
+		
+		answer keys;
+	end;    // bezier_scale_keys
+	
+	//
+	// constructor
+	//
+		
+	verb new
+		of translated_3ds_scale_value type values[];
+		from translated_3ds_scale_value type in_tangents[];
+		to translated_3ds_scale_value type out_tangents[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_key_controller new using bezier_scale_keys of values 
+			from in_tangents to out_tangents at times;
+	end;    // new
+	
+	//
+	// getting method
+	//
+	
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type time;
+	is
+		translated_3ds_bezier_scale_key type prev_key is
+			translated_3ds_bezier_scale_key type (keys get_prev at time);
+		translated_3ds_bezier_scale_key type next_key is
+			translated_3ds_bezier_scale_key type (keys get_next at time);
+			
+		if some prev_key and some next_key then
+			vpolynomial type scale_vpolynomial is get_hermite_vcubic
+				from (prev_key's value's scaling) (prev_key's out_tangent's scaling)
+				to (next_key's value's scaling) (next_key's in_tangent's scaling);          
+			vpolynomial type quat_vpolynomial is get_hermite_vcubic
+				from (prev_key's value's quat's v) (prev_key's out_tangent's quat's v)
+				to (next_key's value's quat's v) (next_key's in_tangent's quat's v);
+			polynomial type quat_polynomial is get_hermite_cubic
+				from (prev_key's value's quat's s) (prev_key's out_tangent's quat's s)
+				to (next_key's value's quat's s) (next_key's in_tangent's quat's s);
+			scalar duration = next_key's time - prev_key's time;
+			scalar t = (time - prev_key's time) / duration;
+			answer new translated_3ds_scale_value of (scale_vpolynomial get_value at t) in
+				new quat of (quat_polynomial get_value at t) by (quat_vpolynomial get_value at t);
+		elseif some next_key then
+			answer next_key's value;
+		elseif some prev_key then
+			answer prev_key's value;
+		else
+			answer unit_translated_3ds_scale_value;
+		end;
+	end;    // get_value
+end;    // translated_3ds_bezier_scale_value_controller

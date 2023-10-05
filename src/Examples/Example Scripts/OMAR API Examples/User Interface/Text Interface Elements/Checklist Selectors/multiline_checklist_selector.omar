@@ -1,0 +1,61 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    multiline_checklist_selector.omar   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a multiline           }
+{       checklist selector user interface component.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do multiline_checklist_selector_anim;
+
+include "system/3d.ores";
+include "system/multiline_checklist_selector.ores";
+include "system/checklist_labels.ores";
+
+strings type title is [
+	"Procedure Checklist"
+	"Steps"
+];
+strings type step1 is ["This"];
+strings type step2 is ["That"];
+strings type step3 is ["The" "Other" "Thing!"];
+strings type checklist[] is [
+	step1 step2 step3
+];
+
+strings type checklist_labels is ["1" "2" "3"];
+
+anim multiline_checklist_selector_anim with
+	double_buffer is true;
+is
+	//strings type labels is get_numbered_checklist_labels from 1 to num checklist;
+	strings type labels is checklist_labels;
+	multiline_text_display type text_display of title at <-1 .8 0> aligned to middle_right;
+	
+	multiline_checklist_selector type checklist_selector 
+		of checklist labelled labels
+		at <-1 0 0> aligned to middle_left
+		using text_display;
+	
+	verb checklist_action is
+		strings type text is checklist_selector get_selected_step;
+		write "selected item is:", ;
+		for each string type string in text do
+			write string, ;
+		end;
+	end;    // checklist_action
+	picture scene is
+		checklist_selector draw;
+		text_display draw;
+	end;
+	
+	checklist_selector set_selection_action to (new action of checklist_action);
+	while true do
+		scene;
+		checklist_selector update;
+	end;
+end;    // multiline_checklist_selector_anim

@@ -1,0 +1,233 @@
+{***************************************************************}
+{                          palm.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do palm_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+include "system/bumps.ores";
+
+
+shape palm with
+    integer segments = 15;
+    scalar sway = 2;
+is
+    static shape leaf is
+        triangle <0 0 0> <1.5 -.6 -3> <-1.5 -.6 -3>;
+        triangle <1.5 -.6 -3> <-1.5 -.6 -3> <0 -.6 -6>;
+        triangle <1.5 -.6 -3> <2.1 -.6 -11> <0 -.6 -6>;
+        triangle <-1.5 -.6 -3> <-2.1 -.6 -11> <0 -.6 -6>;
+        triangle <0 -.6 -6> <2.1 -.6 -11> <-2.1 -.6 -11>;
+        triangle <-2.1 -.6 -11> <2.1 -.6 -11> <0 0 -15>;
+    end;    // leaf
+
+
+    static shape three_leaf is
+        leaf with
+            rotate by -6 around <0 0 1>;
+            rotate by -13 around <1 0 0>;
+            rotate by 93 around <0 1 0>;
+        end;
+        leaf with
+            rotate by 4 around <0 0 1>;
+            rotate by 45 around <1 0 0>;
+            rotate by 260 around <0 1 0>;
+        end;
+        leaf with
+            stretch by 1.1 along <0 0 1>;
+            rotate by 17 around <0 0 1>;
+            rotate by -14 around <1 0 0>;
+            rotate by 12 around <0 1 0>;
+        end;
+        leaf with
+            scale by .88 along <0 0 1>;
+            rotate by -10 around <0 0 1>;
+            rotate by 21 around <1 0 0>;
+            rotate by 320 around <0 1 0>;
+        end;
+    end;    // three_leaf
+
+
+    static shape six_leaf is
+        three_leaf with
+            magnify by .8;
+            rotate by 30 around <0 1 0>;
+        end;
+        three_leaf with
+            magnify by .78;
+            rotate by 260 around <0 1 0>;
+        end;
+    end;    // six_leaf
+
+
+    static shape frond is
+        shape dead_leaves is
+            leaf with
+                magnify by .5;
+                rotate by 77 around <1 0 0>;
+                move to <0 0 -.8>;
+                rotate by 140 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .5;
+                rotate by 65 around <1 0 0>;
+                move to <0 0 -.8>;
+                rotate by 280 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .4;
+                rotate by 72 around <1 0 0>;
+                move to <0 0 -.8>;
+                rotate by 40 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .4;
+                rotate by 59 around <1 0 0>;
+                move to <0 0 -.8>;
+                rotate by 210 around <0 1 0>;
+            end;
+        end;    // dead_leaves
+
+        shape leaves is
+            six_leaf with
+                magnify by .87;
+                rotate by 38 around <0 1 0>;
+            end;
+            three_leaf with
+                magnify by .77;
+                rotate by 13 around <1 0 0>;
+                rotate by 170 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .5;
+                rotate by -70 around <1 0 0>;
+            end;
+            leaf with
+                magnify by .6;
+                rotate by -75 around <1 0 0>;
+                rotate by 123 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .4;
+                rotate by -80 around <1 0 0>;
+                rotate by 310 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .5;
+                rotate by -30 around <1 0 0>;
+                rotate by 210 around <0 1 0>;
+            end;
+            leaf with
+                magnify by .6;
+                rotate by -50 around <1 0 0>;
+                rotate by 120 around <0 1 0>;
+            end;
+        end;    // leaves
+
+        leaves with
+            material is plastic colored dark green polished semi shiny;
+        end;
+        dead_leaves with
+            material is plastic colored <.5 .42 .2> polished semi shiny;
+        end;
+    end;    // frond
+
+
+    static shape segment is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 5>;
+            radius1 = 3;
+            radius2 = 4;
+        end;
+        sphere with
+            radius = 4;
+            vmin = 0;
+            scale by .5 along <0 0 1>;
+            move to <0 0 5>;
+        end;
+    end;    // segment
+
+
+    segment with
+        material is chalk colored brown;
+    end;
+    if segments > 1 then
+        palm with
+            segments = static segments - 1;
+            sway = static sway;
+            rotate by sway around <0 1 0>;
+            magnify by .96;
+            move to <0 0 5>;
+        end;
+    else
+        frond with
+            material is plastic colored dark green;
+            magnify by 5;
+            move to <0 0 5>;
+        end;
+    end;
+end;    // palm
+
+
+picture palm_picture with
+    eye = <0 -150 100>;
+    lookat = <0 0 40>;
+    background = sky_blue;
+    fog_factor = 1000;
+is
+    distant_light from <-.5 -.5 1>;
+    paraboloid with
+        material is chalk colored light brown;
+        top = <0 0 10>;
+        base = <0 0 0>;
+        radius = 40;
+    end;
+    palm with
+        segments = 25;
+        sway = 1;
+        move to <18 0 0>;
+    end;
+    palm with
+        segments = 25;
+        sway = 2;
+        move to <10 15 0>;
+        rotate by 60 around <0 0 1>;
+    end;
+    palm with
+        segments = 20;
+        sway = 3;
+        rotate by -120 around <0 0 1>;
+        move to <-15 12 0>;
+    end;
+    palm with
+        segments = 20;
+        sway = 3;
+        rotate by 300 around <0 0 1>;
+        move to <-5 -20 0>;
+    end;
+    glossy bumpy <0 .2 .6> plane with
+        magnify by 50;
+    end;
+end;    // palm_picture
+
+
+anim palm_anim
+    args type args;
+with
+    eye = <0 -150 100>;
+    lookat = <0 0 40>;
+    double_buffer is on;
+    background = sky_blue;
+    args check;
+is
+    mouse_controlled_picture palm_picture;
+end;    // palm_anim

@@ -1,0 +1,70 @@
+{***************************************************************}
+{                          cube_vertices.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cube_vertices_picture;
+
+
+include "system/3d.ores";
+include "system/futura_l.omar";
+include "system/cube_mesh.omar";
+
+
+shape cube_mesh_vertices is
+    cube_mesh;
+
+    // top vertices
+    //
+        futura_l_7 with
+        rotate by 90 around <1 0 0>;
+        move to <1.1 1 .9>;
+    end;
+        futura_l_8 with
+        rotate by 90 around <1 0 0>;
+        move to <-.9 1 .9>;
+    end;
+        futura_l_5 with
+        rotate by 90 around <1 0 0>;
+        move to <-.9 -1 .9>;
+    end;
+        futura_l_6 with
+        rotate by 90 around <1 0 0>;
+        move to <1.1 -1 .9>;
+    end;
+
+    // bottom vertices
+    //
+        futura_l_3 with
+        rotate by 90 around <1 0 0>;
+        move to <1.1 1 -1.1>;
+    end;
+        futura_l_4 with
+        rotate by 90 around <1 0 0>;
+        move to <-.9 1 -1.1>;
+    end;
+        futura_l_1 with
+        rotate by 90 around <1 0 0>;
+        move to <-.9 -1 -1.1>;
+    end;
+        futura_l_2 with
+        rotate by 90 around <1 0 0>;
+        move to <1.1 -1 -1.1>;
+    end;
+end;    // cube_mesh_vertices
+
+
+picture cube_vertices_picture with
+    eye = <2 -8 4>;
+    lookat = <0 0 0>;
+    render_mode is wireframe;
+    edges is all;
+    field_of_view = 40;
+is
+    distant_light from <.3 -.5 1>;
+    cube_mesh_vertices;
+end;    // cube_vertices_picture

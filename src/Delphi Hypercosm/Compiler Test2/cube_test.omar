@@ -1,0 +1,38 @@
+do test_anim;
+
+
+include "3d.ores";
+include "time.ores";
+include "check_keys.ores";
+include "anims.ores";
+
+
+anim test_anim with
+    eye = <2 -8 4>;
+    width = 512;
+    height = 384;
+    background = dark blue;
+is
+    material type blah_material is plastic poster "blah.jpg";
+    
+    picture scene is
+        scalar elapsed_time = get_seconds;
+        scalar angle = elapsed_time * 90;
+        
+        block with
+            material is blah_material;
+            //rotate by angle around <0 0 1>;
+        end;
+        
+        distant_light from <1 -3 2>;
+        //write "elapsed time = ", elapsed_time, ;
+    end;
+   
+    {
+    while true do
+        scene;
+        check_keys;
+    end;
+    }
+    mouse_controlled_picture scene;
+end;    // fish_anim

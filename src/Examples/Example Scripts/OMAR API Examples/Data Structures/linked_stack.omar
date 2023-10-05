@@ -1,0 +1,160 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          linked_stack.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       stack utilities.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/linked_stack.ores";
+
+abstract subject figure
+extends
+	printable printing object
+does
+	// converting method
+	//
+	string type question to_string;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	vector color;
+is
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		answer "figure";
+	end;    // to_string
+	
+	//
+	// printing method
+	//
+
+	verb print is
+		write to_string, ;
+	end;    // print
+end;    // figure
+
+subject circle
+extends
+	figure
+does
+	// converting method
+	//
+	string type question to_string;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	scalar radius = 1;
+is
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		string type result is none;
+		result add "circle with radius = ";
+		result add scalar_to_string of radius;
+		answer result;
+	end;    // to_string
+
+	//
+	// printing method
+	//
+
+	verb print is
+		write to_string, ;
+	end;    // print
+end;    // circle
+
+subject square
+extends
+	figure
+does
+	// converting method
+	//
+	string type question to_string;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	scalar size = 1;
+is
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		string type result is none;
+		result add "square with size = ";
+		result add scalar_to_string of size;
+		answer result;
+	end;    // to_string
+	
+	//
+	// printing method
+	//
+
+	verb print is
+		write to_string, ;
+	end;    // print
+end;    // square
+
+verb example is
+	circle type circle, circle2;
+	square type square, square2;
+	linked_stack type circle_stack;
+	linked_stack type square_stack;
+	linked_stack type shape_stack;
+
+	// create circle stack
+	//
+	circle_stack push circle, circle2;
+
+	// create square stack
+	//
+	square_stack push square, square2;
+
+	// create shape stack
+	//
+	shape_stack push circle, square, circle2, square2;
+
+	// pop items from circle stack
+	//
+	write "circle stack:", ;
+	write "circle stack height = ", circle_stack height, ;
+	circle_stack print;
+	write;
+
+	// pop items from square stack
+	//
+	write "square stack:", ;
+	write "square stack height = ", square_stack height, ;
+	square_stack print;
+	write;
+
+	// pop items from shape stack
+	//
+	write "shape stack:", ;
+	write "shape stack height = ", shape_stack height, ;
+	shape_stack print;
+end;    // example

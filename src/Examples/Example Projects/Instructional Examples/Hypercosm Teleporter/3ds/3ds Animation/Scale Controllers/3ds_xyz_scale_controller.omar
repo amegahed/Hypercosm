@@ -1,0 +1,61 @@
+do xyz_scale_controller_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+include "scale_marker.omar";
+
+shape xyz_scale_controller_scene with
+	scalar time = 0;
+is
+	static translated_3ds_linear_float_controller type x_scale_controller of [
+		1 .5 1 1 1
+	] at converted_3ds_ticks_array_from_frames_array of [
+		0 25 50 75 100
+	];  // x_scale_controller
+	
+	translated_3ds_linear_float_controller type y_scale_controller of [
+		1 1 .5 1 1
+	] at converted_3ds_ticks_array_from_frames_array of [
+		0 25 50 75 100
+	];  // y_scale_controller
+	
+	translated_3ds_linear_float_controller type z_scale_controller of [
+		1 1 1 .5 1
+	] at converted_3ds_ticks_array_from_frames_array of [
+		0 25 50 75 100
+	];  // z_scale_controller
+	
+	translated_3ds_xyz_scale_controller type scale_controller with
+		x_scale_controller is static x_scale_controller;
+		y_scale_controller is static y_scale_controller;
+		z_scale_controller is static z_scale_controller;
+	end;    // scale_controller
+	static scalar duration = converted_3ds_seconds_from_frames of 100;
+	
+	scale_marker with
+		scale_controller apply to trans at (converted_3ds_ticks_from_seconds of (smod time to duration));
+	end;
+end;    // xyz_scale_controller_scene
+
+anim xyz_scale_controller_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_shape xyz_scale_controller_scene
+		within new static_shape of environment
+		titled "3DS XYZ Scale Controller";
+end;    // xyz_scale_controller_anim

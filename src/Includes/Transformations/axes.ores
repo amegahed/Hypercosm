@@ -1,0 +1,194 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              axes.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of axes, a mathematical way of    }
+{       describing orientation in 3 dimensions.                 } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/vectors.ores";
+include "system/vector_rotations.ores";
+
+static subject axes
+does
+	// constructor
+	//
+	verb new with
+		vector x_axis = <1 0 0>;
+		vector y_axis = <0 1 0>;
+		vector z_axis = <0 0 1>;
+	end;    // new
+
+	// transforming methods
+	//
+	verb scale
+		by vector v;
+	end;
+
+	verb orient
+		from axes type axes;
+	end;
+
+	verb rotate
+		by scalar angle;
+		around vector axis;
+	end;
+
+	// transformation query methods
+	//
+	vector question oriented
+		vector direction;
+	end;    // oriented
+
+	// matrix methods
+	//
+	verb init;
+	verb transpose;
+	verb invert;
+	verb reverse;
+	verb normalize;
+	
+	// querying methods
+	//
+	scalar question determinant;
+	vector question dimensions;
+	scalar question trace;
+
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public vector x_axis, y_axis, z_axis;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		vector x_axis = <1 0 0>;
+		vector y_axis = <0 1 0>;
+		vector z_axis = <0 0 1>;
+	is
+		axes's x_axis = x_axis;
+		axes's y_axis = y_axis;
+		axes's z_axis = z_axis;
+	end;    // new
+
+	//
+	// transforming methods
+	//
+	
+	verb scale
+		by vector v;
+	is
+		x_axis = x_axis * v.x;
+		y_axis = y_axis * v.y;
+		z_axis = z_axis * v.z;
+	end;    // scale
+	
+	verb orient
+		from axes type axes;
+	is
+		x_axis = axes oriented x_axis;
+		y_axis = axes oriented y_axis;
+		z_axis = axes oriented z_axis;
+	end;    // orient
+
+	verb rotate
+		by scalar angle;
+		around vector axis;
+	is
+		rotate_vector x_axis by angle around axis;
+		rotate_vector y_axis by angle around axis;
+		rotate_vector z_axis by angle around axis;      
+	end;    // rotate
+	
+	//
+	// transformation query methods
+	//
+	
+	vector question oriented
+		vector direction;
+	is
+		answer (x_axis * direction.x) + (y_axis * direction.y) + (z_axis * direction.z);
+	end;    // oriented
+
+	//
+	// matrix methods
+	//
+	
+	verb init is
+		x_axis = <1 0 0>;
+		y_axis = <0 1 0>;
+		z_axis = <0 0 1>;
+	end;    // init
+
+	verb transpose is
+		vector vx = x_axis;
+		vector vy = y_axis;
+		vector vz = z_axis;
+		x_axis = <(vx.x) (vy.x) (vz.x)>;
+		y_axis = <(vx.y) (vy.y) (vz.y)>;
+		z_axis = <(vx.z) (vy.z) (vz.z)>;
+	end;    // transpose
+
+	verb invert is
+		scalar d = 1 / determinant;
+		vector vx = (y_axis cross z_axis) * d;
+		vector vy = (z_axis cross x_axis) * d;
+		vector vz = (x_axis cross y_axis) * d;
+		x_axis = <(vx.x) (vy.x) (vz.x)>;
+		y_axis = <(vx.y) (vy.y) (vz.y)>;
+		z_axis = <(vx.z) (vy.z) (vz.z)>;
+	end;    // invert
+
+	verb reverse is
+		x_axis = -x_axis;
+		y_axis = -y_axis;
+		z_axis = -z_axis;
+	end;    // reverse
+
+	verb normalize is
+		x_axis = normalized x_axis;
+		y_axis = normalized y_axis;
+		z_axis = normalized z_axis;
+	end;    // normalize
+	
+	//
+	// querying methods
+	//
+		
+	scalar question determinant is
+		axes type axes2;
+		axes2 = axes;
+		axes2 transpose;
+		answer axes2's x_axis dot (axes2's y_axis cross axes2's z_axis);
+	end;    // determinant
+
+	vector question dimensions is
+		answer <(vlength of x_axis) (vlength of y_axis) (vlength of z_axis)>;
+	end;    // dimensions
+	
+	scalar question trace is
+		answer x_axis.x + y_axis.y + z_axis.z;
+	end;    // trace
+	
+	//     
+	// printing methods
+	//
+	
+	verb print is
+		write "x_axis = ", x_axis, ;
+		write "y_axis = ", y_axis, ;
+		write "z_axis = ", z_axis, ;
+	end;    // print
+end;    // axes
+
+const axes type unit_axes;

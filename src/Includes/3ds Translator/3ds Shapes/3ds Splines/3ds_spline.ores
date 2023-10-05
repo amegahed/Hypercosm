@@ -1,0 +1,551 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          3ds_spline.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains spline definitions that correspond to          }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/trans.ores";
+include "system/rendering.ores";
+include "system/printing.ores";
+include "system/3ds_spline_segments.ores";
+include "system/3ds_spline_vertex_kinds.ores";
+include "system/segmented_spline.ores";
+include "system/polygon_utils.ores";
+include "system/singly_linked_queues.ores";
+
+subject polyline extends segmented_spline type;
+subject polylines extends segmented_splines type;
+
+subject translated_3ds_spline
+extends
+	transformable volume_boundable printable recycleable object
+does
+	// constructor
+	//
+	verb new
+		of translated_3ds_spline_segments type segments is none;
+		through translated_3ds_spline_vertices type vertices is none;
+	end;
+	
+	// setting methods
+	//
+	verb set
+		to translated_3ds_spline_segments type segments is none;
+		through translated_3ds_spline_vertices type vertices is none;
+	end;
+	
+	// constructing methods
+	//
+	verb append_segment
+		translated_3ds_spline_segment type segment;
+		to list_end type list_end is tail;
+	end;
+	verb append_segments
+		translated_3ds_spline_segments type segments;
+		to list_end type list_end is tail;
+	end;
+	verb append_vertex
+		translated_3ds_spline_vertex type vertex;
+	end;
+	verb append_vertices
+		translated_3ds_spline_vertices type vertices;
+	end;
+	verb append_spline
+		translated_3ds_spline type spline;
+		to list_end type list_end is tail;
+	end;
+	
+	// modification methods
+	//
+	verb to_line;
+	verb to_curve;
+	verb reverse;
+	verb set_orientation
+		to turn_orientation type orientation is counter_clockwise;
+	end;
+	
+	// querying methods
+	//
+	integer question num_segments;
+	boolean question is_closed;
+	boolean question is_line;
+	boolean question is_curve;
+	turn_orientation type question get_orientation;
+	polyline type question to_polyline with
+		integer steps = 4;
+	end;
+	
+	// bounding methods
+	//
+	volume_bounding type question get_bounds;
+	
+	// transforming methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+	
+	// rendering methods
+	//
+	shape instance with
+		integer steps = 4;
+	end;
+	
+	// printing methods
+	//
+	verb print;
+	
+	// recycling methods
+	//
+	objective translated_3ds_spline type question get;
+	reference verb recycle;
+has
+	// attributes
+	//
+	public singly_linked_queue type segment_list;
+	public singly_linked_list type vertex_list;
+is
+	// recycling free list
+	//
+	singly_linked_list type free_list;
+	
+	//
+	// constructor
+	//
+	
+	verb new
+		of translated_3ds_spline_segments type segments is none;
+		through translated_3ds_spline_vertices type vertices is none;
+	is
+		if verbose_recycling then
+			write "new 3ds spline", ;
+		end;
+		if some segments then
+			append_segments segments;
+		end;
+		if some vertices then
+			append_vertices vertices;
+		end;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+	
+	verb set
+		to translated_3ds_spline_segments type segments is none;
+		through translated_3ds_spline_vertices type vertices is none;
+	is
+		// recycle spline segments
+		//
+		while not segment_list is_empty do
+			translated_3ds_spline_segment type spline_segment is
+				translated_3ds_spline_segment type segment_list removed_first;
+			spline_segment recycle; 
+		end;
+		
+		// recycle spline vertices
+		//
+		while not vertex_list is_empty do
+			translated_3ds_spline_vertex type spline_vertex is
+				translated_3ds_spline_vertex type vertex_list removed_first;
+			spline_vertex recycle;  
+		end;
+		
+		if some segments then
+			append_segments segments;
+		end;
+		if some vertices then
+			append_vertices vertices;
+		end;
+	end;    // set
+	
+	//
+	// constructing methods
+	//
+	
+	verb append_segment
+		translated_3ds_spline_segment type segment;
+		to list_end type list_end is tail;
+	is
+		segment_list append segment to list_end;
+	end;    // append_segment
+	
+	verb append_segments
+		translated_3ds_spline_segments type segments;
+		to list_end type list_end is tail;
+	is
+		for each translated_3ds_spline_segment type segment in segments do
+			append_segment segment to list_end;
+		end;
+	end;    // append_segments
+	
+	verb append_vertex
+		translated_3ds_spline_vertex type vertex;
+	is
+		vertex_list add vertex;
+	end;    // append_vertex
+	
+	verb append_vertices
+		translated_3ds_spline_vertices type vertices;
+	is
+		for each translated_3ds_spline_vertex type vertex in vertices do
+			append_vertex vertex;
+		end;
+	end;    // append_vertices
+		
+	verb append_spline
+		translated_3ds_spline type spline;
+		to list_end type list_end is tail;
+	is
+		iterator type iterator is spline's segment_list get_iterator;
+		while iterator is_iterating do
+			append_segment (translated_3ds_spline_segment type iterator next) to list_end;
+		end;
+	end;    // append_spline
+	
+	//
+	// modification methods
+	//
+	
+	verb to_line is
+		iterator type iterator is segment_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			segment to_line;
+		end;
+	end;    // to_line
+	
+	verb to_curve is
+		iterator type iterator is segment_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			segment to_curve;
+		end;
+	end;    // to_curve
+		
+	verb reverse is     
+		iterator type iterator is none;
+		translated_3ds_spline_segment type first_segment is none; 
+			   
+		// reverse segments
+		//
+		iterator is segment_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			segment reverse;
+		end;
+		
+		// reverse order of segments in segment list
+		//
+		segment_list reverse;
+		
+		// reverse vertices in spline
+		//
+		iterator is segment_list get_iterator;
+		first_segment is none;
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			
+			// first segment
+			//
+			if first_segment is none then
+				first_segment is segment;
+				segment's vertex1 reverse;
+				segment's vertex2 reverse;
+				
+			// middle segment
+			//
+			elseif iterator is_iterating then
+				segment's vertex2 reverse;
+			
+			// last segment
+			//  
+			else
+				if segment's vertex2 isn't first_segment's vertex1 then
+					segment's vertex2 reverse;
+				end;
+			end;
+		end;
+	end;    // reverse
+	
+	verb set_orientation 
+		to turn_orientation type orientation is counter_clockwise;
+	is
+		if get_orientation isn't orientation then
+			reverse;
+		end;
+	end;    // set_orientation
+	
+	//
+	// querying methods
+	//
+  
+	integer question num_segments is
+		answer segment_list get_size;
+	end;    // num_segments
+	
+	boolean question is_closed is
+		boolean closed is false;
+		
+		if segment_list get_size >= 1 then
+			iterator type iterator is segment_list get_iterator;
+			translated_3ds_spline_segment type prev_segment is 
+				translated_3ds_spline_segment type segment_list get_last;
+			
+			// look for breaks
+			//
+			closed is true;
+			while iterator is_iterating and closed do
+				translated_3ds_spline_segment type segment is 
+					translated_3ds_spline_segment type iterator next;
+	
+				if segment's vertex1's point <> prev_segment's vertex2's point then
+					closed is false;
+				end;
+				
+				prev_segment is segment;
+			end;
+		end;
+		
+		answer closed;      
+	end;    // is_closed
+	
+	boolean question is_line is
+		boolean found_curve is false;
+		iterator type iterator is segment_list get_iterator;
+		
+		while iterator is_iterating and not found_curve do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			if segment is_curve then
+				found_curve is true;
+			end;
+		end;
+		
+		answer not found_curve;
+	end;    // is_line
+	
+	boolean question is_curve is
+		boolean found_line is false;
+		iterator type iterator is segment_list get_iterator;
+		
+		while iterator is_iterating and not found_line do
+			translated_3ds_spline_segment type segment is 
+				translated_3ds_spline_segment type iterator next;
+			if segment is_line then
+				found_line is true;
+			end;
+		end;
+		
+		answer not found_line;
+	end;    // is_curve
+		
+	turn_orientation type question get_orientation is
+		answer get_polygon_orientation of to_polyline;
+	end;    // orientation
+	
+	integer question point_count with
+		integer steps = 4;
+	is
+		integer count = 0;
+		
+		verb count_point
+			vector point;
+		is
+			static vector prev_point;
+			if count <> 0 then
+				if point <> prev_point then
+					count = itself + 1;
+					prev_point = point;
+				end;
+			else
+				count = itself + 1;
+				prev_point = point;
+			end;
+		end;    // count_point
+		
+		iterator type iterator is segment_list get_iterator;
+		
+		// add number of points of each segment
+		//        
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is
+				translated_3ds_spline_segment type iterator next;
+				
+			if segment is_line then
+				count_point segment's vertex1's point;
+				count_point segment's vertex2's point;
+			else
+				count_point segment's vertex1's point;
+				count = itself + steps;
+				count_point segment's vertex2's point;
+			end;
+		end;
+		
+		answer count;
+	end;    // point_count
+		
+	polyline type question to_polyline with
+		integer steps = 4;
+	is
+		integer num_points = (point_count with steps = static steps);
+		
+		if num_points = 0 then
+			answer none;
+		else
+			polyline type polyline;
+			iterator type iterator is segment_list get_iterator;
+			integer counter = 0;
+			
+			verb add_point
+				vector point;
+			is
+				static vector prev_point;
+				if counter <> 0 then
+					if point <> prev_point then
+						counter = itself + 1;
+						polyline[counter] = point;
+						prev_point = point;
+					end;
+				else
+					counter = itself + 1;
+					polyline[counter] = point;
+					prev_point = point;
+				end;
+			end;    // add_point
+						
+			// add points of each segment
+			//
+			dim polyline[1 .. num_points];
+			while iterator is_iterating do
+				translated_3ds_spline_segment type segment is
+					translated_3ds_spline_segment type iterator next;
+					
+				if segment is_line then
+					add_point segment's vertex1's point;
+					add_point segment's vertex2's point;
+				else
+					integer vertices = steps + 2;
+					add_point segment's vertex1's point;
+					if steps >= 1 then
+						vpolynomial type segment_spline is segment get_cubic_spline;
+						for integer vertex = 1 .. steps do
+							scalar t = vertex / (vertices - 1);
+							counter = itself + 1;
+							polyline[counter] = segment_spline get_value at t;
+						end;
+					end;
+					add_point segment's vertex2's point;
+				end;
+			end;
+					
+			answer polyline;
+		end;
+	end;    // to_polyline
+	
+	//
+	// bounding methods
+	//
+
+	volume_bounding type question get_bounds is
+		polyline type polyline is to_polyline;
+		answer polyline get_bounds;
+	end;    // get_bounds
+	
+	//              
+	// transforming methods
+	//
+	
+	verb transform
+		from trans type trans;
+	is
+		iterator type iterator is segment_list get_iterator;
+		
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is
+				translated_3ds_spline_segment type iterator next;
+			segment transform from trans;            
+		end;
+	end;    // transform
+	
+	//  
+	// rendering methods
+	//
+	
+	shape instance  with
+		integer steps = 4;
+	is
+		iterator type iterator is segment_list get_iterator;
+		
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is
+				translated_3ds_spline_segment type iterator next; 
+			segment instance with
+				steps = static steps;
+			end;          
+		end;
+	end;    // instance
+	
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		iterator type iterator is segment_list get_iterator;
+		
+		write "3ds spline:", ;
+		while iterator is_iterating do
+			translated_3ds_spline_segment type segment is
+				translated_3ds_spline_segment type iterator next;
+			write segment to_string , ;           
+		end;
+	end;    // print
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_spline type question get is
+		if free_list is_empty then
+			answer new translated_3ds_spline;
+		else
+			answer translated_3ds_spline type free_list removed_first;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+			
+		// recycle spline segments
+		//
+		while not segment_list is_empty do
+			translated_3ds_spline_segment type spline_segment is
+				translated_3ds_spline_segment type segment_list removed_first;
+			spline_segment recycle; 
+		end;
+		
+		// recycle spline vertices
+		//
+		while not vertex_list is_empty do
+			translated_3ds_spline_vertex type spline_vertex is
+				translated_3ds_spline_vertex type vertex_list removed_first;
+			spline_vertex recycle;  
+		end;
+				
+		// add to free list
+		//
+		free_list add_first translated_3ds_spline;
+		translated_3ds_spline is none;
+	end;        // recycle   
+end;    // translated_3ds_spline

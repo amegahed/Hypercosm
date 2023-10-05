@@ -1,0 +1,506 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   3ds_spline_vertex.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains spline vertex definitions that correspond 		}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/smoothing.ores";
+include "system/reversing.ores";
+include "system/transforming.ores";
+include "system/rendering.ores";
+include "system/printing.ores";
+include "system/marks.ores";
+include "system/swapping.ores";
+include "system/singly_linked_lists.ores";
+
+
+{***************************************************************} 
+{			Spline Vertices and IN/OUT Tangent Vectors			}
+{***************************************************************}
+{																}
+{	Each spline vertex has two tangent vectors: an "IN"			}
+{	tangent vector and an "OUT" tangent vector.					}
+{																}
+{						<--- point --->							}
+{						IN			OUT							}
+{																}
+{	The vertices have no intrinsic orientation and so the  		}
+{	tangent vectors always point out from the vertex point.		}
+{	When traversing a list of points, the tangent vector		}
+{	that we use and the direction of that tangent vector		}
+{	are determined by the direction that we traverse the 		}
+{	list.														}
+{																}
+{	When traversing a list in a forward direction, we 			}
+{	encounter the tangent vectors in the order: 				}
+{		OUT[N],-IN[N+1],OUT[N+1],-IN[N+2],OUT[N+2]...-IN[N]		}
+{																}
+{	When traversing a list in a reverse direction, we			}
+{	encounter the vectors in the order:							}
+{		IN[N],-OUT[N-1],IN[N-1],-OUT[N-2],IN[N-2]...-OUT[N]		}
+{																}
+{	Picture a bezier spline with three knots, going from 		}
+{	left to right: 												}
+{																}				
+{				A--->AB----BA<---B--->BC----CB<---C				}
+{																}
+{	The knot points are A, B and C.  The vectors are labeled 	}
+{	the same as patch vectors (AB is the vector from A going 	}
+{	toward B, the vector from B to A is labeled BA, and so on).	}
+{																}
+{	In this diagram, AB is the OUT vector for knot A.  BA is 	}
+{	the IN vector for knot B.  BC is the OUT vector for knot 	}
+{	B, and CB is the IN vector for knot C.  Because this is 	}
+{	an open spline, knot A doesn't use its IN vector, and 		}
+{	knot C doesn't use its OUT vector.							}
+{																}
+{	The IN and OUT terminology is based on the way a spline 	}
+{	flows from the first knot to the last.  If the spline is 	}
+{	reversed, the IN and OUT sense is reversed, as well.		}
+{																}
+{	Regarding the vectors, the only difference between a 		}
+{	circle and a square is that the square has vectors that 	}
+{	are at the same location as the knot point (in other words, }
+{	zero length vectors) causing sharp corners.  The circle 	}
+{	uses vectors which cause each segment to bulge to form 		}
+{	a quarter-circle.											}
+{																}
+{***************************************************************}
+
+
+{***************************************************************}
+{		A Note on Vertex In/Out Tangent Vector Lengths			}
+{***************************************************************}
+{		3ds spline vertices store tangent vectors as			}
+{		BEZIER tangents rather than HERMITE tangents.			}
+{		This means that the tangent vectors are a factor		}
+{		of 3 smaller than they would be if they were			}
+{		interpreted as tangents to the hermite form 			}
+{		of spline curves.										}
+{***************************************************************}
+
+
+subject translated_3ds_spline_vertex
+extends
+	smoothable reverseable transformable renderable scribable recycleable object
+does
+    // constructor
+    //
+    verb new
+    
+    	// geometry parameters
+    	//
+        at vector point = <0 0 0>;
+        
+        // tangent vector parameters
+        //
+    	from vector in_tangent = <0 0 0>;
+    	to vector out_tangent = <0 0 0>;
+    	
+    	// neighbor vertex parameters
+    	//
+    	after translated_3ds_spline_vertex type prev_vertex is none;
+    	before translated_3ds_spline_vertex type next_vertex is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean smooth_tangents is false;
+    	boolean show_tangents is true;
+    end;
+    
+    // attribute setting methods
+    //
+    verb set
+    	// geometry parameters
+    	//
+        at vector point = <0 0 0>;
+        
+        // tangent vector parameters
+        //
+    	from vector in_tangent = <0 0 0>;
+    	to vector out_tangent = <0 0 0>;
+    	
+    	// neighbor vertex parameters
+    	//
+    	after translated_3ds_spline_vertex type prev_vertex is none;
+    	before translated_3ds_spline_vertex type next_vertex is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean smooth_tangents is false;
+    	boolean show_tangents is true;
+    end;
+    verb set_location
+    	to vector point;
+    end;
+    verb set_tangents
+    	from vector in_tangent = <0 0 0>;
+    	to vector out_tangent = <0 0 0>;
+    end;
+    verb set_neighbors
+    	after translated_3ds_spline_vertex type prev_vertex is none;
+    	before translated_3ds_spline_vertex type next_vertex is none;
+    end;
+
+    // vertex querying methods
+    //
+    boolean question is_corner;
+    boolean question is_smooth;
+       
+    // smoothable method
+    //
+    verb smooth;
+    
+    // reversable method
+    //
+    verb reverse;
+     
+    // transformable method
+    //
+    verb transform
+        from trans type trans;
+    end;
+	
+	// renderable method
+	//
+	shape instance;
+	
+	// scribable method
+	//
+	string type question to_string;
+	
+	// recycleable methods
+	//
+    objective translated_3ds_spline_vertex type question get;
+	reference verb recycle;
+has
+	// geometry attributes
+	//
+    public vector point;
+    
+    // tangent vector attributes
+    //
+    public vector in_tangent, out_tangent;
+
+	// neighbor vertex attributes
+	//
+	public translated_3ds_spline_vertex type prev_vertex is none;
+	public translated_3ds_spline_vertex type next_vertex is none;
+    	    
+	// rendering attributes
+	//
+	public boolean smooth_tangents;
+	public boolean show_tangents;
+is
+	// vertex relative scaling parameters
+	//
+	const scalar tangent_scale = 1;
+	const scalar mark_scale = .1;
+	
+	// vertex color parameters
+	//
+	const color type mark_color = red;
+	const color type in_tangent_color = light grey;
+	const color type out_tangent_color = light grey;
+	const color type in_tangent_handle_color = green;
+	const color type out_tangent_handle_color = green;
+		
+    // recycling free list
+    //
+    singly_linked_list type free_list;
+    
+    
+    //		
+    // constructor
+    //
+    
+    
+    verb new
+    	// geometry parameters
+    	//
+        at vector point = <0 0 0>;
+    	from vector in_tangent = <0 0 0>;
+    	to vector out_tangent = <0 0 0>;
+    	
+    	// neighbor vertex parameters
+    	//
+    	after translated_3ds_spline_vertex type prev_vertex is none;
+    	before translated_3ds_spline_vertex type next_vertex is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean smooth_tangents is false;
+    	boolean show_tangents is true;
+    is
+		if verbose_recycling then
+	    	write "new 3ds spline vertex", ;
+	    end;
+		    
+        with translated_3ds_spline_vertex do
+        
+        	// set geometry attributes
+        	//
+            its point = point;
+            
+            // set tangent vector attributes
+            //
+            its in_tangent = in_tangent;
+            its out_tangent = out_tangent;
+            
+            // set neighbor vertex attributes
+            //
+            its prev_vertex is prev_vertex;
+            its next_vertex is next_vertex;
+            
+            // set rendering attributes
+            //
+            its smooth_tangents is smooth_tangents;
+            its show_tangents is show_tangents;
+        end;
+        
+        if smooth_tangents then
+        	smooth;
+        end;
+    end;    // new
+
+
+	//
+    // attribute setting methods
+    //
+    
+
+    verb set
+    	// geometry parameters
+    	//
+        at vector point = <0 0 0>;
+        
+        // tangent vector parameters
+        //
+    	from vector in_tangent = <0 0 0>;
+    	to vector out_tangent = <0 0 0>;
+    	
+    	// neighbor vertex parameters
+    	//
+    	after translated_3ds_spline_vertex type prev_vertex is none;
+    	before translated_3ds_spline_vertex type next_vertex is none;
+    with
+    	// rendering parameters
+    	//
+    	boolean smooth_tangents is false;
+    	boolean show_tangents is true;
+    is
+        with translated_3ds_spline_vertex do
+        
+        	// set geometry attributes
+        	//
+            its point = point;
+            
+            // set tangent vector attributes
+            //
+            its in_tangent = in_tangent;
+            its out_tangent = out_tangent;
+            
+            // set neighbor vertex attributes
+            //
+            its prev_vertex is prev_vertex;
+            its next_vertex is next_vertex;
+            
+            // set rendering attributes
+            //
+            its smooth_tangents is smooth_tangents;
+            its show_tangents is show_tangents;
+        end;
+        
+        if smooth_tangents then
+        	smooth;
+        end;    
+    end;	// set
+    
+    
+    verb set_location
+    	to vector point;
+    is
+    	translated_3ds_spline_vertex's point = point;
+    end;	// set_location
+    
+    
+    verb set_tangents
+    	from vector in_tangent = <0 0 0>;
+    	to vector out_tangent = <0 0 0>;
+    is
+        with translated_3ds_spline_vertex do
+            its in_tangent = in_tangent;
+            its out_tangent = out_tangent;
+		end;
+    end;	// set_tangents
+    
+        
+    verb set_neighbors
+    	after translated_3ds_spline_vertex type prev_vertex is none;
+    	before translated_3ds_spline_vertex type next_vertex is none;
+    is
+        with translated_3ds_spline_vertex do
+            its prev_vertex is prev_vertex;
+            its next_vertex is next_vertex;
+		end;
+    end;	// set_neighbors
+    
+    
+    //            
+    // vertex querying methods
+    //
+    
+
+    boolean question is_corner is
+        answer in_tangent = <0 0 0> and out_tangent = <0 0 0>;
+    end;    // is_corner
+    
+        
+    boolean question is_smooth is
+        answer in_tangent <> <0 0 0> or out_tangent <> <0 0 0>;
+    end;    // is_smooth
+        
+
+    //
+    // smoothable method
+    //
+    
+        
+    verb smooth is 	
+		if (some prev_vertex or some next_vertex) then  
+			vector tangent;
+		  
+			// compute tangent from neighboring vertices
+			//
+			if some prev_vertex and some next_vertex then
+			
+				// smooth middle vertices
+				//
+				tangent = (next_vertex's point - prev_vertex's point) / 2;
+			elseif some prev_vertex then
+			
+				// smooth last vertex
+				//
+				tangent = (point - (prev_vertex's point + prev_vertex's out_tangent * 1.5)) * 2;
+			elseif some next_vertex then
+			
+				// smooth first vertex
+				//
+				tangent = ((next_vertex's point + next_vertex's in_tangent * 1.5) - point) * 2;
+			end;
+			
+			// convert tangents from hermite form to bezier form
+			//
+			tangent = itself / 3;
+			in_tangent = -tangent;
+			out_tangent = tangent;
+		end; 
+		
+    	smooth_tangents is true;  
+    end;	// smooth
+    
+    
+    //
+    // reverseable method
+    //
+    
+        
+    verb reverse is
+    	swap_vectors translated_3ds_spline_vertex's in_tangent and 
+			translated_3ds_spline_vertex's out_tangent;
+    end;	// reverse
+    
+
+    //    
+    // transformable method
+    //
+    
+    
+    verb transform
+        from trans type trans;
+    is
+        point = trans transformed point;
+        in_tangent = trans transformed in_tangent;
+        out_tangent = trans transformed out_tangent;
+    end;    // transform
+    
+
+    //	
+	// renderable method
+	//
+	
+	
+	shape instance is
+	    mark at point of square as drawn in two_d with
+    	    size = vlength of ((in_tangent - out_tangent) / 2 * tangent_scale * mark_scale);
+	        color = mark_color;
+	    end;
+
+        if is_smooth and show_tangents then    
+    	    line [(point + in_tangent * tangent_scale) point] with
+    	        color = in_tangent_color;
+    	    end;
+    	    
+    	    line [point (point + out_tangent * tangent_scale)] with
+    	    	color = out_tangent_color;
+    	    end;
+    	    
+    	    mark at (point + in_tangent * tangent_scale) of square as drawn in two_d with
+    	    	size = vlength of (in_tangent * tangent_scale * mark_scale);
+    	        color = in_tangent_handle_color;
+    	    end; 
+    	    
+    	    mark at (point + out_tangent * tangent_scale) of square as drawn in two_d with
+    	    	size = vlength of (out_tangent * tangent_scale * mark_scale);
+    	        color = out_tangent_handle_color;
+    	    end;
+	    end;
+	end;    // instance
+	
+
+	//
+	// scribable method
+	//
+	
+		
+	string type question to_string is
+		string type string is "translated 3ds spline vertex";
+		string add " at ";
+		string add vector_to_string of point;
+		answer string;
+	end;	// to_string
+	
+	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_spline_vertex type question get is
+		if free_list is_empty then
+			answer new translated_3ds_spline_vertex;
+		else
+			answer translated_3ds_spline_vertex type free_list removed_first;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+		
+		// add to free list
+		//
+	    free_list add_first translated_3ds_spline_vertex;
+	    translated_3ds_spline_vertex is none;
+	end;		// recycle 
+end;	// translated_3ds_spline_vertex
+
+
+type translated_3ds_spline_vertices is translated_3ds_spline_vertex type[];

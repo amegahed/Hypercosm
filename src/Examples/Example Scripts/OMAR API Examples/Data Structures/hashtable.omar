@@ -1,0 +1,113 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          hashtable.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       hashtable utilities.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/string_conversions.ores";
+include "system/hashtable.ores";
+
+subject thing
+extends
+	printable printing object
+does
+	// constructor
+	//
+	verb new with
+		integer value = 0;
+	end;    // new
+
+	// converting method
+	//
+	string type question to_string;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	integer value = 0;
+is
+	//
+	// constructor
+	//
+
+	verb new with
+		integer value = 0;
+	is
+		thing's value = value;
+	end;    // new
+
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		answer integer_to_string of value;
+	end;
+
+	//
+	// printing method
+	//
+
+	verb print is
+		write "thing with value = ", to_string, ;
+	end;    // print
+end;    // thing
+
+verb example is
+	thing type thing1 with
+		value = 8;
+	end;
+	thing type thing2 with
+		value = 16;
+	end;
+	object type item is none;
+	thing type thing is none;
+	hashtable type hashtable;
+
+	// store items in hashtable
+	//
+	write "storing thing1 as fred, thing2 as barney", ;
+	hashtable enter thing1 as "fred", thing2 as "barney";
+	write "stored ", hashtable num_entries, " items", ;
+	write;
+	
+	write "hashtable entries: ", ;
+	hashtable print;
+	write;
+	
+	// retreive first item from hashtable
+	//
+	write "retreiving fred...", ;
+	thing is thing type hashtable get_entry named "fred";
+	thing print;
+	write;
+
+	// retreive second item from hashtable
+	//
+	write "retreiving barney...", ;
+	thing is thing type hashtable get_entry named "barney";
+	thing print;
+	write;
+
+	// retreive third (nonexistant) item from hashtable
+	//
+	write "retreiving wilma...", ;
+	item is hashtable get_entry named "wilma";
+	if some item then
+		thing is thing type item;
+		thing print;
+	else
+		write "no item", ;
+	end;
+end;    // example

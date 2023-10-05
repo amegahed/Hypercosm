@@ -1,0 +1,43 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   multiline_checklist.ores 		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition for methods and             }
+{       structures to parse and store a checklist where         }
+{       each entry in the checklist may be multiple lines       }
+{       of text.                                                } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/multiline_step.ores";
+
+
+subject multiline_checklist 
+extends
+	multiline_step type[]
+does
+	// printing method
+	//
+    verb print;
+is
+	//
+	// printing method
+	//
+	
+	
+    verb print is
+        integer line_number = 1;
+        
+        for each multiline_step type multiline_step in multiline_checklist do
+            write line_number, ": ";
+            multiline_step print;
+            write;
+            line_number = itself + 1;
+        end;
+    end;    // print
+end;	// multiline_checklist

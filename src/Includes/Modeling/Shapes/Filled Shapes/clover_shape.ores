@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          clover_shape.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a standard filled shape        }
+{       in the form of a clover leaf.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+
+shape clover_shape with
+	integer leaves = 4;
+	integer steps = 20;
+is
+	shape cloverleaf is
+		vector vertex[1..steps];
+		for integer counter = 1..steps do
+			scalar theta = (counter / steps * 360 / leaves);
+			scalar r = sin (counter / steps * 180);
+			scalar x = cos theta * r;
+			scalar y = sin theta * r;
+			vertex[counter] = <x y 0>;
+		end;
+		
+		polygon vertex;
+	end;    // cloverleaf
+
+	for integer counter = 1..leaves do
+		cloverleaf with
+			rotate by (counter / leaves * 360) around
+				<0 0 1>;
+		end;
+	end;
+end;    // clover_shape

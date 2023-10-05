@@ -1,0 +1,68 @@
+do tactile_shapes_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/apple.omar";
+include "system/banana.omar";
+include "system/fish.omar";
+
+
+anim tactile_shapes_anim
+    args type args;
+with
+    eye = <0 -20 20>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape apple_shape is
+        write "making apple", ;
+        apple with
+            magnify by 2;
+        end;
+    end;    // apple_shape
+    
+    shape fish_shape is
+        fish type fish;
+        write "making fish", ;
+        fish instance with
+            magnify by .25;
+        end;
+    end;    // fish_shape
+    
+    shape banana_shape is
+        write "making banana", ;
+        banana with
+            magnify by 2;
+        end;
+    end;    // banana_shape
+
+    shape shapes is
+        write "making shapes", ;
+        fish_shape with
+            rotate by 90 around <0 0 1>;
+            move to <-7 0 3>;
+        end;
+    
+        apple_shape;
+    
+        banana_shape with
+            rotate by 90 around <0 0 1>;
+            move to <7 0 2>;
+        end;
+    end;    // shapes
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape shapes titled "Tactile Shapes" in floor;
+end;    // tactile_shapes_anim

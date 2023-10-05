@@ -1,0 +1,273 @@
+{***************************************************************}
+{                          xmas.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do xmas_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/bumps.ores";
+include "system/solids.ores";
+include "system/architect.omar";
+include "system/fireplace.omar";
+include "system/office_chair.omar";
+include "system/desk.omar";
+include "system/present.omar";
+include "system/vase.omar";
+include "system/xmas_tree.omar";
+
+
+shape presents is
+    metallic bumpy light green present with
+        move to <2.5 -2 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light blue present with
+        rotate by 20 around <0 0 1>;
+        move to <1 -2 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light green present with
+        scale by 1.5 along <1 0 0>;
+        rotate by -70 around <0 0 1>;
+        move to <0 2 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light blue present with
+        rotate by 10 around <0 0 1>;
+        move to <2.25 1.5 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light green present with
+        rotate by 15 around <0 0 1>;
+        move to <5 2 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light green present with
+        scale by 2 along <1 0 0>;
+        scale by 1.5 along <0 1 0>;
+        rotate by 35 around <0 0 1>;
+        move to <6 -1 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light blue present with
+        scale by .5 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        rotate by 35 around <0 0 1>;
+        move to <3.5 -1.5 0>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light blue present with
+        move to <2 -2 0>;
+        rotate by 45 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light blue present with
+        move to <6 3 0>;
+        rotate by 15 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light blue present with
+        move to <-5 -2 0>;
+        rotate by 35 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+    metallic bumpy light green present with
+        move to <-3 -1 0>;
+        rotate by 85 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+end;    // presents
+
+
+shape overhead_light is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 -.5>;
+        radius1 = .25;
+        radius2 = 1;
+    end;
+    unshaded white sphere with
+        center = <0 0 -.5>;
+        radius = .3;
+    end;
+    point_light with
+        move to <0 0 -2>;
+        brightness = 6;
+        color = <1 .9 .5>;
+    end;
+end;    // overhead_light
+
+
+shape room with
+    scalar width = 16;
+    scalar depth = 24;
+    scalar height = 8;
+is
+    scalar a = width / 2;
+    scalar b = depth / 2;
+
+    // rear wall
+    //
+    flat bricked color light brown polygon [(<a b 0>) (<a b height>) (
+        <-a b height>) (<-a b 0>) (<-2 b 0>) (<-2 b 4>) (
+        <2 b 4>) (<2 b 0>)]
+    with
+        magnify the shader_trans by 4;
+    end;
+
+    {
+        parallelogram with
+                vertex = (-a) (-b) 0;
+                side1 = width 0 0;
+                side2 = 0 0 height;
+        end;
+
+        // front wall
+        //
+        parallelogram with
+                vertex = (-a) (b) 0;
+                side1 = width 0 0;
+                side2 = 0 0 height;
+        end;
+
+        // front ceiling moulding
+        //
+        flat wooden block with
+                vertex = (-a) (b) height;
+                side1 = width 0 0;
+                side2 = 0 0 -1;
+                side3 = 0 -.1 0;
+        end;
+        }
+
+    // right wall
+    //
+    flat bumpy bricked color light brown parallelogram with
+        vertex = <(a) (-b) 0>;
+        side1 = <0 depth 0>;
+        side2 = <0 0 height>;
+        rotate the shader_trans by 90 around <0 0 1>;
+        magnify the shader_trans by 4;
+    end;
+
+    // right ceiling moulding
+    //
+    flat wooden block with
+        vertex = <(a) (-b) height>;
+        side1 = <0 depth 0>;
+        side2 = <0 0 -1>;
+        side3 = <-.1 0 0>;
+    end;
+
+    // left wall
+    //
+    flat bumpy bricked color light brown parallelogram with
+        vertex = <(-a) (-b) 0>;
+        side1 = <0 depth 0>;
+        side2 = <0 0 height>;
+        rotate the shader_trans by 90 around <0 0 1>;
+        magnify the shader_trans by 4;
+    end;
+
+    // left ceiling moulding
+    //
+    flat wooden block with
+        vertex = <(-a) (-b) height>;
+        side1 = <0 depth 0>;
+        side2 = <0 0 -1>;
+        side3 = <.1 0 0>;
+    end;
+
+    // ceiling
+    //
+    parallelogram with
+        material is chalk colored grey;
+        vertex = <(-a) (-b) height>;
+        side1 = <width 0 0>;
+        side2 = <0 depth 0>;
+    end;
+
+    // floor
+    glossy checkered marble pink granite grey plane with
+        scale by a along <1 0 0>;
+        scale by b along <0 1 0>;
+        move to <0 0 .01>;
+    end;
+    overhead_light with
+        material is plastic colored red;
+        move to <0 0 height>;
+    end;
+    fireplace with
+        magnify by 1;
+        move to <0 b 0>;
+    end;
+    flat wooden window with
+        magnify by 10;
+        move to <-5 b 4>;
+    end;
+    flat wooden window with
+        magnify by 10;
+        move to <5 b 4>;
+    end;
+    flat wooden front_door with
+        rotate by 90 around <0 0 1>;
+        magnify by 3;
+        move to <(-a) 0 3>;
+    end;
+    messy_desk with
+        material is plastic colored brown;
+        rotate by 180 around <0 0 1>;
+        magnify by 1.6;
+        move to <-5.5 6 0>;
+    end;
+    office_chair with
+        material is plastic colored brown;
+        rotate by 180 around <0 0 1>;
+        move to <-4 6 0>;
+    end;
+
+    xmas_tree with
+        magnify by .03;
+        move to <4.5 0 0>;
+    end;
+    {
+    glossy marble red vase with
+        magnify by .1;
+        move to <7 10 1>;
+    end;
+    }
+
+    // xmas presents!!
+    //
+    presents;
+end;    // room
+
+
+picture xmas_picture
+    args type args;
+with
+    eye = <6 -14 5>;
+    lookat = <-3 9 3>;
+    field_of_view = 70;
+    shading is pixel;
+    facets = 0;
+    ambient = <.5 .4 .3>;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+
+    args check;
+is
+    point_light with
+        move to <5 -12 3>;
+        brightness = 6;
+    end;
+    room;
+end;    // xmas_picture

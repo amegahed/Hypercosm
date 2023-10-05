@@ -1,0 +1,37 @@
+do tactile_venus_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/venus.omar";
+
+
+anim tactile_venus_anim
+    args type args;
+with
+    eye = <0 -25 25>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape venus_shape is
+        write "making venus", ;
+        venus with
+            magnify by 2;
+            material is plastic poster "Stucco.jpg";
+        end;
+    end;    // venus_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape venus_shape titled "Tactile Venus" in floor;
+end;    // tactile_venus_anim

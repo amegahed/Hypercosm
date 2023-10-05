@@ -1,0 +1,244 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          mesh_geometry.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains generalized mesh geometry definitions.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/trans.ores";
+include "system/transforming.ores";
+include "system/texture_mapping.ores";
+include "system/printing.ores";
+include "system/recycling.ores";
+include "system/singly_linked_lists.ores";
+
+subject mesh_geometry
+extends
+	transformable texturable volume_boundable printable object
+does
+	// constructor
+	//
+	verb new 
+		of vector vertices[] is none;
+		oriented to vector normals[] is none;
+		textured by vector texcoords[] is none;
+	with
+		boolean oriented is false;
+		boolean textured is false;
+	end;
+	
+	// setting method
+	//
+	verb set
+		to vector vertices[] is none;
+		oriented to vector normals[] is none;
+		textured by vector texcoords[] is none;
+	with
+		boolean oriented is false;
+		boolean textured is false;
+	end;
+	
+	// attributes querying methods
+	//
+	boolean question is_valid;
+	
+	// transforming methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+	
+	// texturing methods
+	//
+	verb apply
+		texture_mapping type texture_mapping;
+	end;    // apply
+	
+	// bounding methods
+	//
+	volume_bounding type question get_bounds;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public vectors type vertices is none;
+	public vectors type normals is none;
+	
+	// texturing attributes
+	//
+	public vectors type texcoords is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new 
+		of vector vertices[] is none;
+		oriented to vector normals[] is none;
+		textured by vector texcoords[] is none;
+	with
+		boolean oriented is false;
+		boolean textured is false;
+	is
+		set to vertices oriented to normals textured by texcoords with
+			oriented is static oriented;
+			textured is static textured;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set
+		to vector vertices[] is none;
+		oriented to vector normals[] is none;
+		textured by vector texcoords[] is none;
+	with
+		boolean oriented is false;
+		boolean textured is false;
+	is
+		// set mesh geometry attributes
+		//
+		with mesh_geometry do
+			its vertices is vertices;
+			its normals is normals;
+			its texcoords is texcoords;
+		end;
+		
+		// create optional normals and texcoords
+		//
+		if num vertices > 0 then
+			if oriented and normals is none then
+				dim normals[1 .. num vertices];
+			end;
+			if textured and texcoords is none then
+				dim texcoords[1 .. num vertices];
+			end;
+		end;
+	end;    // set
+	
+	//
+	// attributes querying methods
+	//
+	
+	boolean question is_valid is
+		if some vertices then
+			if some normals then
+				if num normals <> num vertices then
+					answer false;
+				end;
+			end;
+			if some texcoords then
+				if num texcoords <> num vertices then
+					answer false;
+				end;
+			end;
+			answer true;
+		else
+			answer false;
+		end;
+	end;    // is_valid
+	
+	//
+	// transforming methods
+	//
+	
+	verb transform
+		from trans type trans;
+	is
+		for each vector vertex in vertices do
+			vertex = trans transformed vertex;
+		end;
+		for each vector normal in normals do
+			normal = trans oriented normal;
+		end;
+	end;    // transform
+	
+	//    
+	// texturing methods
+	//
+	
+	verb apply
+		texture_mapping type texture_mapping;
+	is
+		texcoords is texture_mapping get_texcoords at vertices towards normals;
+	end;    // apply
+	
+	//
+	// bounding methods
+	//
+	
+	volume_bounding type question get_bounds is
+		answer get_point_extents of vertices;
+	end;    // get_bounds
+	
+	//
+	// printing methods
+	//
+			
+	verb print is
+		if not is_valid then
+			write "invalid ";
+		end;
+		write "mesh geometry with:", ;
+		write "num vertices = ", num vertices, ;
+		write "num normals = ", num normals, ;
+		write "num texcoords = ", num texcoords, ;
+	end;    // print
+end;    // mesh_geometry
+
+{***************************************************************}
+{                   recycle whenever possible!                  }
+{***************************************************************}
+
+subject recycleable_mesh_geometry
+extends
+	recycleable mesh_geometry
+does
+	// recycling methods
+	//
+	objective recycleable_mesh_geometry type question get;
+	reference verb recycle;
+is
+	// recycling free list
+	//
+	singly_linked_list type free_list;
+
+	//  
+	// recycling methods
+	//
+	
+	objective recycleable_mesh_geometry type question get is
+		if free_list is_empty then
+			if verbose_recycling then
+				write "new recycleable mesh geometry", ;
+			end;
+			answer new recycleable_mesh_geometry;
+		else
+			answer recycleable_mesh_geometry type free_list removed_first;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// free attributes
+		//
+		vertices is none;
+		normals is none;
+		texcoords is none;
+	
+		// add to free list
+		//  
+		free_list add_first recycleable_mesh_geometry;
+		recycleable_mesh_geometry is none;
+	end;        // recycle    
+end;    // recycleable_mesh_geometry

@@ -1,0 +1,136 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          block_instance.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a block instance in the        }
+{       scene graph.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "object_instance.ores";
+
+subject block_instance
+extends 
+	object_instance
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+	with
+		vector vertex = <-1 -1 -1>;
+		vector side1 = <2 0 0>;
+		vector side2 = <0 2 0>;
+		vector side3 = <0 0 2>;
+		trans type trans = unit_trans;
+		material type material is none;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from block_instance type source;
+	end;
+	block_instance type question clone;
+	
+	// printable methods
+	//
+	string type question to_string;
+has
+	// attributes 
+	//
+	vector side1, side2, side3, vertex;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		named string type name is none;
+	with
+		vector vertex = <-1 -1 -1>;
+		vector side1 = <2 0 0>;
+		vector side2 = <0 2 0>;
+		vector side3 = <0 0 2>;
+		trans type trans = unit_trans;
+		material type material is none;
+	is
+		// call superclass constructor
+		//
+		object_instance new named name with
+			trans = static trans;
+			material is static material;
+		end;
+		
+		// set attributes
+		//
+		with block_instance do
+			its vertex = vertex;
+			its side1 = side1;
+			its side2 = side2;
+			its side3 = side3;
+		end;
+	end;    // new
+	
+	//    
+	// rendering methods
+	//
+	
+	
+	shape instance is
+		global block with
+			vertex = static vertex;
+			side1 = static side1;
+			side2 = static side2;
+			side3 = static side3;
+			global trans = trans;
+			global material is material;
+		end;
+	end;    // instance
+	
+	
+	//   
+	// copying and cloning methods
+	// 
+	
+	  
+	verb copy 
+		from block_instance type source;
+	is
+		// call superclass method
+		//
+		object_instance static copy from source;
+			
+		// copy attributes of source
+		//
+		vertex = source's vertex;
+		side1 = source's side1;
+		side2 = source's side2;
+		side3 = source's side3;
+	end;    // copy
+	
+	
+	block_instance type question clone is
+		block_instance type block2;
+		block2 copy from block_instance;
+		answer block2;
+	end;    // clone
+	
+	//
+	// printable methods
+	//
+	
+	
+	string type question to_string is
+		answer "block instance";
+	end;    // to_string
+end;    // block_instance

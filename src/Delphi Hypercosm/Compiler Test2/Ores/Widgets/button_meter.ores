@@ -1,0 +1,125 @@
+{***************************************************************}
+{                       button_meter.ores                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{           Contains a button_meter subject definition.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "button.ores";
+include "meter.ores";
+
+
+subject button_meter
+extends
+    meter
+does
+    verb new
+        labelled string type label is none;
+        from scalar min_value = 0;
+        to scalar max_value = 1;
+        in integer steps = 200;
+        controls scalar reference value refers to none;
+    with
+        scalar sweep_seconds = 2;
+    end;
+    shape instance;
+has
+    button type increase_button, decrease_button;
+    scalar step;
+    scalar step_seconds;
+    scalar next_step_time;
+    boolean previous_decrease_pressed is false;
+    boolean previous_increase_pressed is false;
+is
+    verb new
+        labelled string type label is none;
+        from scalar min_value = 0;
+        to scalar max_value = 1;
+        in integer steps = 200;
+        controls scalar reference value refers to none;
+    with
+        scalar sweep_seconds = 2;
+    is
+        meter new labelled label from min_value to max_value
+            shows value;
+        button_meter's step = (max_value - min_value) / steps;
+        step_seconds = sweep_seconds / steps;
+    end;    // new
+
+
+    objective shape minus_sign is
+        line [<-.1 0 0> <.1 0 0>];
+    end;    // minus_sign
+
+
+    objective shape plus_sign is
+        line [<-.1 0 0> <.1 0 0>];
+        line [<0 -.1 0> <0 .1 0>];
+    end;    // plus_sign
+
+
+    shape instance is
+        scalar current_time = get_seconds;
+
+        // decrease button
+        //
+        decrease_button instance with
+            scale by .15 along <1 0 0>;
+            scale by .15 along <0 1 0>;
+            move to <-.75 -.4 0>;
+            color = light red;
+        end;
+        minus_sign with
+            move to <-.75 -.4 0>;
+        end;
+
+        // increase button
+        //
+        increase_button instance with
+            scale by .15 along <1 0 0>;
+            scale by .15 along <0 1 0>;
+            move to <.75 -.4 0>;
+            color = light blue;
+        end;
+        plus_sign with
+            move to <.75 -.4 0>;
+        end;
+
+        // check buttons
+        //
+        if decrease_button's pressed then
+            if previous_decrease_pressed then
+                while current_time >= next_step_time do
+                    meter's value = itself - step;
+                    next_step_time = itself + step_seconds;
+                end;
+            else
+                meter's value = itself - step;
+                next_step_time = current_time + step_seconds;
+                previous_decrease_pressed is true;
+            end;
+        else
+            previous_decrease_pressed is false;
+        end;
+        if increase_button's pressed then
+            if previous_increase_pressed then
+                while current_time >= next_step_time do
+                    meter's value = itself + step;
+                    next_step_time = itself + step_seconds;
+                end;
+            else
+                meter's value = itself + step;
+                next_step_time = current_time + step_seconds;
+                previous_increase_pressed is true;
+            end;
+        else
+            previous_increase_pressed is false;
+        end;
+
+        meter static instance;
+    end;    // instance
+end;    // button_meter

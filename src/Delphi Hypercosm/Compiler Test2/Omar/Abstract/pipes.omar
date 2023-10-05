@@ -1,0 +1,81 @@
+{***************************************************************}
+{                          pipes.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ripple_pipe;
+
+
+include "system/3d.ores";
+include "system/time.ores";
+
+picture pipes with
+    scalar num_pipes = 60;
+    scalar max_sweep = 120.0;
+    scalar pipe_width = .025;
+    scalar pipe_length = 1.0;
+    scalar time = 0;
+is
+    scalar loop_thing = .0;
+    scalar temp;
+    scalar color_step, pipe_color, pipe_step;
+
+    temp = -(num_pipes * pipe_width / 2.0);
+    color_step = .60 / num_pipes;
+    distant_light from <.3 -.5 1> with
+        brightness = .7;
+    end;
+    pipe_color = .40;
+    pipe_step = pipe_width + pipe_width;
+    while (loop_thing + 1 <> num_pipes) do
+        cylinder with
+            end1 = <temp 0 0>;
+            end2 = <temp 0 pipe_length>;
+            radius = pipe_width;
+            rotate by (max_sweep * (sin (time + (loop_thing *
+                10.0)))) around <1 0 0>;
+
+            color = <1 0 pipe_color>;
+        end;
+
+        {cylinder}
+
+        temp = temp + pipe_width * 2.0;
+        loop_thing = loop_thing + 1.0;
+        pipe_color = pipe_color + color_step;
+    end;    // while
+end;    // pipes
+
+
+anim ripple_pipe with
+    facets = 3;
+    double_buffer is on;
+is
+    timer type t with
+        ticks_per_second = 200;
+    end;
+    scalar view = 60;
+    scalar view_step = -60;
+
+    while true do
+        eye = <(6 * cos view) (6 * sin view) 0>;
+
+        view = view + view_step * get_clamped_frame_duration;
+        if view < -60 then
+            view_step = -view_step;
+            view = -60.0;
+        end;
+        if view > 60 then
+            view_step = -view_step;
+            view = 60.0;
+        end;
+
+        pipes with
+            time = t position;
+        end;
+    end;
+end;    // ripple_pipe

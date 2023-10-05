@@ -1,0 +1,77 @@
+{***************************************************************}
+{                          collision.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do collision_anim;
+
+include "system/native_sensing.ores";
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "fish.omar";
+
+shape collision with
+	shape static_shape;
+	shape moving_shape;
+is
+	static material type hit_material is chalk colored lime_green;
+	static material type miss_material is metal colored lime_green;
+	vector point, normal;
+	shape moved_shape is
+		moving_shape with
+			move to get_mouse * 8;
+		end;
+	end;    // moved_shape
+	if shape_hits_shape static_shape moved_shape
+		return at point towards normal
+	then
+		arrow from point to (point + normal * 4) with
+			color = red;
+		end;
+		static_shape with
+			material is hit_material;
+		end;
+	else
+		static_shape with
+			material is miss_material;
+		end;
+	end;
+	moved_shape;
+end;    // collision
+
+anim collision_anim
+	args type args;
+with
+	eye = <5 -10 5>;
+	args check;
+is
+	static shape static_shape is
+		torus with
+			inner_radius = 2;
+			outer_radius = 2.5;
+			normal = <0 1 0>;
+		end;
+	end;    // static_shape
+
+	static shape moving_shape is
+		fish type's form with
+			magnify by .1;
+			rotate by 90 around <0 0 1>;
+		end;
+	end;    // moving_shape
+	shape scene with
+		scalar t = 0;
+	is
+		collision with
+			static_shape does static static_shape;
+			moving_shape does static moving_shape;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "Collision Detection";
+end;    // collision_anim

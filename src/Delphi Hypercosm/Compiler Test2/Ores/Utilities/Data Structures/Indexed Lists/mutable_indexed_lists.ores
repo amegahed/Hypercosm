@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   mutable_indexed_list.ores		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class that can be used to access lists       }
+{       in a random access using integer indices.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/indexed_lists.ores";
+
+
+subject mutable_indexed_list
+extends
+	indexed_list
+does
+	// mutable methods
+	//
+    verb set
+        element integer index;
+        to object type item;
+    end;
+is
+	//
+	// mutable methods
+	//
+	
+	
+    verb set
+        element integer index;
+        to object type item;
+    is
+        list_iterator type iterator is indexed_iterator at index;
+        iterator set to item;
+    end;    // set
+end;	// mutable_indexed_list

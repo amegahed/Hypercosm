@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          list_selector.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a list selector       }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do list_selector_anim;
+
+include "system/3d.ores";
+include "system/list_selector.ores";
+
+anim list_selector_anim with
+	double_buffer is on;
+is
+	list_selector type list_selector of ["this" "that" "other thing"] at <.75 0 0> with
+		text_spacing = 10;
+		selected is true;
+	end;
+	verb selection_action is
+		write "selected item is ", list_selector get_selected_item, ;
+	end;    // selection_action
+	
+	picture scene is
+		list_selector draw;
+	end;
+	
+	list_selector set_selection_action to (new action of selection_action);
+	while true do
+		scene;
+		list_selector update;
+	end;
+end;    // list_selector_anim

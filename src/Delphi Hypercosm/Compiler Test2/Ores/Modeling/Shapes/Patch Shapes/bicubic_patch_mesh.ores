@@ -1,0 +1,141 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	   bicubic_patch_mesh.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		bicubic patch mesh.   This is a mesh surface 			}
+{		formed from	an array of bicubic patches.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/bicubic_patch.ores";
+include "system/vector_fields.ores";
+include "system/vector_grid.ores";
+
+
+shape bicubic_patch_mesh
+    of vector grid[,];
+with
+	// tessellation parameters
+	//
+    integer rows = 8, columns = 8;
+    boolean triangulate is false;
+    boolean alternate is false;
+    
+    // rendering parameters
+    //    
+    boolean smoothing is true;
+    boolean closed is false;
+    
+    // texturing parameters
+    //
+    boolean textured is true;
+	texture_mapping type mapping is unit_parametric_mapping;
+
+    // flags to show grid tangents
+    //
+    boolean show_row_tangents is false;
+    boolean show_column_tangents is false;
+
+	// diagnostic rendering parameters
+	//
+    boolean show_patch_row_tangents is false;
+    boolean show_patch_column_tangents is false;
+    boolean show_patch_normals is false;
+is
+    vector row_tangents[, ] is get_row_tangents_grid of grid;
+    vector column_tangents[, ] is get_column_tangents_grid of grid;
+    vector patch_vertices[0..1, 0..1];
+    vector patch_row_tangents[0..1, 0..1];
+    vector patch_column_tangents[0..1, 0..1];
+    texture_mapping type patch_mapping is none;
+
+
+    verb find_corners
+        vector corners[0..1, 0..1];
+        of vector grid[,];
+        at integer row, column;
+    is
+        corners[0, 0] = grid[row, column];
+        corners[0, 1] = grid[row + 1, column];
+        corners[1, 0] = grid[row, column + 1];
+        corners[1, 1] = grid[row + 1, column + 1];
+    end;    // find_corners
+    
+
+    if show_row_tangents then
+        vector_field2 of arrows in row_tangents at grid with
+            color = red;
+        end;
+    end;
+    if show_column_tangents then
+        vector_field2 of arrows in column_tangents at grid with
+            color = blue;
+        end;
+    end;
+
+    for integer row = min grid .. max grid - 1 do
+        scalar t1 = (row - min grid) / (num grid - 1);
+        scalar t2 = (row + 1 - min grid) / (num grid - 1);
+               
+        for integer column = min grid[] .. max grid[] - 1 do
+            scalar s1 = (column - min grid[]) / (num grid[] - 1);
+            scalar s2 = (column + 1 - min grid[]) / (num grid[] - 1);
+            
+            find_corners patch_vertices of grid
+                at row column;
+            find_corners patch_row_tangents of row_tangents
+                at row column;
+            find_corners patch_column_tangents of column_tangents
+                at row column;
+                
+            // compute texture mapping of patch
+            //
+            if some mapping then
+	            if parametric_mapping type mapping then
+	            	parametric_mapping type parametric_mapping is parametric_mapping type mapping;
+		            vector start = parametric_mapping's start + 
+		            	parametric_mapping's direction * <s1 t1 0>;
+		            vector finish = parametric_mapping's start + 
+		            	parametric_mapping's direction * <s2 t2 0>;	
+	            	patch_mapping is new parametric_mapping from start to finish;
+	           	else
+	           		patch_mapping is mapping;
+	            end;
+            end;
+
+            // create bicubic surface patch
+            //
+            bicubic_patch rows by columns of (ferguson_bicubic
+                through patch_vertices towards
+                patch_column_tangents patch_row_tangents)
+            with
+				// tessellation parameters
+				//
+                triangulate is static triangulate;
+                alternate is static alternate;
+                				
+                // rendering parameters
+                //
+                smoothing is static smoothing;
+                closed is static closed;
+                
+                // texturing parameters
+                //
+                textured is static textured;
+                mapping is patch_mapping;
+                
+				// diagnostic rendering parameters
+				//
+                show_row_tangents is show_patch_row_tangents;
+                show_column_tangents is show_patch_column_tangents;
+                show_normals is show_patch_normals;
+            end;
+        end;
+    end;
+end;    // bicubic_patch_mesh

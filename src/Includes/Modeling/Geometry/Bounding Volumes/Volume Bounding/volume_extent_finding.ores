@@ -1,0 +1,40 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      volume_extent_finding.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some utility methods for finding extents       }
+{       within a 3 dimensional volume.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/volume_extents.ores";
+
+volume_extents type question get_point_extents   
+	of vector points[] is none;
+is
+	volume_extents type extents;
+	
+	for each vector point in points do
+		extents extend to point;
+	end;
+	
+	answer extents;
+end;    // get_point_extents
+
+volume_extents type question get_centered_volume_extents
+	of vector size = <0 0 0>;
+	at vector center = <0 0 0>;
+is
+	volume_extents type extents;
+	
+	if size <> <0 0 0> then
+		extents extend to (center - size / 2);
+		extents extend to (center + size / 2);
+	end;
+	
+	answer extents;
+end;    // get_centered_volume_extents

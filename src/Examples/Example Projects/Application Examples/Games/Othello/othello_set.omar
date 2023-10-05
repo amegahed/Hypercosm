@@ -1,0 +1,274 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          othello_set.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an othello set where you       }
+{       can add and remove pieces.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do othello_set_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "othello.ores";
+include "othello_chip.omar";
+include "othello_board.omar";
+
+subject othello_set
+does
+	// constructor
+	//
+	verb new with
+		integer rows = 8, columns = 8;
+		scalar thickness = .1;
+		color type black_color = grey;
+		color type white_color = white;
+		color type board_color1 = evergreen;
+		color type board_color2 = grey;
+		color type line_color = white;
+		boolean show_lines is false;
+	end;
+	// routines to modify othello set
+	//
+	verb add
+		othello_piece type othello_piece;
+	end;
+	verb delete
+		othello_piece type othello_piece;
+	end;
+	verb add_piece
+		at integer row, column;
+		to othello_color type othello_color;
+	end;
+	verb delete_piece
+		at integer row, column;
+	end;
+	// routines to construct othello set
+	//
+	verb init;
+	// rendering methods
+	//
+	shape piece
+		othello_piece type othello_piece;
+	with
+		boolean bad_move is false;
+		color type bad_move_color = red;
+	end;
+	shape pieces;
+	shape instance;
+	// routines to select othello pieces
+	//
+	verb find_position
+		of integer reference row, column;
+		at vector location;
+	end;
+	verb get_piece
+		othello_piece type reference othello_piece;
+		at integer row, column;
+	end;
+has
+	// attributes
+	//
+	public scalar thickness;
+	public color type black_color, white_color;
+	public color type board_color1, board_color2, line_color;
+	public boolean show_lines;
+	public othello_piece type othello_pieces[, ];
+	public integer number_of_places = 0;
+	public integer number_of_pieces = 0;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		integer rows = 8, columns = 8;
+		scalar thickness = .1;
+		color type black_color = grey;
+		color type white_color = white;
+		color type board_color1 = evergreen;
+		color type board_color2 = grey;
+		color type line_color = white;
+		boolean show_lines is false;
+	is
+		othello_set's thickness = thickness;
+		othello_set's black_color = black_color;
+		othello_set's white_color = white_color;
+		othello_set's board_color1 = board_color1;
+		othello_set's board_color2 = board_color2;
+		othello_set's line_color = line_color;
+		othello_set's show_lines is show_lines;
+		dim none othello_pieces[1 .. rows, 1 .. columns];
+		number_of_places = rows * columns;
+		number_of_pieces= 0;
+	end;    // new
+
+	verb add
+		othello_piece type othello_piece;
+	is
+		integer row = othello_piece's row;
+		integer column = othello_piece's column;
+		number_of_pieces = itself + 1;
+		othello_piece move to row column of othello_pieces;
+	end;    // add
+
+	verb delete
+		othello_piece type othello_piece;
+	is
+		integer row = othello_piece's row;
+		integer column = othello_piece's column;
+		othello_pieces[row, column] is none;
+		number_of_pieces = itself - 1;
+	end;    // delete
+
+	verb add_piece
+		at integer row, column;
+		to othello_color type othello_color;
+	is
+		othello_piece type othello_piece at row column
+			in othello_color;
+		add othello_piece;
+	end;    // add_piece
+
+	verb delete_piece
+		at integer row, column;
+	is
+		othello_piece type othello_piece is othello_pieces[row, column];
+		if some othello_piece then
+			delete othello_piece;
+		end;
+	end;    // delete_piece
+
+	verb clear is
+		for integer row = 1 .. num othello_pieces do
+			for integer column = 1 .. num othello_pieces[] do
+				othello_pieces[row, column] is none;
+			end;
+		end;
+	end;    // clear
+
+	verb init is
+		integer row1 = (num othello_pieces) div 2;
+		integer row2 = row1 + 1;
+		integer column1 = (num othello_pieces[]) div 2;
+		integer column2 = column1 + 1;
+		clear;
+		// add black pieces
+		//
+		add_piece at row1 column1 to black, at row2 column2 to black;
+		// add white pieces
+		//
+		add_piece at row1 column2 to white, at row2 column1 to white;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+	
+	
+	shape piece
+		othello_piece type othello_piece;
+	with
+		boolean bad_move is false;
+		color type bad_move_color = red;
+	is
+		scalar row_offset = (num othello_pieces + 1) / 2;
+		scalar column_offset = (num othello_pieces[] + 1) / 2;
+		scalar x = othello_piece's column - column_offset;
+		scalar y = othello_piece's row - row_offset;
+		othello_chip with
+			if bad_move then
+				color1 = bad_move_color;
+				color2 = bad_move_color;
+			else
+				color1 = black_color;
+				color2 = white_color;
+			end;
+			if othello_piece's othello_color is white then
+				rotate by 180 around <1 0 0>;
+			end;
+			move to <0 0 (thickness / 2)>;
+			magnify by .4;
+			move to <x y othello_set's thickness>;
+		end;
+	end;    // piece
+
+	shape pieces is
+		for integer row = 1 .. num othello_pieces do
+			for integer column = 1 .. num othello_pieces[] do
+				othello_piece type othello_piece is
+					othello_pieces[row, column];
+				if some othello_piece then
+					piece othello_piece;
+				end;
+			end;
+		end;
+	end;    // pieces
+
+	shape instance is
+		// othello board
+		//
+		othello_board with
+			rows = num othello_pieces;
+			columns = num othello_pieces[];
+			thickness = static thickness;
+			board_color1 = static board_color1;
+			board_color2 = static board_color2;
+			line_color = static line_color;
+			show_lines is static show_lines;
+		end;
+		// othello pieces
+		//
+		pieces;
+	end;    // instance
+
+	verb find_position
+		of integer reference row, column;
+		at vector location;
+	is
+		scalar x = location dot <1 0 0>;
+		scalar y = location dot <0 1 0>;
+		scalar frow = y + (num othello_pieces) / 2;
+		scalar fcolumn = x + (num othello_pieces[]) / 2;
+		if frow < 0 then
+			row = trunc frow;
+		else
+			row = (trunc frow) + 1;
+		end;
+		if fcolumn < 0 then
+			column = trunc fcolumn;
+		else
+			column = (trunc fcolumn) + 1;
+		end;
+	end;    // find_position
+
+	verb get_piece
+		othello_piece type reference othello_piece;
+		at integer row, column;
+	is
+		othello_piece is othello_pieces[row, column];
+	end;    // get_piece
+end;    // othello_set
+
+anim othello_set_anim
+	args type args;
+with
+	args check;
+is
+	othello_set type othello_set with
+		black_color = dark evergreen;
+		white_color = white;
+	end;
+	shape scene is
+		othello_set instance;
+	end;
+	othello_set init;
+	mouse_controlled_shape scene titled "Othello!" with
+		auto_camera is on;
+	end;
+end;    // othello_set_anim

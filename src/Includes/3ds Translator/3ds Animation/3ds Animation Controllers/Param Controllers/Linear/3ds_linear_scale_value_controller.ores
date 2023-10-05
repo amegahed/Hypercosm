@@ -1,0 +1,92 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm 3ds_linear_scale_value_controller.ores 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_keys.ores";
+include "system/3ds_scale_key.ores";
+include "system/3ds_key_controller.ores";
+include "system/3ds_scale_value_controlling.ores";
+
+subject translated_3ds_linear_scale_value_controller 
+extends
+	translated_3ds_scale_value_controllable translated_3ds_key_controller
+does
+	// constructor
+	//
+	verb new
+		of translated_3ds_scale_value type values[];
+		at translated_3ds_time type times[];
+	end;
+	
+	// getting method
+	//
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type t;
+	end;
+is
+	objective translated_3ds_keys type question scale_keys
+		of translated_3ds_scale_value type values[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_keys type keys;
+		integer key_number = num values;
+		
+		// create array of keys
+		//
+		dim none keys[1 .. key_number];
+		for integer counter = 1 .. key_number do
+			keys[counter] is new translated_3ds_scale_key
+				of values[counter] at times[counter];
+		end;
+		
+		answer keys;
+	end;    // scale_keys
+	
+	//
+	// constructor
+	//
+		
+	verb new
+		of translated_3ds_scale_value type values[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_key_controller new using scale_keys of values at times;
+	end;    // new
+	
+	//
+	// getting method
+	//
+	
+	translated_3ds_scale_value type question get_value
+		at translated_3ds_time type time;
+	is
+		translated_3ds_scale_key type prev_key is
+			translated_3ds_scale_key type (keys get_prev at time);
+		translated_3ds_scale_key type next_key is
+			translated_3ds_scale_key type (keys get_next at time);
+		
+		if some prev_key and some next_key then
+			scalar duration = next_key's time - prev_key's time;
+			scalar t1 = (time - prev_key's time) / duration;
+			scalar t2 = 1 - t1;
+			translated_3ds_scale_value type scale1 is prev_key's value scaled by t2;
+			translated_3ds_scale_value type scale2 is next_key's value scaled by t1;
+			answer scale1 plus scale2;
+		elseif some next_key then
+			answer next_key's value;
+		elseif some prev_key then
+			answer prev_key's value;
+		else
+			answer unit_translated_3ds_scale_value;
+		end;
+	end;    // get_value
+end;    // translated_3ds_linear_scale_value_controller

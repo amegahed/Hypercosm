@@ -1,0 +1,204 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  string_utils.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{           Contains several standard string utilities.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+include "system/strings.ores";
+include "system/string_conversions.ores";
+include "system/random.ores";
+include "system/icomparisons.ores";
+include "system/swapping.ores";
+
+
+string type question quotated
+    string type string;
+is
+    string type string2;
+
+    dim string2[1 .. num string + 2];
+    string2[1] is double_quote;
+    string2[2..num string + 1] = string[..];
+    string2[num string + 2] is double_quote;
+
+    answer string2;
+end;    // quotated
+
+
+string type question get_padded_string
+    of string type string;
+is
+    string type string2;
+
+    dim string2[1 .. num string + 2];
+    string2[1] is " ";
+    string2[2..num string + 1] = string[..];
+    string2[num string + 2] is " ";
+
+    answer string2;
+end;    // get_padded_string
+
+
+strings type question get_padded_strings
+    of strings type strings;
+is
+    strings type strings2;
+
+	if some strings then
+	    dim strings2[1 .. num strings];
+		for integer counter = 1 .. num strings do
+			strings2[counter] is get_padded_string of strings[counter];
+		end;
+	end;
+
+    answer strings2;
+end;    // get_padded_strings
+    
+
+string type question substring
+    of string type string;
+    from integer start;
+    to integer finish;
+is
+    integer size = finish - start + 1;
+    integer min_index = min string + start - 1;
+    integer max_index = ismaller of (min_index + size - 1) and max string;
+    integer substring_size = max_index - min_index + 1;
+    
+    if substring_size >= 1 then
+    	string type string2;
+        dim string2[1 .. substring_size];
+        string2[1 .. substring_size] = string[min_index .. max_index];
+        answer string2;
+    else
+        answer none;
+    end;
+end;    // substring
+    
+       
+strings type question string_to_words
+    string type string;
+is
+    integer char_counter = min string;
+    integer limit = max string;
+    strings type words;
+   
+   
+    verb parse_through_whitespace is        
+        while char_counter <= limit and whitespace string[char_counter] do
+            char_counter = itself + 1;
+        end;
+    end;    // parse_through_whitespace
+    
+    
+    verb parse_through_text is
+        while char_counter <= limit and not whitespace string[char_counter] do
+            char_counter = itself + 1;
+        end;
+    end;    // parse_through_text
+    
+    
+    string type question parse_word is
+        integer start, finish;
+        string type word;
+        
+        parse_through_whitespace;
+        start = char_counter;
+        parse_through_text;
+        finish = char_counter - 1;
+        
+        if start <= finish then
+            word = string[start .. finish];
+        else
+            word is none;
+        end;
+        
+        answer word;
+    end;    // parse_word
+    
+    
+    integer question word_count is
+        integer counter = 0;
+        integer start = char_counter;
+        
+        while char_counter <= limit do
+            parse_through_whitespace;
+            parse_through_text;
+            counter = itself + 1;
+        end;
+        char_counter = start;
+        
+        answer counter;
+    end;    // word_count
+    
+
+    dim words[1 .. word_count];
+    for integer counter = 1 .. num words do
+        words[counter] is parse_word;
+    end;
+            
+    answer words;
+end;    // string_to_words
+
+
+string type question string_to_word
+    of string type string;
+is
+    integer char_counter = min string;
+    integer limit = max string;
+    integer start, finish;
+    string type word;
+
+    verb parse_through_whitespace is        
+        while char_counter <= limit and whitespace string[char_counter] do
+            char_counter = itself + 1;
+        end;
+    end;    // parse_through_whitespace
+    
+
+    verb parse_through_text is
+        while char_counter <= limit and not whitespace string[char_counter] do
+            char_counter = itself + 1;
+        end;
+    end;    // parse_through_text
+    
+            
+    parse_through_whitespace;
+    start = char_counter;
+    parse_through_text;
+    finish = char_counter - 1;
+    
+    if start <= finish then
+        word = string[start .. finish];
+    else
+        word is none;
+    end;
+    
+    answer word;
+end;    // string_to_word
+
+
+string type question anagram
+    of string type string;
+is
+    verb shuffle
+        string type reference string;
+    is
+        integer length = num string;
+        for integer counter = min string .. max string do
+            swap_chars string[counter] and string[trunc(random 0 to length) + 1];
+        end;
+    end;    // shuffle
+
+    string type string2 = string;   // make a copy
+    shuffle string2;
+    answer string2;
+end;    // anagram

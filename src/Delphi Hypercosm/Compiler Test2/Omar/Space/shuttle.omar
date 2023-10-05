@@ -1,0 +1,519 @@
+{***************************************************************}
+{                          shuttle.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do shuttle_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+// include "system/smpl_textures";
+// include "system/roadster.smpl";
+shape shuttle with
+    boolean gear_down is false;
+is
+    shape shuttle_nose is
+        sphere with
+            center = <0 -1 -1>;
+            radius = 1;
+        end;
+        sphere with
+            center = <0 -1 1>;
+            radius = 1;
+        end;
+        sphere with
+            center = <0 1 -1>;
+            radius = 1;
+        end;
+        sphere with
+            center = <0 1 1>;
+            radius = 1;
+        end;
+        sphere with
+            material is chalk colored grey;
+            radius = .7;
+            rotate by 90 around <0 1 0>;
+            move to <-5 0 -.5>;
+        end;
+        cone with
+            material is chalk colored grey;
+            end1 = <-5 0 -.5>;
+            end2 = <0 -1 -1>;
+            radius1 = .7;
+            radius2 = 1;
+        end;
+        cone with
+            end1 = <-5 0 -.5>;
+            end2 = <0 -1 1>;
+            radius1 = .7;
+            radius2 = 1;
+        end;
+        cone with
+            material is chalk colored grey;
+            end1 = <-5 0 -.5>;
+            end2 = <0 1 -1>;
+            radius1 = .7;
+            radius2 = 1;
+        end;
+        cone with
+            end1 = <-5 0 -.5>;
+            end2 = <0 1 1>;
+            radius1 = .7;
+            radius2 = 1;
+        end;
+
+        // top
+        triangle <-5.1 0 .2> <-.2 -1 2> <-.2 1 2>;
+
+        // sides
+        triangle <-5.1 -.7 -.5> <0 -2 -1> <0 -2 1> with
+            material is chalk colored grey;
+        end;
+        triangle <-5.1 .7 -.5> <0 2 -1> <0 2 1> with
+            material is chalk colored grey;
+        end;
+
+        // bottom
+        triangle <-5.1 0 -1.2> <0 -1 -2> <0 1 -2>;
+    end;    // shuttle_nose
+
+
+    shape shuttle_top is
+        cylinder with
+            end1 = <-8 0 0>;
+            end2 = <8 0 0>;
+            radius = 1.8;
+            scale by .5 along <0 0 1>;
+        end;
+
+        // windshield
+        cone with
+            material is plastic colored blue;
+            end1 = <-8 0 0>;
+            end2 = <-10 0 0>;
+            radius1 = 1.8;
+            radius2 = 1;
+            scale by .5 along <0 0 1>;
+            skew from <-10 0 0> to <-11 0 -2> about <-8 0 0>;
+        end;
+        cylinder with
+            end1 = <-8 0 1.8>;
+            end2 = <-10 0 1>;
+            radius = .1;
+            scale by .5 along <0 0 1>;
+            skew from <-10 0 0> to <-11 0 -2> about <-8 0 0>;
+        end;
+
+        // bay doors
+        cylinder with
+            end1 = <-6.5 0 0>;
+            end2 = <-6.6 0 0>;
+            radius = 1.9;
+            scale by .5 along <0 0 1>;
+        end;
+        cylinder with
+            end1 = <4.5 0 0>;
+            end2 = <4.6 0 0>;
+            radius = 1.9;
+            scale by .5 along <0 0 1>;
+        end;
+        cylinder with
+            end1 = <-6.6 -1.8 0>;
+            end2 = <4.6 -1.8 0>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-6.6 1.8 0>;
+            end2 = <4.6 1.8 0>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-6.6 0 .95>;
+            end2 = <4.6 0 .95>;
+            radius = .1;
+        end;
+    end;    // shuttle_top
+
+
+    shape shuttle_wing is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 -2 0>;
+            radius1 = 7.75;
+            radius2 = 4;
+            scale by .1 along <0 0 1>;
+            skew from <0 -2 0> to <3.5 -2 0>;
+        end;
+        cone with
+            end1 = <3.5 -2 0>;
+            end2 = <3.5 -6.5 0>;
+            radius1 = 4;
+            radius2 = 1.5;
+            scale by .1 along <0 0 1>;
+            skew from <3.5 -6.5 0> to <5.5 -6.5 0> about <3.5 -2 0>;
+        end;
+        cone with
+            end1 = <5.5 -6.5 0>;
+            end2 = <5.5 -7.5 0>;
+            radius1 = 1.5;
+            radius2 = 0;
+            scale by .1 along <0 0 1>;
+            skew from <5.5 -7.5 0> to <6.8 -7.5 0> about <5.5 -6.5
+                0>;
+        end;
+    end;    // shuttle_wing
+
+
+    shape shuttle_engine is
+        disk with
+            center = <0 0 0>;
+            normal = <1 0 0>;
+            radius = .5;
+        end;
+        paraboloid with
+            top = <0 0 0>;
+            base = <2 0 0>;
+            radius = 1;
+            rotate by -10 around <0 1 0>;
+        end;
+    end;    // shuttle_engine
+
+
+    shape shuttle_tail is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 2>;
+            radius = 1.7;
+            scale by .2 along <0 1 0>;
+        end;
+        cone with
+            end1 = <0 0 2>;
+            end2 = <0 0 6>;
+            radius1 = 1.7;
+            radius2 = .7;
+            skew from <0 0 6> to <3 0 6> about <0 0 2>;
+            scale by .2 along <0 1 0> about <0 0 2>;
+        end;
+        sphere with
+            radius = .7;
+            scale by .2 along <0 1 0>;
+            scale by .4 along <0 0 1>;
+            move to <3 0 6>;
+        end;
+    end;    // shuttle_tail
+
+
+    shape oms_pod is
+        sphere with
+            center = <0 0 0>;
+            radius = 1.2;
+            scale by .4 along <1 0 0>;
+            scale by .7 along <0 1 0>;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <2.5 0 0>;
+            radius = 1.2;
+            scale by .7 along <0 1 0>;
+        end;
+        disk with
+            center = <2.5 0 0>;
+            normal = <1 0 0>;
+            radius = 1.2;
+            scale by .7 along <0 1 0>;
+        end;
+        paraboloid with
+            top = <2.5 0 0>;
+            base = <3.2 0 0>;
+            radius = .5;
+        end;
+    end;    // oms_pod
+
+
+    shape shuttle_tire is
+        cylinder with
+            end1 = <0 -.3 0>;
+            end2 = <0 .3 0>;
+            radius = 1;
+        end;
+        cone with
+            end1 = <0 -.3 0>;
+            end2 = <0 -.4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        cone with
+            end1 = <0 .3 0>;
+            end2 = <0 .4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        ring with
+            center = <0 -.4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        ring with
+            center = <0 .4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        cone with
+            end1 = <0 .4 0>;
+            end2 = <0 .35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;
+        cone with
+            end1 = <0 -.4 0>;
+            end2 = <0 -.35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;
+    end;    // shuttle_tire
+
+
+    shape hubcap is
+        disk with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            radius = .5;
+        end;
+        cone with
+            end1 = <0 -.1 0>;
+            end2 = <0 0 0>;
+            radius1 = .1;
+            radius2 = .35;
+        end;
+    end;    // hubcap
+
+
+    shape shuttle_wheel is
+        shuttle_tire with material is chalk colored grey; end;
+        hubcap with
+            material is metal;
+            move to <0 -.35 0>;
+        end;
+        hubcap with
+            material is metal;
+            rotate by 180 around <0 0 1>;
+            move to <0 .35 0>;
+        end;
+    end;    // shuttle_wheel
+
+
+    shape landing_gear_stuff is
+        shuttle_wheel;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 -1 0>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 -1 0>;
+            end2 = <0 -1 1.2>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 -1 1.2>;
+            end2 = <0 0 1.2>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 0 1.2>;
+            end2 = <0 0 3.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 0 1.5>;
+            end2 = <0 0 3.5>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <0 0 1.5>;
+            end2 = <0 -1 3.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <0 0 1.5>;
+            end2 = <0 1 3.5>;
+            radius = .1;
+        end;
+    end;    // landing_gear_stuff
+
+
+    shape landing_gear is
+        landing_gear_stuff with
+            move to <0 0 -3>;
+        end;
+    end;    // landing_gear
+
+
+    shape shuttle_body with
+        boolean gear_down is false;
+    is
+        if gear_down then
+            landing_gear with
+                magnify by .5;
+                move to <-12 0 -1.5>;
+            end;
+            landing_gear with
+                magnify by .7;
+                move to <2 -4 -1.7>;
+            end;
+            landing_gear with
+                magnify by .7;
+                move to <2 4 -1.7>;
+            end;
+        end;
+        parallelogram with
+            vertex = <-8 -2 -1>;
+            side1 = <16 0 0>;
+            side2 = <0 0 2>;
+        end;
+        parallelogram with
+            vertex = <-8 -1 2>;
+            side1 = <16 0 0>;
+            side2 = <0 2 0>;
+        end;
+        parallelogram with
+            vertex = <-8 2 -1>;
+            side1 = <16 0 0>;
+            side2 = <0 0 2>;
+        end;
+        parallelogram with
+            vertex = <-8 1 2>;
+            side1 = <16 0 0>;
+            side2 = <0 -2 0>;
+        end;
+        cylinder with
+            end1 = <-8 -1 -1>;
+            end2 = <8 -1 -1>;
+            radius = 1;
+        end;
+        cylinder with
+            end1 = <-8 -1 1>;
+            end2 = <8 -1 1>;
+            radius = 1;
+        end;
+        cylinder with
+            end1 = <-8 1 -1>;
+            end2 = <8 1 -1>;
+            radius = 1;
+        end;
+        cylinder with
+            end1 = <-8 1 1>;
+            end2 = <8 1 1>;
+            radius = 1;
+        end;
+        shuttle_nose with
+            move to <-8 0 0>;
+        end;
+        shuttle_top with
+            move to <0 0 1.5>;
+        end;
+        shuttle_wing with
+            move to <.5 -1.9 -1.4>;
+        end;
+        shuttle_wing with
+            scale by -1 along <0 1 0>;
+            move to <.5 1.9 -1.4>;
+        end;
+        cone with
+            end1 = <8 0 -1.2>;
+            end2 = <10 0 -1.2>;
+            radius1 = 3;
+            radius2 = 2.5;
+            scale by .1 along <0 0 1> about <9 0 -1.2>;
+        end;
+        shuttle_engine with
+            material is chalk colored grey;
+            move to <8 0 2>;
+        end;
+        shuttle_engine with
+            material is chalk colored grey;
+            move to <8 -1.5 0>;
+        end;
+        shuttle_engine with
+            material is chalk colored grey;
+            move to <8 1.5 0>;
+        end;
+        shuttle_tail with
+            move to <7 0 1.3>;
+        end;
+        oms_pod with
+            rotate by -45 around <1 0 0>;
+            move to <6 -1.6 2.2>;
+        end;
+        oms_pod with
+            rotate by 45 around <1 0 0>;
+            move to <6 1.6 2.2>;
+        end;
+    end;    // shuttle_body
+
+    shuttle_body with
+        gear_down is static gear_down;
+        scale by 1.2 along <1 0 0>;
+        color = white;
+    end;
+end;    // shuttle
+
+
+shape landing_shuttle is
+    shuttle with
+        gear_down is true;
+        rotate by -3.9 around <0 1 0>;  // shuttle on ground
+        move to <0 0 4.5>;
+    end;
+end;    // landing_shuttle
+
+
+picture shuttle_picture with
+    field_of_view = 20;
+    eye = <0 0 150>;
+    eye = <30 -100 50>;
+    lookat = <0 0 5>;
+    render_mode is shaded;
+    shading is vertex;
+    background = sky_blue;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+is
+    distant_light from <.3 -.5 1>;
+    landing_shuttle with
+        material is plastic colored white;
+        rotate by 60 around <0 0 1>;
+
+    end;
+
+
+    plane with
+        magnify by 15;
+    end;
+end;    // shuttle_picture
+
+
+anim shuttle_anim
+    args type args;
+with
+    eye = <-20 -40 20>;
+    double_buffer is on;
+    background = black;
+    args check;
+is
+    shape scene is
+        shuttle;
+    end;
+
+    mouse_controlled_shape scene;
+end;    // shuttle_anim

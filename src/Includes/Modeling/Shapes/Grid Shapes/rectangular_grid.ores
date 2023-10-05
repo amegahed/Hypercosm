@@ -1,0 +1,72 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        rectangular_grid.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       rectangular grid.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/grid_mesh.ores";
+
+shape rectangular_grid with
+
+	// geometry parameters
+	//
+	vector vertex = <-1 -1 0>;
+	vector side1 = <2 0 0>;
+	vector side2 = <0 2 0>;
+	
+	// tessellation parameters
+	//
+	integer h_steps = 8, v_steps = 8;
+	boolean triangulate is false;
+	boolean alternate is true;
+		
+	// rendering paramters
+	//
+	boolean one_sided is false;
+	boolean reversed is false;
+	boolean smoothing is true;
+	
+	// texturing parameters
+	// 
+	boolean textured is true;  
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	vector_grid type vertex_grid;
+	integer rows = v_steps, columns = h_steps;
+	
+	// create vertex grid
+	//
+	vertex_grid is (square_vector_grid rows by columns with
+		vertex = static vertex;
+		side1 = static side1;
+		side2 = static side2);
+
+	// create mesh from grid of vertices
+	//
+	grid_mesh of vertex_grid with
+	
+		// tessellation parameters
+		//
+		triangulate is static triangulate;
+		alternate is static alternate;
+		
+		// rendering parameters
+		//
+		smoothing is static smoothing;
+		textured is static textured;
+		closed is one_sided;
+		reversed is static reversed;
+		
+		// texturing parameters
+		//
+		textured is static textured;
+		mapping is static mapping;
+	end;
+end;    // rectangular_grid

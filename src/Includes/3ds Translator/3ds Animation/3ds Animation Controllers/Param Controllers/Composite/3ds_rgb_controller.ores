@@ -1,0 +1,86 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        3ds_rgb_controller.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_color_controlling.ores";
+include "system/3ds_float_controlling.ores";
+
+subject translated_3ds_rgb_controller
+extends
+	translated_3ds_color_controllable object
+does
+	// constructor
+	//
+	verb new with
+		translated_3ds_float_controllable type r_controller is none;
+		translated_3ds_float_controllable type g_controller is none;
+		translated_3ds_float_controllable type b_controller is none;
+	end;
+	
+	// getting method
+	//
+	color type question get_value
+		at translated_3ds_time type time;
+	end;
+has
+	// attributes
+	//
+	translated_3ds_float_controllable type r_controller is none;
+	translated_3ds_float_controllable type g_controller is none;
+	translated_3ds_float_controllable type b_controller is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		translated_3ds_float_controllable type r_controller is none;
+		translated_3ds_float_controllable type g_controller is none;
+		translated_3ds_float_controllable type b_controller is none;
+	is
+		with translated_3ds_rgb_controller do
+			its r_controller is r_controller;
+			its g_controller is g_controller;
+			its b_controller is b_controller;
+		end;
+	end;    // new
+	
+	//
+	// getting method
+	//
+		
+	color type question get_value
+		at translated_3ds_time type time;
+	is
+		scalar r, g, b;
+		
+		if some r_controller then
+			r = r_controller get_value at time;
+		else
+			r = 0;
+		end;
+		
+		if some g_controller then
+			g = g_controller get_value at time;
+		else
+			g = 0;
+		end;
+		
+		if some b_controller then
+			b = b_controller get_value at time;
+		else
+			b = 0;
+		end;
+		
+		answer <r g b>;
+	end;    // get_value
+end;    // translated_3ds_rgb_controller

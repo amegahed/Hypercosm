@@ -1,0 +1,32 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             naming.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains behavior definitions for objects that can      }
+{       be named.                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+
+adjective nameable
+does
+	// name querying methods
+	//
+	string type question get_name;
+end;    // nameable
+
+adjective renameable
+extends
+	nameable
+does
+	// name setting methods
+	//
+	verb set_name
+		to string type name;
+	end;
+end;    // renameable

@@ -1,0 +1,17 @@
+do test;
+	
+	
+verb test
+is	
+	verb do_stuff is
+		integer array[0 .. 100];
+		
+		for integer counter = 0 .. 100 do
+			array[counter] = 0;
+		end;
+	end;	// do_stuff
+
+	while true do
+		do_stuff;
+	end;
+end;	// test

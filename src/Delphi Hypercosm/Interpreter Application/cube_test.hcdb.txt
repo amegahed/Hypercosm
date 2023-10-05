@@ -1,0 +1,2030 @@
+ 98
+"C:\Documents and Settings\megaheda\Desktop\Delphi Hypercosm (new)\Compiler Test2\cube_test.omar"
+"3d.ores"
+"native_shapes.ores"
+"common_colors.ores"
+"standard_colors.ores"
+"color.ores"
+"texture_coordinates.ores"
+"vectors.ores"
+"vector.ores"
+"math.ores"
+"native_math.ores"
+"constants.ores"
+"fractions.ores"
+"trigonometry.ores"
+"vector_grids.ores"
+"vector_grid.ores"
+"native_trans.ores"
+"trans.ores"
+"axes.ores"
+"vector_rotations.ores"
+"bounding_boxes.ores"
+"boxes.ores"
+"volume_extent_finding.ores"
+"volume_extents.ores"
+"volume_bounding.ores"
+"centering.ores"
+"volume_sizeing.ores"
+"validation.ores"
+"printing.ores"
+"strings.ores"
+"booleans.ores"
+"chars.ores"
+"string_conversions.ores"
+"comparisons.ores"
+"varrays.ores"
+"vlists.ores"
+"swapping.ores"
+"native_lights.ores"
+"native_rendering.ores"
+"native_materials.ores"
+"native_textures.ores"
+"native_images.ores"
+"native_viewing.ores"
+"native_display.ores"
+"native_windows.ores"
+"native_devices.ores"
+"native_keyboard.ores"
+"native_mouse.ores"
+"transformations.ores"
+"axes_orientations.ores"
+"materials.ores"
+"modifiers.ores"
+"string_utils.ores"
+"random.ores"
+"time.ores"
+"native_time.ores"
+"time_conversions.ores"
+"icomparisons.ores"
+"args.ores"
+"mouse.ores"
+"check_keys.ores"
+"anims.ores"
+"mouse_controlled_picture.ores"
+"interactions.ores"
+"native_sensing.ores"
+"trans_stacks.ores"
+"native_trans_stacks.ores"
+"mouse_controlled_shape.ores"
+"lighting.ores"
+"mouse_controlled_animated_shape.ores"
+"mouse_controlled_actor.ores"
+"actors.ores"
+"timed_actors.ores"
+"timed_actor.ores"
+"acting.ores"
+"rendering.ores"
+"timers.ores"
+"active.ores"
+"cyclic_actor.ores"
+"shape_actors.ores"
+"shape_actor.ores"
+"animated_shape_actor.ores"
+"cyclic_shape_actor.ores"
+"manipulatable_actors.ores"
+"touchable_actor.ores"
+"manipulation.ores"
+"devices.ores"
+"picking.ores"
+"viewing.ores"
+"proximity.ores"
+"bounding_squares.ores"
+"squares.ores"
+"shape_querying.ores"
+"native_proximity.ores"
+"intersections.ores"
+"sensing_utils.ores"
+"manipulation_behaviors.ores"
+"pressable_actor.ores"
+886
+1 0 0 "object"
+2 26 6 "dark"
+3 27 6 "color"
+4 19 5 "white"
+5 20 5 "black"
+6 21 5 "grey"
+7 25 5 "red"
+8 26 5 "green"
+9 27 5 "blue"
+10 31 5 "cyan"
+11 32 5 "magenta"
+12 33 5 "yellow"
+13 18 4 "orange"
+14 19 4 "raspberry"
+15 20 4 "sky_blue"
+16 21 4 "brown"
+17 22 4 "pink"
+18 23 4 "brick"
+19 25 4 "maize"
+20 26 4 "aqua"
+21 27 4 "evergreen"
+22 30 4 "lavender"
+23 35 4 "violet"
+24 23 11 "sin"
+25 24 11 "angle"
+26 27 11 "cos"
+27 28 11 "angle"
+28 31 11 "tan"
+29 32 11 "angle"
+30 41 11 "asin"
+31 42 11 "s"
+32 45 11 "acos"
+33 46 11 "s"
+34 49 11 "atan"
+35 50 11 "s"
+36 59 11 "ln"
+37 60 11 "s"
+38 63 11 "exp"
+39 64 11 "s"
+40 73 11 "trunc"
+41 74 11 "s"
+42 77 11 "round"
+43 78 11 "s"
+44 87 11 "chr"
+45 88 11 "i"
+46 91 11 "ord"
+47 92 11 "ch"
+48 101 11 "real"
+49 102 11 "c"
+50 105 11 "imag"
+51 106 11 "c"
+52 37 12 "infinity"
+53 22 14 "arctan"
+54 23 14 "y"
+55 23 14 "x"
+56 26 14 "th"
+57 116 10 "sqr"
+58 117 10 "s"
+59 123 10 "sqrt"
+60 124 10 "s"
+61 138 10 "abs"
+62 139 10 "s"
+63 19 9 "normalized"
+64 20 9 "v"
+65 22 9 "magnitude"
+66 39 9 "vlength"
+67 40 9 "v"
+68 17 20 "rotate_vector"
+69 18 20 "direction"
+70 19 20 "angle"
+71 20 20 "axis"
+72 22 20 "x_axis"
+73 23 20 "y_axis"
+74 24 20 "z_axis"
+75 25 20 "x"
+76 26 20 "y"
+77 47 20 "rotate_point"
+78 48 20 "point"
+79 49 20 "angle"
+80 50 20 "axis"
+81 51 20 "origin"
+82 20 19 "axes"
+83 67 19 "x_axis"
+84 67 19 "y_axis"
+85 67 19 "z_axis"
+86 74 19 "new"
+87 0 0 "axes"
+88 75 19 "x_axis"
+89 76 19 "y_axis"
+90 77 19 "z_axis"
+91 90 19 "scale"
+92 0 0 "axes"
+93 91 19 "v"
+94 99 19 "orient"
+95 0 0 "axes"
+96 100 19 "axes"
+99 108 19 "rotate"
+100 0 0 "axes"
+101 109 19 "angle"
+102 110 19 "axis"
+103 123 19 "oriented"
+97 0 0 "axes"
+98 124 19 "direction"
+104 135 19 "init"
+105 0 0 "axes"
+106 142 19 "transpose"
+107 0 0 "axes"
+108 143 19 "vx"
+109 144 19 "vy"
+110 145 19 "vz"
+111 153 19 "invert"
+112 0 0 "axes"
+113 154 19 "d"
+116 156 19 "vx"
+117 157 19 "vy"
+118 158 19 "vz"
+119 166 19 "reverse"
+120 0 0 "axes"
+121 173 19 "normalize"
+122 0 0 "axes"
+123 185 19 "determinant"
+114 0 0 "axes"
+115 188 19 "axes2"
+124 194 19 "dimensions"
+125 0 0 "axes"
+126 199 19 "trace"
+127 0 0 "axes"
+128 209 19 "print"
+129 0 0 "axes"
+130 15 22 "box"
+131 28 22 "vertices"
+132 35 22 "new"
+133 0 0 "box"
+134 0 0 "object"
+135 36 22 "vertices"
+136 49 22 "get_vertices"
+137 0 0 "box"
+138 0 0 "object"
+139 54 22 "get_edges"
+140 0 0 "box"
+141 0 0 "object"
+142 55 22 "edges"
+143 57 22 "set_edge"
+144 0 0 "box"
+145 0 0 "object"
+146 58 22 "index"
+147 59 22 "index1"
+148 60 22 "index2"
+149 83 22 "get_faces"
+150 0 0 "box"
+151 0 0 "object"
+152 84 22 "faces"
+153 86 22 "set_face"
+154 0 0 "box"
+155 0 0 "object"
+156 87 22 "index"
+157 88 22 "index1"
+158 88 22 "index2"
+159 88 22 "index3"
+160 88 22 "index4"
+161 13 26 "centerable"
+162 15 26 "get_center"
+163 0 0 "centerable"
+164 13 27 "volume_sizeable"
+165 15 27 "get_size"
+166 0 0 "volume_sizeable"
+167 17 25 "volume_containing"
+168 19 25 "contains"
+169 0 0 "volume_containing"
+170 20 25 "point"
+171 25 25 "volume_bounding"
+172 29 25 "get_min"
+173 0 0 "volume_bounding"
+174 30 25 "get_max"
+175 0 0 "volume_bounding"
+176 34 25 "volume_boundable"
+177 36 25 "get_bounds"
+178 0 0 "volume_boundable"
+179 14 28 "validifyable"
+180 16 28 "is_valid"
+181 0 0 "validifyable"
+182 26 28 "invalidateable"
+183 28 28 "invalidate"
+184 0 0 "invalidateable"
+185 18 31 "on"
+186 19 31 "yes"
+187 19 31 "no"
+188 32 32 "is_upper"
+189 33 32 "ch"
+190 39 32 "is_lower"
+191 40 32 "ch"
+192 60 32 "to_lower"
+193 61 32 "ch"
+194 63 32 "case_difference"
+195 73 32 "to_upper"
+196 74 32 "ch"
+197 76 32 "case_difference"
+198 86 32 "char_to_integer"
+199 87 32 "ch"
+200 97 32 "digit_to_char"
+201 98 32 "digit"
+202 20 30 "string"
+203 66 30 "add"
+204 0 0 "string"
+205 67 30 "string2"
+206 69 30 "string3"
+207 89 30 "addchar"
+208 0 0 "string"
+209 90 30 "char2"
+210 92 30 "string3"
+211 95 30 "newstring"
+212 114 30 "matches"
+213 0 0 "string"
+214 115 30 "string2"
+215 117 30 "index1"
+216 117 30 "index2"
+217 149 30 "length"
+218 0 0 "string"
+219 158 30 "is_lower"
+220 0 0 "string"
+221 163 30 "ch"
+222 172 30 "is_upper"
+223 0 0 "string"
+224 177 30 "ch"
+225 191 30 "plus"
+226 0 0 "string"
+227 192 30 "string2"
+228 194 30 "string3"
+229 195 30 "string_len"
+230 196 30 "string2_len"
+231 197 30 "total_len"
+232 209 30 "s"
+233 226 30 "left"
+234 0 0 "string"
+235 227 30 "chars"
+236 231 30 "left_string"
+237 240 30 "right"
+238 0 0 "string"
+239 241 30 "chars"
+240 245 30 "right_string"
+241 260 30 "to_lower"
+242 0 0 "string"
+243 263 30 "string2"
+244 269 30 "ch"
+245 277 30 "to_upper"
+246 0 0 "string"
+247 280 30 "string2"
+248 286 30 "ch"
+249 294 30 "to_echo_string"
+250 0 0 "string"
+251 295 30 "echo_char"
+252 299 30 "echo_string"
+253 300 30 "ch"
+254 16 29 "scribable"
+255 18 29 "to_string"
+256 0 0 "scribable"
+257 22 29 "printable"
+258 24 29 "print"
+259 0 0 "printable"
+260 22 33 "integer_to_string"
+261 23 33 "number"
+262 25 33 "negative"
+263 27 33 "string"
+264 27 33 "digit"
+265 61 33 "scalar_to_string"
+266 62 33 "s"
+267 63 33 "significant_digits"
+268 66 33 "string"
+269 66 33 "integer_part"
+270 66 33 "fractional_part"
+271 72 33 "i"
+272 89 33 "c"
+273 90 33 "significant_digit"
+274 100 33 "s2"
+275 101 33 "i2"
+276 102 33 "multiplier"
+277 126 33 "string2"
+278 127 33 "spot_to_increment"
+279 129 33 "n"
+280 155 33 "string2"
+281 165 33 "vector_to_string"
+282 166 33 "v"
+283 167 33 "significant_digits"
+284 170 33 "string"
+285 14 34 "smaller"
+286 15 34 "s1"
+287 16 34 "s2"
+288 26 34 "larger"
+289 27 34 "s1"
+290 28 34 "s2"
+291 22 24 "max_extent"
+292 23 24 "min_extent"
+293 27 24 "volume_extents"
+294 80 24 "low"
+295 80 24 "high"
+296 87 24 "new"
+297 0 0 "volume_extents"
+298 0 0 "object"
+299 88 24 "low"
+300 89 24 "high"
+305 100 24 "set"
+301 0 0 "volume_extents"
+302 0 0 "object"
+303 101 24 "low"
+304 102 24 "high"
+306 111 24 "invalidate"
+307 0 0 "volume_extents"
+308 0 0 "object"
+309 122 24 "is_valid"
+310 0 0 "volume_extents"
+311 0 0 "object"
+312 132 24 "contains"
+313 0 0 "volume_extents"
+314 0 0 "object"
+315 133 24 "point"
+316 141 24 "get_min"
+317 0 0 "volume_extents"
+318 0 0 "object"
+319 146 24 "get_max"
+320 0 0 "volume_extents"
+321 0 0 "object"
+322 151 24 "get_size"
+323 0 0 "volume_extents"
+324 0 0 "object"
+325 156 24 "get_center"
+326 0 0 "volume_extents"
+327 0 0 "object"
+328 166 24 "extend"
+329 0 0 "volume_extents"
+330 0 0 "object"
+331 167 24 "point"
+332 178 24 "expand"
+333 0 0 "volume_extents"
+334 0 0 "object"
+335 179 24 "bounds"
+336 193 24 "plus"
+337 0 0 "volume_extents"
+338 0 0 "object"
+339 194 24 "bounds"
+340 196 24 "extents"
+341 207 24 "to_string"
+342 0 0 "volume_extents"
+343 0 0 "object"
+344 208 24 "string"
+345 16 23 "get_point_extents"
+346 17 23 "points"
+347 21 23 "extents"
+348 21 23 "point"
+349 19 21 "bounding_box"
+350 37 21 "new"
+351 0 0 "bounding_box"
+352 0 0 "box"
+353 0 0 "object"
+354 38 21 "vertices"
+355 49 21 "get_bounds"
+356 0 0 "bounding_box"
+357 0 0 "box"
+358 0 0 "object"
+359 20 18 "trans"
+360 79 18 "origin"
+361 85 18 "new"
+362 0 0 "trans"
+363 0 0 "axes"
+364 86 18 "x_axis"
+365 87 18 "y_axis"
+366 88 18 "z_axis"
+367 89 18 "origin"
+368 104 18 "init"
+369 0 0 "trans"
+370 0 0 "axes"
+371 110 18 "set_extents"
+372 0 0 "trans"
+373 0 0 "axes"
+374 111 18 "extents"
+375 113 18 "size"
+376 125 18 "translate"
+377 0 0 "trans"
+378 0 0 "axes"
+379 126 18 "direction"
+380 132 18 "direct"
+381 0 0 "trans"
+382 0 0 "axes"
+383 133 18 "axes"
+384 142 18 "transform"
+385 0 0 "trans"
+386 0 0 "axes"
+387 143 18 "trans"
+391 152 18 "inverse_transform"
+392 0 0 "trans"
+393 0 0 "axes"
+394 153 18 "trans"
+401 163 18 "invert"
+395 0 0 "trans"
+396 0 0 "axes"
+397 164 18 "d"
+398 166 18 "vx"
+399 167 18 "vy"
+400 168 18 "vz"
+402 177 18 "compute"
+403 0 0 "trans"
+404 0 0 "axes"
+405 178 18 "source"
+406 179 18 "dest"
+407 191 18 "equals"
+408 0 0 "trans"
+409 0 0 "axes"
+410 192 18 "trans2"
+411 201 18 "transformed"
+388 0 0 "trans"
+389 0 0 "axes"
+390 202 18 "point"
+412 213 18 "set_bounding_box"
+413 0 0 "trans"
+414 0 0 "axes"
+415 214 18 "bounding_box"
+416 229 18 "get_bounds"
+417 0 0 "trans"
+418 0 0 "axes"
+419 231 18 "bounding_box"
+420 236 18 "get_bounding_box"
+421 0 0 "trans"
+422 0 0 "axes"
+423 238 18 "bounding_box"
+424 248 18 "print"
+425 0 0 "trans"
+426 0 0 "axes"
+427 257 18 "unit_trans"
+428 24 17 "trans"
+429 25 17 "shader_trans"
+430 28 3 "sphere"
+431 29 3 "center"
+432 30 3 "radius"
+433 31 3 "umin"
+434 31 3 "umax"
+435 32 3 "vmin"
+436 32 3 "vmax"
+437 36 3 "cylinder"
+438 37 3 "end1"
+439 38 3 "end2"
+440 39 3 "radius"
+441 40 3 "umin"
+442 40 3 "umax"
+443 44 3 "cone"
+444 45 3 "end1"
+445 46 3 "end2"
+446 47 3 "radius1"
+447 48 3 "radius2"
+448 49 3 "umin"
+449 49 3 "umax"
+450 53 3 "paraboloid"
+451 54 3 "top"
+452 55 3 "base"
+453 56 3 "radius"
+454 57 3 "umin"
+455 57 3 "umax"
+456 61 3 "hyperboloid1"
+457 62 3 "end1"
+458 63 3 "end2"
+459 64 3 "radius1"
+460 65 3 "radius2"
+461 66 3 "umin"
+462 66 3 "umax"
+463 70 3 "hyperboloid2"
+464 71 3 "top"
+465 72 3 "base"
+466 73 3 "radius"
+467 74 3 "eccentricity"
+468 75 3 "umin"
+469 75 3 "umax"
+470 84 3 "plane"
+471 85 3 "origin"
+472 86 3 "normal"
+473 90 3 "disk"
+474 91 3 "center"
+475 92 3 "normal"
+476 93 3 "radius"
+477 94 3 "umin"
+478 94 3 "umax"
+479 98 3 "ring"
+480 99 3 "center"
+481 100 3 "normal"
+482 101 3 "inner_radius"
+483 102 3 "outer_radius"
+484 103 3 "umin"
+485 103 3 "umax"
+486 107 3 "triangle"
+487 108 3 "vertex1"
+488 109 3 "vertex2"
+489 110 3 "vertex3"
+490 114 3 "parallelogram"
+491 115 3 "vertex"
+492 116 3 "side1"
+493 117 3 "side2"
+494 121 3 "polygon"
+495 122 3 "vertices"
+496 124 3 "texcoords"
+497 133 3 "torus"
+498 134 3 "center"
+499 135 3 "normal"
+500 136 3 "inner_radius"
+501 137 3 "outer_radius"
+502 138 3 "umin"
+503 138 3 "umax"
+504 139 3 "vmin"
+505 139 3 "vmax"
+506 143 3 "block"
+507 144 3 "vertex"
+508 145 3 "side1"
+509 146 3 "side2"
+510 147 3 "side3"
+511 151 3 "shaded_triangle"
+512 152 3 "vertex1"
+513 153 3 "vertex2"
+514 154 3 "vertex3"
+515 155 3 "normal1"
+516 156 3 "normal2"
+517 157 3 "normal3"
+518 161 3 "shaded_polygon"
+519 162 3 "vertices"
+520 163 3 "normals"
+521 165 3 "texcoords"
+522 169 3 "mesh"
+523 170 3 "vertices"
+524 171 3 "edges"
+525 172 3 "faces"
+526 174 3 "normals"
+527 175 3 "texcoords"
+528 176 3 "smoothing"
+529 177 3 "mending"
+530 178 3 "closed"
+531 182 3 "blob"
+532 183 3 "centers"
+533 185 3 "radii"
+534 186 3 "strengths"
+535 187 3 "threshold"
+536 196 3 "points"
+537 197 3 "vertices"
+538 201 3 "line"
+539 202 3 "vertices"
+540 206 3 "volume"
+541 207 3 "densities"
+542 208 3 "vertices"
+543 210 3 "threshold"
+544 211 3 "capping"
+545 212 3 "smoothing"
+546 221 3 "clipping_plane"
+547 222 3 "origin"
+548 223 3 "normal"
+549 232 3 "sphere_color"
+550 233 3 "cylinder_color"
+551 234 3 "cone_color"
+552 235 3 "paraboloid_color"
+553 236 3 "hyperboloid1_color"
+554 237 3 "hyperboloid2_color"
+555 238 3 "plane_color"
+556 239 3 "disk_color"
+557 240 3 "ring_color"
+558 241 3 "triangle_color"
+559 242 3 "parallelogram_color"
+560 243 3 "polygon_color"
+561 244 3 "torus_color"
+562 245 3 "block_color"
+563 246 3 "shaded_triangle_color"
+564 247 3 "shaded_polygon_color"
+565 248 3 "mesh_color"
+566 249 3 "blob_color"
+567 250 3 "point_color"
+568 251 3 "line_color"
+569 252 3 "volume_color"
+570 21 38 "distant_light"
+571 22 38 "direction"
+572 24 38 "brightness"
+573 25 38 "color"
+574 26 38 "shadows"
+575 30 38 "point_light"
+576 31 38 "brightness"
+577 32 38 "color"
+578 33 38 "shadows"
+579 37 38 "spot_light"
+580 38 38 "direction"
+581 40 38 "brightness"
+582 41 38 "angle"
+583 42 38 "color"
+584 43 38 "shadows"
+585 24 42 "image"
+586 27 42 "new"
+587 0 0 "image"
+588 0 0 "object"
+589 28 42 "name"
+590 31 42 "get_color"
+591 0 0 "image"
+592 0 0 "object"
+593 32 42 "units"
+594 33 42 "x"
+595 33 42 "y"
+596 34 42 "units"
+597 36 42 "interpolation"
+598 41 42 "free"
+599 0 0 "image"
+600 0 0 "object"
+601 43 42 "id"
+602 23 41 "interpolation"
+603 24 41 "mipmapping"
+604 25 41 "wraparound"
+605 29 41 "texture"
+606 32 41 "new"
+607 0 0 "texture"
+608 0 0 "object"
+609 33 41 "image"
+610 35 41 "interpolation"
+611 36 41 "mipmapping"
+612 37 41 "wraparound"
+613 42 41 "free"
+614 0 0 "texture"
+615 0 0 "object"
+616 44 41 "id"
+617 25 40 "untextured_material"
+618 54 40 "diffuse"
+619 55 40 "specular"
+620 56 40 "specular_power"
+621 60 40 "ambient"
+622 61 40 "emissive"
+623 65 40 "reflected"
+624 66 40 "transmitted"
+625 70 40 "color"
+626 74 40 "new"
+627 0 0 "untextured_material"
+628 0 0 "object"
+629 75 40 "color"
+630 79 40 "diffuse"
+631 80 40 "specular"
+632 81 40 "specular_power"
+633 85 40 "ambient"
+634 86 40 "emissive"
+635 90 40 "reflected"
+636 91 40 "transmitted"
+637 115 40 "print"
+638 0 0 "untextured_material"
+639 0 0 "object"
+640 141 40 "material"
+641 176 40 "texture"
+642 180 40 "new"
+643 0 0 "material"
+644 0 0 "untextured_material"
+645 0 0 "object"
+646 181 40 "color"
+647 182 40 "texture"
+648 183 40 "image"
+649 184 40 "file_name"
+650 188 40 "diffuse"
+651 189 40 "specular"
+652 190 40 "specular_power"
+653 194 40 "ambient"
+654 195 40 "emissive"
+655 199 40 "reflected"
+656 200 40 "transmitted"
+657 204 40 "interpolation"
+658 205 40 "mipmapping"
+659 206 40 "wraparound"
+660 32 39 "color"
+661 32 39 "material"
+662 36 39 "render_mode"
+663 37 39 "shading"
+664 41 39 "edges"
+665 42 39 "edge_orientation"
+666 43 39 "outline"
+667 47 39 "shadows"
+668 48 39 "reflections"
+669 49 39 "refractions"
+670 55 39 "facets"
+671 56 39 "antialiasing"
+672 57 39 "supersampling"
+673 58 39 "ambient"
+674 59 39 "background"
+675 60 39 "fog_factor"
+676 61 39 "min_feature_size"
+677 62 39 "stereo"
+678 63 39 "left_color"
+679 64 39 "right_color"
+680 65 39 "double_buffer"
+681 72 39 "scanning"
+682 73 39 "max_reflections"
+683 74 39 "max_refractions"
+684 75 39 "min_ray_weight"
+685 23 43 "eye"
+686 24 43 "lookat"
+687 25 43 "roll"
+688 26 43 "yaw"
+689 27 43 "pitch"
+690 28 43 "coord_system"
+691 35 43 "field_of_view"
+692 36 43 "projection"
+693 64 43 "project"
+694 65 43 "v"
+695 66 43 "coords"
+696 67 43 "coords"
+697 25 45 "screen_width"
+698 26 45 "screen_height"
+699 25 44 "width"
+700 26 44 "height"
+701 27 44 "h_center"
+702 28 44 "v_center"
+703 29 44 "window_name"
+704 36 44 "aspect_ratio"
+705 37 44 "logo"
+706 38 44 "frame"
+707 39 44 "cursor"
+708 40 44 "show_pictures"
+709 41 44 "save_pictures"
+710 42 44 "file_format"
+711 43 44 "frame_number"
+712 44 44 "picture_name"
+713 18 47 "get_key"
+714 19 47 "key_down"
+715 19 47 "key"
+716 20 47 "key_to_char"
+717 20 47 "key"
+718 21 47 "char_to_key"
+719 21 47 "c"
+720 18 48 "get_mouse"
+721 19 48 "coords"
+722 20 48 "coords"
+723 24 48 "mouse_down"
+724 25 48 "number"
+725 48 49 "rotate"
+726 49 49 "trans"
+727 50 49 "angle"
+728 51 49 "axis"
+729 52 49 "point"
+730 61 49 "revolve"
+731 62 49 "trans"
+732 63 49 "angle"
+733 64 49 "axis"
+734 20 52 "very"
+735 21 52 "s"
+736 21 56 "get_time"
+737 29 55 "get_seconds"
+738 30 55 "time"
+739 31 55 "hours"
+740 32 55 "minutes"
+741 33 55 "seconds"
+742 19 51 "shiny"
+743 22 51 "specularity"
+744 23 51 "shininess"
+745 110 51 "plastic"
+746 111 51 "color"
+747 112 51 "shininess"
+748 113 51 "texture"
+749 114 51 "image"
+750 115 51 "file_name"
+751 119 51 "interpolation"
+752 120 51 "mipmapping"
+753 121 51 "wraparound"
+754 18 61 "char_down"
+755 19 61 "ch"
+756 31 61 "check_keys"
+757 19 65 "shape_hits_shape"
+758 20 65 "thing1"
+759 21 65 "thing2"
+760 23 65 "point"
+761 24 65 "normal"
+762 28 65 "ray_hits_shape"
+763 29 65 "location"
+764 29 65 "direction"
+765 30 65 "thing"
+766 32 65 "point"
+767 33 65 "normal"
+768 20 64 "in_window"
+769 21 64 "v"
+770 23 64 "x"
+771 24 64 "y"
+772 32 64 "mouse_tracker"
+773 40 64 "up"
+774 41 64 "down"
+775 42 64 "dragged"
+776 43 64 "location"
+777 44 64 "direction"
+778 48 64 "button_number"
+779 49 64 "previous_down"
+780 50 64 "previous_mouse"
+781 52 64 "new"
+782 0 0 "mouse_tracker"
+783 0 0 "object"
+784 53 64 "button_number"
+785 59 64 "update"
+786 0 0 "mouse_tracker"
+787 0 0 "object"
+788 60 64 "current_mouse"
+789 61 64 "current_down"
+790 92 64 "camera_tracker"
+791 103 64 "field_of_view"
+792 104 64 "distance"
+793 106 64 "new"
+794 0 0 "camera_tracker"
+795 0 0 "trans"
+796 0 0 "axes"
+797 119 64 "zoom"
+798 0 0 "camera_tracker"
+799 0 0 "trans"
+800 0 0 "axes"
+801 120 64 "factor"
+802 126 64 "place"
+803 0 0 "camera_tracker"
+804 0 0 "trans"
+805 0 0 "axes"
+806 133 64 "roll"
+807 0 0 "camera_tracker"
+808 0 0 "trans"
+809 0 0 "axes"
+810 134 64 "angle"
+811 136 64 "x"
+812 136 64 "y"
+813 147 64 "interaction"
+814 164 64 "point"
+815 165 64 "distance"
+816 166 64 "direction"
+817 167 64 "camera"
+818 168 64 "trans"
+819 172 64 "mouse"
+820 173 64 "rotate_mouse"
+821 174 64 "pan_mouse"
+822 175 64 "zoom_roll_mouse"
+823 179 64 "roll_angle"
+824 180 64 "rolling"
+825 185 64 "factor"
+826 188 64 "new"
+827 0 0 "interaction"
+828 0 0 "object"
+829 189 64 "point"
+830 191 64 "rotate_button"
+831 192 64 "pan_button"
+832 193 64 "zoom_roll_button"
+833 198 64 "rolling"
+834 230 64 "update_object"
+835 0 0 "interaction"
+836 0 0 "object"
+837 231 64 "x"
+838 231 64 "y"
+839 231 64 "angle"
+840 232 64 "trans_point"
+841 233 64 "right_vector2"
+842 233 64 "line_of_sight2"
+843 233 64 "up_vector2"
+844 271 64 "update_camera"
+845 0 0 "interaction"
+846 0 0 "object"
+847 276 64 "x"
+848 277 64 "y"
+849 278 64 "diagonal"
+850 279 64 "x_factor"
+851 280 64 "y_factor"
+852 292 64 "x"
+853 293 64 "y"
+854 307 64 "x"
+855 309 64 "y"
+856 312 64 "angle"
+857 330 64 "update"
+858 0 0 "interaction"
+859 0 0 "object"
+860 118 67 "unit_trans_stack"
+861 119 67 "levels"
+862 122 67 "trans_stack"
+863 131 67 "max_transformations"
+864 132 67 "trans_stack"
+865 133 67 "shader_trans_stack"
+866 139 67 "trans_level"
+867 22 63 "mouse_controlled_picture"
+868 23 63 "image"
+869 24 63 "point"
+870 25 63 "action"
+871 26 63 "title"
+872 28 63 "frames"
+873 32 63 "interaction"
+874 32 63 "done"
+875 19 94 "closest_to_point"
+876 20 94 "point"
+877 21 94 "thing"
+878 25 94 "closest_to_plane"
+879 26 94 "point"
+880 26 94 "normal"
+881 27 94 "thing"
+882 10 1 "test_anim"
+883 16 1 "blah_material"
+884 18 1 "scene"
+885 19 1 "elapsed_time"
+886 20 1 "angle"
+1043
+1 29
+2 19
+3 20
+4 21
+5 25
+6 26
+7 27
+8 31
+9 32
+10 33
+11 18
+12 19
+13 20
+14 21
+15 22
+16 23
+17 25
+18 26
+19 27
+20 30
+21 35
+22 37
+23 25
+24 26
+25 26
+27 28
+28 29
+29 31
+30 32
+31 35
+32 37
+33 38
+34 40
+35 119
+36 126
+37 141
+38 142
+39 144
+40 22
+41 22
+43 24
+44 25
+45 28
+46 42
+47 42
+49 22
+50 23
+51 23
+53 24
+54 25
+55 26
+57 26
+58 28
+60 28
+61 51
+62 53
+63 55
+67 55
+68 75
+69 76
+70 77
+71 79
+72 80
+73 81
+74 93
+75 94
+76 95
+77 102
+78 103
+82 103
+83 104
+86 104
+87 105
+90 113
+94 114
+98 115
+79 126
+102 136
+103 137
+104 138
+105 143
+106 144
+107 145
+108 147
+109 148
+110 149
+111 154
+112 154
+120 156
+121 157
+122 158
+123 160
+124 161
+125 162
+126 167
+127 168
+128 169
+129 174
+130 175
+132 175
+133 176
+135 176
+136 177
+113 188
+115 188
+116 190
+118 190
+138 195
+139 195
+141 195
+143 195
+145 200
+146 210
+147 210
+148 210
+149 211
+150 211
+151 211
+152 212
+153 212
+154 212
+155 36
+156 38
+157 39
+158 50
+159 62
+160 63
+161 66
+166 67
+171 68
+176 69
+181 70
+186 71
+191 72
+196 73
+201 74
+206 75
+211 76
+216 77
+221 79
+222 90
+223 91
+224 92
+225 93
+226 96
+233 97
+240 98
+247 99
+254 100
+261 101
+268 103
+269 18
+270 19
+271 19
+272 35
+273 35
+275 35
+277 35
+279 42
+280 42
+282 42
+284 42
+286 63
+287 63
+289 63
+291 65
+292 66
+294 66
+295 66
+297 66
+299 68
+300 76
+301 76
+303 76
+305 78
+306 79
+308 79
+309 79
+311 79
+313 81
+314 89
+315 89
+317 89
+319 89
+321 89
+323 90
+324 90
+326 90
+328 92
+329 101
+330 101
+332 101
+334 72
+335 73
+336 76
+337 77
+338 78
+339 81
+340 83
+342 84
+344 85
+345 94
+346 96
+347 97
+348 98
+349 101
+350 103
+352 104
+353 105
+354 119
+355 120
+356 121
+357 123
+358 127
+359 128
+360 131
+361 132
+362 133
+363 134
+364 135
+365 136
+366 138
+367 139
+368 142
+369 144
+370 150
+371 151
+372 154
+373 159
+374 160
+375 163
+377 164
+378 165
+380 165
+381 168
+382 173
+383 174
+384 177
+386 178
+387 179
+389 179
+390 182
+391 195
+392 196
+393 197
+394 199
+395 200
+396 203
+397 204
+398 207
+399 208
+400 210
+401 213
+402 215
+403 216
+405 219
+406 220
+408 222
+409 231
+410 232
+411 235
+413 236
+414 245
+415 246
+416 249
+418 250
+419 263
+420 264
+421 267
+423 269
+425 270
+426 271
+428 273
+429 280
+430 281
+431 284
+433 286
+435 287
+436 288
+438 290
+439 295
+440 299
+441 300
+443 301
+444 304
+445 25
+446 27
+448 29
+449 30
+451 32
+452 33
+453 36
+454 37
+455 37
+457 38
+458 39
+461 39
+462 42
+463 43
+464 44
+465 45
+468 47
+469 63
+470 68
+471 69
+472 70
+473 71
+477 72
+478 73
+482 77
+484 79
+485 80
+486 85
+487 86
+489 86
+492 86
+494 88
+495 90
+496 91
+500 95
+501 99
+502 102
+503 104
+504 105
+505 107
+507 114
+508 114
+509 116
+510 117
+513 117
+515 119
+516 124
+517 125
+518 125
+520 126
+521 126
+525 127
+526 128
+527 131
+528 132
+529 134
+530 135
+531 137
+532 138
+533 141
+534 141
+536 142
+537 143
+538 143
+540 145
+541 146
+542 149
+543 155
+544 155
+548 156
+549 161
+550 167
+551 170
+555 171
+558 171
+561 172
+565 173
+568 173
+571 174
+575 175
+578 175
+581 176
+585 177
+586 18
+587 19
+588 21
+589 30
+590 31
+591 33
+592 22
+593 23
+594 88
+595 89
+596 91
+597 104
+598 105
+599 106
+603 112
+604 113
+605 123
+606 135
+607 142
+608 147
+609 152
+610 157
+611 169
+612 169
+615 170
+616 170
+619 171
+620 171
+623 172
+624 172
+627 173
+628 173
+631 174
+632 174
+635 181
+636 182
+639 183
+641 183
+644 184
+646 196
+650 197
+653 198
+654 208
+655 209
+659 210
+662 210
+664 211
+668 212
+671 212
+673 213
+674 17
+675 21
+677 21
+679 22
+682 25
+683 38
+684 40
+687 50
+688 50
+690 86
+691 87
+692 88
+693 89
+694 91
+696 92
+697 93
+698 94
+699 96
+700 105
+701 107
+703 113
+704 114
+706 114
+707 115
+709 115
+710 116
+711 117
+712 128
+713 135
+714 136
+717 136
+718 137
+721 137
+722 138
+725 138
+726 139
+729 145
+730 146
+737 146
+738 147
+741 147
+742 148
+745 148
+746 149
+749 156
+761 156
+762 157
+765 157
+766 158
+769 158
+770 159
+773 159
+774 160
+750 164
+751 164
+753 166
+754 167
+755 168
+756 170
+757 171
+758 172
+759 173
+777 181
+778 183
+780 184
+783 194
+731 204
+732 205
+784 216
+785 217
+786 218
+787 219
+788 220
+789 221
+790 222
+791 223
+792 224
+793 231
+795 232
+798 232
+799 233
+801 238
+803 239
+806 239
+807 249
+808 249
+809 249
+810 250
+811 250
+812 250
+813 251
+814 251
+815 251
+816 252
+817 252
+818 252
+819 257
+821 24
+822 25
+823 29
+824 30
+825 31
+826 31
+827 32
+828 32
+829 37
+830 38
+831 39
+832 40
+833 40
+834 45
+835 46
+836 47
+837 48
+838 49
+839 49
+840 54
+841 55
+842 56
+843 57
+844 57
+845 62
+846 63
+847 64
+848 65
+849 66
+850 66
+851 71
+852 72
+853 73
+854 74
+855 75
+856 75
+857 85
+858 86
+859 91
+860 92
+861 93
+862 94
+863 94
+864 99
+865 100
+866 101
+867 102
+868 103
+869 103
+870 115
+871 116
+872 117
+873 134
+874 135
+875 136
+876 137
+877 138
+878 138
+879 139
+880 139
+881 144
+882 145
+883 146
+884 147
+885 176
+886 177
+887 178
+888 187
+889 208
+890 210
+891 211
+892 212
+893 222
+894 223
+895 232
+896 233
+897 234
+898 235
+899 236
+900 237
+901 238
+902 239
+903 240
+904 241
+905 242
+906 243
+907 244
+908 245
+909 246
+910 247
+911 248
+912 249
+913 250
+914 251
+915 252
+916 22
+917 24
+918 25
+919 26
+920 31
+921 32
+922 33
+923 38
+924 40
+925 41
+926 42
+927 43
+928 34
+929 36
+930 23
+931 24
+932 25
+933 35
+934 36
+935 37
+936 75
+937 79
+938 80
+939 81
+940 85
+941 86
+942 90
+943 91
+944 95
+945 96
+946 97
+947 101
+948 102
+949 106
+950 107
+951 111
+952 118
+953 118
+954 118
+955 119
+956 119
+957 119
+958 120
+959 120
+960 120
+961 124
+962 124
+963 124
+964 125
+965 125
+966 125
+967 129
+968 129
+969 129
+970 130
+971 130
+972 130
+973 134
+974 134
+975 134
+976 176
+977 181
+978 182
+979 183
+980 184
+981 188
+982 189
+983 190
+984 194
+985 195
+986 199
+987 200
+988 204
+989 205
+990 206
+991 208
+994 209
+995 210
+996 211
+997 212
+998 213
+999 214
+1000 215
+1001 220
+1002 221
+1003 222
+1004 223
+1007 223
+1008 224
+1009 225
+1011 228
+1012 228
+1015 228
+1018 229
+1019 230
+1020 231
+1021 235
+1022 32
+1023 36
+1024 37
+1025 41
+1026 42
+1027 43
+1028 47
+1029 48
+1030 49
+1031 55
+1032 56
+1033 57
+1034 58
+1035 59
+1036 60
+1037 61
+1038 62
+1039 63
+1040 64
+1041 65
+1042 72
+1043 73
+1044 74
+1045 75
+1046 23
+1047 24
+1048 25
+1049 26
+1050 27
+1051 28
+1052 35
+1053 36
+1054 67
+1055 25
+1056 26
+1057 27
+1058 27
+1059 28
+1060 28
+1061 29
+1063 36
+1064 37
+1065 38
+1066 39
+1067 40
+1068 41
+1069 42
+1070 43
+1071 44
+1073 20
+1074 25
+1075 49
+1076 52
+1077 54
+1082 55
+1086 56
+1090 57
+1094 62
+1095 66
+1099 67
+1103 68
+1107 23
+1108 30
+1109 30
+1110 31
+1111 31
+1113 32
+1114 32
+1116 33
+1117 35
+1118 19
+1119 29
+1120 30
+1121 30
+1123 32
+1124 111
+1125 112
+1126 113
+1128 113
+1129 114
+1130 115
+1131 119
+1132 120
+1133 121
+1134 125
+1135 126
+1136 127
+1137 128
+1140 128
+1141 129
+1142 130
+1144 133
+1145 133
+1148 133
+1151 134
+1152 135
+1153 136
+1154 141
+1155 142
+1159 142
+1160 143
+1161 143
+1163 145
+1164 146
+1166 146
+1167 147
+1168 21
+1169 22
+1171 22
+1172 22
+1174 22
+1176 23
+1178 23
+1180 23
+1183 24
+1185 24
+1186 24
+1188 24
+1190 25
+1192 25
+1194 25
+1196 26
+1197 27
+1199 27
+1201 35
+1202 35
+1204 36
+1206 37
+1208 38
+1210 39
+1212 40
+1214 41
+1216 42
+1217 47
+1218 47
+1220 48
+1222 49
+1224 50
+1226 51
+1228 52
+1229 57
+1230 57
+1232 58
+1234 59
+1236 60
+1237 65
+1238 65
+1240 66
+1242 67
+1244 68
+1245 23
+1246 24
+1247 26
+1248 26
+1250 26
+1252 40
+1253 41
+1254 42
+1255 43
+1256 44
+1257 49
+1258 50
+1259 53
+1260 55
+1261 60
+1262 60
+1263 61
+1264 64
+1266 66
+1267 67
+1268 67
+1270 69
+1271 73
+1273 75
+1274 76
+1275 77
+1276 79
+1277 84
+1278 85
+1279 107
+1281 108
+1282 109
+1283 109
+1285 110
+1286 110
+1288 111
+1289 113
+1290 114
+1291 114
+1293 115
+1297 122
+1298 127
+1299 128
+1300 129
+1301 134
+1302 138
+1303 139
+1304 140
+1305 140
+1308 167
+1310 168
+1312 173
+1313 174
+1314 175
+1315 185
+1316 189
+1317 191
+1318 192
+1319 193
+1320 198
+1321 200
+1322 201
+1323 201
+1325 202
+1326 206
+1327 207
+1328 207
+1330 208
+1331 210
+1332 210
+1334 211
+1335 213
+1336 213
+1338 214
+1339 219
+1340 220
+1341 221
+1342 225
+1343 226
+1344 237
+1345 238
+1346 239
+1347 240
+1352 243
+1357 244
+1358 246
+1361 248
+1362 248
+1364 249
+1365 249
+1367 250
+1368 254
+1369 256
+1370 259
+1371 259
+1374 260
+1375 261
+1376 263
+1377 264
+1378 264
+1380 267
+1384 275
+1385 276
+1386 277
+1387 278
+1388 278
+1390 278
+1392 278
+1394 279
+1395 280
+1396 282
+1400 283
+1404 288
+1405 289
+1406 290
+1408 290
+1410 290
+1411 291
+1412 292
+1413 293
+1414 295
+1415 295
+1417 296
+1419 296
+1422 298
+1423 299
+1424 306
+1425 307
+1426 309
+1427 312
+1428 312
+1431 314
+1432 315
+1433 317
+1434 318
+1435 318
+1437 320
+1441 326
+1443 326
+1446 335
+1448 335
+1450 339
+1452 340
+1454 341
+1456 122
+1457 122
+1459 123
+1460 131
+1461 132
+1462 132
+1464 133
+1465 133
+1467 24
+1469 26
+1470 28
+1471 29
+1472 32
+1475 32
+1476 34
+1477 35
+1478 37
+1479 38
+1480 39
+1481 44
+1482 45
+1483 48
+1485 48
+1486 49
+1487 50
+1488 11
+1489 12
+1490 13
+1491 14
+1492 15
+1494 16
+1495 16
+1498 19
+1499 19
+1500 20
+1501 22
+1502 23
+1503 25
+1504 27
+1506 29
+1507 38
+1509 0

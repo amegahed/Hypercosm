@@ -1,0 +1,49 @@
+do multiline_checklist_selector_anim;
+
+
+include "system/3d.ores";
+include "system/multiline_checklist_selector.ores";
+
+
+strings type title is [
+    "Procedure Checklist"
+    "Steps"
+];
+strings type step1 is ["This"];
+strings type step2 is ["That"];
+strings type step3 is ["The" "Other" "Thing!"];
+strings type checklist[] is [
+    step1 step2 step3
+];
+
+
+anim multiline_checklist_selector_anim with
+    background = dark blue;
+    double_buffer is true;
+is
+    multiline_text_display type step_display of title
+    	at <-1 .8 0> aligned to middle_left;
+   
+    multiline_checklist_selector type checklist_selector of checklist 
+		at <.95 0 0> aligned to middle_right using step_display;
+    
+    verb checklist_action is
+        strings type text is checklist_selector selected_step;
+
+        write "selected item is:", ;
+
+        for each string type string in text do
+            write string, ;
+        end;
+    end;    // checklist_action
+
+    picture scene is
+        checklist_selector draw;
+        step_display draw;
+    end;
+    
+    checklist_selector's selection_action is (new action of checklist_action);
+    while true do
+        scene;
+    end;
+end;    // multiline_checklist_selector_anim

@@ -1,0 +1,50 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 	moon_shape.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of a standard filled shape		}
+{		in the form of a moon.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+
+
+shape moon_shape with
+    integer steps = 20;
+    scalar phase = .5;  // -1 to 1, 0 = full
+is
+    vector vertex[1..steps * 2];
+    scalar factor = sin (90 + phase * 180);
+
+    if (phase > 0) then
+        scale by -1 along <1 0 0>;
+    end;
+
+    // outer edges
+    //
+    for integer counter = 1..steps do
+        scalar theta = counter / steps * 180;
+        scalar x = sin theta;
+        scalar y = -cos theta;
+
+        vertex[counter] = <x y 0>;
+    end;
+
+    // inner edges
+    //
+    for integer counter = 1..steps do
+        scalar theta = counter / steps * 180;
+        scalar x = -sin theta * factor;
+        scalar y = cos theta;
+
+        vertex[counter + steps] = <x y 0>;
+    end;
+    
+    polygon vertex;
+end;    // moon_shape

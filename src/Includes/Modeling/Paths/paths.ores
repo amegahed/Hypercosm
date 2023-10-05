@@ -1,0 +1,16 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            paths.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard subjects for creating paths or        }
+{       trails behind moving points.                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/pixie_path.ores";
+include "system/wave_path.ores";
+include "system/bubble_path.ores";

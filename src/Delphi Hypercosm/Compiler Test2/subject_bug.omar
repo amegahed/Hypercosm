@@ -1,0 +1,70 @@
+do test;
+
+
+subject texcoord
+extends
+	vector
+does
+	// uvw query methods
+	//
+	scalar question u;
+	scalar question v;
+	scalar question w;
+is
+	scalar question u is
+		answer texcoord.x;
+	end;	// u
+	
+	
+	scalar question v is
+		answer texcoord.y;
+	end;	// v
+	
+	
+	scalar question w is
+		answer texcoord.z;
+	end;	// w
+end;	// texcoord
+
+
+subject parametric_mapping
+does
+	verb new
+		from texcoord type start = <0 0 0>;
+		to texcoord type finish = <1 1 1>;
+	end;
+has
+	public texcoord type start, finish, direction;
+is
+	verb new
+		from texcoord type start = <0 0 0>;
+		to texcoord type finish = <1 1 1>;
+	is
+		with parametric_mapping do
+			its start = start;
+			its finish = finish;
+		end;
+		direction = finish - start;
+		write "start = ", parametric_mapping's start, ;
+		write "finish = ", parametric_mapping's finish, ;
+		write "direction = ", parametric_mapping's direction, ;
+	end;	// new
+end;	// parametric_mapping
+
+
+// default parametric texture mapping
+//
+const parametric_mapping type unit_parametric_mapping is (new parametric_mapping type
+	from <-1 -1 -1> to <5 5 5>);
+	
+	
+verb test is
+	texcoord type texcoord = <1 1 1>;
+	
+	write "texcoord = ", texcoord, ;
+	write "texcoord.x = ", texcoord.x, ;
+	
+	if some unit_parametric_mapping then
+		write "done.", ;
+	end;
+end;

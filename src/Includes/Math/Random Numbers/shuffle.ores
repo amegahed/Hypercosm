@@ -1,0 +1,65 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             shuffle.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains procedures for randomly shuffling arrays       }
+{       of data.                                                }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/random.ores";
+
+verb shuffle
+	scalar array[];
+is
+	integer last_index;
+	integer exchange_index;
+	scalar temp;
+	
+	last_index = max array;
+	while last_index > (min array) do
+		exchange_index = irandom (min array) to last_index;
+		temp = array[last_index];
+		array[last_index] = array[exchange_index];
+		array[exchange_index] = temp;
+		last_index = itself - 1;
+	end;
+end;    // shuffle
+
+verb ishuffle
+	integer array[];
+is
+	integer last_index;
+	integer exchange_index;
+	integer temp;
+	
+	last_index = max array;
+	while last_index > (min array) do
+		exchange_index = irandom (min array) to last_index;
+		temp = array[last_index];
+		array[last_index] = array[exchange_index];
+		array[exchange_index] = temp;
+		last_index = itself - 1;
+	end;
+end;    // ishuffle
+
+verb vshuffle
+	vector array[];
+is
+	integer last_index;
+	integer exchange_index;
+	vector temp;
+
+	last_index = max array;
+	while last_index > (min array) do
+		exchange_index = irandom (min array) to last_index;
+		temp = array[last_index];
+		array[last_index] = array[exchange_index];
+		array[exchange_index] = temp;
+		last_index = itself - 1;
+	end;
+end;    // vshuffle

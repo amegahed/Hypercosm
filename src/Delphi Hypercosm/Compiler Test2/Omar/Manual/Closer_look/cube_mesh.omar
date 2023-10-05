@@ -1,0 +1,50 @@
+{***************************************************************}
+{                          cube_mesh.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cube_mesh_picture;
+
+
+include "system/3d.ores";
+
+
+shape cube_mesh is
+    mesh
+        // vertices
+        //
+        [<-1 -1 -1> <1 -1 -1> <1 1 -1> <-1 1 -1>
+         <-1 -1 1> <1 -1 1> <1 1 1> <-1 1 1>]
+
+        // edges
+        //
+        [[1 2][2 3][3 4][4 1]
+         [5 6][6 7][7 8][8 5]
+         [1 5][2 6][3 7][4 8]]
+
+        // faces
+        //
+        [-4 -3 -2 -1 0
+         5 6 7 8 0
+         1 10 -5 -9 0
+         2 11 -6 -10 0
+         3 12 -7 -11 0
+         4 9 -8 -12 0
+        ];
+end;    // cube_mesh
+
+
+picture cube_mesh_picture with
+    eye = <2 -8 4>;
+    lookat = <0 0 0>;
+    render_mode is shaded;
+    shading is vertex;
+    field_of_view = 40;
+is
+    distant_light from <.3 -.5 1>;
+    cube_mesh;
+end;    // cube_mesh_picture

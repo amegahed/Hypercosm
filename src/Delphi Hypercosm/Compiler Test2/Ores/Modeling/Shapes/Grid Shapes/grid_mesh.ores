@@ -1,0 +1,90 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		  grid_mesh.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		mesh which is a grid of triangles or quads.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/tri_grid_mesh.ores";
+include "system/quad_grid_mesh.ores";
+
+
+boolean grid_triangulation is off;
+boolean alt_grid_triangulation is off;
+
+
+shape grid_mesh
+    of vector_grid type vector_grid;
+    oriented to vector_grid type normal_grid is none;
+with
+	// rendering parameters
+	//
+    boolean smoothing is true;
+    boolean mending is false;
+    boolean closed is false;
+    boolean reversed is false;
+    
+    // tessellation parameters
+    //
+    boolean triangulate is grid_triangulation;
+    boolean alternate is alt_grid_triangulation;
+    
+	// texturing parameters
+	//  
+    boolean textured is true; 
+	texture_mapping type mapping is unit_parametric_mapping;
+is	
+    if triangulate then
+        if alternate then
+            alt_tri_grid_mesh of vector_grid oriented to normal_grid with
+            
+            	// rendering parameters
+            	//
+                smoothing is static smoothing;
+                mending is static mending;
+                closed is static closed;
+                
+                // texturing parameters
+                //
+                textured is static textured;
+                mapping is static mapping;
+            end;
+        else
+            tri_grid_mesh of vector_grid oriented to normal_grid with
+            
+            	// rendering parameters
+            	//
+                smoothing is static smoothing;
+                mending is static mending;
+                closed is static closed;
+                
+                // texturing parameters
+                //
+                textured is static textured;
+                mapping is static mapping;
+            end;
+        end;
+    else
+        quad_grid_mesh of vector_grid oriented to normal_grid with
+        
+        	// rendering parameters
+        	//
+            smoothing is static smoothing;
+            mending is static mending;
+            closed is static closed;
+            reversed is static reversed;
+            
+            // texturing parameters
+            //
+            textured is static textured;
+            mapping is static mapping;
+        end;
+    end;
+end;    // grid_mesh

@@ -1,0 +1,23 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            constants.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of constants in the OMAR language.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do constants_example;
+
+const scalar freezing_point = 32;
+const scalar pi = 3.14159265;
+const scalar e = 2.718281828;
+const boolean on is true, off is false;
+
+verb constants_example is
+	write "pi = ", pi, ;
+	//pi = 3.14159265;          // Error - a constant may only be assigned by its initializer
+end;    // constants_example

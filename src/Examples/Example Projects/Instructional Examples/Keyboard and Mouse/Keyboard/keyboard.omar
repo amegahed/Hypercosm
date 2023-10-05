@@ -1,0 +1,216 @@
+do keyboard_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/renderable_text.ores";
+include "system/beveled_shapes.ores";
+
+// key definitions
+//
+strings type key_row0_labels is ["1" "2" "3" "4" "5" "6" "7" "8" "9" "0"];
+strings type key_row1_labels is ["Q" "W" "E" "R" "T" "Y" "U" "I" "O" "P"];
+strings type key_row2_labels is ["A" "S" "D" "F" "G" "H" "J" "K" "L" ":"];
+strings type key_row3_labels is ["Z" "X" "C" "V" "B" "N" "M" "<" ">" "/"];
+
+// material definitions
+//
+material type key_material is plastic colored grey;
+material type pressed_key_material is plastic colored red;
+material type keyboard_material is plastic colored beige;
+material type key_label_material is chalk colored white;
+
+shape unlabeled_key with
+    scalar length = 1;
+    scalar width = 1;
+    scalar height = .25;
+    scalar bevel = .25;
+is
+    scalar l = length / 2, l2 = l * .75;
+    scalar w = width / 2, w2 = w * .75;
+    scalar h = height;
+    
+    mesh
+        // vertices
+        //
+        [<-l -w 0> <l -w 0> <l w 0> <-l w 0>
+         <-l2 -w2 h> <l2 -w2 h> <l2 w2 h> <-l2 w2 h>]
+        // edges
+        //
+        [[1 2][2 3][3 4][4 1]
+         [5 6][6 7][7 8][8 5]
+         [1 5][2 6][3 7][4 8]]
+        // faces
+        //
+        [-4 -3 -2 -1 0
+         5 6 7 8 0
+         1 10 -5 -9 0
+         2 11 -6 -10 0
+         3 12 -7 -11 0
+         4 9 -8 -12 0
+        ]
+	with
+		closed is true;
+	end;    
+end;    // unlabeled_key
+
+shape key_label 
+    of char c;
+with
+    scalar size = 1;
+is
+    text [c] with
+        size = static size;
+        rotate by -90 around <1 0 0>;
+        v_align is middle;
+        material is key_label_material;
+    end;
+end;    // key_label
+
+shape labeled_key 
+    labeled string type label;
+with
+    scalar length = 1;
+    scalar width = 1;
+    scalar height = .25;
+    scalar bevel = .25;
+is
+    unlabeled_key with
+        length = static length;
+        width = static width;
+        height = static height;
+    end;
+    
+    if some label then
+        if num label = 1 then
+        
+            // simple single character labels
+            //
+            key_label of label[1] with
+                size = static length * .5;
+                move to <0 0 (height * 1.01)>;
+                material is key_label_material;
+            end;
+        else
+            // multicharacter labels
+            //
+            text label with
+                size = static length * .5 / num label;
+                rotate by -90 around <1 0 0>;
+                move to <0 0 (height * 1.01)>;
+                v_align is middle;
+                material is key_label_material;
+            end;
+        end;
+    end;
+end;    // labeled_key
+    
+    
+shape key
+    labeled string type label is none;
+with
+    scalar length = 1;
+    scalar width = 1;
+    scalar height = .25;
+    boolean pressed is false;
+is
+    labeled_key labeled label with
+        length = static length;
+        width = static width;
+        height = static height;
+  
+        if pressed then
+            move to <0 0 (-height / 2)>;
+            material is pressed_key_material;          
+        else
+            material is key_material;
+        end;
+    end;    
+end;    // key
+
+shape row_of_keys
+    labeled strings type labels;
+with
+    scalar key_length = 1;
+    scalar key_width = 1;
+    scalar key_height = .25;
+    scalar key_spacing = .25;
+is
+    scalar x = -((num labels - 1) / 2) * (key_length + key_spacing);
+    
+    for integer counter = min labels .. max labels do
+        integer keycode = char_to_key of labels[counter][1];
+        
+        key labeled labels[counter] with
+            length = key_length;
+            width = key_width;
+            height = key_height;
+            move to <x 0 0>;
+            
+            // check keyboard to see if key is pressed
+            //
+            pressed is key_down keycode;
+        end;
+        
+        x = itself + key_length + key_spacing;
+    end;
+end;    // row_of_keys
+
+shape keys with
+    scalar time = 0;
+is
+    scalar row_spacing = 1.25;
+    
+    // rows of keys
+    //
+    row_of_keys labeled key_row0_labels with
+        move to <0 (row_spacing * 2) 0>;
+    end; 
+    row_of_keys labeled key_row1_labels with
+        move to <0 (row_spacing * 1) 0>;
+    end; 
+    row_of_keys labeled key_row2_labels with
+        move to <0 (row_spacing* 0) 0>;
+    end; 
+    row_of_keys labeled key_row3_labels with
+        move to <0 (row_spacing * -1) 0>;
+    end; 
+    
+    // space bar
+    //
+    key with
+        length = 8;
+        move to <0 (row_spacing * -2) 0>;
+        pressed is key_down char_to_key of " ";
+    end;
+end;    // keys
+
+shape keyboard with
+    scalar time = 0;
+is
+    scalar keyboard_length = 15;
+    scalar keyboard_width = 7;
+    scalar keyboard_height = 1;
+    
+    keys with
+        time = static time;
+        move to <0 0 keyboard_height>;
+    end;
+    
+    beveled_block with
+        vertex = <(-keyboard_length / 2) (-keyboard_width / 2) 0>;
+        side1 = <keyboard_length 0 0>;
+        side2 = <0 keyboard_width 0>;
+        side3 = <0 0 keyboard_height>;
+        bevel_width = .5;
+        material is keyboard_material;
+    end;
+end;    // keyboard
+
+anim keyboard_anim
+    args type args;
+with
+	eye = <0 -10 15>;
+    args check;
+is
+    mouse_controlled_animated_shape keyboard titled "Interactive Virtual Keyboard";
+end; // keyboard_anim

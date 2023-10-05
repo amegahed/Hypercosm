@@ -1,0 +1,146 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	    3ds_spline_segments.ores		3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains spline segment definitions that correspond		}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_spline_segment.ores";
+
+
+type translated_3ds_spline_segments is translated_3ds_spline_segment type[];
+
+
+{***************************************************************} 
+{          utility spline segment construction methods          }
+{***************************************************************}
+
+
+translated_3ds_spline_segments type question translated_3ds_connected_spline_segments
+	through translated_3ds_spline_vertices type vertices;
+is
+	translated_3ds_spline_segments type segments;
+	integer first = min vertices;
+	integer last = max vertices;
+	
+	// connect vertices
+	//
+	for integer counter = first .. last do
+		translated_3ds_spline_vertex type prev_vertex is none;
+		translated_3ds_spline_vertex type next_vertex is none;	
+		
+		if counter > min vertices then
+			prev_vertex is vertices[counter - 1];
+		end;
+		if counter < max vertices then
+			next_vertex is vertices[counter + 1];
+		end;
+		vertices[counter] set_neighbors after prev_vertex before next_vertex;
+	end;
+	
+	// smooth vertices
+	//
+	if num vertices > 1 then
+	
+		// smooth interior vertices
+		//
+		if first + 1 <= last - 1 then
+			for integer counter = first + 1 .. last - 1 do
+				if vertices[counter]'s smooth_tangents then
+					vertices[counter] smooth;
+				end;
+			end;
+		end;
+		
+		// smooth endpoint vertices
+		//
+		if vertices[first]'s smooth_tangents then
+			vertices[first] smooth;
+		end;
+		if vertices[last]'s smooth_tangents then
+			vertices[last] smooth;
+		end;
+
+		// create new segments between vertices
+		//
+		dim none segments[1 .. num vertices - 1];
+		for integer counter = 1 .. num segments do
+			translated_3ds_spline_vertex type vertex1 is vertices[first + (counter - 1)];
+			translated_3ds_spline_vertex type vertex2 is vertices[first + counter];	
+		    segments[counter] is translated_3ds_spline_segment type's get;			
+			segments[counter] set curve from vertex1 to vertex2;
+		end;		
+	end;
+	
+	answer segments;
+end;	// translated_3ds_connected_spline_segments
+
+
+translated_3ds_spline_segments type question translated_3ds_connected_cyclic_spline_segments
+	through translated_3ds_spline_vertices type vertices;
+is
+	integer first = min vertices;
+	integer last = max vertices;
+	integer num_vertices = last - first + 1;
+	translated_3ds_spline_segments type segments;
+		
+	if num_vertices > 1 then
+		boolean wraparound is vertices[first]'s point = vertices[last]'s point;	
+				
+		if wraparound then
+			num_vertices = itself - 1;
+			last = itself - 1;
+		end;
+			
+		// connect vertices
+		//
+		for integer counter = first .. last do
+			translated_3ds_spline_vertex type prev_vertex is none;
+			translated_3ds_spline_vertex type next_vertex is none;	
+			
+			if counter > first then
+				prev_vertex is vertices[counter - 1];
+			else
+				prev_vertex is vertices[last];
+			end;
+			if counter < last then
+				next_vertex is vertices[counter + 1];
+			else
+				next_vertex is vertices[first];
+			end;
+			vertices[counter] set_neighbors after prev_vertex before next_vertex;
+		end;
+	
+		// smooth vertices
+		//
+		for integer counter = first .. last do
+			if vertices[counter]'s smooth_tangents then
+				vertices[counter] smooth;
+			end;
+		end;
+			
+		// create new segments between vertices
+		//		
+		dim none segments[1 .. num_vertices];
+		for integer counter = 1 .. num_vertices - 1 do
+			translated_3ds_spline_vertex type vertex1 is vertices[first + (counter - 1)];
+			translated_3ds_spline_vertex type vertex2 is vertices[first + counter];
+			segments[counter] is translated_3ds_spline_segment type's get;				
+			segments[counter] set curve from vertex1 to vertex2;
+		end;
+		
+		// connect end to start
+		//
+	    segments[num_vertices] is translated_3ds_spline_segment type's get;
+		segments[num_vertices] set curve from vertices[last] to vertices[first];
+	end;
+	
+	answer segments;
+end;	// translated_3ds_connected_cyclic_spline_segments

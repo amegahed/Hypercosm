@@ -1,0 +1,45 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           text_sensor.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a text sensor         }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do text_sensor_anim;
+
+include "system/3d.ores";
+include "system/text_sensor.ores";
+
+anim text_sensor_anim with
+	double_buffer is on;
+is
+	verb mouse_down_action is
+		write "pressed!", ;
+	end;
+	verb mouse_up_action is
+		write "released!", ;
+	end;
+		
+	text_sensor type text_sensor of "text sensor"
+		at <1 0 0> aligned to middle_right
+	with        
+		font is (new screen_font styled bold sized 24);
+		font_color set to white over dark green;
+		mouse_down_action is (new action of static mouse_down_action); 
+		mouse_up_action is (new action of static mouse_up_action);
+	end;
+	
+	picture scene is
+		text_sensor draw;
+	end;    // scene
+	
+	while true do
+		scene;
+		text_sensor update;
+	end;
+end;    // text_sensor_anim

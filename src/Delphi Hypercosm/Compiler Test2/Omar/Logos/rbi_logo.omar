@@ -1,0 +1,100 @@
+{***************************************************************}
+{                          rbi_logo.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape rbi_letters is
+    shape letter_r is
+        block with
+            scale by 1.5 along <0 0 1>;
+            scale by .5 along <1 0 0>;
+            move to <-1 0 0>;
+        end;
+        tube with
+            inner_radius = .5;
+            umin = 270;
+            umax = 90;
+            rotate by 90 around <1 0 0>;
+            scale by 2 along <1 0 0>;
+            move to <-.5 0 .5>;
+        end;
+        block with
+            scale by .5 along <1 0 0>;
+            scale by .75 along <0 0 1>;
+            move to <1 0 -.75>;
+            skew from <1.5 0 -.5> to <.5 0 -.5> about <1.5 0 -1.5>;
+        end;
+    end;    // letter_R
+
+
+    shape letter_b is
+        block with
+            scale by 1.5 along <0 0 1>;
+            scale by .5 along <1 0 0>;
+            move to <-1 0 0>;
+        end;
+        tube with
+            inner_radius = .5;
+            umin = 270;
+            umax = 90;
+            rotate by 90 around <1 0 0>;
+            scale by .85 along <0 0 1>;
+            scale by 1.5 along <1 0 0>;
+            move to <-.5 0 .65>;
+        end;
+        tube with
+            inner_radius = .5;
+            umin = 270;
+            umax = 90;
+            rotate by 90 around <1 0 0>;
+            scale by .85 along <0 0 1>;
+            scale by 2 along <1 0 0>;
+            move to <-.5 0 -.65>;
+        end;
+    end;    // letter_B
+
+
+    shape letter_i is
+        block with
+            scale by 1.5 along <0 0 1>;
+            scale by .5 along <1 0 0>;
+            move to <0 0 0>;
+        end;
+    end;    // letter_I
+
+    letter_r with
+        move to <-3 0 0>;
+        color = light red;
+    end;
+    letter_b with
+        move to <.5 0 0>;
+        color = light green;
+    end;
+    letter_i with
+        move to <3 0 0>;
+        color = light blue;
+    end;
+end;    // rbi_letters
+
+
+anim test
+    args type args;
+with
+    double_buffer is on;
+    eye = <4 -12 8>;
+    args check;
+is
+    mouse_controlled_shape rbi_letters;
+end;    // test

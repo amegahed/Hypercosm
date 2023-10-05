@@ -1,0 +1,124 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm        3ds_textured_standard_			3d      }
+{ |/  \|				animated_material.ores			To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains material definitions that correspond to        }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_standard_animated_material.ores";
+include "system/3ds_textured_standard_material.ores";
+include "system/3ds_material_maps.ores";
+
+
+subject translated_3ds_textured_standard_animated_material
+extends
+	translated_3ds_standard_animated_material
+does
+	// constructor
+	//
+	verb new with
+
+		// color controller parameters
+		//
+	    translated_3ds_point3_controllable type ambient_color_controller is none;
+	    translated_3ds_point3_controllable type diffuse_color_controller is none;
+	    translated_3ds_point3_controllable type specular_color_controller is none;
+	    translated_3ds_point3_controllable type self_illum_color_controller is none;
+	
+		// scalar controller parameters
+		//        
+	    translated_3ds_float_controllable type specular_level_controller is none;
+	    translated_3ds_float_controllable type glossiness_controller is none;
+	    translated_3ds_float_controllable type soften_controller is none;
+	    translated_3ds_float_controllable type opacity_controller is none;
+	    
+	    // mapping parameters
+	    //
+	    translated_3ds_material_maps type mapping;
+	end;
+	
+	// querying method
+	//
+	translated_3ds_material type question to_translated_3ds_material
+		at translated_3ds_time type time;
+	end;
+has
+    // mapping attributes
+    //
+	translated_3ds_material_maps type mapping;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+
+		// color controller parameters
+		//
+	    translated_3ds_point3_controllable type ambient_color_controller is none;
+	    translated_3ds_point3_controllable type diffuse_color_controller is none;
+	    translated_3ds_point3_controllable type specular_color_controller is none;
+	    translated_3ds_point3_controllable type self_illum_color_controller is none;
+	
+		// scalar controller parameters
+		//        
+	    translated_3ds_float_controllable type specular_level_controller is none;
+	    translated_3ds_float_controllable type glossiness_controller is none;
+	    translated_3ds_float_controllable type soften_controller is none;
+	    translated_3ds_float_controllable type opacity_controller is none;
+	    
+	    // mapping parameters
+	    //
+	    translated_3ds_material_maps type mapping;
+	is
+		// call superclass constructor
+		//
+		translated_3ds_standard_animated_material new with
+
+			// set color controller parameters
+			//
+		    ambient_color_controller is static ambient_color_controller;
+		    diffuse_color_controller is static diffuse_color_controller;
+		    specular_color_controller is static specular_color_controller;
+		    self_illum_color_controller is static self_illum_color_controller;
+		
+			// set scalar controller attributes
+			//        
+		    specular_level_controller is static specular_level_controller;
+		    glossiness_controller is static glossiness_controller;
+		    soften_controller is static soften_controller;
+		    opacity_controller is static opacity_controller;
+		end;
+		
+		with translated_3ds_textured_standard_animated_material do
+		
+		    // set mapping attributes
+		    //
+			its mapping = mapping;
+		end;
+	end;	// new
+	
+	
+	//
+	// querying methods
+	//
+	
+
+	translated_3ds_material type question to_translated_3ds_material
+		at translated_3ds_time type time;
+	is
+		translated_3ds_textured_standard_material type material with
+			mapping = static mapping;
+		end;
+		eval material at time;
+		answer material;
+	end;	// to_translated_3ds_material
+end;    // translated_3ds_textured_standard_animated_material

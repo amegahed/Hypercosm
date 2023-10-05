@@ -1,0 +1,66 @@
+{***************************************************************}
+{                          podium.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do podium_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/common_materials.ores";
+
+
+shape microphone is
+    cylinder with
+        material is aluminum;
+        end1 = <0 0 0>;
+        end2 = <0 0 1>;
+        radius = .02;
+    end;
+    rounded_rod with
+        material is chalk colored dark grey;
+        end1 = <0 0 1.2>;
+        end2 = <0 0 1>;
+        radius = .1;
+    end;
+end;    // microphone
+
+
+shape podium is
+    extrude [[-1 0] [-1 3] [1 4] [1 0]] along <1 0 0> with
+        height = 3;
+        material is wood_veneer;
+    end;
+    extrude [[-1 3] [1 4] [.8 4] [-1.2 3]] along <1 0 0> with
+        height = 3.5;
+        material is plastic colored grey;
+    end;
+    microphone with
+        rotate by -45 around <1 0 0>;
+        move to <0 -.9 4>;
+    end;
+end;    // podium
+
+
+anim podium_anim
+    args type args;
+with
+    args check;
+is
+    shape environment is
+        plane with
+            magnify by 4;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_shape podium in environment with
+    	auto_camera is on;
+    end;
+end;    // podium_anim

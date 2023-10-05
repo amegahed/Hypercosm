@@ -1,0 +1,58 @@
+do translated_3ds_n_gon_anim;
+
+include "system/3d.ores";
+include "system/3ds_n_gon.ores";
+include "system/3ds_circle.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape translated_3ds_n_gon_scene with
+    scalar time = 0;
+    scalar tessellation = 1;
+is
+	translated_3ds_n_gon with
+	    radius = 25;
+	    nsides = 7 + trunc(sin(time * 90) * 5);
+	    circumscribed is true;
+	    
+        renderable is true;
+	    thickness = 1;
+	    sides = 6;
+	end;
+	
+	{
+	translated_3ds_circle with
+		radius = 25;
+        steps = round (8 * tessellation); 
+	end;
+	translated_3ds_n_gon with
+	    radius = 25;
+	    sides = 7 + trunc(sin(time * 90) * 5);
+	    circumscribed is false;
+	    
+        renderable is true;
+	    thickness = 1;
+	    sides = 4;
+	end;
+	}
+end;    // translated_3ds_n_gon_scene
+	
+	
+anim translated_3ds_n_gon_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_n_gon_scene
+		within new static_shape of environment
+	    titled "3DS NGon"
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_n_gon_anim

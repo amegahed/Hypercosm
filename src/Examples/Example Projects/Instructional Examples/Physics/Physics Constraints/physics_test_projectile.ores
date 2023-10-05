@@ -1,0 +1,50 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    phsyics_test_projectile.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a few simple methods to create       }
+{       and launch a physics sphere, for use in testing         }
+{       physics scenes.                                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/renderable_physics_scene.ores";
+include "system/renderable_physics_sphere_actor.ores";
+
+scalar projectile_radius = .75;
+
+shape projectile_shape is
+	sphere with
+		material is chalk colored green;
+		radius = projectile_radius;
+	end;
+end;    // projectile_shape
+static_shape type static_projectile_shape of projectile_shape;
+
+verb add_and_fire_projectile
+	to renderable_physics_scene type physics;
+is
+	// get the camera's current position
+	//
+	camera type current_camera is targeted_camera type's get_current;
+	trans type eye_trans;
+	physics_actor type new_projectile is none;
+	current_camera get_trans eye_trans;
+	
+	// add a new projectile positioned where the camera is
+	//
+	new_projectile is (new renderable_physics_sphere_actor rendering static_projectile_shape with
+		trans = eye_trans;
+		radius = projectile_radius;
+		mass = 2);
+	physics add_physics_actor new_projectile;
+	
+	// add velocity along the direction the camera is aimed
+	//
+	new_projectile set_linear_velocity to (eye_trans's y_axis * 60);
+end;    // add_and_fire_projectile
+

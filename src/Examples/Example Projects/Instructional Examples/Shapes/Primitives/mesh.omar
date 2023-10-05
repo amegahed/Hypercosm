@@ -1,0 +1,60 @@
+{***************************************************************}
+{                          mesh.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do mesh_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/grid_shapes.ores";
+include "system/futura_l.ores";
+include "system/arrow_shapes.ores";
+
+shape mesh_primitive
+is
+	scalar question wavy_function
+		scalar x, y;
+	is
+		answer (cos (x * 180)) * (cos (y * 180));
+	end;    // wavy_function
+
+	shape mesh_shape with
+		scalar h = 0;
+	is
+		height_function using wavy_function with
+			h_steps = 8;
+			v_steps = 8;
+			x_center = h / 10;
+			scale by 1.4 along <1 0 0>;
+			scale by .5 along <0 0 1>;
+			triangulate is on;
+		end;
+	end;    // mesh_shape
+	
+	mesh_shape;
+end;    // mesh_primtive
+
+shape mesh_scene is
+	mesh_primitive with
+		material is glass colored mesh_color;
+		render_mode is shaded_line;
+	end;
+	axes;
+end;    // mesh_scene
+	
+	
+anim mesh_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	window_name is "The Mesh Primitive";
+	args check;
+is
+	mouse_controlled_shape mesh_scene;
+end;    // mesh_anim

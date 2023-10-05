@@ -1,0 +1,149 @@
+{***************************************************************}
+{                       planar_alignment.ores                   }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{             Contains text alignment definitions.        	 	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/horizontal_alignment.ores";
+include "system/vertical_alignment.ores";
+
+
+static subject planar_alignment
+does
+	// constructor
+	//
+	verb new
+		of vertical_alignment type vertical_alignment;
+		horizontal_alignment type horizontal_alignment;
+	end;
+	
+	// attribute setting methods
+	//
+	verb set
+		to vertical_alignment type vertical_alignment;
+		horizontal_alignment type horizontal_alignment;
+	end;
+	verb set_horizontal
+		to horizontal_alignment type horizontal_alignment;
+	end;
+	verb set_vertical
+		to vertical_alignment type vertical_alignment;
+	end;
+	
+	// attribute querying methods
+	//
+	horizontal_alignment type question get_horizontal;
+	vertical_alignment type question get_vertical;
+			
+	// scribable and printable methods
+	//
+	string type question to_string;
+	verb print;
+has
+	// text alignment attributes
+	//
+	public horizontal_alignment type horizontal_alignment;
+	public vertical_alignment type vertical_alignment;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of vertical_alignment type vertical_alignment;
+		horizontal_alignment type horizontal_alignment;
+	is
+		// set text alignment attributes
+		//
+		set to vertical_alignment horizontal_alignment;
+	end;	// new
+	
+
+	//
+	// attribute setting methods
+	//
+	
+	
+	verb set
+		to vertical_alignment type vertical_alignment;
+		horizontal_alignment type horizontal_alignment;
+	is
+		with planar_alignment do
+			its horizontal_alignment is horizontal_alignment;
+			its vertical_alignment is vertical_alignment;
+		end;
+	end;	// set
+	
+	
+	verb set_horizontal
+		to horizontal_alignment type horizontal_alignment;
+	is
+		planar_alignment's horizontal_alignment is horizontal_alignment;
+	end;	// set_horizontal
+	
+	
+	verb set_vertical
+		to vertical_alignment type vertical_alignment;
+	is
+		planar_alignment's vertical_alignment is vertical_alignment;
+	end;	// set_vertical
+	
+
+	//	
+	// attribute querying methods
+	//
+	
+	
+	horizontal_alignment type question get_horizontal is
+		answer horizontal_alignment;
+	end;	// get_horizontal
+	
+	
+	vertical_alignment type question get_vertical is
+		answer vertical_alignment;
+	end;	// get_vertical
+	
+	
+	//	
+	// scribable and printable methods
+	//
+	
+	
+	string type question to_string is
+		string type string;
+		string add horizontal_alignment_to_string of horizontal_alignment;
+		string add " ";
+		string add vertical_alignment_to_string of vertical_alignment;
+		answer string;
+	end;	// to_string
+	
+	
+	verb print is
+		write to_string;
+	end;	// print;
+end;	// planar_alignment
+
+
+//
+// the 9 cardinal planar alignment values
+//
+
+
+const planar_alignment type top_left of top left;
+const planar_alignment type top_center of top center;
+const planar_alignment type top_right of top right;
+
+const planar_alignment type middle_left of middle left;
+const planar_alignment type middle_center of middle center;
+const planar_alignment type middle_right of middle right;
+
+const planar_alignment type bottom_left of bottom left;
+const planar_alignment type bottom_center of bottom center;
+const planar_alignment type bottom_right of bottom right;

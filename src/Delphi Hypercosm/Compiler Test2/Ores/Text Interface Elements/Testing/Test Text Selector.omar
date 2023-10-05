@@ -1,0 +1,35 @@
+do text_selector_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "Text Selector.ores";
+include "devices.ores";
+
+
+anim text_selector_test with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+    
+    text_selector type text_selector "press me" or "pressed!" at <.75 0 0> with
+        h_alignment is center;
+        mouse_down_action is (new action type of static mouse_down_action);
+    end;
+    
+    picture test_picture is
+       text_selector draw;
+        
+        if key_pressed char_to_key " " then
+            write "deselecting", ;
+            text_selector toggle_selected;
+        end;
+    end;    // test_picture
+    
+    while true do
+        test_picture;
+    end;
+end;    // text_selector_test

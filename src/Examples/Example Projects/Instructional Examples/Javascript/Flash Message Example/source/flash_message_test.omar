@@ -1,0 +1,75 @@
+do Untitled_Anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_translator.ores";
+include "system/3ds_animation.ores";
+include "system/native_messages.ores";
+include "system/native_scripting.ores";
+
+material type current_material is plastic colored grey;
+
+shape scene with
+    scalar time = 0;
+is
+	sphere with
+		material is current_material;
+	end;
+end; // scene
+
+verb check_messages is
+    string type message;
+    string type out_message;
+    integer num_messages = get_message_number;
+    
+    if num_messages <> 0 then 
+        message is get_next_message;
+        
+        out_message add "ReceiveMessage('Changing Color to ";
+        out_message add message;
+        out_message add "');";
+       
+        if message matches "Red" then      
+            current_material is plastic colored red;
+            exec_script out_message;
+        elseif message matches "Green" then
+            current_material is plastic colored green;
+            exec_script out_message;
+        elseif message matches "Blue" then
+            current_material is plastic colored blue;
+            exec_script out_message;            
+        elseif message matches "Orange" then
+            current_material is plastic colored orange;
+            exec_script out_message;         
+        end;
+    end;
+end;    // check_messages
+
+anim Untitled_Anim
+	args type args;
+with
+	show_controls is true;
+	show_about_control is true;
+	show_popup_control is true;
+	show_camera_control is true;
+	show_fov_control is true;
+	show_mouse_control is true;
+	show_navigation_control is true;
+	show_upright_control is true;
+	show_spin_control is true;
+	auto_rotation is true;
+	show_animation_control is true;
+	show_graphics_control is true;
+	show_detail_control is true;
+	show_lighting_control is true;
+	show_help_control is true;
+	show_fps_control is true;
+	auto_upright is true;
+	args check;
+is
+	mouse_controlled_animated_shape scene
+        doing check_messages
+	with
+		auto_camera is on;
+	end;
+end;

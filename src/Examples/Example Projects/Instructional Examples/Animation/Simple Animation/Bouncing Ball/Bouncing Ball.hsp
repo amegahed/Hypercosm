@@ -1,0 +1,59 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "bouncing_ball.hcvm";
+	WebOutputDir "Website";
+	Alignment;
+	CommandLine;
+	Width "768";
+	Height "640";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar_main "Bouncing Ball.omar";
+		}
+	}
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "Bouncing Ball.html";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+		}
+	}
+}

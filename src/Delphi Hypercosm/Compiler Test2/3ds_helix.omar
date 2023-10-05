@@ -1,0 +1,38 @@
+do helix_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_helix.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim helix_anim with
+	eye = <0 -200 150>;
+is
+	shape scene with
+		scalar time = 0;
+	is	
+		translated_3ds_helix with
+		
+		    // geometry parameters
+		    //
+	        radius1 = 25;
+	        radius2 = 0;
+	        height = 50;
+	        turns = 4 + sin(time * 90) * 3;
+	    	bias = 0;
+	    	orientation is clockwise;
+	    	steps = 8;
+    	end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+
+
+	mouse_controlled_animated_shape scene titled "3DS Helix" with
+		//auto_camera is on;	
+	end;
+end;	// helix_anim

@@ -1,0 +1,36 @@
+{***************************************************************}
+{                     horizontal_alignment.ores                 }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{             Contains text alignment definitions.        	 	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+
+include "system/strings.ores";
+
+
+enum horizontal_alignment is left, center, right;
+
+
+string type question horizontal_alignment_to_string
+	of horizontal_alignment type alignment;
+is
+	when alignment is
+		left: 
+			answer "left";
+		end;
+		
+		center: 
+			answer "center"; 
+		end;
+		
+		right: 
+			answer "right"; 
+		end;
+	end;
+end;	// horizontal_alignment_to_string

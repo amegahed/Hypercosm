@@ -1,0 +1,65 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          3ds_omni_light.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains omni light definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_lights.ores";
+include "system/marks.ores";
+
+shape translated_3ds_omni_light
+	at vector location = <0 0 0>;
+with
+	// color and brightness parameters
+	//
+	color type color = white;
+	scalar intensity = 1;
+	scalar scale = 1;
+	
+	// state parameters
+	//
+	boolean on is true;
+	boolean shadow is false;
+	boolean visible is false;
+is
+	if on then
+		point_light with
+			brightness = sqrt intensity;
+			color = static color;
+			shadows is shadow;
+			magnify by scale;
+			move to location;
+		end;
+	end;
+	
+	// draw omni light icon if visible
+	//
+	if visible then
+		mark at location of circle as drawn in three_d with
+			size = mark_size * scale;
+				
+			if on then
+				color = static color;
+			else
+				color = black;
+			end;
+		end;
+		
+		mark at location of x as drawn in three_d with
+			size = mark_size * scale * 2;
+			
+			if on then
+				color = static color;
+			else
+				color = black;
+			end;
+		end;
+	end;
+end;    // translated_3ds_omni_light

@@ -1,0 +1,575 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   3ds_torus.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains torus definitions that correspond to 		    }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_sliceable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+include "system/triangle_fan_meshes.ores";
+include "system/tessellation.ores";
+
+
+enum translated_3ds_torus_smoothing is sides, segments, all;	
+		
+		
+final subject translated_3ds_torus
+extends
+    translated_3ds_collapsable translated_3ds_sliceable_object
+does
+    // constructor
+    //
+	verb new with
+
+    	// geometry parameters
+    	//
+        scalar radius = 1;
+        scalar radius2 = 0.5;
+        scalar rotation = 0;
+        scalar twist = 0;
+        
+        // tessellation parameters
+        //
+        integer segments = 24;
+        integer sides = 8;
+        translated_3ds_torus_smoothing type smoothing is all;
+        
+        // slicing parameters
+        //
+        boolean slice_on is false;
+        scalar slice_from = 0;
+        scalar slice_to = 0;
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+        
+        // additional parameters that
+        // are not provided by 3DS Max
+        //
+        boolean capping is true;
+        scalar slice_from2 = 0;
+        scalar slice_to2 = 0;
+	end;
+
+    // attributes setting method
+    //
+	verb set with
+
+    	// geometry parameters
+    	//
+        scalar radius = 1;
+        scalar radius2 = 0.5;
+        scalar rotation = 0;
+        scalar twist = 0;
+        
+        // tessellation parameters
+        //
+        integer segments = 24;
+        integer sides = 8;
+        translated_3ds_torus_smoothing type smoothing is all;
+        
+        // slicing parameters
+        //
+        boolean slice_on is false;
+        scalar slice_from = 0;
+        scalar slice_to = 0;
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+        
+        // additional parameters that
+        // are not provided by 3DS Max
+        //
+        boolean capping is true;
+        scalar slice_from2 = 0;
+        scalar slice_to2 = 0;
+	end;
+		
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_torus type question get;
+	reference verb recycle;	
+has
+	// geometry attributes
+	//
+    scalar radius;
+    scalar radius2;
+    scalar rotation;
+    scalar twist;
+    
+    // tessellation attributes
+    //
+    integer segments;
+    integer sides;
+    translated_3ds_torus_smoothing type smoothing is all;
+    
+    // additional attributes that
+    // are not provided by 3DS Max
+    //
+    boolean capping;
+    scalar slice_from2;
+    scalar slice_to2;
+
+private	
+	// recycling attributes
+	//
+	translated_3ds_torus type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_torus type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    	
+	verb new with
+	
+    	// geometry parameters
+    	//
+        scalar radius = 1;
+        scalar radius2 = 0.5;
+        scalar rotation = 0;
+        scalar twist = 0;
+        
+        // tessellation parameters
+        //
+        integer segments = 24;
+        integer sides = 8;
+        translated_3ds_torus_smoothing type smoothing is all;
+        
+        // slicing parameters
+        //
+        boolean slice_on is false;
+        scalar slice_from = 0;
+        scalar slice_to = 0;
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+        
+        // additional parameters that
+        // are not provided by 3DS Max
+        //
+        boolean capping is true;
+        scalar slice_from2 = 0;
+        scalar slice_to2 = 0;
+	is
+	    translated_3ds_sliceable_object new with
+
+        	// set slicing parameters
+        	//
+            slice_on is static slice_on;
+            slice_from = static slice_from;
+            slice_to = static slice_to;
+            	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+
+		if verbose_recycling then
+			write "new 3ds torus", ;
+		end;
+				    
+		with translated_3ds_torus do
+		
+        	// set geometry attributes
+        	//
+            its radius = radius;
+            its radius2 = radius2;
+            its rotation = rotation;
+            its twist = twist;
+            
+            // set tessellation attributes
+            //
+            its segments = segments;
+            its sides = sides;
+        	its smoothing is smoothing;
+            
+            // set additional attributes that
+            // are not provided by 3DS Max
+            //
+            its capping is capping;
+            its slice_from2 = slice_from2;
+            its slice_to2 = slice_to2;
+	    end;
+	end;	// new	
+
+
+	//
+    // attributes setting method
+    //
+    
+    
+	verb set with
+
+    	// geometry parameters
+    	//
+        scalar radius = 1;
+        scalar radius2 = 0.5;
+        scalar rotation = 0;
+        scalar twist = 0;
+        
+        // tessellation parameters
+        //
+        integer segments = 24;
+        integer sides = 8;
+        translated_3ds_torus_smoothing type smoothing is all;
+        
+        // slicing parameters
+        //
+        boolean slice_on is false;
+        scalar slice_from = 0;
+        scalar slice_to = 0;
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+        
+        // additional parameters that
+        // are not provided by 3DS Max
+        //
+        boolean capping is true;
+        scalar slice_from2 = 0;
+        scalar slice_to2 = 0;
+    is
+		with translated_3ds_torus do
+		
+        	// set geometry attributes
+        	//
+            its radius = radius;
+            its radius2 = radius2;
+            its rotation = rotation;
+            its twist = twist;
+            
+            // set tessellation attributes
+            //
+            its segments = segments;
+            its sides = sides;
+        	its smoothing is smoothing;
+            
+            // set additional attributes that
+            // are not provided by 3DS Max
+            //
+            its capping is capping;
+            its slice_from2 = slice_from2;
+            its slice_to2 = slice_to2;
+            
+        	// set slicing parameters
+        	//
+            its slice_on is slice_on;
+            its slice_from = slice_from;
+            its slice_to = slice_to;
+            	    
+            // set texturing parameters
+            //
+	        its gen_mapping_coords is gen_mapping_coords;
+	    end;    
+	end;	// set
+	
+	
+    //
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;		
+	    
+        // torus sweep parameters
+        //
+        scalar umin, umax, uspan;
+        scalar vmin, vmax, vspan;
+        
+        // compute range in longitude
+        //
+        if slice_on then
+    	    umin = normalized_positive_angle of slice_to;
+    	    umax = normalized_positive_angle of slice_from;
+    	    if umax = 0 then
+    	    	umax = 360;
+    	    end;
+    	    if umax < umin then
+    	    	umin = itself - 360;
+    	    end;
+    	    uspan = umax - umin;
+    	else
+    		umin = 0;
+    		umax = 360;
+    		uspan = 360;
+    	end;
+    	
+        // compute range in lattitude
+        //
+        if slice_on then
+    	    vmin = normalized_positive_angle of slice_to2;
+    	    vmax = normalized_positive_angle of slice_from2;
+    	    if vmax = 0 then
+    	    	vmax = 360;
+    	    end;
+    	    if vmax < vmin then
+    	    	vmin = itself - 360;
+    	    end;
+    	    vspan = vmax - vmin;
+    	else
+    		vmin = 0;
+    		vmax = 360;
+    		vspan = 360;
+    	end;
+    
+    	radius = larger of radius and 0;
+    
+    	// restrict radius to positive values
+    	//	
+    	if radius2 > 0 then
+    	
+        	// rows = number of vertical divisions
+        	// columns = number of horizontal divisions
+        	//
+        	integer rows = sides;
+        	integer columns = segments;
+        	
+	 		// clamp grid tessellation to minimum values
+	 		//
+        	if rows < min_circle_tessellation then
+        		rows = min_circle_tessellation;
+        	end;
+        	if columns < min_circle_tessellation then
+        		columns = min_circle_tessellation;
+        	end;
+    
+            // create grid
+            //
+            if rows > 0 and columns > 0 then
+                vector vertex_grid[0 .. rows, 0 .. columns];
+                vector normal_grid[0 .. rows, 0 .. columns];
+                		
+            	// compute vertices
+            	//       
+                for integer row = 0 .. rows do
+            		scalar t = row / rows;
+            		scalar v = vmin + t * vspan;
+                	
+                	for integer column = 0 .. columns do
+            	    	scalar s = column / columns;
+            	    	scalar u = umin + s * uspan;
+                		
+                		// rotate for lattitude
+                		//
+                		vector point = rotated_point <0 radius2 0> by (v + rotation + (twist * (1 - s))) around <1 0 0>;
+                		
+                		// rotate for longitude
+                		//
+                		vector center = rotated_point <0 radius 0> by u around <0 0 1>; 
+                		
+                		vertex_grid[row, column] = rotated_point (point + <0 radius 0>) by u around <0 0 1>;
+                		normal_grid[row, column] = vertex_grid[row, column] - center;
+                	end;
+                end;
+                
+        	    editable_mesh add_element (get_grid_mesh 
+        	        of vertex_grid oriented to normal_grid
+        	    with
+        	    	smoothing is some static smoothing;
+        	    	closed is true;
+        	    	reversed is (height < 0);
+        	    	mending is false; 
+        	    	textured is gen_mapping_coords;	
+        	   	);
+            
+               	// add capping faces
+               	//
+            	if capping then
+            	
+            	   	// sweep capping faces
+            	   	//
+            		if uspan <> 360 then
+            			if vspan <> 360 then
+            		    	vector face1[0 .. rows + 1]; 
+            		    	vector face2[0 .. rows + 1];
+            		    	
+            				face1[0] = rotated_point <0 radius 0> by umin around <0 0 1>;
+            				face2[0] = rotated_point <0 radius 0> by umax around <0 0 1>;	
+            			   	for integer row = 1 .. rows + 1 do
+            			   		face1[row] = vertex_grid[row - 1, 0];
+            			   		face2[row] = vertex_grid[row - 1, columns];
+            				end;
+            			   	
+            				editable_mesh add_element (get_triangle_fan_mesh of face1 with
+            					open is true;
+            				    one_sided is true;
+        	    	            textured is gen_mapping_coords;	
+            				);			   	
+            				editable_mesh add_element (get_triangle_fan_mesh of face2 with
+            					open is true;
+            				    one_sided is true;
+            				    reversed is true;
+            	            	textured is gen_mapping_coords;	
+            				);	
+            		   	else
+            		    	vector face1[0 .. rows]; 
+            		    	vector face2[0 .. rows];
+            		    	
+            				face1[0] = rotated_point <0 radius 0> by umin around <0 0 1>;
+            				face2[0] = rotated_point <0 radius 0> by umax around <0 0 1>;	
+            			   	for integer row = 1 .. rows do
+            			   		face1[row] = vertex_grid[row - 1, 0];
+            			   		face2[row] = vertex_grid[row - 1, columns];
+            				end;
+            				
+            				editable_mesh add_element (get_triangle_fan_mesh of face1 with
+            					open is false;
+            				    one_sided is true;
+        	    	            textured is gen_mapping_coords;	
+            				);	
+            				editable_mesh add_element (get_triangle_fan_mesh of face2 with
+            					open is false;
+            				    one_sided is true;
+            				    reversed is true;
+        	    	            textured is gen_mapping_coords;	
+            				);
+            		   	end;
+            	   	end;
+               	end;    // if capping
+            end;    // if rows and columns
+        end;    // if radius2 > 0
+		
+		recycle;
+		answer editable_mesh;
+	end;	// get_collapsed
+	
+    	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_torus type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_torus type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_torus;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_torus;
+		
+		translated_3ds_torus is none;
+	end;		// recycle			
+end;    // translated_3ds_torus
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_torus with
+
+	// geometry parameters
+	//
+    scalar radius = 1;
+    scalar radius2 = 0.5;
+    scalar rotation = 0;
+    scalar twist = 0;
+    
+    // tessellation parameters
+    //
+    integer segments = 24;
+    integer sides = 8;
+    translated_3ds_torus_smoothing type smoothing is all;
+    
+    // slicing parameters
+    //
+    boolean slice_on is false;
+    scalar slice_from = 0;
+    scalar slice_to = 0;
+    
+    // texturing parameters
+    //
+    boolean gen_mapping_coords is false;
+    
+    // additional parameters that
+    // are not provided by 3DS Max
+    //
+    boolean capping is true;
+    scalar slice_from2 = 0;
+    scalar slice_to2 = 0;
+    
+    // modifier stack
+    //
+	translated_3ds_torus type translated_3ds_torus is translated_3ds_torus type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_torus;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_torus set with
+	
+    	// set geometry parameters
+    	//
+        radius = static radius;
+        radius2 = static radius2;
+        rotation = static rotation;
+        twist = static twist;
+        
+        // set tessellation parameters
+        //
+        segments = static segments;
+        sides = static sides;
+        smoothing is static smoothing;
+        
+        // set slicing parameters
+        //
+        slice_on is static slice_on;
+        slice_from = static slice_from;
+        slice_to = static slice_to;
+        
+        // set texturing parameters
+        //
+        gen_mapping_coords is static gen_mapping_coords;
+        
+        // set additional parameters that
+        // are not provided by 3DS Max
+        //
+        capping is static capping;
+        slice_from2 = static slice_from2;
+        slice_to2 = static slice_to2;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_torus

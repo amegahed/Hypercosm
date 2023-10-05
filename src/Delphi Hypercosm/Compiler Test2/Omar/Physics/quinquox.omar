@@ -1,0 +1,451 @@
+{***************************************************************}
+{                          quinquox.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do quinquox_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/common_materials.ores";
+
+
+subject quinquox
+extends
+    actor
+does
+    verb new with
+        scalar length = 5;
+        scalar width = .3;
+        scalar height = 4;
+        scalar tube_height = 2.5;
+        scalar tube_radius = .1;
+        scalar ball_radius = .1;
+        scalar spacing = .4;
+        scalar peg_radius = .025;
+        scalar peg_length = .3;
+    end;    // new
+
+    verb set_dynamics with
+        scalar gravity = .02;
+        scalar elasticity = .5;
+    end;    // set_dynamics
+
+    shape instance;
+    verb act;
+has
+    scalar length;
+    scalar width;
+    scalar height;
+    scalar tube_height;
+    scalar tube_radius;
+    scalar tube_diameter;
+    scalar ball_radius;
+    scalar spacing;
+    scalar peg_radius;
+    scalar peg_length;
+    vector ball_location = <0 0 0>;
+    scalar ball_diameter;
+    color type ball_color = red;
+
+    // dynamics
+    //
+    scalar gravity;
+    scalar elasticity;
+    vector ball_velocity = <0 0 0>;
+    scalar epsilon = .001;
+
+    // peg info used in collision testing
+    //
+    scalar peg_spacing;
+    integer peg_rows;
+    integer peg_columns;
+    scalar h_offset;
+    scalar v_offset;
+    scalar min_height;
+
+    // ball counters
+    //
+    integer tube_number = 0;
+    integer ball_number = 0;
+    integer ball_counter[];
+    integer max_balls = 0;
+    integer max_ball_count = 0;
+    boolean ball_in_motion is false;
+is
+    verb set_dynamics with
+        scalar gravity = .02;
+        scalar elasticity = .5;
+    is
+        with quinquox do
+            its gravity = gravity;
+            its elasticity = elasticity;
+        end;
+    end;    // set_dynamics
+
+
+    verb new with
+        scalar length = 5;
+        scalar width = .3;
+        scalar height = 4;
+        scalar tube_height = 2.5;
+        scalar tube_radius = .1;
+        scalar ball_radius = .1;
+        scalar spacing = .4;
+        scalar peg_radius = .025;
+        scalar peg_length = .3;
+    is
+        // init quinquox attributes
+        //
+        with quinquox do
+            its length = length;
+            its width = width;
+            its height = height;
+            its tube_height = tube_height;
+            its tube_radius = tube_radius;
+            its tube_diameter = tube_radius * 2;
+            its ball_radius = ball_radius;
+            its ball_diameter = ball_radius * 2;
+            its spacing = spacing;
+            its peg_radius = peg_radius;
+            its peg_length = peg_length;
+        end;
+
+        // init peg info used in collision testing
+        //
+        peg_spacing = spacing;
+        peg_rows = trunc (height / peg_spacing + 1);
+        peg_columns = trunc (length / peg_spacing);
+        h_offset = -(peg_columns / 2) * peg_spacing;
+        v_offset = -(peg_rows / 2) * peg_spacing;
+        min_height = -(height / 2) + tube_height;
+
+        // init peg counter stuff
+        //
+        tube_number = trunc (length / tube_diameter);
+        max_balls = trunc (tube_height / ball_diameter);
+        dim ball_counter[1..tube_number];
+        for each integer counter in ball_counter do
+            counter = 0;
+        end;
+
+        // set stuff using in dynamics
+        //
+        set_dynamics;
+    end;    // new
+
+
+    vector question nearest_peg
+        vector location;
+    is
+        scalar x = location dot <1 0 0>;
+        scalar y = location dot <0 0 1>;
+        integer peg_row = round ((y - v_offset) / peg_spacing);
+        integer peg_column;
+
+        y = peg_row * peg_spacing + v_offset;
+        if peg_row mod 2 = 1 then
+            peg_column = round ((x - h_offset) / peg_spacing);
+            x = peg_column * peg_spacing + h_offset;
+        else
+            x = itself - peg_spacing / 2;
+            peg_column = round ((x - h_offset) / peg_spacing);
+            x = (peg_column + .5) * peg_spacing + h_offset;
+        end;
+        answer <x 0 y>;
+    end;    // nearest_peg
+
+
+    vector question peg_collision
+        vector ball_location;
+        vector ball_velocity;
+        vector peg_location;
+    is
+        scalar ball_x = ball_location dot <1 0 0>;
+        scalar ball_y = ball_location dot <0 0 1>;
+        scalar peg_x = peg_location dot <1 0 0>;
+        scalar peg_y = peg_location dot <0 0 1>;
+        vector direction = <(ball_x - peg_x) 0 (ball_y - peg_y)>;
+        scalar distance_squared;
+        vector normal = <0 0 0>;
+
+        distance_squared = direction dot direction;
+        if distance_squared < sqr (ball_radius + peg_radius) then
+            normal = normalized direction;
+            if normal dot ball_velocity > 0 then
+                normal = -normal;
+            end;
+        end;
+        answer normal;
+    end;    // peg_collision
+
+
+    boolean question peg_collide
+    is
+        vector peg_location = nearest_peg ball_location;
+        vector normal = peg_collision ball_location ball_velocity
+            peg_location;
+        vector v1, v2;
+        boolean collision is false;
+
+        if (normal <> <0 0 0>) then
+
+            // move ball correct distance away
+            //
+            ball_location = peg_location + normal * (
+                peg_radius + ball_radius + epsilon);
+            v1 = ball_velocity perpendicular normal;
+            v2 = ball_velocity parallel normal;
+            ball_velocity = (v1 - v2) * elasticity;
+            collision is true;
+        end;
+        answer collision;
+    end;    // peg_collide
+
+
+    boolean question wall_collide
+    is
+        scalar x = ball_location dot <1 0 0>;
+        scalar y = ball_location dot <0 1 0>;
+        scalar z = ball_location dot <0 0 1>;
+        vector normal = <0 0 0>;
+        vector v1, v2;
+        boolean collision is false;
+
+        if abs (x) > (length / 2 - ball_radius) then
+
+            // collide with right / left sides
+            //
+            normal = <1 0 0>;
+            x = (length / 2 - ball_radius - epsilon);
+            if (x > 0) then
+                x = -x;
+            end;
+            ball_location = <x y z>;
+        end;
+        if normal <> <0 0 0> then
+            v1 = ball_velocity perpendicular normal;
+            v2 = ball_velocity parallel normal;
+            ball_velocity = (v1 - v2) * elasticity;
+            collision is true;
+        end;
+        answer collision;
+    end;    // wall_collide
+
+
+    shape peg is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 (-peg_length) 0>;
+            radius = peg_radius;
+        end;
+    end;    // peg
+
+
+    shape test_ball with
+        vector location = <0 0 0>;
+    is
+        color type ball_color;
+        vector peg_location;
+
+        peg_location = nearest_peg location;
+        if peg_collision location <0 0 0> peg_location =
+            <0 0 0>
+        then
+            ball_color = red;
+        else
+            ball_color = white;
+        end;
+        sphere with
+            color = ball_color;
+            move to location;
+            radius = ball_radius;
+        end;
+
+        // show nearest peg
+        //
+        peg with
+            color = white;
+            move to nearest_peg location;
+        end;
+    end;    // test_ball
+
+
+    shape pegs is
+        integer peg_rows = trunc (height / peg_spacing + 1);
+        integer peg_columns = trunc (length / peg_spacing);
+        scalar h_offset = -(peg_columns / 2) * peg_spacing;
+        scalar v_offset = -(peg_rows / 2) * peg_spacing;
+        scalar min_height = -(height / 2) + tube_height;
+        scalar h, v;
+
+        v = v_offset;
+        for integer counter1 = 1..peg_rows do
+            if v > min_height then
+                integer columns;
+
+                if counter1 mod 2 = 1 then
+                    h = h_offset + peg_spacing / 2;
+                    columns = peg_columns;
+                else
+                    h = h_offset;
+                    columns = peg_columns + 1;
+                end;
+                for integer counter2 = 1..columns do
+                    peg with
+                        move to <h 0 v>;
+                    end;
+                    h = itself + peg_spacing;
+                end;
+            end;
+            v = itself + peg_spacing;
+        end;
+    end;    // pegs
+
+
+    shape pegboard is
+        scalar offset = -tube_number / 2 * tube_diameter +
+            tube_radius;
+
+        // backboard of quinquox
+        //
+        block with
+            material is wood;
+            vertex = <(-length / 2) tube_radius (-height / 2)>;
+            side1 = <length 0 0>;
+            side2 = <0 width 0>;
+            side3 = <0 0 height>;
+        end;
+
+        // collection buckets
+        //
+        for integer counter = 1..tube_number do
+            cylinder with
+                render_mode is wireframe;
+                radius = tube_radius;
+                end1 = <offset 0 (-height / 2)>;
+                end2 = <offset 0 (-height / 2 +
+                    tube_height)>;
+            end;
+            offset = offset + tube_diameter;
+        end;
+
+        // pegs
+        //
+        pegs with
+            material is silver;
+            move to <0 tube_radius 0>;
+        end;
+    end;    // pegboard
+
+
+    shape ball_counters
+    is
+        for integer counter1 = 1..tube_number do
+            scalar x = (counter1 - .5) * tube_diameter + h_offset;
+
+            for integer counter2 = 1..ball_counter[counter1] do
+                scalar z = v_offset + counter2 * ball_diameter
+                    + ball_radius;
+                sphere with
+                    move to <x 0 z>;
+                    radius = ball_radius;
+                    color = red;
+                end;
+            end;
+        end;
+    end;    // ball_counters
+
+
+    shape instance is
+        pegboard;
+        sphere with
+            color = ball_color;
+            radius = ball_radius;
+            move to ball_location;
+        end;
+        ball_counters;
+    end;    // instance
+
+
+    verb drop_ball is
+        ball_location = <(random -.01 to .01) 0 (height / 2)>;
+        ball_velocity = <0 0 0>;
+        ball_in_motion is true;
+    end;    // drop_ball
+
+
+    verb count_ball is
+        scalar x = ball_location dot <1 0 0>;
+        integer tube_index = trunc ((x - h_offset) / tube_diameter)
+            + 1;
+
+        if tube_index < 1 then
+            tube_index = 1;
+        end;
+        if tube_index > tube_number then
+            tube_index = tube_number;
+        end;
+        ball_counter[tube_index] = ball_counter[tube_index] + 1;
+
+        // start over
+        //
+        if ball_counter[tube_index] > max_balls then
+            for each integer counter in ball_counter do
+                counter = 0;
+            end;
+        else
+            if ball_counter[tube_index] > max_ball_count then
+                max_ball_count = ball_counter[tube_index];
+            end;
+        end;
+        ball_number = itself + 1;
+
+        // write "balls in column ", peg_column;
+        // writeln " = ", ball_counter[peg_column];
+    end;    // verb count_ball
+
+
+    verb act is
+        if not ball_in_motion then
+            drop_ball;
+        end;
+
+        // drop ball through pegs
+        //
+        if (ball_location dot <0 0 1>) > min_height then
+            if not peg_collide or wall_collide then
+                ball_color = green;
+            else
+                ball_color = red;
+            end;
+            ball_location = ball_location + ball_velocity;
+            ball_velocity = ball_velocity - <0 0 gravity>;
+        else
+            ball_in_motion is false;
+            count_ball;
+        end;
+    end;    // act
+end;    // quinquox
+
+
+anim quinquox_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <0 -8 4>;
+    args check;
+is
+    quinquox type quinquox with
+        length = 2.5;
+    end;
+
+    mouse_controlled_actor quinquox;
+end;    // quinquox_anim

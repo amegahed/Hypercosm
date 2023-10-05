@@ -1,0 +1,23 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           if_then_stmt.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the conditional        }
+{       "if-then" statement in the OMAR language.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do if_then_stmt_example;
+
+verb if_then_stmt_example is
+	integer a = 5;
+
+	// if-then statement
+	//  
+	if a >= 0 then
+		write "a is positive", ;
+	end;
+end;    // if_then_stmt_example

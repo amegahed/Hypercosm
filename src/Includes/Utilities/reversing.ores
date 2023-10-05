@@ -1,0 +1,16 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           reversing.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard generic reversing definition.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective reverseable
+does
+	verb reverse;
+end;    // reverseable

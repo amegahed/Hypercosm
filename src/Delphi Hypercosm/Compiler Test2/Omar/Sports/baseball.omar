@@ -1,0 +1,33 @@
+{***************************************************************}
+{                          baseball.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do baseball_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape baseball
+is
+    material type ball_material is (chalk textured (new
+        texture type using new image type named "baseball.jpg")
+        with color = white);
+
+    sphere with
+        radius = .5;
+        material is ball_material;
+    end;
+end;
+
+anim baseball_anim with
+    eye = <0 -3 1>;
+    facets = 12;
+    double_buffer is on;
+is
+    mouse_controlled_shape baseball;
+end;

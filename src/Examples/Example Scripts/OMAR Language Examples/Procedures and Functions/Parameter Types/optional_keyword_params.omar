@@ -1,0 +1,66 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     optional_keyword_params.omar       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of optional keyword parameters in the OMAR      }
+{       language.                                               }
+{                                                               }
+{       Optional keyword parameters are very similar to         }
+{       optional parameters except that the paramter values     }
+{       are specified by using a keyword rather than by         }
+{       using the name of the parameter to set its value.       }
+{                                                               }
+{       There is no direct analogy for these types of           }
+{       parameters in languages such as C, C++, and Pascal.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do optional_keyword_params_example;
+
+verb init_table
+	integer table[];                // mandatory parameter for table
+	to integer value = 0;           // optional keyword parameter for table contents (with default)
+is
+	for each integer i in table do
+		i = value;
+	end;
+end;    // init_table
+
+verb write_table
+	integer table[];
+is
+	for each integer i in table do
+		write i, " ";
+	end;
+end;    // write_table
+
+verb optional_keyword_params_example is
+	integer table[1 .. 10];
+	// initialize table using the default value for the optional parameter
+	//
+	init_table table;
+	write "table values using default value:";
+	write_table table;
+	// write an empty line to seperate output
+	//  
+	write;  
+	
+	// call function with a specific value (0) for the optional parameter
+	//
+	init_table table to 1;
+	write "table values initialized to 1: ";
+	write_table table;
+	// write an empty line to seperate output
+	//  
+	write;  
+		
+	// call function with a specific value (0) for the optional parameter
+	//
+	init_table table to -1;
+	write "table values initialized to -1: ";
+	write_table table;
+end;    // optional_keyword_params_example

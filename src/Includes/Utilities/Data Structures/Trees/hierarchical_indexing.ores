@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       hierarchical_indexing.ores       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains general definitions of hierarchical            }
+{       types that can be indexed using integer indices.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective hierarchically_indexable
+does
+	// This method is used to access a particular node in a tree
+	// using a list of integer indices.  If the list of indices
+	// is empty, then the root is returned.  Otherwise, the 
+	// children are indexed by using each sucessive integer index
+	// to index into the collection of children.  The first child
+	// always starts at 1.  An index of 0 is not permitted.
+	//
+	object type question get_child
+		at integer indices;
+	end;
+	object type question get_descendent
+		at integer indices[];
+	end;
+	
+	// This method finds a list of indices of a particular element
+	// in a tree. If the element is not found, then an empty array 
+	// is returned. Array indices start at 1 and array indices of 0
+	// are not permitted.
+	//
+	integer[] question get_indices
+		of object type element;
+	end;
+end;    // hierarchically_indexable

@@ -1,0 +1,219 @@
+{***************************************************************}
+{                          fisheye.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do fisheye_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.omar";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+
+
+shape fisheye_scene is
+    line [<-1 -1 -1> <1 -1 -1> <1 1 -1> <-1 1 -1> <-1 -1 -1>];
+    line [<-1 -1 1> <1 -1 1> <1 1 1> <-1 1 1> <-1 -1 1>];
+    line [<-1 -1 -1> <-1 -1 1>];
+    line [<1 -1 -1> <1 -1 1>];
+    line [<1 1 -1> <1 1 1>];
+    line [<-1 1 -1> <-1 1 1>];
+end;    // fisheye_scene
+
+
+shape fisheye_rays is
+
+    // rays
+    //
+    line [<.25 1 -.25> <-.25 -.9 .25>];
+    line [<-.25 1 -.25> <.25 -.9 .25>];
+    line [<.25 1 .25> <-.25 -.9 -.25>];
+    line [<-.25 1 .25> <.25 -.9 -.25>];
+    line [<.25 1.5 -.25> <-.16 -.95 .16>];
+    line [<-.25 1.5 -.25> <.16 -.95 .16>];
+    line [<.25 1.5 .25> <-.16 -.95 -.16>];
+    line [<-.25 1.5 .25> <.16 -.95 -.16>];
+end;    // fisheye_rays
+
+
+shape fisheye_projection is
+
+    // image on plane
+    //
+    scalar theta;
+
+    {
+        line [(-.25 -1 -.25) (.25 -1 -.25) (.25 -1 .25) (-.25 -1 .25) (-.2
+        5 -1 -.25)];
+        line [(-.16 -1 -.16) (.16 -1 -.16) (.16 -1 .16) (-.16 -1 .16) (-.1
+        6 -1 -.16)];
+
+        line [(-.25 -1 -.25) (-.16 -1 -.16)];
+        line [(.25 -1 -.25) (.16 -1 -.16)];
+        line [(.25 -1 .25) (.16 -1 .16)];
+        line [(-.25 -1 .25) (-.16 -1 .16)];
+        }
+
+    // diagonal arcs
+    arc to 6 with
+        rotate by 13 around <0 0 1>;
+        rotate by -90 around <0 0 1>;
+        rotate by 45 around <0 1 0>;
+    end;
+    arc to 6 with
+        rotate by 13 around <0 0 1>;
+        rotate by -90 around <0 0 1>;
+        rotate by (45 + 90) around <0 1 0>;
+    end;
+    arc to 6 with
+        rotate by 13 around <0 0 1>;
+        rotate by -90 around <0 0 1>;
+        rotate by (45 + 180) around <0 1 0>;
+    end;
+    arc to 6 with
+        rotate by 13 around <0 0 1>;
+        rotate by -90 around <0 0 1>;
+        rotate by (45 + 270) around <0 1 0>;
+    end;
+
+    // large box
+    //
+    theta = 14;
+
+    // horizontal arcs
+    //
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by theta around <1 0 0>;
+    end;
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by -theta around <1 0 0>;
+    end;
+
+    // vertical arcs
+    //
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by 90 around <0 1 0>;
+        rotate by theta around <0 0 1>;
+    end;
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by 90 around <0 1 0>;
+        rotate by -theta around <0 0 1>;
+    end;
+
+    // small box
+    //
+    theta = 9;
+
+    // horizontal arcs
+    //
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by theta around <1 0 0>;
+    end;
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by -theta around <1 0 0>;
+    end;
+
+    // vertical arcs
+    //
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by 90 around <0 1 0>;
+        rotate by theta around <0 0 1>;
+    end;
+    arc to (theta * 2) with
+        rotate by -(theta + 90) around <0 0 1>;
+        rotate by 90 around <0 1 0>;
+        rotate by -theta around <0 0 1>;
+    end;
+end;    // fisheye_projection
+
+
+shape fisheye_screen is
+    scalar width = 30;
+    scalar height = 20;
+    
+    sphere with
+        radius = 1;
+        umin = -width;
+        umax = width;
+        vmin = -height;
+        vmax = height;
+        rotate by -90 around <0 0 1>;
+        move to <0 1 0>;
+        edges is silhouette;
+    end;
+end;    // fisheye_screen
+
+
+anim fisheye_anim with
+    eye = <6 -6 4>;
+    field_of_view = 30;
+is
+	shape scene is
+	    arrow from <0 -.99 0> to <0 2.5 0> with
+	        arrow_head_length = .05;
+	        color = green;
+	    end;
+	    mark at <0 0 0>;
+	    fisheye_scene with
+	        magnify by .25;
+	        move to <0 1.25 0>;
+	        color = red;
+	    end;
+	    outlined fisheye_screen with
+	        move to <0 -.99 0>;
+	        material is glass;
+	    end;
+		sphere with
+			vmax = 0;
+	        rotate by -90 around <1 0 0>;
+	        render_mode is wireframe;
+			edges is silhouette;
+			color = white;
+		end;
+	    futura_l_word "FOCAL POINT";
+	    futura_l_word "IMAGE PLANE" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 -1 -.5>;
+	    end;
+	    futura_l_word "LINE" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 .15>;
+	    end;
+	    futura_l_word "OF" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 0>;
+	    end;
+	    futura_l_word "SIGHT" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 -.15>;
+	    end;
+	    futura_l_word "SCENE" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 1 .5>;
+	    end;
+	    fisheye_rays with
+	        color = blue;
+	    end;
+	    fisheye_projection with
+	        color = red;
+	    end;
+	end;
+	
+	mouse_controlled_shape scene;
+end;    // fisheye_anim

@@ -1,0 +1,589 @@
+{***************************************************************}
+{                          city.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do city_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/house.omar";
+include "system/roadster.omar";
+include "system/telephone_pole.omar";
+
+
+image type pavement named "stucco2.tga";
+
+shape garbage_can is
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 1>;
+        radius = .35;
+    end;
+    disk with
+        center = <0 0 0>;
+        normal = <0 0 1>;
+        radius = .35;
+    end;
+end;    // garbage can
+
+
+shape garbage_cans is
+    garbage_can with material is chalk colored light grey; end;
+    garbage_can with
+        material is chalk colored light grey;
+        move to <-1.2 1.2 0>;
+    end;
+    garbage_can with
+        material is chalk colored light grey;
+        move to <.3 1 0>;
+    end;
+    garbage_can with
+        material is chalk colored light grey;
+        rotate by 90 around <1 0 0>;
+        rotate by -30 around <0 0 1>;
+        move to <-.5 -.5 .35>;
+    end;
+end;    // garbage_cans
+
+
+shape streetlight is
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 .8>;
+        radius = .02;
+    end;
+
+    {
+        cylinder with
+                end1 = 0 0 .9; end2 = 0 .3 .9; radius = .02; end;
+        }
+    torus with
+        umax = 180;
+        normal = <1 0 0>;
+        inner_radius = .22;
+        outer_radius = .25;
+        scale by .25 along <0 0 1>;
+        move to <0 .23 .8>;
+    end;
+    sphere with
+        radius = .05;
+        vmin = 0;
+        vmax = 90;
+        scale by 1.5 along <0 1 0>;
+        scale by .5 along <0 0 1>;
+        move to <0 .5 .77>;
+    end;
+
+    {
+        point_light with
+                move to 0 .5 .77;
+                color = light light orange;
+                brightness = .8;
+        end;
+        }
+
+    {
+        sphere with
+                move to 0 .5 .77;
+                radius = .01;
+                color = white;
+        end;
+        }
+end;    // streetlight
+
+
+shape car is
+    roadster type's form with
+        magnify by .0075;
+    end;
+end;    // car
+
+
+shape home is
+    house;
+    block with
+        material is chalk colored grey;
+        vertex = <.125 0 0>;
+        side1 = <.25 0 0>;
+        side2 = <0 -2 0>;
+        side3 = <0 0 .01>;
+    end;    // front walk
+
+    {
+        telephone_pole with magnify by 2; move to 1 -2.15 0; end;
+        }
+
+    streetlight with
+        material is metal;
+        magnify by 2;
+        rotate by 180 around <0 0 1>;
+        move to <1 -1.5 0>;
+    end;
+    garbage_cans with
+        magnify by .2;
+        move to <.7 -2.2 0>;
+    end;
+    flat speckled charcoal square with
+        scale by .75 along <1 0 0>;
+        scale by 1.5 along <0 1 0>;
+        move to <-1 -1 .005>;
+    end;    // driveway
+
+    {
+        car with
+                rotate by 90 around 0 0 1;
+                move to -.7 -1.6 0;
+        end;
+        }
+end;    // home
+
+
+shader sided
+        color type color;
+is
+        scalar spacing = .1;
+        scalar z = (location in local) dot <0 0 1>;
+
+        z = itself - trunc(z / spacing) * spacing;
+
+        if z < .01 then
+                answer black;
+        else
+                answer color;
+        end;
+end;    // sided
+
+
+shape houses1 is
+
+    {flat light yellow home with move to -5 0 0; end;}
+
+    flat bricked home with
+        move to <-5 0 0>;
+        magnify the shader_trans by .5;
+    end;
+    home with
+        material is chalk colored brown;
+        scale by -1 along <1 0 0>;
+    end;
+
+    {flat light green home with move to 5 0 0; end;}
+    flat bricked color light brown home with
+        move to <5 0 0>;
+        magnify the shader_trans by .5;
+    end;
+end;    // houses1
+
+
+shape houses2 is
+    home with
+        material is chalk colored light blue;
+        move to <-5 0 0>;
+    end;
+    home with
+        material is chalk colored grey;
+        scale by -1 along <1 0 0>;
+    end;
+    flat bricked home with
+        move to <5 0 0>;
+        magnify the shader_trans by .5;
+    end;
+end;    // houses2
+
+
+shape houses3 is
+    home with
+        material is chalk colored light gold;
+        move to <-5 0 0>;
+    end;
+
+    {flat light grey home with scale by -1 along 1 0 0; end;}
+    flat bricked color brown home with
+        scale by -1 along <1 0 0>;
+        magnify the shader_trans by .5;
+    end;
+    home with
+        material is chalk colored light brown;
+        move to <5 0 0>;
+    end;
+end;    // houses3
+
+
+shape houses4 is
+    home with
+        material is chalk colored red;
+        move to <-5 0 0>;
+    end;
+    home with
+        material is chalk colored white;
+        scale by -1 along <1 0 0>;
+    end;
+
+    {flat purple home with move to 5 0 0; end;}
+    flat bricked color gold home with
+        move to <5 0 0>;
+        magnify the shader_trans by .5;
+    end;
+end;    // houses4
+
+
+shape sidewalk is
+    square with
+        material is chalk colored light grey;
+        scale by .125 along <0 1 0>;
+        scale by 9.125 along <1 0 0>;
+    end;
+end;    // sidewalk
+
+
+shape street is
+    flat speckled charcoal square with
+        scale by .5 along <0 1 0>;
+        scale by 10.5 along <1 0 0>;
+    end;
+end;    // street
+
+
+shape city_block is
+    scalar h1 = .001;   // height of sidewalks
+    scalar h2 = .002;   // height of streets
+
+    houses1 with
+        move to <0 3 0>;
+    end;
+    houses2 with
+        scale by -1 along <0 1 0>;
+        move to <0 7 0>;
+    end;
+    houses3 with
+        scale by -1 along <0 1 0>;
+        move to <0 -3 0>;
+    end;
+    houses4 with
+        move to <0 -7 0>;
+    end;
+
+    // sidewalks
+    //
+    sidewalk with
+        move to <0 -9 h1>;
+    end;
+    sidewalk with
+        move to <0 9 h1>;
+    end;
+    sidewalk with
+        rotate by 90 around <0 0 1>;
+        move to <9 0 .01>;
+    end;
+    sidewalk with
+        rotate by 90 around <0 0 1>;
+        move to <-9 0 .01>;
+    end;
+    street with
+        move to <0 0 h2>;
+    end;
+    sidewalk with
+        move to <0 -1 h1>;
+    end;
+    sidewalk with
+        move to <0 1 h1>;
+    end;
+
+    // streets
+    //
+    street with
+        move to <0 -10 h2>;
+    end;
+    street with
+        move to <0 10 h2>;
+    end;
+    street with
+        rotate by 90 around <0 0 1>;
+        move to <10 0 h2>;
+    end;
+    street with
+        rotate by 90 around <0 0 1>;
+        move to <-10 0 h2>;
+    end;
+
+    {
+        street with move to 10 0 h2; rotate by 90 around 0 0 1; end;
+        street with move to 10 0 h2; rotate by 90 around 0 0 1; end;
+        }
+
+    // cars
+    //
+    {
+        glossy red car with move to 2 -9.8 0; end;
+        glossy yellow car with
+                rotate by 90 around 0 0 1;
+                move to 9.8 -6 0;
+        end;
+
+        // cars on middle road
+        //
+        glossy (.3 .5 1) car with
+                rotate by 180 around 0 0 1;
+                move to 8 -.2 0;
+        end;
+        glossy (.3 .5 1) car with
+                rotate by 180 around 0 0 1;
+                move to -3 -.2 0;
+        end;
+        glossy (.3 .5 1) car with move to 3 .2 0; end;
+        }
+
+    // trees
+    //
+    ash_tree with
+        magnify by 1.5;
+        move to <8.2 8 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <8.2 -8 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <-8.2 8 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <-8.2 -8 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <8.5 2 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <8.5 -2 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <-8.5 2 0>;
+    end;
+    ash_tree with
+        magnify by 1.5;
+        move to <-8.5 -2 0>;
+    end;
+end;    // city_block
+
+
+shape neighborhood is
+    city_block with
+        move to <10 10 0>;
+    end;
+    city_block with
+        rotate by -90 around <0 0 1>;
+        move to <10 -10 0>;
+    end;
+    city_block with
+        rotate by -90 around <0 0 1>;
+        move to <-10 10 0>;
+    end;
+    city_block with
+        move to <-10 -10 0>;
+    end;
+end;    // neighborhood
+
+
+shape village is
+    neighborhood with
+        move to <20 20 0>;
+    end;
+    neighborhood with
+        rotate by 90 around <0 0 1>;
+        move to <20 -20 0>;
+    end;
+    neighborhood with
+        rotate by 90 around <0 0 1>;
+        move to <-20 20 0>;
+    end;
+    neighborhood with
+        move to <-20 -20 0>;
+    end;
+end;    // village
+
+
+shape town is
+    village with
+        move to <40 40 0>;
+    end;
+    village with
+        rotate by 90 around <0 0 1>;
+        move to <40 -40 0>;
+    end;
+    village with
+        rotate by 90 around <0 0 1>;
+        move to <-40 40 0>;
+    end;
+    village with
+        move to <-40 -40 0>;
+    end;
+end;    // town
+
+
+shape city is
+    town with
+        move to <80 80 0>;
+    end;
+    town with
+        rotate by 90 around <0 0 1>;
+        move to <80 -80 0>;
+    end;
+    town with
+        rotate by 90 around <0 0 1>;
+        move to <-80 80 0>;
+    end;
+    town with
+        move to <-80 -80 0>;
+    end;
+end;    // city
+
+
+shape burbs is
+    city with
+        move to <160 160 0>;
+    end;
+    city with
+        rotate by 90 around <0 0 1>;
+        move to <160 -160 0>;
+    end;
+    city with
+        rotate by 90 around <0 0 1>;
+        move to <-160 160 0>;
+    end;
+    city with
+        move to <-160 -160 0>;
+    end;
+end;    // burbs
+
+
+picture home_picture with
+    eye = <1 -5 2>;
+    lookat = <0 0 0>;
+    field_of_view = 80;
+    render_mode is shaded;
+    facets = 0;
+    shadows is off;
+is
+    distant_light from <5 .5 7>;
+    flat bricked home with
+        magnify the shader_trans by .5;
+    end;
+    flat speckled dark green plane with
+        magnify by 4;
+    end;
+end;    // home_picture
+
+
+picture block_picture with
+    eye = <4 -20 8>;
+    lookat = <0 0 0>;
+    field_of_view = 80;
+    render_mode is shaded;
+    facets = 0;
+    min_ray_weight = .05;
+is
+    distant_light from <5 .5 7>;
+    city_block;
+    flat speckled dark green plane with
+        magnify by 50;
+    end;
+end;    // block_picture
+
+
+picture town_picture with
+    eye = <-10 -15 5>;
+    lookat = <0 0 0>;
+    field_of_view = 60;
+    render_mode is shaded;
+    facets = 0;
+    min_ray_weight = .1;
+    fog_factor = 100;
+    background = black;
+    ambient = white * .4;
+    shadows is off;
+is
+    town;
+    flat speckled dark green plane with
+        magnify by 50;
+    end;
+end;    // town_picture
+
+
+picture city_picture with
+    eye = <-10 -15 5>;
+    lookat = <0 0 0>;
+    field_of_view = 60;
+    projection is fisheye;
+    render_mode is shaded;
+    facets = 0;
+    shading is pixel;
+    background = sky_blue;
+    fog_factor = 200;
+    ambient = white * .2;
+    min_ray_weight = .2;
+    shadows is on;
+    reflections is on;
+    facets = 0;
+is
+    distant_light from <.2 -.3 1>;
+    burbs;
+    flat speckled dark green plane with
+        magnify by 50;
+    end;
+end;    // city_picture
+
+
+picture sunset_picture with
+    eye = <-10 -.5 .5>;
+    eye = <-20 -1 .5>;
+    field_of_view = 60;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+is
+    vector sun_location = <1000 100 100>;
+
+    // overhead light
+    //
+    distant_light from <-5 .5 7> with
+        brightness = .4;
+    end;
+
+    // sunlight
+    //
+    point_light with
+        move to sun_location;
+        color = yellow;
+        brightness = 1500;
+    end;
+
+    // sun's disk
+    //
+    sphere with
+        material is constant_color yellow;
+        center = sun_location - (sun_location - eye) * .1;
+        radius = 40;
+    end;
+
+    // sky
+    //
+    plane with
+        color = <1 .2 .2>;
+        origin = sun_location + (sun_location - eye) * .4;
+        normal = origin - eye;
+    end;
+    village;
+    plane with color = <0 .3 .1>; end;
+end;    // sunset_picture

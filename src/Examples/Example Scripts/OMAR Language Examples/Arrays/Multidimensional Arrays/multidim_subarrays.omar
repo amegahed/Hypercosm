@@ -1,0 +1,97 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       multidim_subarrays.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of multi-dimensional subarray expressions       }
+{       in the OMAR language.                                   }
+{                                                               }
+{       There is no direct analogy for this language            }
+{       feature in languages such as C, C++, and Pascal.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do multidim_subarrays_example;
+
+// two dimensional arrays
+//
+integer a[1 .. 5, 1 .. 5];      // small array of arrays
+integer b[1 .. 10, 1 .. 10];    // larger array of arrays
+// arrays of arrays
+//
+integer c[1 .. 5][1 .. 5];          // small two dimensional array
+integer d[1 .. 10][1 .. 10];        // larger two dimensional array
+
+verb init_arrays 
+is
+	// initialize two dimensional arrays
+	//
+	for each integer i in a do
+		i = 0;
+	end;
+	for each integer i in b do
+		i = 0;
+	end;
+	
+	// initialize arrays of arrays 
+	//
+	for integer row = min c .. max c do
+		for integer column = min c[row] .. max c[row] do
+			c[row][column] = 0;
+		end;
+	end;
+	for integer row = min d .. max d do
+		for integer column = min d[row] .. max d[row] do
+			d[row][column] = 0;
+		end;
+	end;
+end;    // init_arrays
+
+verb multidim_subarrays_example 
+is
+	init_arrays;
+	
+	// Copy a subportion of a multidimensional array to a
+	// multidimensional array
+	//
+	a = b[1 .. 5, 1 .. 5];                  
+											
+	// Copy a subportion of a multidimensional array to a
+	// subportion of multidimensional array
+	//
+	a[1 .. 2, 1 .. 2] = b[1 .. 2, 1 .. 2];  
+	
+	// Copy a subportion of an array of arrays array to an
+	// array of arrays
+	//
+	c = d[1 .. 5][1 .. 5];          
+									
+	// Copy a subportion of an array of arrays array to a
+	// subportion of an array of arrays
+	//
+	c[1 .. 2][1 .. 2] = d[1 .. 2][1 .. 2];
+	// Copy a subportion of an array of arrays to
+	// a multidimensional array
+	//
+	a = c[1 .. 5][1 .. 5];
+	
+	// Copy a subportion of a multidimensional array to
+	// an array of arrays
+	//
+	c = a[1 .. 5, 1 .. 5];  
+	
+	// Copy a subportion of an array of arrays to a 
+	// subportion of a multidimensional array
+	//
+	a[1 .. 2, 1 .. 2] = c[1 .. 2][1 .. 2];
+	
+	// Copy a subportionof a multidimensional array to a
+	// suportion of an array of arrays
+	//
+	c[1 .. 2][1 .. 2] = a[1 .. 2, 1 .. 2];  
+				
+	write "ok!", ;
+end;    // multidim_subarrays_example

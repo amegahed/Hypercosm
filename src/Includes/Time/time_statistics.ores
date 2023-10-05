@@ -1,0 +1,462 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        time_statistics.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains subjects for accumulating samples of time-     }
+{       varying data, and performing some analysis on them.     }
+{       Currently it allows only lookup of the data at a given  }
+{       time.  Eventually it will include windowed average      }
+{       functionality.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// The {T} below is a placeholder that allows the subject to be easily
+// duplicated and customized for a new type of data.
+//
+subject {T} scalar_time_statistics
+does
+	// constructor
+	//
+	verb new
+		scalar max_window;
+	end;
+	
+	verb reset;
+	
+	verb add
+		{T} scalar value;
+		at scalar time;
+	end;
+	
+	{T} scalar question get_value
+		at scalar time;
+	with
+		boolean interpolate_closest_samples is true;
+	end;
+has
+	// attributes
+	//
+	scalar oldest_base_time;
+	integer oldest_index;
+	integer youngest_index;
+	boolean empty is true;
+	scalar max_window;
+
+	// Each entry in the system represents a range of time, and the
+	// time and value at the end of that range.
+	//
+	scalar times[1 .. 64];
+	{T} scalar values[1 .. 64];
+is
+	//
+	// constructor
+	//
+
+	verb new
+		scalar max_window;
+	is
+		{T} scalar_time_statistics's max_window = max_window;
+	end;    // new
+	
+	verb reset
+	is
+		empty is true;
+	end;    // reset
+	
+	// private utility method
+	//
+	verb wrap_index
+		integer reference index;
+	is
+		if index > max times then
+			index = min times;
+		elseif index < min times then
+			index = max times;
+		end;
+	end;    // wrap_index
+	
+	verb add
+		{T} scalar value;
+		at scalar time;
+	is
+		if empty then
+			oldest_index = 1;
+			youngest_index = 1;
+			
+			times[1] = time;
+			values[1] = value;
+			oldest_base_time = time;
+			empty is false;
+		else
+			integer next_index = youngest_index + 1;
+			
+			wrap_index next_index;
+			
+			if next_index = oldest_index then
+
+				// We've run out of space in the buffer.  If the
+				// difference between the time of the new entry and
+				// the time of the oldest entry is at least as large
+				// as the maximum time window that we need to watch,
+				// then it's safe to throw away the oldest entry.
+				//
+				if (time - times[oldest_index]) >= max_window then
+					oldest_base_time = times[oldest_index];
+					oldest_index = itself + 1;
+					wrap_index oldest_index;
+				else
+					// We really are out of space.  Make new arrays
+					// that are larger, and copy the data over.
+					//
+					integer numtimes = num times;
+					integer j = 1;
+					scalar new_times[1 .. (numtimes + 64)];
+					{T} scalar new_values[1 .. (numtimes + 64)];
+					
+					if youngest_index < oldest_index then
+
+						// The used portion of the buffer wraps
+						// around.  It must be copied in two parts.
+						//
+						for integer i = oldest_index .. max times do
+							new_times[j] = times[i];
+							new_values[j] = values[j];
+							j = itself + 1;
+						end;
+						
+						for integer i = min times .. youngest_index do
+							new_times[j] = times[i];
+							new_values[j] = values[j];
+							j = itself + 1;
+						end;
+					else
+						for integer i = oldest_index .. youngest_index do
+							new_times[j] = times[i];
+							new_values[j] = values[j];
+							j = itself + 1;
+						end;
+					end;
+					
+					youngest_index = j;
+					oldest_index = 1;
+					
+					times is new_times;
+					values is new_values;
+				end;
+			end;
+			
+			// Now it's safe to write the new entry to next_index
+			//
+			times[next_index] = time;
+			values[next_index] = value;
+			youngest_index = next_index;
+		end;
+	end;    // add
+	
+	// private utility method
+	//
+	verb get_closest_indices
+		at scalar time;     // must be in (oldest..youngest)
+	return
+		integer index1;     // older than time
+		integer index2;     // younger or equal to time
+	is
+		scalar oldest_time = times[oldest_index];
+		scalar youngest_time = times[youngest_index];
+		
+		if time <= ((youngest_time + oldest_time) / 2) then
+
+			// The time is closer to the older end
+			//
+			index1 = oldest_index;
+			index2 = index1 + 1;
+			wrap_index index2;
+			
+			while times[index2] < time do
+				index1 = index2;
+				index2 = itself + 1;
+				wrap_index index2;
+			end;
+		else
+			// The time is closer to the younger end
+			//
+			index2 = youngest_index;
+			index1 = index2 - 1;
+			wrap_index index1;
+			
+			while times[index1] >= time do
+				index2 = index1;
+				index1 = itself - 1;
+				wrap_index index1;
+			end;
+		end;
+	end;    // get_closest_indices
+	
+	{T} scalar question get_value
+		at scalar time;
+	with
+		boolean interpolate_closest_samples is true;
+	is
+		if empty then
+			answer {T} 0;
+		else
+			scalar oldest_time = times[oldest_index];
+			scalar youngest_time = times[youngest_index];
+			
+			if time <= oldest_time then
+				answer values[oldest_index];
+			elseif time >= youngest_time then
+				answer values[youngest_index];
+			else
+				integer index1;
+				integer index2;
+				scalar t;
+				
+				get_closest_indices at time return index1 index2;
+				
+				oldest_time = times[index1];
+				youngest_time = times[index2];
+				
+				t = (time - oldest_time) /
+					(youngest_time - oldest_time);
+				
+				if interpolate_closest_samples then
+					answer ((1 - t) * values[index1]) +
+						   (t * values[index2]);
+				else
+					if t >= 0.5 then
+						answer values[index2];
+					else
+						answer values[index1];
+					end;
+				end;
+			end;
+		end;
+	end;
+end;    // {T} scalar_time_statistics
+
+subject {T} vector_time_statistics
+does
+	// constructor
+	//
+	verb new
+		scalar max_window;
+	end;
+	
+	verb reset;
+	
+	verb add
+		{T} vector value;
+		at scalar time;
+	end;
+	
+	{T} vector question get_value
+		at scalar time;
+	with
+		boolean interpolate_closest_samples is true;
+	end;
+has
+	// attributes
+	//
+	scalar oldest_base_time;
+	integer oldest_index;
+	integer youngest_index;
+	boolean empty is true;
+	scalar max_window;
+
+	// Each entry in the system represents a range of time, and the
+	// time and value at the end of that range.
+	//
+	scalar times[1 .. 64];
+	{T} vector values[1 .. 64];
+is
+	//
+	// construtor
+	//
+
+	verb new
+		scalar max_window;
+	is
+		{T} vector_time_statistics's max_window = max_window;
+	end;    // new
+	
+	verb reset
+	is
+		empty is true;
+	end;    // reset
+	
+	// private utility method
+	//
+	verb wrap_index
+		integer reference index;
+	is
+		if index > max times then
+			index = min times;
+		elseif index < min times then
+			index = max times;
+		end;
+	end;    // wrap_index
+	
+	verb add
+		{T} vector value;
+		at scalar time;
+	is
+		if empty then
+			oldest_index = 1;
+			youngest_index = 1;
+			
+			times[1] = time;
+			values[1] = value;
+			oldest_base_time = time;
+			empty is false;
+		else
+			integer next_index = youngest_index + 1;
+			
+			wrap_index next_index;
+			
+			if next_index = oldest_index then
+
+				// We've run out of space in the buffer.  If the
+				// difference between the time of the new entry and
+				// the time of the oldest entry is at least as large
+				// as the maximum time window that we need to watch,
+				// then it's safe to throw away the oldest entry.
+				//
+				if (time - times[oldest_index]) >= max_window then
+					oldest_base_time = times[oldest_index];
+					oldest_index = itself + 1;
+					wrap_index oldest_index;
+				else
+					// We really are out of space.  Make new arrays
+					// that are larger, and copy the data over.
+					//
+					integer numtimes = num times;
+					integer j = 1;
+					scalar new_times[1 .. (numtimes + 64)];
+					{T} vector new_values[1 .. (numtimes + 64)];
+					
+					if youngest_index < oldest_index then
+
+						// The used portion of the buffer wraps
+						// around.  It must be copied in two parts.
+						//
+						for integer i = oldest_index .. max times do
+							new_times[j] = times[i];
+							new_values[j] = values[j];
+							j = itself + 1;
+						end;
+						
+						for integer i = min times .. youngest_index do
+							new_times[j] = times[i];
+							new_values[j] = values[j];
+							j = itself + 1;
+						end;
+					else
+						for integer i = oldest_index .. youngest_index do
+							new_times[j] = times[i];
+							new_values[j] = values[j];
+							j = itself + 1;
+						end;
+					end;
+					
+					youngest_index = j;
+					oldest_index = 1;
+					
+					times is new_times;
+					values is new_values;
+				end;
+			end;
+			
+			// Now it's safe to write the new entry to next_index
+			//
+			times[next_index] = time;
+			values[next_index] = value;
+			youngest_index = next_index;
+		end;
+	end;    // add
+	
+	// private utility method
+	//
+	verb get_closest_indices
+		at scalar time;     // must be in (oldest..youngest)
+	return
+		integer index1;     // older than time
+		integer index2;     // younger or equal to time
+	is
+		scalar oldest_time = times[oldest_index];
+		scalar youngest_time = times[youngest_index];
+		
+		if time <= ((youngest_time + oldest_time) / 2) then
+
+			// The time is closer to the older end
+			//
+			index1 = oldest_index;
+			index2 = index1 + 1;
+			wrap_index index2;
+			
+			while times[index2] < time do
+				index1 = index2;
+				index2 = itself + 1;
+				wrap_index index2;
+			end;
+		else
+			// The time is closer to the younger end
+			//
+			index2 = youngest_index;
+			index1 = index2 - 1;
+			wrap_index index1;
+			
+			while times[index1] >= time do
+				index2 = index1;
+				index1 = itself - 1;
+				wrap_index index1;
+			end;
+		end;
+	end;    // get_closest_indices
+	
+	{T} vector question get_value
+		at scalar time;
+	with
+		boolean interpolate_closest_samples is true;
+	is
+		if empty then
+			answer {T} <0 0 0>;
+		else
+			scalar oldest_time = times[oldest_index];
+			scalar youngest_time = times[youngest_index];
+			
+			if time <= oldest_time then
+				answer values[oldest_index];
+			elseif time >= youngest_time then
+				answer values[youngest_index];
+			else
+				integer index1;
+				integer index2;
+				scalar t;
+				
+				get_closest_indices at time return index1 index2;
+				
+				oldest_time = times[index1];
+				youngest_time = times[index2];
+				
+				t = (time - oldest_time) /
+					(youngest_time - oldest_time);
+				
+				if interpolate_closest_samples then
+					answer ((1 - t) * values[index1]) +
+						   (t * values[index2]);
+				else
+					if t >= 0.5 then
+						answer values[index2];
+					else
+						answer values[index1];
+					end;
+				end;
+			end;
+		end;
+	end;
+end;    // {T} vector_time_statistics

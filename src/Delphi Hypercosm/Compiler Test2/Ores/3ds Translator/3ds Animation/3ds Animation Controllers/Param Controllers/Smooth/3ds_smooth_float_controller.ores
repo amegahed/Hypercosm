@@ -1,0 +1,89 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	3ds_smooth_float_controller.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_bezier_float_controller.ores";
+
+
+subject translated_3ds_smooth_float_controller 
+extends
+	translated_3ds_bezier_float_controller
+does
+    // constructor
+    //
+	verb new
+		of scalar values[];
+		at translated_3ds_time type times[];
+	end;
+is
+	objective scalar[] question get_tangents
+		of scalar values[];
+		at translated_3ds_time type times[];
+	is
+		scalar tangents[min values .. max values];
+		scalar slopes[1 .. num values - 1];
+			
+		// compute slopes
+		//
+		for integer counter = 1 .. num values - 1 do
+			scalar dy = values[counter + 1] - values[counter];
+			scalar dx = times[counter + 1] - times[counter];			
+			slopes[counter] = dy / dx;
+		end;
+			
+		// compute tangents
+		//
+		for integer counter = 1 .. num values do
+			if counter = 1 then
+				tangents[counter] = slopes[counter];
+			elseif counter = num values then
+				tangents[counter] = slopes[counter - 1];
+			else
+				tangents[counter] = (slopes[counter - 1] + slopes[counter]) / 2;
+			end;
+		end;
+			
+		answer tangents;
+	end;	// get_tangents
+	
+	
+	objective scalar[] question get_flipped_tangents
+		of scalar tangents[];
+	is
+		scalar flipped_tangents[min tangents .. max tangents];
+		for integer counter = min tangents .. max tangents do
+			flipped_tangents[counter] = -tangents[counter];
+		end;
+		answer flipped_tangents;
+	end;	// get_flipped_tangents
+	
+
+    //
+    // constructor
+    //
+    
+    	
+	verb new
+		of scalar values[];
+		at translated_3ds_time type times[];
+	is
+		scalar in_tangents[] is (get_tangents of values at times);
+		scalar out_tangents[] is (get_flipped_tangents of in_tangents);
+		translated_3ds_bezier_float_controller new  
+			of values from in_tangents to out_tangents at times;
+	end;	// new
+end;	// translated_3ds_smooth_float_controller
+
+
+
+

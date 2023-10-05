@@ -1,0 +1,45 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        reference_params.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of reference parameters in the OMAR             }
+{       language.                                               }
+{                                                               }
+{       Reference parameters are used whenever you want         }
+{       a method to make changes to parameter values that       }
+{       are reflected outside of the functioin when the         }
+{       function ends.                                          }
+{                                                               }
+{       Reference parameters in OMAR are similar to             }
+{       reference parameters in C++ or "var" parameters         }
+{       in Pascal.  There is no direct analogy for these        }
+{       types of parameters in Java or C.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do reference_params_example;
+
+verb swap
+	integer reference i;
+	integer reference j;
+is
+	integer k = i;
+	i = j;
+	j = k;
+end;    // swap
+
+verb reference_params_example is
+	integer a = 1, b = 2;
+	
+	write "a, b = ", a, ", ", b, ;
+	// note that the values of a and b will 
+	// be changed after calling this method
+	//
+	swap a b;           
+	
+	write "a, b = ", a, ", ", b, ;
+end;    // reference_params_example

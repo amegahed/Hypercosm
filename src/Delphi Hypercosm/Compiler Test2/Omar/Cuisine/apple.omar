@@ -1,0 +1,107 @@
+{***************************************************************}
+{                          apple.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do apple_anim;
+
+
+include "system/3d.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+
+
+shape apple with
+    integer steps = facets div 2;
+is
+    vector cross_section[0..8];
+    trans type path[1..5];
+    trans type reference trans;
+
+    // initialize cross_section
+    //
+    cross_section[0] = <0 1 0>;
+    cross_section[1] = <-.75 .75 0>;
+    cross_section[2] = <-1 0 0>;
+    cross_section[3] = <-.75 -.75 0>;
+    cross_section[4] = <0 -1 0>;
+    cross_section[5] = <.75 -.75 0>;
+    cross_section[6] = <1 0 0>;
+    cross_section[7] = <.75 .75 0>;
+    cross_section[8] = <0 1 0>;
+
+    // initialize path
+    //
+    trans refers to path[1];
+    magnify the trans by 0;
+    move the trans to <0 0 .25>;
+
+    trans refers to path[2];
+    magnify the trans by .5;
+    move the trans to <0 0 0>;
+
+    trans refers to path[3];
+    magnify the trans by 1.25;
+    move the trans to <0 0 1>;
+
+    trans refers to path[4];
+    magnify the trans by .85;
+    move the trans to <0 0 2>;
+
+    trans refers to path[5];
+    magnify the trans by 0;
+    move the trans to <0 0 1.75>;
+
+    // create curved hull from cross section and path
+    //
+    curved_hull of cross_section along path with
+        material is plastic poster "apple.jpg";
+        material's color = red;
+        rows = steps;
+        columns = steps;
+        color = red;
+        closed is true;
+    end;
+
+    hyperboloid1 with
+        material is chalk colored dark brown;
+        end1 = <0 0 1.7>;
+        end2 = <0 0 2.1>;
+        radius1 = .05;
+        radius2 = .08;
+        color = brown;
+    end;
+    disk with
+        material is chalk colored dark brown;
+        center = <0 0 2.1>;
+        radius = .08;
+        color = brown;
+    end;
+end;    // apple
+
+
+anim apple_anim
+    args type args;
+with
+    lookat = <0 0 1>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        apple;
+    end;
+    shape environment is
+    	plane with
+    		magnify by 10;
+    		render_mode is wireframe;
+    	end;
+    end;
+
+    mouse_controlled_shape scene in environment with
+    	auto_camera is on;
+    end;
+end;    // apple_anim

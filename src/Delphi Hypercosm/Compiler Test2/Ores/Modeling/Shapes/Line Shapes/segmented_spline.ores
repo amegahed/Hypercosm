@@ -1,0 +1,204 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 segmented_spline.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************} 
+{                                                               }
+{   	Contains a definitions of a segmented curve that		}
+{		moves through space which is called a "spline".			}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+
+include "system/vectors.ores";
+
+
+subject segmented_spline
+extends
+	vlist type
+does
+	// construction methods
+	//
+	reference verb attach
+		segmented_spline type segmented_spline2;
+	end;
+	
+	// querying methods
+	//
+	vector question get_value
+		at scalar t;
+	end;
+	vector question get_tangent
+		at scalar t;
+	end;
+	vector question get_circular_tangent
+		at scalar t;
+	end;
+	
+	// vertex querying methods
+	//
+	vector question get_vertex
+		of integer index;
+	end;	
+	vector question get_vertex_tangent
+		of integer index;
+	end;
+	vector question get_circular_vertex_tangent
+		of integer index;
+	end;
+		
+	// rendering methods
+	//
+	shape line;
+	shape polygon;
+is
+	//
+	// construction methods
+	//
+	
+	
+	reference verb attach
+		segmented_spline type segmented_spline2;
+	is
+		segmented_spline add_all segmented_spline2;
+	end;	// attach
+	
+
+	//
+	// querying methods
+	//
+	
+		
+	vector question get_value
+		at scalar t;
+	is
+		if t <= 0 then
+			answer segmented_spline[min segmented_spline];
+		elseif t >= 1 then
+			answer segmented_spline[max segmented_spline];
+		else
+			scalar s = min segmented_spline + (num segmented_spline - 1) * t;
+			integer index1 = trunc s;
+			integer index2 = index1 + 1;
+			scalar t1 = index2 - s;
+			scalar t2 = 1 - t1;
+			answer segmented_spline[index1] * t1 + segmented_spline[index2] * t2; 
+		end;
+	end;	// get_value
+	
+	
+	vector question get_tangent
+		at scalar t;
+	is
+		if t <= 0 then
+			answer get_vertex_tangent of min segmented_spline;
+		elseif t >= 1 then
+			answer get_vertex_tangent of max segmented_spline;
+		else
+			scalar s = min segmented_spline + (num segmented_spline - 1) * t;
+			integer index1 = trunc s;
+			integer index2 = index1 + 1;
+			scalar t1 = index2 - s;
+			scalar t2 = 1 - t1;
+			answer get_vertex_tangent of index1 * t1 + 
+				get_vertex_tangent of index2 * t2; 
+		end;	
+	end;	// get_tangent
+	
+	
+	vector question get_circular_tangent
+		at scalar t;
+	is
+		if t <= 0 then
+			answer get_circular_vertex_tangent of min segmented_spline;
+		elseif t >= 1 then
+			answer get_circular_vertex_tangent of max segmented_spline;
+		else
+			scalar s = min segmented_spline + (num segmented_spline - 1) * t;
+			integer index1 = trunc s;
+			integer index2 = index1 + 1;
+			scalar t1 = index2 - s;
+			scalar t2 = 1 - t1;
+			answer get_circular_vertex_tangent of index1 * t1 + 
+				get_circular_vertex_tangent of index2 * t2; 
+		end;
+	end;	// get_circular_tangent
+	
+
+	//	
+	// vertex querying methods
+	//
+	
+
+	vector question get_vertex
+		of integer index;
+	is
+		answer segmented_spline[index];
+	end;	// get_vertex
+	
+		
+	vector question get_vertex_tangent
+		of integer index;
+	is
+		if num segmented_spline > 1 then
+			if index = min segmented_spline then	
+				answer segmented_spline[min segmented_spline + 1] - segmented_spline[min segmented_spline];
+			elseif index = max segmented_spline then
+				answer segmented_spline[max segmented_spline] - segmented_spline[max segmented_spline - 1];
+			else
+				vector prev = segmented_spline[index] - segmented_spline[index - 1];
+				vector next = segmented_spline[index + 1] - segmented_spline[index];
+				answer (prev + next) / 2;
+			end;
+		else
+			answer <0 0 0>;
+		end;
+	end;	// get_vertex_tangent
+	
+	
+	vector question get_circular_vertex_tangent
+		of integer index;
+	is
+		if num segmented_spline > 1 then
+			vector prev, next;
+			
+			if index = min segmented_spline or index = max segmented_spline then
+				prev = segmented_spline[max segmented_spline] - segmented_spline[max segmented_spline - 1];
+				next = segmented_spline[min segmented_spline + 1] - segmented_spline[min segmented_spline];
+			else
+				prev = segmented_spline[index] - segmented_spline[index - 1];
+				next = segmented_spline[index + 1] - segmented_spline[index];
+			end;
+			
+			answer (prev + next) / 2;
+		else
+			answer <0 0 0>;
+		end;
+	end;	// get_circular_vertex_tangent
+		
+
+	//			
+	// rendering methods
+	//
+	
+	
+	shape line is
+		global line segmented_spline;
+	end;	// line
+	
+	
+	shape polygon is
+		if some segmented_spline then
+			if segmented_spline[min segmented_spline] = segmented_spline[max segmented_spline] then
+				global polygon segmented_spline[min segmented_spline .. max segmented_spline - 1];
+			else
+				global polygon segmented_spline;
+			end;
+		end;
+	end;	// polygon
+end;	// segmented_spline
+
+
+subject segmented_splines extends segmented_spline type[];

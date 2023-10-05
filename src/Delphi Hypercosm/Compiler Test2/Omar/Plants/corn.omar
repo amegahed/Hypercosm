@@ -1,0 +1,190 @@
+{***************************************************************}
+{                          corn.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do corn_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape corn_plant with
+    integer steps = 10;
+is
+    shape tip is
+        cone with
+            end1 = <1 0 0>;
+            end2 = <1 10 0>;
+            radius1 = 1;
+            radius2 = 0;
+            scale by .2 along <0 0 1> about <1 5 0>;
+            skew from <1 10 0> to <0 10 0>;
+        end;
+        cone with
+            end1 = <-1 0 0>;
+            end2 = <-1 10 0>;
+            radius1 = 1;
+            radius2 = 0;
+            scale by .2 along <0 0 1> about <-1 5 0>;
+            skew from <-1 10 0> to <0 10 0>;
+        end;
+    end;    // tip
+
+
+    shape midleaf is
+        cone with
+            end1 = <1 0 0>;
+            end2 = <1 5 0>;
+            radius1 = 1;
+            radius2 = .8;
+            scale by .2 along <0 0 1> about <1 2.5 0>;
+            skew from <0 5 0> to <-.2 5 0>;
+        end;
+        cone with
+            end1 = <-1 0 0>;
+            end2 = <-1 5 0>;
+            radius1 = 1;
+            radius2 = .8;
+            scale by .2 along <0 0 1> about <-1 2.5 0>;
+            skew from <0 5 0> to <.2 5 0>;
+        end;
+    end;    // midleaf
+
+
+    {
+    shape midleaf1 is
+        midleaf with
+            move to <0 -5 0>;
+            scale by 1.2 along <1 0 0>;
+        end;
+    end;    // midleaf1
+    }
+
+
+    shape leaf_group
+        integer n;
+    is
+        if (n = 0) then
+            tip with
+                magnify by .8;
+                rotate by -5 around <1 0 0>;
+                move to <0 5 0>;
+            end;
+            midleaf;
+        elseif (n = 1) then
+            leaf_group (n - 1) with
+                rotate by -12 around <1 0 0>;
+                move to <0 5 0>;
+            end;
+            midleaf;
+        else
+            leaf_group (n - 1) with
+                magnify by .8;
+                scale by .9 along <0 1 0>;
+                rotate by -12 around <1 0 0>;
+                move to <0 5 0>;
+            end;
+            midleaf;
+        end;
+    end;    // leaf_group
+
+
+    shape frond is
+        leaf_group 15 with
+            move to <0 5 0>;
+        end;
+        cone with
+            end1 = <1 0 0>;
+            end2 = <1 5 0>;
+            radius1 = .9;
+            radius2 = 1;
+            scale by .2 along <0 0 1> about <1 2.5 0>;
+            skew from <0 0 0> to <-.2 0 0> about <0 5 0>;
+        end;
+        cone with
+            end1 = <-1 0 0>;
+            end2 = <-1 5 0>;
+            radius1 = .8;
+            radius2 = 1;
+            scale by .2 along <0 0 1> about <-1 2.5 0>;
+            skew from <0 0 0> to <.2 0 0> about <0 5 0>;
+        end;
+    end;    // frond
+
+
+    shape stem_segment is
+        frond with
+            magnify by .7;
+            rotate by 90 around <1 0 0>;
+            move to <0 0 2>;
+            rotate by -20 around <1 0 0>;
+            move to <0 .8 0>;
+        end;
+        paraboloid with
+            top = <0 0 0>;
+            base = <0 0 2>;
+            radius = 1;
+            scale by .2 along <0 1 0>;
+            rotate by -20 around <1 0 0>;
+            move to <0 .8 0>;
+        end;
+    end;    // stem_segment
+
+
+    scalar angle = 175;
+    scalar height = 0;
+    scalar magnification = 1;
+
+    color = dark green;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 20>;
+        radius1 = 1.2;
+        radius2 = .8;
+    end;
+    cone with
+        end1 = <0 0 20>;
+        end2 = <0 0 25>;
+        radius1 = .8;
+        radius2 = 0;
+    end;
+    for integer counter = 1..steps do
+        stem_segment with
+            magnify by magnification;
+            rotate by angle around <0 0 1>;
+            move to <0 0 ((counter / steps) * 20)>;
+        end;
+        magnification = magnification - .025;
+        angle = angle - 80;
+        height = height + 1;
+    end;
+end;    // corn_plant
+
+
+anim corn_anim
+    args type args;
+with
+    eye = <10 -50 15>;
+    lookat = <0 0 12>;
+    double_buffer is on;
+    facets = 4;
+    background = sky_blue;
+    shading is face;
+    args check;
+is
+    shape scene is
+        corn_plant;
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+        end;
+    end;
+
+    mouse_controlled_shape scene;
+end;    // corn_anim

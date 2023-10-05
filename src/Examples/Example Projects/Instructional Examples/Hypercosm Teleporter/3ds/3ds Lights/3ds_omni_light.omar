@@ -1,0 +1,51 @@
+do omni_light_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_plane.ores";
+include "system/3ds_omni_light.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/common_materials.ores";
+
+shape omni_light_scene 
+is
+	static shape shapes is
+		translated_3ds_sphere with
+		    radius = 25;
+		    move to <0 0 25>;
+		    color = white;
+		end;
+		translated_3ds_plane with
+			magnify by 100;
+	        length_segments = 8;
+	    	width_segments = 8;
+	    	material is wood;
+		end;
+	end;	// shapes
+	
+	shapes;
+	
+	translated_3ds_omni_light at <100 0 100> with
+		color = light blue;
+		intensity = 1;
+		scale = 150;
+		visible is true;
+	end;
+	translated_3ds_omni_light at <-100 0 100> with
+		color = light yellow;
+		intensity = 1;
+		scale = 150;
+		visible is true;
+	end;
+end;    // omni_light_scene
+
+anim omni_light_anim with
+    background_name is none;
+    background = light grey;
+	ambient = black;
+is
+	mouse_controlled_shape omni_light_scene lit by none titled "3DS Omni Light" with
+		auto_camera is on;
+	end;
+end;	// omni_light_anim

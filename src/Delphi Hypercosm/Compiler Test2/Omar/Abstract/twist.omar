@@ -1,0 +1,181 @@
+{***************************************************************}
+{                          twist.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do twist_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/grid_mesh_shapes.ores";
+include "system/shaders.ores";
+include "system/surfaces.ores";
+include "system/common_materials.ores";
+
+
+subject twist
+extends
+    step_actor
+does
+    objective shape form with
+        scalar revolutions = 3;
+        integer steps = 20;
+        scalar radius = .5;
+        scalar height = 1.5;
+        scalar sphere_radius = .15;
+        scalar cylinder_radius = .02;
+    end;    // form
+
+    shape instance;
+is
+    objective shape form with
+        scalar revolutions = 3;
+        integer steps = 20;
+        scalar radius = .5;
+        scalar height = 1.5;
+        scalar sphere_radius = .15;
+        scalar cylinder_radius = .02;
+    is
+        integer counter = 1;
+        scalar angle = 0;
+        scalar x, y, z, t;
+        scalar r, g, b;
+        vector last;
+        vector vertex[1..steps, 1..2];
+
+        while (counter <= steps) do
+            t = counter / steps;
+            angle = 360 * t * revolutions;
+            x = sin angle * radius * t;
+            y = cos angle * radius * t;
+            z = height * (1 - t);
+            vertex[counter, 1] = <0 0 0>;
+            vertex[counter, 2] = <x y z>;
+            if (sphere_radius <> 0) then
+                r = cos angle;
+                g = sin angle;
+                b = t;
+                if (r < 0) then
+                    r = -r;
+                end;
+                if (g < 0) then
+                    g = -g;
+                end;
+                sphere with
+                    material is metal colored <r g b>;
+                    color = <r g b>;
+                    center = <x y z>;
+                    radius = sphere_radius * t;
+                end;
+            end;
+            if (cylinder_radius <> 0) then
+                cylinder_color = <.99 t t>;
+
+                // radial cylinders
+                //
+                cylinder with
+                    material is metal colored cylinder_color;
+                    end1 = <0 0 0>;
+                    end2 = <x y z>;
+                    radius = cylinder_radius;
+                end;
+
+                // edge  cylinders
+                //
+                if (counter > 1) then
+                    cylinder with
+                        material is metal colored cylinder_color;
+                        end1 = last;
+                        end2 = <x y z>;
+                        radius = cylinder_radius;
+                    end;
+                end;
+            end;
+            counter = itself + 1;
+            last = <x y z>;
+        end;
+        tri_grid_mesh of vertex with
+            material is aluminum;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            sphere_radius = 0;
+            revolutions = cos (static steps * 5) * 2;
+        end;
+    end;    // instance
+end;    // twist
+
+
+picture twist_picture with
+    eye = <0 -4 2.5>;
+    lookat = <0 0 1>;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    background = black;
+    fog_factor = 100;
+    ambient = black;
+is
+
+    // distant_light from .3 .5 1;
+    // distant_light from -10 -10 10;
+    spot_light towards <10 15 -10> with
+        move to <-10 -15 12>;
+        angle = 30;
+        brightness = 30;
+    end;
+    twist type's form with
+        material is metal colored light purple;
+        steps = 10;
+        revolutions = -1;
+        sphere_radius = 0;
+        magnify by 1.5;
+        move to <1 0 0>;
+    end;
+    twist type's form with
+        material is metal colored light green;
+        steps = 100;
+        revolutions = 6;
+        sphere_radius = 0;
+        magnify by 1.5;
+    end;
+    twist type's form with
+        material is metal colored light blue;
+        steps = 10;
+        revolutions = 1;
+        sphere_radius = 0;
+        magnify by 1.5;
+        move to <-1 0 0>;
+    end;
+    sphere with
+        magnify by .1;
+    end;
+    flat show_rgb in local plane with
+        magnify the shader_trans by 2;
+    end;
+end;    // twist_picture
+
+
+anim twist_anim
+    args type args;
+with
+    eye = <1 -2 2>;
+    lookat = <0 0 .55>;
+    double_buffer is on;
+    roll = 30;
+    args check;
+is
+    twist type twist;
+
+    mouse_controlled_actor twist;
+end;    // twist_anim

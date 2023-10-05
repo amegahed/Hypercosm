@@ -1,0 +1,121 @@
+{***************************************************************}
+{                          beaker.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do beaker_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/surfaces.ores";
+include "system/bumps.ores";
+
+
+shape beaker_stand is
+    torus with
+        inner_radius = 9.5;
+        outer_radius = 10.5;
+        move to <0 0 15>;
+    end;
+    cylinder with
+        end1 = <15 0 0>;
+        end2 = <10 0 15>;
+        radius = .5;
+    end;
+    cylinder with
+        end1 = <15 0 0>;
+        end2 = <10 0 15>;
+        rotate by 120 around <0 0 1>;
+        radius = .5;
+    end;
+    cylinder with
+        end1 = <15 0 0>;
+        end2 = <10 0 15>;
+        rotate by 240 around <0 0 1>;
+        radius = .5;
+    end;
+end;    // beaker_stand
+
+
+shape beaker is
+    sphere with
+        vmax = 70;
+        radius = 10;
+    end;
+    sphere with
+        vmax = 70;
+        vmin = 30;
+        radius = 9.5;
+    end;
+    cylinder with
+        end1 = <0 0 (10 * sin 70)>;
+        end2 = <0 0 20>;
+        radius = 10 * cos 70;
+    end;
+    cylinder with
+        end1 = <0 0 (9.5 * sin 70)>;
+        end2 = <0 0 20>;
+        radius = 10 * cos 70 - .5;
+    end;
+    torus with
+        vmin = 0;
+        vmax = 180;
+        outer_radius = 10 * cos 70;
+        inner_radius = 10 * cos 70 - .5;
+        scale by 3 along <0 0 1>;
+        move to <0 0 20>;
+    end;
+
+    // liquid
+    //
+    transparent red sphere with
+        radius = 9.5;
+        vmax = 30;
+    end;
+    transparent red disk with
+        radius = 9.5 * cos 30;
+        move to <0 0 9> * sin 30;
+    end;
+end;    // beaker
+
+
+shape beaker_and_stand is
+    beaker_stand with
+        material is metal;
+        magnify by .2;
+    end;
+    transparent white beaker with
+        magnify by .2;
+        move to <0 0 3.5>;
+    end;
+end;    // beaker_and_stand
+
+
+picture beaker_picture with
+    eye = <5 -15 10>;
+    lookat = <0 0 3>;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+is
+    distant_light from <.3 -.5 1>;
+    beaker_and_stand;
+    plane;
+end;    // beaker_picture
+
+
+anim beaker_anim with
+    eye = <5 -15 10>;
+    lookat = <0 0 3>;
+    facets = 10;
+    double_buffer is on;
+is
+    mouse_controlled_shape beaker_and_stand;
+end;    // beaker_anim

@@ -1,0 +1,35 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           enum_for_loop.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a for loop       }
+{       using an enumerated type in the OMAR language.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do enum_for_loop_example;
+
+enum animal is cat, dog, cow, pig, sheep;
+
+verb speak
+	animal type animal;
+is
+	when animal is
+		cat: write "meow", ; end;
+		dog: write "woof", ; end;
+		cow: write "moo", ; end;
+		pig: write "oink", ; end;       
+		sheep: write "baa", ; end;      
+	end;    // case
+end;    // speak
+
+verb enum_for_loop_example is
+	write "For each type of animal...", ;
+	
+	for animal type animal is cat .. sheep do
+		speak animal;
+	end;
+end;    // enum_for_loop_example

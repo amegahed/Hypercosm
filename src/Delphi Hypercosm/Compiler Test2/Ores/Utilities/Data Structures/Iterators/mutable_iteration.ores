@@ -1,0 +1,27 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		mutable_iteration.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of iteration behaviors for			}
+{		mutable collections.     								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/iteration.ores";
+
+
+adjective mutable_iterable
+extends
+    iterable
+does
+    // data modification methods
+    //
+    verb set
+        to object type item;
+    end;
+end;    // mutable_iterable

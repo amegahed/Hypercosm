@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              char.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of usage of        }
+{       the char data type in the OMAR language.                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do char_example;
+
+include "system/native_chars.ores";
+
+char ch is "A";
+char space is chr 32;
+char name[] = "Fred Freugelbugger";             // an array of chars
+
+verb char_example is
+	write "This example declares, assigns, and prints", ;
+	write "values for a series of character variables:", ;
+	write;
+	
+	write "ch is ", ch, ;
+	write "name is ", name, ;
+end;    // char_example

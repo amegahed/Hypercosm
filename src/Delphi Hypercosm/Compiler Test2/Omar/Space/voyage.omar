@@ -1,0 +1,73 @@
+{***************************************************************}
+{                          voyage.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do voyage;
+
+
+include "system/3d.ores";
+include "system/earth.omar";
+include "system/space_station.omar";
+
+
+shader banded
+    color type color;
+is
+    scalar r = (location in parametric) dot <0 1 0>;
+    scalar s = noise1 (r * 100);
+
+    if s < .8 then
+        answer refract 1 white;
+    else
+        answer color;
+    end;
+end;    // banded
+
+
+picture voyage with
+    eye = <0 -10 0>;
+    render_mode is shaded;
+    facets = 0;
+
+    {
+        facets = 0;
+        reflections is on;
+        refractions is on;
+        shadows is off;
+        }
+is
+    distant_light from <-.3 -1 .5>;
+    celestial_sphere;
+    sphere;
+
+    // banded flat blend (show_image image2) yellow .5
+    ring with
+        material is chalk colored light brown;
+        inner_radius = 1.4;
+        outer_radius = 2;
+        normal = <.2 -.3 1>;
+    end;
+    space_station with
+        material is metal;
+        rotate by 120 around <0 0 1>;
+        rotate by 30 around <1 0 0>;
+        magnify by .2;
+        move to <.5 -3 .05>;
+    end;
+
+    sphere with
+        material is plastic colored grey;
+        center = <-3 10 3>;
+        radius = .5;
+    end;
+    sphere with
+        material is plastic colored light blue;
+        center = <-5 8 2>;
+        radius = .3;
+    end;
+end;    // voyage

@@ -1,0 +1,56 @@
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/marks.ores";
+include "system/arrows.ores";
+
+
+trans type plane_trans with
+	origin = <0 0 0>;
+	x_axis = <1 0 0>;
+	y_axis = <0 .5 0>;
+	z_axis = <0 0 .25>;
+end;
+vector reference_point = <0 0 2>;
+
+
+shape scene with
+	scalar t = 0;
+is
+	scalar x = get_mouse dot <1 0 0> * 360;
+	scalar y = get_mouse dot <0 1 0> * 360;
+	vector closest_point;
+	
+	parallelogram with
+		trans = plane_trans;
+		rotate by x around <1 0 0>;
+		rotate by y around <0 1 0>;
+		
+		closest_point = closest_point_on_plane_to_point
+			at trans's origin along trans's x_axis by trans's y_axis
+			to reference_point;
+	end;
+	
+	mark at reference_point;
+	mark at closest_point with
+		color = red;
+	end;
+	arrow from reference_point to closest_point;
+end;	// scene
+
+
+anim test with
+	eye = <2 -8 4>;
+is
+	shape environment is
+		plane with
+			magnify by 10;
+			move to <0 0 -3>;
+			render_mode is wireframe;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene in environment;
+end;	// test

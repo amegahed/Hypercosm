@@ -1,0 +1,111 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         final_subjects.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of a final subject (or "class") in the          }
+{       OMAR language.                                          }
+{                                                               }
+{       Final classes are just like normal classes except       }
+{       that they may not be subclassed.  Classes will          }
+{       only be declared final if it is certain that they       }
+{       will never need to be extended.  When classes are       }
+{       declared as final, it is sometimes possible for the     }
+{       compiler to perform additional optimizations on         }
+{       the code since it knows that the class will never       }
+{       be extended.                                            } 
+{                                                               }
+{       Final subjects are just like final classes in           }
+{       languages such as C++ or Java.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do final_subject_example;
+
+include "system/math.ores";
+
+final subject circle
+does
+	// constructor
+	//
+	verb new with
+		scalar radius = 1;
+	end;
+	
+	// methods
+	//
+	scalar question get_area;
+has
+	// attributes
+	//
+	scalar radius;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		scalar radius = 1;
+	is
+		circle's radius = radius;
+	end;    // new
+	
+	//
+	// methods
+	//
+		
+	scalar question get_area is
+		answer pi * radius * radius;
+	end;    // get_area
+end;    // circle
+
+{
+subject sphere
+extends
+	circle
+does
+	// constructor
+	//
+	verb new with
+		scalar radius = 1;
+	end;
+	
+	// methods
+	//
+	scalar question get_area;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		scalar radius = 1;
+	is
+		// call superclass constructor
+		//
+		circle new with
+			radius = static radius;
+		end;
+	end;    // new
+	
+	//
+	// methods
+	//
+		
+	scalar question get_area is
+		answer 4 / 3 * pi * radius ^ 3;
+	end;
+end;    // sphere
+}
+
+verb final_subject_example 
+is
+	circle type circle;
+	// sphere type sphere;
+	
+	write "circle with area = ", circle get_area, ;
+	// write "sphere with area = ", sphere get_area, ;
+end;    // final_subject_example

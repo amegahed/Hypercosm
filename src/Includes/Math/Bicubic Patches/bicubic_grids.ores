@@ -1,0 +1,118 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         bicubic_grids.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard utilities for creating a grid         }
+{       of points in the form of a bicubic surface patch.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/tangents.ores";
+include "system/hermite_splines.ores";
+include "system/hermite_patches.ores";
+include "system/vector_grid.ores";
+include "system/vpolynomials.ores";
+
+vector_grid type question get_bicubic_vertices
+	integer rows;
+	by integer columns;
+	of bicubic_basis type bicubic_basis;
+is
+	vector_grid type vector_grid;
+	
+	vpolynomial type curve1 is get_hermite_vcubic from
+		bicubic_basis[0, 0] bicubic_basis[0, 2] to
+		bicubic_basis[0, 1] bicubic_basis[0, 3];
+	vpolynomial type curve2 is get_hermite_vcubic from
+		bicubic_basis[1, 0] bicubic_basis[1, 2] to
+		bicubic_basis[1, 1] bicubic_basis[1, 3];
+	vpolynomial type tangent_curve1 is get_hermite_vcubic from
+		bicubic_basis[2, 0] bicubic_basis[2, 2] to
+		bicubic_basis[2, 1] bicubic_basis[2, 3];
+	vpolynomial type tangent_curve2 is get_hermite_vcubic from
+		bicubic_basis[3, 0] bicubic_basis[3, 2] to
+		bicubic_basis[3, 1] bicubic_basis[3, 3];
+	dim vector_grid[0..rows, 0..columns];
+	for integer row = 0 .. rows do
+		scalar t = row / rows;
+		vector p1 = curve1 get_value at t;
+		vector p2 = curve2 get_value at t;
+		vector r1 = tangent_curve1 get_value at t;
+		vector r2 = tangent_curve2 get_value at t;
+		vpolynomial type curve is get_hermite_vcubic from p1 r1 to p2 r2;
+		vector_grid[row, ..] = curve get_values in columns;
+	end;
+	answer vector_grid;
+end;    // get_bicubic_vertices
+
+vector_grid type question get_bicubic_row_tangents
+	integer rows;
+	by integer columns;
+	of bicubic_basis type bicubic_basis;
+is
+	vector_grid type vector_grid;
+	vpolynomial type curve1 is get_hermite_vcubic from
+		bicubic_basis[0, 0] bicubic_basis[0, 2] to
+		bicubic_basis[0, 1] bicubic_basis[0, 3];
+	vpolynomial type curve2 is get_hermite_vcubic from
+		bicubic_basis[1, 0] bicubic_basis[1, 2] to
+		bicubic_basis[1, 1] bicubic_basis[1, 3];
+	vpolynomial type tangent_curve1 is get_hermite_vcubic from
+		bicubic_basis[2, 0] bicubic_basis[2, 2] to
+		bicubic_basis[2, 1] bicubic_basis[2, 3];
+	vpolynomial type tangent_curve2 is get_hermite_vcubic from
+		bicubic_basis[3, 0] bicubic_basis[3, 2] to
+		bicubic_basis[3, 1] bicubic_basis[3, 3];
+
+	dim vector_grid[0..rows, 0..columns];
+	for integer row = 0 .. rows do
+		scalar t = row / rows;
+		vector p1 = curve1 get_value at t;
+		vector p2 = curve2 get_value at t;
+		vector r1 = tangent_curve1 get_value at t;
+		vector r2 = tangent_curve2 get_value at t;
+		vpolynomial type curve is get_hermite_vcubic from p1 r1 to p2 r2;
+		vpolynomial type tangent_curve is curve get_derivative;
+		vector_grid[row, ..] = tangent_curve get_values in columns;
+	end;
+
+	answer vector_grid;
+end;    // get_bicubic_row_tangents
+
+vector_grid type question get_bicubic_column_tangents
+	integer rows;
+	by integer columns;
+	of bicubic_basis type bicubic_basis;
+is
+	vector_grid type vector_grid;
+	vpolynomial type curve1 is get_hermite_vcubic from
+		bicubic_basis[0, 0] bicubic_basis[2, 0] to
+		bicubic_basis[1, 0] bicubic_basis[3, 0];
+	vpolynomial type curve2 is get_hermite_vcubic from
+		bicubic_basis[0, 1] bicubic_basis[2, 1] to
+		bicubic_basis[1, 1] bicubic_basis[3, 1];
+	vpolynomial type tangent_curve1 is get_hermite_vcubic from
+		bicubic_basis[0, 2] bicubic_basis[2, 2] to
+		bicubic_basis[1, 2] bicubic_basis[3, 2];
+	vpolynomial type tangent_curve2 is get_hermite_vcubic from
+		bicubic_basis[0, 3] bicubic_basis[2, 3] to
+		bicubic_basis[1, 3] bicubic_basis[3, 3];
+
+	dim vector_grid[0..rows, 0..columns];
+	for integer column = 0 .. columns do
+		scalar t = column / columns;
+		vector p1 = curve1 get_value at t;
+		vector p2 = curve2 get_value at t;
+		vector r1 = tangent_curve1 get_value at t;
+		vector r2 = tangent_curve2 get_value at t;
+		vpolynomial type curve is get_hermite_vcubic from p1 r1 to p2 r2;
+		vpolynomial type tangent_curve is curve get_derivative;
+		vector_grid[.., column] = tangent_curve get_values in rows;
+	end;
+	
+	answer vector_grid;
+end;    // get_bicubic_column_tangents

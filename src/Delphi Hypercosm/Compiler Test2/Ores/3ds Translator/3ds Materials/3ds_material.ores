@@ -1,0 +1,46 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm           3ds_material.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains material definitions that correspond to        }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/materials.ores";
+include "system/application.ores";
+include "system/native_rendering.ores";
+
+
+abstract subject translated_3ds_material
+extends
+	applicable object
+does
+	// application method
+	//
+	verb apply;
+	
+	// querying methods
+	//
+	abstract material type question to_material;
+is
+	//
+	// application method
+	//
+	
+	
+	verb apply is
+		global material is to_material;
+		if some material then
+		    global color = material's color;
+		end;
+	end;	// apply
+end;    // translated_3ds_material
+
+
+subject translated_3ds_materials extends translated_3ds_material type[];

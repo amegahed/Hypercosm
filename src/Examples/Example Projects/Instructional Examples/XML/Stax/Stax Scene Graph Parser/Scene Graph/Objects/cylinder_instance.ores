@@ -1,0 +1,132 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         cylinder_instance.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of cylinder instances in the      }
+{       scene graph.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "object_instance.ores";
+
+subject cylinder_instance
+extends 
+	object_instance
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+	with
+		vector end1 = <0 0 1>;
+		vector end2 = <0 0 -1>;
+		scalar radius = 1;
+		trans type trans = unit_trans;
+		material type material is none;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from cylinder_instance type source;
+	end;
+	cylinder_instance type question clone;
+	
+	// printable methods
+	//
+	string type question to_string;
+has
+	// attributes 
+	//
+	vector end1, end2;
+	scalar radius;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		named string type name is none;
+	with
+		vector end1 = <0 0 1>;
+		vector end2 = <0 0 -1>;
+		scalar radius = 1;
+		trans type trans = unit_trans;
+		material type material is none;
+	is
+		// call superclass constructor
+		//
+		object_instance new named name with
+			trans = static trans;
+			material is static material;
+		end;
+		
+		// set attributes
+		//
+		with cylinder_instance do
+			its end1 = end1;
+			its end2 = end2;
+			its radius = radius;
+		end;
+	end;    // new
+	
+	//    
+	// rendering methods
+	//
+	
+	
+	shape instance is
+		global cylinder with
+			end1 = static end1;
+			end2 = static end2;
+			radius = static radius;
+			global trans = trans;
+			global material is material;
+		end;
+	end;    // instance
+	
+	//   
+	// copying and cloning methods
+	// 
+	
+	  
+	verb copy 
+		from cylinder_instance type source;
+	is
+		// call superclass method
+		//
+		object_instance static copy from source;
+			
+		// copy attributes of source
+		//
+		end1 = source's end1;
+		end2 = source's end2;
+		radius = source's radius;
+	end;    // copy
+	
+	
+	cylinder_instance type question clone is
+		cylinder_instance type cylinder2;
+		cylinder2 copy from cylinder_instance;
+		answer cylinder2;
+	end;    // clone
+	
+	//   
+	// printable methods
+	//
+	
+	
+	string type question to_string is
+		answer "cylinder instance";
+	end;    // to_string
+end;    // cylinder_instance
+

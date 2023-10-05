@@ -1,0 +1,251 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    physics_compound_shape.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of compound      }
+{       shapes with the physics engine;                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_compound_shape_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the 's' key to launch projectiles to get the      }
+{       shape to move.                                          }
+{                                                               }
+{***************************************************************}
+
+include "system/3d.ores"; 
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/common_textures.ores";
+include "system/infinite_plane.ores";
+include "physics_test_projectile.ores";
+
+// chair leg shape definition
+//
+scalar leg_height = 4;
+scalar leg_length = .5;
+scalar leg_width = .5;
+
+shape chair_leg is
+	block with
+		vertex = <-(leg_width/2) -(leg_length/2) -(leg_height/2)>;
+		side1 = <(leg_width) 0 0>;
+		side2 = <0 (leg_length) 0>;
+		side3 = <0 0 (leg_height)>;
+		material is (chalk textured wood_texture);
+	end;
+end;
+
+// chair seat shape definition
+//
+scalar seat_height = .5;
+scalar seat_length = 4;
+scalar seat_width = 4;
+
+shape chair_seat is
+	block with
+		vertex = <-(seat_width/2) -(seat_length/2) -(seat_height/2)>;
+		side1 = <(seat_width) 0 0>;
+		side2 = <0 (seat_length) 0>;
+		side3 = <0 0 (seat_height)>;
+		material is (chalk textured wood_texture);
+	end;
+end;
+
+// chair_back shape definition
+//
+scalar back_height = 4;
+scalar back_length = .5;
+scalar back_width = 4;
+
+shape chair_back is
+	block with
+		vertex = <-(back_width/2) -(back_length/2) -(back_height/2)>;
+		side1 = <(back_width) 0 0>;
+		side2 = <0 (back_length) 0>;
+		side3 = <0 0 (back_height)>;
+		material is (chalk textured wood_texture);
+	end;
+end;
+
+vector chair_center = <0 (seat_length/6) (leg_height + seat_height/2)>;
+
+shape chair with
+is
+	chair_back with
+		trans's origin = (<0 (seat_length/2 - back_length/2) (leg_height + seat_height + back_height/2)> - chair_center);
+	end;
+	chair_seat with
+		trans's origin = (<0 0 (leg_height + seat_height/2)> - chair_center);
+	end;
+	chair_leg with
+		trans's origin = (<-(seat_width/2 - leg_width/2) -(seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+	chair_leg with
+	   trans's origin = (<-(seat_width/2 - leg_width/2) (seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+	chair_leg with
+		trans's origin = (<(seat_width/2 - leg_width/2) -(seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+	chair_leg with
+		trans's origin = (<(seat_width/2 - leg_width/2) (seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+end;    // chair
+
+anim physics_compound_shape_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+	lookat = <0 0 3>;
+is
+	renderable_physics_scene type physics;  
+	
+	// define the leg physics shapes
+	//
+	renderable_physics_box_shape type leg1_physics_shape with
+		height = leg_height;
+		width = leg_width;
+		length = leg_length;
+	end;
+	renderable_physics_box_shape type leg2_physics_shape with
+		height = leg_height;
+		width = leg_width;
+		length = leg_length;
+	end;
+	renderable_physics_box_shape type leg3_physics_shape with
+		height = leg_height;
+		width = leg_width;
+		length = leg_length;
+	end;
+	renderable_physics_box_shape type leg4_physics_shape with
+		height = leg_height;
+		width = leg_width;
+		length = leg_length;
+	end;
+	
+	// define the legs' local positions
+	//
+	trans type leg1_trans with
+		origin = (<-(seat_width/2 - leg_width/2) -(seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);    
+	end;
+	trans type leg2_trans with
+		origin = (<-(seat_width/2 - leg_width/2) (seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+	trans type leg3_trans with
+		origin = (<(seat_width/2 - leg_width/2) -(seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+	trans type leg4_trans with
+		origin = (<(seat_width/2 - leg_width/2) (seat_length/2 - leg_length/2) (leg_height/2)> - chair_center);
+	end;
+	
+	// define seat physics shape
+	//
+	renderable_physics_box_shape type seat_physics_shape with
+		height = seat_height;
+		width = seat_width;
+		length = seat_length;
+	end;
+	
+	// define the seat's local position
+	//
+	trans type seat_trans with
+		origin = (<0 0 (leg_height + seat_height/2)>  - chair_center);
+	end;
+	// define back physics shape
+	//
+	renderable_physics_box_shape type back_physics_shape with
+		height = back_height;
+		width = back_width;
+		length = back_length;
+	end;
+	
+	// define the back's local position
+	//
+	trans type back_trans with
+		origin = (<0 (seat_length/2 - back_length/2) (leg_height + seat_height + back_height/2)> - chair_center);
+	end;
+	// define the compound shape for the entire chair 
+	//   
+	renderable_physics_compound_shape type chair_physics_shape with
+		children is [
+			leg1_physics_shape
+			leg2_physics_shape
+			leg3_physics_shape
+			leg4_physics_shape
+			seat_physics_shape
+			back_physics_shape
+		];
+		dim transes[1 .. num children];
+		transes[1] = leg1_trans;
+		transes[2] = leg2_trans;
+		transes[3] = leg3_trans;
+		transes[4] = leg4_trans;
+		transes[5] = seat_trans;
+		transes[6] = back_trans;
+	end;  
+	verb draw is
+		// display on screen instructions
+		//
+		overlay_text "Press 's' to shoot a projectile." at <0 .9 0>;
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+			   
+		// fire a projectile, only if we just pressed the key this frame
+		// 
+		if key_down char_to_key of "s" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to physics;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+	end;    // check_keys
+	
+	
+	verb update is
+		draw;
+		check_keys;
+	end;    // update
+
+	shape scene with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+		
+		physics instance;
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // scene
+	
+	// add chair's children
+	//
+	physics add_physics_actor (new renderable_physics_compound_actor rendering (new static_shape of chair) with 
+		trans's origin = chair_center;
+		mass = 10;
+		compound_shape is chair_physics_shape
+	);
+  
+	// add the plane shape
+	//
+	physics add_physics_actor (new physics_plane_actor);
+	// turn on/off proxy rendering aka debug mode
+	//                       
+	physics set_render_proxies to true; 
+	// run!
+	//    
+	mouse_controlled_animated_shape scene doing update;
+end;    // physics_compound_shape_anim

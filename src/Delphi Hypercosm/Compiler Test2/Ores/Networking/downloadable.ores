@@ -1,0 +1,24 @@
+{***************************************************************}
+{                       downloadable.ores                       }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{   Contains the downloadable interface, which is implemented   }
+{   by sounds, images, textures, and data_resources.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+enum download_status is
+    downloading, ready, ready_bad_fingerprint, failed;
+
+
+adjective downloadable
+does
+    download_status type question download_status;
+    
+    verb finish_loading;
+end;
+

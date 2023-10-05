@@ -1,0 +1,19 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           overlaying.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an definition for a generalized user           }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+adjective overlayable
+does
+	shape overlay
+		at scalar distance;
+	end;
+end;    // overlayable

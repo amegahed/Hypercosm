@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    physics_camera_interaction.ores     3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the abstract class for classes that will       }
+{       define interaction for physics cameras                  }
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+include "system/native_physics_actor.ores";
+abstract subject physics_camera_interaction
+extends
+	object
+does
+	verb new with
+		scalar max_translation_velocity = 2.5;
+		scalar max_turn_rate = 30;
+	end;
+	
+	abstract verb update 
+		using physics_actor type actor;
+	end;
+has
+	vector current_force = <0 0 0>;
+	scalar max_translation_velocity = 20;
+	scalar max_turn_rate = 30;
+is
+	verb new with
+		scalar max_translation_velocity = 2.5;
+		scalar max_turn_rate = 30;
+	is
+		with physics_camera_interaction do
+			its max_translation_velocity = static max_translation_velocity;
+			its max_turn_rate = static max_turn_rate;
+		end;
+	end;
+end;

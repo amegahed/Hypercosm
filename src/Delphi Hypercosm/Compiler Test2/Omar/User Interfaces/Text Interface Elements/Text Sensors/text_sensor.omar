@@ -1,0 +1,41 @@
+do text_sensor_anim;
+
+
+include "system/3d.ores";
+include "system/text_sensor.ores";
+
+
+anim text_sensor_anim with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+    verb mouse_up_action is
+    	write "released!", ;
+    end;
+        
+    text_sensor type text_sensor of "press me" 
+    	at <.75 0 0>
+    with
+    	font_color set to white over dark green;
+    	font is (new screen_font sized 24 styled bold with
+    		new effects with
+		   		shadowed is true;
+		   		background_shadowed is true;
+		   		background_indented is false;
+		   	end;
+		);
+        mouse_down_action is (new action of static mouse_down_action); 
+        mouse_up_action is (new action of static mouse_up_action);
+    end;
+    
+    picture scene is
+        text_sensor draw;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // text_sensor_anim

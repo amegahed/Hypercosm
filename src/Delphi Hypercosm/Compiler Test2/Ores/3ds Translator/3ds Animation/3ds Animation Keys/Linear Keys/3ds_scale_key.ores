@@ -1,0 +1,36 @@
+{***************************************************************}
+{                        3ds_scale_key.ores           			}
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   	Contains key definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_key.ores";
+include "system/3ds_scale_value.ores";
+
+
+subject translated_3ds_scale_key
+extends
+	translated_3ds_key
+does
+	verb new
+		of translated_3ds_scale_value type value;
+		at translated_3ds_time type time;
+	end;
+has
+	public translated_3ds_scale_value type value is none;
+is
+	verb new
+		of translated_3ds_scale_value type value;
+		at translated_3ds_time type time;
+	is
+		translated_3ds_key new at time;
+		translated_3ds_scale_key's value is value;
+	end;	// new
+end;	// translated_3ds_scale_key

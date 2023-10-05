@@ -1,0 +1,280 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	    3ds_bicubic_patch.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains plane definitions that correspond to 		    }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_textureable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+include "system/bicubic_patch.ores";
+
+
+final subject translated_3ds_bicubic_patch
+extends
+    translated_3ds_collapsable translated_3ds_texturable_object
+does
+    // constructor
+    //
+	verb new
+        of bicubic_basis type bicubic_basis is none;
+    with   
+        // tessellation parameters
+        //
+        integer length_segments = 4;
+    	integer width_segments = 4;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+	end;
+	
+	// attributes setting methods
+	//
+	verb set
+		to bicubic_basis type bicubic_basis;
+	with
+        // tessellation parameters
+        //
+        integer length_segments = 4;
+    	integer width_segments = 4;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+	end;
+	
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_bicubic_patch type question get;
+	reference verb recycle;	
+has
+	// geometry attributes
+	//
+    bicubic_basis type bicubic_basis;
+    
+    // tessellation attributes
+    //
+    integer length_segments;
+	integer width_segments;
+	
+private	
+	// recycling attributes
+	//
+	translated_3ds_bicubic_patch type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_bicubic_patch type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    	
+	verb new
+        of bicubic_basis type bicubic_basis is none;
+	with    
+        // tessellation parameters
+        //
+        integer length_segments = 4;
+    	integer width_segments = 4;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+	is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+	    
+		if verbose_recycling then
+			write "new 3ds bicubic patch", ;
+		end;
+	    
+		with translated_3ds_bicubic_patch do
+		
+        	// set geometry attributes
+        	//
+            its bicubic_basis is bicubic_basis;
+            
+            // set tessellation attributes
+            //
+            its length_segments = length_segments;
+        	its width_segments = width_segments;
+	    end;
+	end;	// new	
+
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set
+		to bicubic_basis type bicubic_basis;
+	with
+        // tessellation parameters
+        //
+        integer length_segments = 4;
+    	integer width_segments = 4;
+    	
+    	// texturing parameters
+    	//
+        boolean gen_mapping_coords is false;
+    is  
+		with translated_3ds_bicubic_patch do
+		
+        	// set geometry attributes
+        	//
+            its bicubic_basis is bicubic_basis;
+            
+            // set tessellation attributes
+            //
+            its length_segments = length_segments;
+        	its width_segments = width_segments;
+        	
+            // set texturing parameters
+            //
+	        its gen_mapping_coords is gen_mapping_coords;
+	    end;
+	end;	// set
+	
+	
+    //
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;		
+
+        // bicubic vertices
+        //
+        vector_grid type vertex_grid is get_bicubic_vertices
+            length_segments by width_segments of bicubic_basis;
+    
+        // bicubic row and column tangents
+        //
+        vector_grid type row_tangents_grid is get_bicubic_row_tangents
+            length_segments by width_segments of bicubic_basis;
+        vector_grid type column_tangents_grid is get_bicubic_column_tangents
+            length_segments by width_segments of bicubic_basis;
+        vector_grid type normals_grid;
+    
+        // find normals from tangents
+        //
+        dim normals_grid[min vertex_grid..max vertex_grid, min vertex_grid[] .. max vertex_grid[]];
+        for integer row = min vertex_grid .. max vertex_grid do
+            for integer column = min vertex_grid[] .. max vertex_grid[] do
+                normals_grid[row, column] = column_tangents_grid[row,
+                    column] cross row_tangents_grid[row, column];
+            end;
+        end;
+    	    
+		editable_mesh add_element (get_grid_mesh
+            of vertex_grid oriented to normals_grid
+        with
+        	smoothing is true;
+        	mending is false;
+        	closed is false;
+        	reversed is false;
+        	textured is gen_mapping_coords;
+        );
+		
+		recycle;
+		answer editable_mesh;
+	end;	// get_collapsed
+	
+	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_bicubic_patch type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_bicubic_patch type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_bicubic_patch;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_bicubic_patch;
+		
+		translated_3ds_bicubic_patch is none;
+	end;		// recycle			
+end;    // translated_3ds_bicubic_patch
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_bicubic_patch
+    of bicubic_basis type bicubic_basis;
+with
+    // tessellation parameters
+    //
+    integer length_segments = 4;
+	integer width_segments = 4;
+	
+	// texturing parameters
+	//
+    boolean gen_mapping_coords is false;
+    
+    // modifier stack
+    //
+	translated_3ds_bicubic_patch type translated_3ds_bicubic_patch is translated_3ds_bicubic_patch type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_bicubic_patch;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_bicubic_patch set to bicubic_basis with
+        
+        // set tessellation parameters
+        //
+        length_segments = static length_segments;
+    	width_segments = static width_segments;
+    	
+    	// set texturing parameters
+    	//
+        gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_bicubic_patch

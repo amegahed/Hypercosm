@@ -1,0 +1,208 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         object_instance.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of object instances in the        }
+{       scene graph.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/naming.ores";
+include "system/rendering.ores";
+include "system/transforming.ores";
+include "system/copying.ores";
+include "system/cloning.ores";
+include "system/printing.ores";
+include "system/materials.ores";
+
+abstract subject object_instance
+extends 
+	nameable transformable renderable copyable cloneable printable object
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+	with
+		trans type trans = unit_trans;
+		material type material is none;
+	end;
+	
+	// naming methods
+	//
+	string type question get_name;
+	verb set_name
+		to string type name;
+	end;
+	
+	// transformation methods
+	//
+	verb get_trans
+		trans type reference trans;
+	end;
+	verb set_trans 
+		to trans type trans;
+	end;
+	verb transform
+		from trans type trans;
+	end;
+	
+	// material methods
+	//
+	material type question get_material;
+	verb set_material
+		to material type material;
+	end;
+	
+	// rendering methods
+	//
+	abstract shape instance;
+	// visibility methods
+	//
+	boolean question is_visible;
+	verb set_visible
+		to boolean visible;
+	end;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from object_instance type source;
+	end;
+	abstract object_instance type question clone;
+	
+	// printable methods
+	//
+	string type question to_string;
+has
+	// attributes 
+	//
+	string type name;
+	trans type trans;
+	material type material is none;
+	boolean visible;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		named string type name is none;
+	with
+		trans type trans = unit_trans;
+		material type material is none;
+	is
+		// set attributes
+		//
+		with object_instance do
+			its name is name;
+			its trans = trans;
+			its material is material;
+			its visible is true;
+		end;
+	end;    // new
+
+	//
+	// naming methods
+	//
+	
+	
+	string type question get_name is
+		answer name;
+	end;    // get_name
+	
+	
+	verb set_name
+		to string type name;
+	is
+		object_instance's name is name;
+	end;    // set_name
+	
+	
+	//
+	// transformation methods
+	//
+	
+	
+	verb get_trans
+		trans type reference trans;
+	is
+		trans = object_instance's trans;
+	end;    // get_trans
+	
+	
+	verb set_trans 
+		to trans type trans;
+	is
+		object_instance's trans = trans;
+	end;    // set_trans
+	
+	
+	verb transform
+		from trans type trans;
+	is
+		object_instance's trans transform from trans;
+	end;    // transform
+
+	//
+	// material methods
+	//
+	
+	
+	material type question get_material is
+		answer material;
+	end;    // get_material
+	
+	
+	verb set_material
+		to material type material;
+	is
+		object_instance's material is material;
+	end;    // set_material
+	
+	
+	//
+	// visibility methods
+	//
+	
+	
+	boolean question is_visible is
+		answer visible;
+	end;    // is_visible
+	
+	
+	verb set_visible
+		to boolean visible;
+	is
+		object_instance's visible is visible;
+	end;    // set_visible
+	
+	//  
+	// copying method
+	//
+	
+	
+	verb copy
+		from object_instance type source;
+	is
+		name is source's name;
+		trans = source's trans;
+		material is source's material;
+		visible is source's visible;
+	end;    // copy
+	
+	//    
+	// printable methods
+	//
+	
+	
+	string type question to_string is
+		answer "translated 3ds object";
+	end;    // to_string
+end;    // object_instance
+

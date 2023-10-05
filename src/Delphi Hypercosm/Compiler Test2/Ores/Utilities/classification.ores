@@ -1,0 +1,81 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		 classification.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of a subject used to find the		}
+{		relationships between different classes of objects.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/naming.ores";
+
+
+subject class
+extends
+	nameable object
+does
+	// constructor
+	//
+	verb new
+		named string type name;
+		of class type superclass is none;
+	end;
+	
+	// attribute querying methods
+	//
+	string type question get_name;
+	class type question get_superclass;
+has
+	// class attributes
+	//
+	string type name;
+	class type superclass is none;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		named string type name;
+		of class type superclass is none;
+	is
+		// set class attributes
+		//
+		with class do
+			its name is name;
+			its superclass is superclass;
+		end;
+	end;	// new
+	
+	
+	//
+	// attribute querying methods
+	//
+	
+	
+	string type question get_name is
+		answer name;
+	end;	// get_name
+	
+	
+	class type question get_superclass is
+		answer superclass;
+	end;	// get_superclass
+end;	// class
+
+
+{***************************************************************}
+{				interfaces associated with classes				}
+{***************************************************************}
+
+
+adjective classifiable
+does
+	class type question get_class;
+end;	// classifiable

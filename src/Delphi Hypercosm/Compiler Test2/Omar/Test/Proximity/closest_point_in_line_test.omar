@@ -1,0 +1,61 @@
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/marks.ores";
+include "system/arrows.ores";
+include "system/proximity.ores";
+
+
+vector point1 = <-1 0 0>;
+vector point2 = <0 1 1>;
+vector reference_point = <0 0 2>;
+
+
+shape scene with
+	scalar t = 0;
+is
+	scalar x = get_mouse dot <1 0 0> * 360;
+	scalar y = get_mouse dot <0 1 0> * 360;
+	vector closest_point;
+	vector rotated_point1, rotated_point2;
+	
+	// rotate line points
+	//
+	rotated_point1 = point1;
+	rotate_point rotated_point1 by x around <1 0 0> about <0 0 0>;
+	rotate_point rotated_point1 by y around <0 1 0> about <0 0 0>;
+	rotated_point2 = point2;
+	rotate_point rotated_point2 by x around <1 0 0> about <0 0 0>;
+	rotate_point rotated_point2 by y around <0 1 0> about <0 0 0>;	
+	
+	// draw line
+	//
+	line [rotated_point1 rotated_point2];
+	closest_point = closest_point_on_line_to_point
+		on rotated_point1 rotated_point2 to reference_point;
+	
+	// draw reference point and closest point
+	//
+	mark at reference_point;
+	mark at closest_point with
+		color = red;
+	end;
+	arrow from reference_point to closest_point;
+end;	// scene
+
+
+anim test with
+	eye = <2 -8 4>;
+is
+	shape environment is
+		plane with
+			magnify by 10;
+			move to <0 0 -3>;
+			render_mode is wireframe;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene in environment;
+end;	// test

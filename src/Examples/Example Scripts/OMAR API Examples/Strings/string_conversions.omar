@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        string_conversions.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       string conversion utilities.                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/string_utils.ores";
+
+verb example is
+	string type string;
+
+	// integer conversion test
+	//
+	string is "69";
+	write "string to integer of '", string, "' = ", string to_integer, ;
+
+	// scalar conversion test
+	//
+	string is "9.8";
+	write "string to scalar of '", string, "' = ", string to_scalar, ;
+	
+	// fraction conversion test
+	//
+	string is ".75";
+	write "string to scalar of '", string, "' = ", string to_scalar, ;
+	string is "0.75";
+	write "string to scalar of '", string, "' = ", string to_scalar, ;
+end;    // example

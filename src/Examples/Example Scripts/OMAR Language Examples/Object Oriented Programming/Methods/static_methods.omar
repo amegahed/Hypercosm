@@ -1,0 +1,76 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         static_methods.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of how to use a           }
+{       static methods of a class in the OMAR language.         }
+{                                                               }
+{       Static methods in OMAR are almost exactly the           }
+{       same as static methods in languages such as C,          }
+{       C++, or Java.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do static_methods_example;
+
+subject thing
+does
+	// constructor
+	//
+	verb new with
+		integer value = 0;
+	end;
+	verb print;
+	
+	// static method
+	//
+	objective integer question get_number;
+has
+	// attributes
+	//
+	integer value;
+is
+	// private, static counter
+	//
+	integer number_of_things = 0;
+
+	//
+	// constructor
+	//
+	
+	verb new with
+		integer value = 0;
+	is
+		// set attributes
+		//
+		thing's value = value;
+		
+		// increment static counter
+		//
+		number_of_things = itself + 1;
+	end;    // new
+	
+	verb print is
+		write "thing with value = ", value, ;
+	end;    // print
+	
+	//
+	// static method
+	//
+	
+	objective integer question get_number is
+		answer number_of_things;
+	end;    // get_number
+end;    // circle
+
+verb static_methods_example is
+	thing type things[1 .. 5];
+	
+	for integer counter = min things .. max things do
+		things[counter] print;
+	end;
+	write "number of things = ", thing type's get_number, ;
+end;    // static_methods_example

@@ -1,0 +1,76 @@
+{***************************************************************}
+{                          polygon.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do polygon_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.ores";
+include "system/arrow_shapes.ores";
+
+shape labelled_polygon is
+	shape polygon_primitive is
+		polygon [<-.25 -.25 0> <-.25 -1.5 0> <1.5 -.25 0>
+			<1.25 1 0> <-.5 1.25 0> <-1.5 -.5 0>]
+		with
+			move to <0 0 -.01>;
+		end;
+	end;
+	
+	polygon_primitive with
+		material is glass colored polygon_color;
+		render_mode is shaded_line;
+	end;
+	
+	mark at <-.25 -.25 0>;
+	mark at <-.25 -1.5 0>;
+	mark at <1.5 -.25 0>;
+	mark at <1.25 1 0>;
+	mark at <-.5 1.25 0>;
+	mark at <-1.5 -.5 0>;
+	futura_l_word "VERTEX" with
+		move to <-.25 -.25 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <-.25 -1.5 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <1.5 -.25 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <1.25 1 0>;
+		move to <0 .1 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <-.5 1.25 0>;
+	end;
+	futura_l_word "VERTEX" with
+		move to <-1.5 -.5 0>;
+	end;
+end;    // labelled_polygon
+
+shape polygon_scene is
+	labelled_polygon;
+	axes;
+end;    // polygon_scene
+	
+	
+anim polygon_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	window_name is "The Polygon Primitive";
+	args check;
+is
+	mouse_controlled_shape polygon_scene;
+end;    // polygon_anim

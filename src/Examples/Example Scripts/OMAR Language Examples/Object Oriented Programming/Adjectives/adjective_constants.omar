@@ -1,0 +1,75 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       adjective_constants.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of an adjective containing constants in         }
+{       the OMAR language.                                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do adjective_constants_example;
+
+adjective trigonometric
+has
+	const scalar pi = 3.1415926;
+end;    // printable
+
+subject circle
+does
+	// constructor
+	//
+	verb new
+		at vector center;
+	with
+		scalar radius = 1;
+	end;
+	
+	// question methods
+	//
+	scalar question get_area;
+has
+	// attributes
+	//
+	vector center = <0 0 0>;
+	public scalar radius = 1;
+is
+	//  
+	// constructor
+	//
+	verb new
+		at vector center;
+	with
+		scalar radius = 1;
+	is
+		with circle do
+			its center = center;
+			its radius = radius;
+		end;
+	end;    // new
+	
+	//
+	// question methods
+	//
+	
+	scalar question get_area is 
+		answer trigonometric type's pi * radius * radius;
+	end;    // get_area
+end;    // circle
+
+verb adjective_constants_example 
+is
+	// object declaration - this creates an instance
+	// of the circle subject or "class"
+	//
+	circle type circle at <0 0 10> with
+		radius = 5;
+	end;
+	
+	// This calls a circle's question method
+	//
+	write "The area of the circle = ", circle get_area, ;
+end;    // adjective_constants_example

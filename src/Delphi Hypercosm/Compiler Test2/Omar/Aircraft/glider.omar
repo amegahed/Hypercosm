@@ -1,0 +1,147 @@
+{***************************************************************}
+{                          glider.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do soaring_glider;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/check_keys.ores";
+
+
+shape glider is
+    shape fuselage is
+        sphere with
+            scale by 8 along <1 0 0>;
+            move to <-3 0 0>;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <10 0 0>;
+            radius1 = .8;
+            radius2 = 0;
+        end;
+    end;    // fuselage
+
+
+    shape wing is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 20 0>;
+            radius1 = 1.5;
+            radius2 = .5;
+            scale by .1 along <0 0 1>;
+            umin = 180;
+        end;
+    end;    // wing
+
+
+    shape stabilizer is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 5 0>;
+            radius1 = 1;
+            radius2 = .5;
+            scale by .1 along <0 0 1>;
+            umin = 180;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 -5 0>;
+            radius1 = 1;
+            radius2 = .5;
+            scale by .1 along <0 0 1>;
+            umax = 180;
+        end;
+    end;    // stabilizer
+
+
+    shape tail is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 5>;
+            radius1 = 1;
+            radius2 = .5;
+            scale by .1 along <0 1 0>;
+        end;
+        stabilizer with
+            move to <0 0 5>;
+        end;
+    end;    // tail
+
+
+    const scalar dihedral = 10;
+
+    fuselage;
+
+    // right wing
+    wing with
+        move to <-4 0 0>;
+        rotate by dihedral around <1 0 0>;
+    end;
+
+    // left wing
+    wing with
+        move to <-4 0 0>;
+        rotate by dihedral around <1 0 0>;
+        scale by -1 along <0 1 0>;
+    end;
+    tail with
+        move to <8 0 0>;
+    end;
+end;    // glider
+
+
+picture glider_picture with
+    scalar time = 0;
+is
+        scalar x = sin time * 30;
+        scalar y = cos (time * 1.35) * 20;
+
+    lookat = <x y (x + y)>;
+        distant_light from <.3 -.5 1>;
+    glider with
+        color = white;
+        rotate by (time * 1.35) around <-1 1 0>;
+        rotate by time around <0 0 1>;
+        move to <x y (x + y)>;
+    end;
+end;    // glider_picture
+
+
+anim soaring_glider
+    args type args;
+with
+    double_buffer is on;
+    eye = <10 -50 30>;
+        background = sky_blue;
+    args check;
+is
+    scalar t = 0;
+
+    while true do
+        glider_picture with
+            time = t;
+        end;
+        check_keys;
+        t = itself + 1;
+    end;
+end;    // soaring_glider
+
+
+anim glider_anim
+    args type args;
+with
+        background = sky_blue;
+    eye = <0 -50 0>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape glider;
+end;    // glider_anim

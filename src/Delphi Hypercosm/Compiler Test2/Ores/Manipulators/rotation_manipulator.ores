@@ -1,0 +1,362 @@
+{***************************************************************}
+{                     rotation_manipulators.ores                }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/manipulation.ores";
+include "system/manipulator.ores";
+include "system/shape_manipulator.ores";
+include "system/rotation_arrow_handles.ores";
+include "system/picking.ores";
+include "system/manipulation_plane.ores";
+include "system/trigonometry.ores";
+include "system/arrows.ores";
+
+
+enum axis is x_axis, y_axis, z_axis;
+
+
+subject rotation_manipulator
+extends
+    shape_manipulator
+does
+    verb new
+        around axis type axis;
+        controlling shape target;
+        bounded by shape bounding_shape does none;
+        transforming trans type reference trans refers to none;
+    with
+        scalar handle_size = default_handle_size;
+        scalar rotation_snap = 0, final_rotation_snap = 90;
+    end;
+    
+    verb reset;
+    verb deselect;
+
+    // shape manipulator methods
+    //
+    shape handles
+        of trans type trans;
+    end;
+    
+    // touchable methods
+    //
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;
+    boolean question is_handle_touched
+        from vector location;
+        towards vector direction;
+        closer than scalar reference min_t refers to none;
+    end;   
+        
+    // pressable methods
+    //
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;
+    verb release
+        from vector location;
+        towards vector direction;
+    end;
+has    
+    // manipulator parameters
+    //
+    scalar handle_size;
+    boolean handle_touched is false;
+    handle_state type handle_states[1..4];
+            
+    // current rotation state
+    //
+    axis type axis;
+    scalar rotation;
+    scalar rotation_snap, final_rotation_snap;
+    scalar cumulative_rotation;
+    scalar min_t;
+    
+    // reference state
+    //
+    manipulation_plane type manipulation_plane;
+    trans type start_trans;
+is
+    verb new
+        around axis type axis;
+        controlling shape target;
+        bounded by shape bounding_shape does none;
+        transforming trans type reference trans refers to none;
+    with
+        scalar handle_size = default_handle_size;
+        scalar rotation_snap = 0, final_rotation_snap = 90;
+    is
+        shape_manipulator new controlling target bounded by bounding_shape
+            padded by <handle_size handle_size handle_size> / 2
+            transforming trans;
+            
+        with rotation_manipulator do
+            its axis is axis;
+            its target does target;
+            its bounding_shape does bounding_shape;
+            its handle_size = handle_size;
+            its rotation_snap = rotation_snap;
+            its final_rotation_snap = final_rotation_snap;
+            its cumulative_rotation = 0;
+        end; 
+    end;    // new
+    
+
+    verb reset is
+        shape_manipulator static reset;
+        cumulative_rotation = 0;
+    end;    // reset
+    
+    
+    verb deselect is
+        manipulator static deselect;
+        handle_touched is false;
+    end;    // deselect
+    
+    
+    verb select_rotation
+        from vector location;
+        towards vector direction;
+        closer than scalar reference min_t;
+    is
+        trans type trans;
+        
+        objective shape x_rotation_target is
+            x_rotation_handles of trans with
+                handle_size = static handle_size;
+            end;
+        end;
+        objective shape y_rotation_target is
+            y_rotation_handles of trans with
+                handle_size = static handle_size;
+            end;
+        end;
+        objective shape z_rotation_target is
+            z_rotation_handles of trans with
+                handle_size = static handle_size;
+            end;
+        end;
+        
+        // compute bounding trans
+        //
+        trans's origin = target_center;
+        scaling the trans of target_size about target_center;  
+        trans transform from relative_trans;
+
+        // find intersections using trans
+        //           
+        when axis is
+            x_axis:
+                if ray_touches_shape x_rotation_target
+                    from location towards direction closer than min_t
+                then
+                    handle_touched is true;
+                    manipulation_plane's origin = trans's origin;
+                    manipulation_plane's normal = trans's x_axis;
+                end;
+            end;
+        
+            y_axis:
+                if ray_touches_shape y_rotation_target
+                    from location towards direction closer than min_t
+                then
+                    handle_touched is true;
+                    manipulation_plane's origin = trans's origin;
+                    manipulation_plane's normal = trans's y_axis;
+                end;
+            end;
+        
+            z_axis:
+                if ray_touches_shape z_rotation_target
+                    from location towards direction closer than min_t
+                then
+                    handle_touched is true;
+                    manipulation_plane's origin = trans's origin;
+                    manipulation_plane's normal = trans's z_axis;
+                end;
+            end;
+        end;    // when
+    end;    // select_rotation
+    
+ 
+    // shape manipulator methods
+    //
+    
+    
+    shape handles
+        of trans type trans;
+    is
+        // highlight handles of rotation axis if touched
+        //
+        if handle_touched then
+            set_handle_states handle_states to highlighted;
+        else
+            set_handle_states handle_states to unselected;
+        end;        
+                           
+        when axis is
+            x_axis: 
+                x_rotation_handles of trans with
+                    handle_size = static handle_size;
+                    handle_states is static handle_states;
+                end;
+            end;
+            
+            y_axis:
+                y_rotation_handles of trans with
+                    handle_size = static handle_size;
+                    handle_states is static handle_states;
+                end;
+            end;
+            
+            z_axis:
+                z_rotation_handles of trans with
+                    handle_size = static handle_size;
+                    handle_states is static handle_states;
+                end;
+            end;
+        end;    // when
+    end;    // handles
+    
+    
+    verb manipulate
+        from vector location;
+        towards vector direction;
+    is
+        manipulation_plane touch from location towards direction;
+        
+        // compute new rotation angle
+        //
+        rotation = vangle2 from (manipulation_plane's press_point - relative_trans transformed target_center)
+            to (manipulation_plane's touch_point - relative_trans transformed target_center)
+            around manipulation_plane's normal;
+        if rotation_snap <> 0 then
+            rotation = snap rotation to rotation_snap;
+        end;
+        
+        // update relative trans
+        //
+        relative_trans = start_trans;
+        rotate the relative_trans by rotation around manipulation_plane's normal
+            about relative_trans transformed target_center; 
+    end;    // manipulate
+
+
+    // touchable methods
+    //
+      
+      
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        if pressed then 
+            manipulate from location towards direction;  
+        elseif not mouse_down then
+            min_t = infinity; 
+            
+            handle_touched is false;     
+            touched is is_touched from location towards direction closer than min_t;
+ 
+            if touched then
+                min_t = infinity;
+                select_rotation from location towards direction closer than min_t;
+                
+                if handle_touched then
+                    if some current_interaction then
+                        current_interaction override;
+                    end;
+                end;
+            end;     
+        end;
+    end;    // touch
+    
+    
+    boolean question is_handle_touched
+        from vector location;
+        towards vector direction;
+        closer than scalar reference min_t refers to none;
+    is  
+        if touched and handle_touched then
+            if min_t refers to none then
+                answer true;
+            else
+                if rotation_manipulator's min_t < min_t then
+                    min_t = rotation_manipulator's min_t;
+                    answer true;
+                else
+                    answer false;
+                end;
+            end;
+        else
+            answer false;
+        end;
+    end;    // is_handle_touched
+    
+        
+    // pressable methods
+    //
+    
+         
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    is
+        if double_click then
+            if is_handle_touched from location towards direction then
+                reset;
+            end;
+        else
+            // activate selected manipulation
+            //
+            if handle_touched then
+                pressed is true;
+                start_trans = relative_trans;
+                manipulation_plane press from location towards direction;
+                rotation = 0;
+            end;
+        end;
+    end;    // press
+
+
+    verb release
+        from vector location;
+        towards vector direction;
+    is 
+        // end rotation
+        //
+        if pressed then
+            if final_rotation_snap <> 0 then
+                rotation = snap rotation to final_rotation_snap;
+            end;
+            
+            // add to cumulative rotation
+            //
+            cumulative_rotation = itself + rotation;
+            
+            // update relative trans
+            //
+            relative_trans = start_trans;
+            rotate the relative_trans by rotation around manipulation_plane's normal
+                about relative_trans transformed target_center;
+                
+            pressed is false;
+        end; 
+    end;    // release
+end;    // rotation_manipulator

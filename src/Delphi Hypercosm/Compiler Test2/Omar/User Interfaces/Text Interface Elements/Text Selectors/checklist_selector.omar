@@ -1,0 +1,48 @@
+do checklist_selector_anim;
+
+
+include "system/3d.ores";
+include "system/checklist_selector.ores";
+
+ 
+anim checklist_selector_anim with
+    background = dark blue;
+    double_buffer is true;
+is
+    text_display type step_display of "steps" at <-1 .8 0> aligned to middle_left;
+    text_display type warning_display of "steps skipped!"
+    	at <0 0 0> aligned to middle_center
+    with
+    	font_color set to red over white;
+        hidden is true;
+    end;
+    checklist_selector type checklist_selector of [
+        "This"
+        "That"
+        "Other Thing"
+        "Yet Another Thing"
+        "Last Thing"
+    ] at <.95 0 0> aligned to middle_right using step_display with
+        show_checkboxes is true;
+    end;
+    
+    verb checklist_action is
+        write "selected item is ", checklist_selector selected_step, ;
+        if checklist_selector steps_skipped then
+            warning_display show;
+        else
+            warning_display hide;
+        end;
+    end;    // checklist_action
+
+    picture scene is
+        checklist_selector draw;
+        step_display draw;
+        warning_display draw;
+    end;
+    
+    checklist_selector's selection_action is (new action of checklist_action);
+    while true do
+        scene;
+    end;
+end;    // checklist_selector_anim

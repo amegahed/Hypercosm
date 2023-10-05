@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         region_sizeing.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains general behavior interface definitions.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/pixels.ores";
+
+adjective region_sizeable
+does
+	// size querying methods
+	//
+	pixel type question get_size;
+	integer question get_width;
+	integer question get_height;
+end;    // region_sizeable
+
+adjective region_resizeable
+does
+	// setting methods
+	//
+	verb set_size
+		to pixel type size;
+	end;
+
+	verb set_width
+		to integer width;
+	end;
+
+	verb set_height
+		to integer height;
+	end;
+end;    // region_resizeable

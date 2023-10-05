@@ -1,0 +1,49 @@
+do spline_test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/splines.ores";
+include "system/arrow_shapes.ores";
+
+
+anim spline_test is
+	spline type spline1, spline2;
+	
+	shape thing is
+		spline1 polygon;
+	end;
+
+	shape scene is
+		thing;
+		axes;
+	end;
+	
+	spline1 add <0 0 0>;
+	spline1 add <1 0 0>;
+	spline1 add <1 1 0>;
+	spline2 add <0 1 0>;
+	spline2 add <0 0 0>;
+	
+	write "spline1: ", ;
+	spline1 print;
+	
+	write "spline2: ", ;
+	spline2 print;
+	
+	write "spline1 + spline2: ", ;
+	spline1 attach spline2;
+	spline1 print;
+	
+	{
+	write "center = ", spline1 center, ;
+	
+	spline1 remove_all [<1 1 0> <1 0 0>];
+	write "spline1 after removing 2: ", ;
+	spline1 print;
+	}
+	
+	mouse_controlled_shape scene with
+		auto_camera is on;
+	end;
+end;	// spline_test

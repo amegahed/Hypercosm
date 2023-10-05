@@ -1,0 +1,242 @@
+{***************************************************************}
+{                          digital_clock.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do digital_clock_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/atom.omar";
+
+
+shape digital_clock with
+    time type time = <0 0 0>;
+    scalar width = .5;
+    scalar height = 1;
+    scalar radius = .25;
+is
+    shape numeral with
+        integer number = 8;
+    is
+        if ((number = 2) or (number = 3) or (number = 4) or (
+            number = 5) or (number = 6) or (number = 8) or (
+            number = 9))
+        then
+            cylinder with
+                end1 = <-width 0 0>;
+                end2 = <width 0 0>;
+                radius = static radius;
+            end;
+        end;
+        if ((number = 2) or (number = 3) or (number = 5) or (
+            number = 6) or (number = 7) or (number = 8) or (
+            number = 9) or (number = 0))
+        then
+            cylinder with
+                end1 = <-width height 0>;
+                end2 = <width height 0>;
+                radius = static radius;
+            end;
+        end;
+        if ((number = 4) or (number = 4) or (number = 5) or (
+            number = 6) or (number = 8) or (number = 9) or (
+            number = 0))
+        then
+            cylinder with
+                end1 = <-width height 0>;
+                end2 = <-width 0 0>;
+                radius = static radius;
+            end;
+        end;
+        if ((number = 2) or (number = 6) or (number = 8) or (
+            number = 0))
+        then
+            cylinder with
+                end1 = <-width 0 0>;
+                end2 = <(-width) (-height) 0>;
+                radius = static radius;
+            end;
+        end;
+        if ((number = 2) or (number = 3) or (number = 5) or (
+            number = 6) or (number = 8) or (number = 0))
+        then
+            cylinder with
+                end1 = <(-width) (-height) 0>;
+                end2 = <width (-height) 0>;
+                radius = static radius;
+            end;
+        end;
+        if ((number = 1) or (number = 3) or (number = 4) or (
+            number = 5) or (number = 6) or (number = 7) or (
+            number = 8) or (number = 9) or (number = 0))
+        then
+            cylinder with
+                end1 = <width (-height) 0>;
+                end2 = <width 0 0>;
+                radius = static radius;
+            end;
+        end;
+        if ((number = 1) or (number = 2) or (number = 3) or (
+            number = 4) or (number = 7) or (number = 8) or (
+            number = 9) or (number = 0))
+        then
+            cylinder with
+                end1 = <width 0 0>;
+                end2 = <width height 0>;
+                radius = static radius;
+            end;
+        end;
+        
+        sphere with
+            radius = static radius;
+            center = <width height 0>;
+        end;
+        sphere with
+            radius = static radius;
+            center = <width -height 0>;
+        end;
+        
+        if (number <> 1)
+        then
+            sphere with
+                radius = static radius;
+                center = <-width height 0>;
+            end;
+        end;
+        if ((number = 2) or (number = 3) or (number = 4) or (
+            number = 5) or (number = 9))
+        then
+            sphere with
+                radius = static radius;
+                center = <-width 0 0>;
+            end;
+        end;
+        if ((number = 2) or (number = 5) or (number = 6))
+        then
+            sphere with
+                radius = static radius;
+                center = <width 0 0>;
+            end;
+        end;
+        if ((number = 2) or (number = 3) or (number = 5) or (
+            number = 6) or (number = 8) or (number = 0))
+        then
+            sphere with
+                radius = static radius;
+                center = <-width -height 0>;
+            end;
+        end;
+    end;    // numeral
+
+
+    shape colon is
+        sphere with
+            radius = .2;
+            move to <0 -.5 0>;
+        end;
+        sphere with
+            radius = .2;
+            move to <0 .5 0>;
+        end;
+    end;    // colon
+
+    integer onessec, tensec;
+    integer onesmin, tenmin;
+    integer oneshour, tenhour;
+    integer hours, minutes, seconds;
+
+    seconds = trunc (time dot <0 0 1>);
+    minutes = trunc (time dot <0 1 0>);
+    hours = trunc (time dot <1 0 0>);
+
+    if hours > 12 then
+        hours = itself - 12;
+    end;
+
+    onessec = seconds mod 10;
+    tensec = seconds div 10;
+    onesmin = minutes mod 10;
+    tenmin = minutes div 10;
+    oneshour = hours mod 10;
+    tenhour = hours div 10;
+
+    // seconds
+    //
+    numeral with
+        number = onessec;
+        move to <6 0 0>;
+        color = light red;
+    end;
+    numeral with
+        number = tensec;
+        move to <4 0 0>;
+        color = light red;
+    end;
+
+    // seconds : minutes colon
+    //
+    colon with
+        move to <2.5 0 0>;
+        color = white;
+    end;
+
+    // minutes
+    //
+    numeral with
+        number = onesmin;
+        move to <1 0 0>;
+        color = light orange;
+    end;
+    numeral with
+        number = tenmin;
+        move to <-1 0 0>;
+        color = light orange;
+    end;
+
+    // minutes : hours colon
+    //
+    colon with
+        move to <-2.5 0 0>;
+        color = white;
+    end;
+
+    // hours
+    //
+    numeral with
+        number = oneshour;
+        move to <-4 0 0>;
+        color = light yellow;
+    end;
+    if tenhour <> 0 then
+        numeral with
+            number = tenhour;
+            move to <-6 0 0>;
+            color = light yellow;
+        end;
+    end;
+end;    // digital_clock
+
+
+anim digital_clock_anim
+    args type args;
+with
+    eye = <-6 -12 8>;
+    double_buffer is on;
+    args check;
+is
+    picture scene is
+        distant_light from <.5 -.3 1>;
+        digital_clock with
+            time = get_time;
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // time_picture
+
+    mouse_controlled_picture scene;
+end;    // digital_clock_anim

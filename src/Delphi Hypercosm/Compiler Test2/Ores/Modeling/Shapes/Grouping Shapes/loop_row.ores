@@ -1,0 +1,77 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	        loop_row.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		loop row of other shapes.								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/transformations.ores";
+include "system/vectors.ores";
+include "system/math.ores";
+
+
+shape loop_row
+    of shape thing;
+with
+    scalar offset = 0;
+    scalar length = 2;
+    scalar radius = 1;
+    scalar number = 10;
+is
+    scalar arc_circumference = pi * radius;
+    scalar total_circumference = (length + arc_circumference) * 2;
+    scalar spacing = total_circumference / number;
+
+    // bottom tread line
+    //
+
+    linear_row from <(-length / 2) 0 (-radius)>
+        to <(length / 2) 0 (-radius)> of thing
+    with
+        offset = static offset;
+        spacing = static spacing;
+    end;
+    offset = itself - length;
+
+    // right tread arc
+    //
+    circular_row of thing from -90 to 90 with
+        offset = static offset;
+        radius = static radius;
+        spacing = static spacing;
+        yaw = 90;
+        roll = 90;
+        move to <(length / 2) 0 0>;
+        rotate by 90 around <1 0 0>;
+    end;
+    offset = itself - arc_circumference;
+
+    // top tread line
+    //
+    linear_row from <(length / 2) 0 radius>
+        to <(-length / 2) 0 radius> of thing
+    with
+        offset = static offset;
+        spacing = static spacing;
+    end;
+    offset = itself - length;
+
+    // left tread arc
+    //
+    circular_row of thing from 90 to 270 with
+        offset = static offset;
+        radius = static radius;
+        spacing = static spacing;
+        yaw = 90;
+        roll = 90;
+        move to <-(length / 2) 0 0>;
+        rotate by 90 around <1 0 0>;
+    end;
+end;    // loop_row

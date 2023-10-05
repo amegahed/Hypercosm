@@ -1,0 +1,40 @@
+do puck_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/common_materials.ores";
+
+shape puck with
+	scalar height = 0.5;
+	scalar radius = 1;
+is
+	material is rubber;
+	
+    disk with
+        radius = static radius;
+    end;
+    disk with
+        radius = static radius;
+        center = <0 0 height>;
+    end;
+    
+    cylinder with
+        radius = static radius;
+        end1 = <0 0 0>;
+        end2 = <0 0 height>;
+    end;
+end;    // puck
+
+anim puck_anim
+	args type args;
+with
+	args check;
+is
+	shape scene is
+		puck;
+	end;
+	
+	mouse_controlled_shape scene titled "Air Hockey Puck" with
+		auto_camera is on;
+	end;
+end;	// puck_anim

@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		 3ds_demo_watermark				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains a method for drawing a demo watermark			}
+{		message over the top of applets that are running		}
+{		in demo mode for the noncommercial version of the		}
+{		Hypercosm exporter.										}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+verb draw_3ds_demo_watermark is
+	{
+	overlay_text "Simulation Created With" at <0 .15 0> with
+		italic is true;
+	end;
+	overlay_text "Hypercosm Teleporter Demo Version" at <0 0 0> with
+		italic is true;
+	end;
+	overlay_text "For Non-Commercial Use ONLY." at <0 -.15 0> with
+		italic is true;
+	end;
+	}
+end;	// draw_3ds_demo_watermark

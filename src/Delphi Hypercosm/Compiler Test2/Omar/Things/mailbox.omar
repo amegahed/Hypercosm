@@ -1,0 +1,532 @@
+{***************************************************************}
+{                          mailbox.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do mailbox_anim;
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+
+
+shape door is
+    parallelogram with
+        vertex = <-1.04 0 -1.52>;
+        side1 = <2.08 0 0>;
+        side2 = <0 0 1.52>;
+    end;
+
+    disk with
+        normal = <0 1 0>;
+        radius = 1.04;
+        umin = 180;
+    end;
+
+    torus with
+        normal = <0 1 0>;
+        inner_radius = 1.01;
+        outer_radius = 1.05;
+        center = <0 .2 0>;
+        umin = 180;
+    end;
+
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 .2 0>;
+        radius = 1.04;
+        umax = 180;
+    end;
+
+    parallelogram with
+        vertex = <-1.04 0 -1.52>;
+        side1 = <0 .2 0>;
+        side2 = <0 0 1.52>;
+    end;
+
+    parallelogram with
+        vertex = <-1.04 0 -1.52>;
+        side1 = <2.08 0 0>;
+        side2 = <0 .2 0>;
+    end;
+    parallelogram with
+        vertex = <1.04 0 -1.52>;
+        side1 = <0 .2 0>;
+        side2 = <0 0 1.52>;
+    end;
+
+    // rounded edges
+    cylinder with
+        end1 = <1.03 .2 -1.52>;
+        end2 = <1.03 .2 0>;
+        radius = .02;
+    end;
+    cylinder with
+        end1 = <-1.03 .2 -1.52>;
+        end2 = <-1.03 .2 0>;
+        radius = .02;
+    end;
+
+    // latch
+    extrude [[-.005 .1] [-.005 .6] [-.18 .7] [-.35 .56]
+                [-.32 .41] [-.3 .415] [-.33 .55]
+                [-.175 .675] [-.024 .585] [-.024 .1]]
+    with
+        material is metal colored grey;
+        height = .4;
+        rotate by 90 around <0 0 1>;
+    end;
+
+    // latch screw
+    sphere with
+        material is chalk colored black;
+        center = <0 -.024 .3>;
+        radius = <.05>;
+    end;
+
+    // hinge
+    block with
+        material is metal colored grey;
+        vertex = <-.6 .03 -1.525>;
+        side1 = <1.2 0 0>;
+        side2 = <0 .2 0>;
+        side3 = <0 0 -.01>;
+    end;
+    // hinge screws
+    sphere with
+        material is chalk colored black;
+        center = <-.3 .1 -1.535>;
+        radius = <.036>;
+    end;
+    sphere with
+        material is chalk colored black;
+        center = <.3 .1 -1.535>;
+        radius = <.036>;
+    end;
+end;    // door
+
+shape flag is
+    polygon [<.24 0 3.2> <1 0 3.2> <1 0 2.8> <.24 0 2.5>] with
+        material is plastic colored red;
+    end;
+    polygon [<.24 -.02 3.2> <1 -.02 3.2> <1 -.02 2.8> <.24 -.02 2.5>] with
+        material is plastic colored red;
+    end;
+    polygon [<.24 0 3.2> <1 0 3.2> <1 -.02 3.2> <.24 -.02 3.2>] with
+        material is plastic colored red;
+    end;
+    block with
+        material is plastic colored red;
+        vertex = <0 0 -.2>;
+        side1 = <.24 0 0>;
+        side2 = <0 -.02 0>;
+        side3 = <0 0 3.4>;
+    end;
+    // screw
+    sphere with
+        material is chalk colored black;
+        center = <.12 -.01 0>;
+        radius = <.05>;
+    end;
+end;    // flag
+
+shape box is
+    cylinder with
+        end1 = <-2.5 0 0>;
+        end2 = <2.5 0 0>;
+        umin = 180;
+    end;
+
+    disk with
+        center = <2.5 0 0>;
+        normal = <1 0 0>;
+        umax = 180;
+    end;
+
+    //soldered corners:
+    torus with
+        center = <2.5 0 0>;
+        normal = <1 0 0>;
+        umax = 180;
+        inner_radius = .97;
+        outer_radius = 1.01;
+    end;
+
+    torus with
+        center = <-2.5 0 0>;
+        normal = <1 0 0>;
+        umax = 180;
+        inner_radius = .97;
+        outer_radius = 1.01;
+    end;
+
+    cylinder with
+        end1 = <2.5 .99 0>;
+        end2 = <2.5 .99 -1.5>;
+        radius = .02;
+    end;
+    cylinder with
+        end1 = <2.5 -.99 0>;
+        end2 = <2.5 -.99 -1.5>;
+        radius = .02;
+    end;
+    cylinder with
+        end1 = <-2.5 .99 0>;
+        end2 = <-2.5 .99 -1.5>;
+        radius = .02;
+    end;
+    cylinder with
+        end1 = <-2.5 -.99 0>;
+        end2 = <-2.5 -.99 -1.5>;
+        radius = .02;
+    end;
+    // end of soldered corners
+
+    parallelogram with
+        vertex = <2.5 -1 -1.5>;
+        side1 = <0 2 0>;
+        side2 = <0 0 1.5>;
+    end;
+
+    parallelogram with
+        vertex = <2.5 -1 -1.5>;
+        side1 = <-5 0 0>;
+        side2 = <0 0 1.5>;
+    end;
+
+    parallelogram with
+        vertex = <2.5 1 -1.5>;
+        side1 = <-5 0 0>;
+        side2 = <0 0 1.5>;
+    end;
+
+    parallelogram with
+        vertex = <-2.5 -1 -1.5>;
+        side1 = <5 0 0>;
+        side2 = <0 2 0>;
+    end;
+
+    // hinge
+    rounded_rod with
+        material is metal colored grey;
+        end2 = <-2.37 -.6 -1.532>;
+        end1 = <-2.37 .6 -1.532>;
+        radius = .03;
+    end;
+    block with
+        material is metal colored grey;
+        vertex = <-2.37 -.6 -1.505>;
+        side1 = <.2 0 0>;
+        side2 = <0 1.2 0>;
+        side3 = <0 0 -.01>;
+    end;
+    // screws
+    sphere with
+        material is chalk colored black;
+        center = <-2.24 -.3 -1.51>;
+        radius = <.036>;
+    end;
+    sphere with
+        material is chalk colored black;
+        center = <-2.24 .3 -1.51>;
+        radius = <.036>;
+    end;
+end;  // box
+
+shape mailbox
+with
+    scalar door_angle = 0;
+    scalar flag_angle = 90;
+is
+    box;
+
+    door with
+        rotate by door_angle around <1 0 0> about <0 .23 -1.53>;
+        rotate by -90 around <0 0 1>;
+        move to <-2.6 0 0>;
+    end;
+
+    flag with
+        rotate by flag_angle around <0 1 0> about <.12 0 0>;
+        move to <-1.6 -1.01 -.5>;
+    end;
+end;    // form
+
+
+subject interactive_mailbox
+extends
+    pressable touchable actor
+does
+    shape instance;
+    verb act;
+
+    // methods for opening and closing the mailbox door
+    //
+    verb open;
+    verb close;
+
+    // methods for raising and lowering the flag
+    //
+    verb raise_flag;
+    verb lower_flag;
+
+    // method for selecting the door or the flag
+    //
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;    // press
+    verb release
+        from vector location;
+        towards vector direction;
+    end;    // release
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;
+has
+    enum object is door, flag;
+
+    object type tracked_object is none;
+    object type touched_object is none;
+
+    boolean opening is false, closing is false;
+    boolean door_open is false;
+    scalar opening_step = 7, closing_step = 6;
+    scalar door_angle = 0;
+
+    boolean raising is false, lowering is false;
+    boolean flag_up is false;
+    scalar raising_step = 8, lowering_step = 9;
+    scalar flag_angle = 90;
+is
+    shape instance is
+        box with
+            material is plastic colored white;
+        end;
+        door with
+            if touched_object is door then
+                edges is outline;
+                render_mode is wireframe;
+            end;
+            material is plastic colored white;
+            rotate by door_angle around <1 0 0> about <0 .23 -1.53>;
+            rotate by -90 around <0 0 1>;
+            move to <-2.6 0 0>;
+        end;
+        flag with
+            if touched_object is flag then
+                edges is outline;
+                render_mode is wireframe;
+            end;
+            rotate by flag_angle around <0 1 0> about <.12 0 0>;
+            move to <-1.6 -1.01 -.5>;
+        end;
+    end;    // instance
+
+
+    verb step_open is
+        door_angle = itself + opening_step;
+        if door_angle >= 95 then
+            door_angle = 95;
+            opening is false;
+        end;
+    end;    // step_open
+
+
+    verb step_close is
+        door_angle = itself - closing_step;
+        if door_angle <= 0 then
+            door_angle = 0;
+            closing is false;
+        end;
+    end;    // step_close
+
+    verb step_raise is
+        flag_angle = itself - raising_step;
+        if flag_angle <= 0 then
+            flag_angle = 0;
+            raising is false;
+        end;
+    end;    // step_raise
+
+
+    verb step_lower is
+        flag_angle = itself + lowering_step;
+        if flag_angle >= 90 then
+            flag_angle = 90;
+            lowering is false;
+        end;
+    end;    // step_lower
+
+    verb act is
+        touch_actor interactive_mailbox;
+        press_actor interactive_mailbox;
+        
+        if opening then
+            step_open;
+        elseif closing then
+            step_close;
+        end;
+        if raising then
+            step_raise;
+        elseif lowering then
+            step_lower;
+        end;
+    end;    // act
+
+    verb open is
+        opening is true;
+        closing is false;
+        door_open is true;
+    end;    // open
+
+
+    verb close is
+        opening is false;
+        closing is true;
+        door_open is false;
+    end;    // close
+
+    verb raise_flag is
+        raising is true;
+        lowering is false;
+        flag_up is true;
+    end;    // raise
+
+
+    verb lower_flag is
+        raising is false;
+        lowering is true;
+        flag_up is false;
+    end;    // lower
+
+    object type question object_hit
+        from vector location;
+        towards vector direction;
+    is
+        objective shape current_door is
+            door with
+                rotate by door_angle around <1 0 0> about <0 .23 -1.53>;
+                rotate by -90 around <0 0 1>;
+                move to <-2.6 0 0>;
+            end;
+        end;
+        objective shape current_flag is
+            flag with
+                rotate by flag_angle around <0 1 0> about <.12 0 0>;
+                move to <-1.6 -1.01 -.5>;
+            end;
+        end;
+
+        if ray_hits_shape location direction current_door then
+            answer door;
+        end;
+
+        if ray_hits_shape location direction current_flag then
+            answer flag;
+        end;
+
+        answer none;
+    end;
+
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    is
+        tracked_object is object_hit from location towards direction;
+    end;    // press
+
+    verb release
+        from vector location;
+        towards vector direction;
+    is
+        object type final_object;
+
+        final_object is object_hit from location towards direction;
+
+        if some tracked_object then
+            if tracked_object is final_object then
+                when tracked_object is
+                    door:
+                        if door_open then
+                            close;
+                        else
+                            open;
+                        end;
+                    end;
+
+                    flag:
+                        if flag_up then
+                            lower_flag;
+                        else
+                            raise_flag;
+                        end;
+                    end;
+                end;
+            end;
+
+            tracked_object is none;
+            touched_object is none;
+        end;
+    end;    // release
+
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        if not ((some current_interaction) and
+                (current_interaction is_tracking)) then
+            touched_object is object_hit from location towards direction;
+
+            if (some tracked_object) or (some touched_object) then
+                set_cursor to arrow;
+
+                if some current_interaction then
+                    current_interaction override;
+                end;
+            end;
+
+            if touched_object isn't tracked_object then
+                touched_object is none;
+            end;
+        end;
+    end;    // touch
+end;
+
+anim mailbox_anim
+    args type args;
+with
+    facets = 5;
+    eye = <-9 -7 3>;
+    lookat = <-1 0 -.5>;
+    double_buffer is on;
+    background = <.2 .2 .6>;
+    args check;
+is
+    interactive_mailbox type mailbox;
+
+    verb check_keys is
+        if key_down char_to_key "o" then
+            mailbox open;
+        elseif key_down char_to_key "c" then
+            mailbox close;
+        elseif key_down char_to_key "u" then
+            mailbox raise_flag;
+        elseif key_down char_to_key "d" then
+            mailbox lower_flag;
+        end;
+
+    end;
+
+    mouse_controlled_actor mailbox doing check_keys;
+end;

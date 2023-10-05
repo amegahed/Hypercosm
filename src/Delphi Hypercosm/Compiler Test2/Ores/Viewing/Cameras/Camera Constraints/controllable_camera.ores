@@ -1,0 +1,301 @@
+{***************************************************************}
+{                     controllable_camera.ores                  }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the camera subject and other utilities         }
+{       useful for controlling how a scene is viewed.  Used     }
+{       in "behaviors.ores" and for keyframed animations.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/camera_constraint.ores";
+include "system/camera_utils.ores";
+include "system/viewing.ores";
+
+
+// auto_upright_mode controls how a controllable_camera should upright
+// itself if it turns upside-down:  whether to rotate around the camera's
+// line of sight, or around the vector from the camera to the camera's
+// point_of_interest.  A value of none disables auto-uprighting (or uses
+// the camera's default mode when passed to validate_new_state).
+//
+enum auto_upright_mode is line_of_sight, line_of_interest;
+
+
+// The controllable_camera is primarily used by mouse_controlled_behaviors.
+// Typically only the camera stored in the current interaction's camera
+// field will be modified.  After modifying the camera position, orientation,
+// or field_of_view, call validate_new_state and then activate.
+//
+subject controllable_camera
+does
+	// constructor
+	//
+    verb new
+        about vector point = global lookat;
+    with
+        vector eye = global eye;
+        vector lookat = global lookat;
+        scalar roll = global roll;
+        scalar yaw = global yaw;
+        scalar pitch = global pitch;
+        scalar field_of_view = global field_of_view;
+        scalar aspect_ratio = global aspect_ratio;
+        projection type projection is global projection;
+    end;
+    
+    // add_constraint adds a camera constraint to the camera.  This will
+    // prevent the camera from leaving a region in space.  Useful camera
+    // constraints are provided in camera_constraints.ores.  The
+    // warn_if_invalid flag instructs this method to write a warning
+    // message if the constraint would make the current camera position
+    // invalid.
+    //
+    verb add_constraint
+        camera_constraint type constraint;
+    with
+        boolean warn_if_invalid is true;
+    end;
+    
+    // zoom changes the field_of_view of the camera.  A zoom factor larger
+    // than 1 will create a telephoto effect, making distant objects appear
+    // larger.  A factor smaller than 1 will widen the viewing angle, making
+    // distant objects appear smaller.  zoom does not call validate_new_state
+    // or activate - the new viewing angle will not take effect until these
+    // two methods are called.
+    //
+    verb zoom
+        by scalar factor;
+    end;
+    
+    // memorize records the current state, to be restored later by the
+    // reset method.
+    //
+    verb memorize;
+    
+    // reset returns the camera to its initial or last memorized state
+    // and then calls activate.
+    //
+    verb reset;
+    
+    // validate_new_state copies the camera state from the trans and
+    // field_of_view members to the corresponding private members, after
+    // verifying that the new state satisfies any applicable camera
+    // constraints.
+    //
+    verb validate_new_state with
+        auto_upright_mode type auto_upright_mode is none;
+    end;
+    
+    // activate sets the eye, lookat, roll, yaw, pitch, field_of_view,
+    // aspect_ratio, and projection global viewing parameters using the
+    // current state of the camera.
+    //
+    verb activate;
+    
+    // save_camera_from_view sets the camera state using the values in the
+    // global viewing parameters.
+    //
+    verb save_camera_from_view;
+has
+	// controllable camera attributes
+	//
+    public trans type trans;
+    public scalar field_of_view;
+    
+    public auto_upright_mode type default_auto_upright_mode;
+    public boolean allow_auto_upright_mode_override;
+    public vector up_vector;
+    public scalar zoom_distance;
+    public vector point_of_interest;
+    public scalar factor;
+    
+    // the camera constraints
+    //
+    camera_constraint type constraints[] is none;
+    
+    // the last valid position set to the view
+    //
+    trans type cur_trans;
+    scalar cur_field_of_view;
+    scalar cur_aspect_ratio;
+    projection type cur_projection;
+    
+    // the last position memorized
+    //
+    trans type initial_trans;
+    scalar initial_field_of_view;
+is
+	//
+	// constructor
+	//
+	
+	
+    verb new
+        about vector point = global lookat;
+    with
+        vector eye = global eye;
+        vector lookat = global lookat;
+        scalar roll = global roll;
+        scalar yaw = global yaw;
+        scalar pitch = global pitch;
+        scalar field_of_view = global field_of_view;
+        scalar aspect_ratio = global aspect_ratio;
+        projection type projection is global projection;
+    is
+        default_auto_upright_mode is none;
+        allow_auto_upright_mode_override is true;
+        up_vector = <0 0 1>;
+        rotate_vector up_vector by -roll around <0 1 0>;  
+        zoom_distance = vlength of (lookat - eye);
+        if zoom_distance = 0 then
+            zoom_distance = vlength of eye;
+        end;
+        if zoom_distance = 0 then
+            zoom_distance = 10;
+        end;
+        point_of_interest = point;
+        factor = 1;
+        
+        get_view_trans into trans with
+            eye = static eye;
+            lookat = static lookat;
+            roll = static roll;
+            yaw = static yaw;
+            pitch = static pitch;
+        end;
+        controllable_camera's field_of_view = field_of_view;
+        cur_aspect_ratio = aspect_ratio;
+        cur_projection is projection;
+        validate_new_state;
+        memorize;
+    end;    // new
+    
+    
+    verb add_constraint
+        camera_constraint type constraint;
+    with
+        boolean warn_if_invalid is true;
+    is
+        if some constraint then
+            if some constraints then
+                integer num_constraints = num constraints;
+                camera_constraint type new_constraints[] is none;
+                
+                dim none new_constraints[1 .. (num_constraints + 1)];
+                
+                for integer i = min constraints .. max constraints do
+                    new_constraints[i] is constraints[i];
+                end;
+                
+                new_constraints[num_constraints + 1] is constraint;
+                
+                constraints is new_constraints;
+            else
+                constraints is [constraint];
+            end;
+            
+            if warn_if_invalid then
+                if not (constraint is_valid cur_trans cur_field_of_view) then
+                    write "Warning: add_constraint was given a constraint ",;
+                    write "    that does not accept the current camera.",;
+                end;
+            end;
+        end;
+    end;    // add_constraint
+    
+    
+    verb zoom
+        by scalar factor;
+    is
+        field_of_view = itself / factor;
+    end;    // zoom
+    
+    
+    verb memorize
+    is
+        initial_trans = cur_trans;
+        initial_field_of_view = cur_field_of_view;
+    end;    // memorize
+    
+    
+    verb reset
+    is
+        trans = initial_trans;
+        cur_trans = initial_trans;
+        cur_field_of_view = initial_field_of_view;
+        activate;
+    end;    // reset
+    
+    
+    verb validate_new_state with
+        auto_upright_mode type auto_upright_mode is none;
+    is
+        // cycle through all the constraints to make sure the new
+        // camera state is acceptable
+        //
+        if some constraints then
+            for integer i = min constraints .. max constraints do
+                constraints[i] constrain_movement
+                    from cur_trans cur_field_of_view
+                    to trans field_of_view
+                    return trans field_of_view;
+            end;
+        end;
+        
+        // determine the method to use for uprighting the camera
+        //
+        if (allow_auto_upright_mode_override is false) or
+                (auto_upright_mode is none) then
+            auto_upright_mode is default_auto_upright_mode;
+        end;
+        
+        // roll camera to keep level to object
+        //
+        if (some auto_upright_mode) and (up_vector <> <0 0 0>) then
+            boolean use_line_of_sight;
+            vector line_of_rotation;
+            
+            if point_of_interest = trans's origin then
+                use_line_of_sight is true;
+            elseif auto_upright_mode is line_of_sight then
+                use_line_of_sight is true;
+            else
+                use_line_of_sight is false;
+            end;
+            
+            if use_line_of_sight then
+                line_of_rotation = trans's y_axis;
+            else
+                line_of_rotation = point_of_interest - trans's origin;
+            end;
+            
+            auto_upright_trans trans around line_of_rotation
+                from (trans's z_axis) to up_vector by factor;
+        end;
+        
+        cur_trans = trans;
+        cur_field_of_view = field_of_view;
+    end;    // validate_new_state
+    
+    
+    verb activate is
+        set_view_from_trans cur_trans;
+        global field_of_view = cur_field_of_view;
+        aspect_ratio = cur_aspect_ratio;
+        projection is cur_projection;
+    end;    // activate
+    
+    
+    verb save_camera_from_view is
+        get_view_trans into trans;
+        field_of_view = global field_of_view;
+        validate_new_state;
+    end;    // save_camera_from_view
+end;    // controllable_camera
+
+

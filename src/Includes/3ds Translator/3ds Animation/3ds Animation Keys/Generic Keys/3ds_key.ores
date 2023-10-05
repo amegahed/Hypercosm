@@ -1,0 +1,79 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            3ds_key.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains key definitions that correspond to             }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/sorting.ores";
+include "system/3ds_time.ores";
+
+abstract subject translated_3ds_key
+extends
+	sortable printable object
+does
+	// constructor
+	//
+	verb new
+		at translated_3ds_time type time;
+	end;
+	
+	// sorting methods
+	//
+	boolean question less
+		than sortable type sortable;
+	end;
+	boolean question greater
+		than sortable type sortable;
+	end;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// key attributes
+	//
+	public translated_3ds_time type time;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at translated_3ds_time type time;
+	is
+		translated_3ds_key's time = time;
+	end;    // new
+	
+	//
+	// sorting methods
+	//
+	
+	boolean question less
+		than sortable type sortable;
+	is
+		translated_3ds_key type key is translated_3ds_key type sortable;
+		answer time < key's time;
+	end;    // less
+		
+	boolean question greater
+		than sortable type sortable;
+	is
+		translated_3ds_key type key is translated_3ds_key type sortable;
+		answer time > key's time;
+	end;    // greater
+	
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		write "key at time = ", time, ;
+	end;    // print
+end;    // translated_3ds_key

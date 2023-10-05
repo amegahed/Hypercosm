@@ -1,0 +1,150 @@
+{***************************************************************}
+{                          toys.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do toys_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/train.omar";
+include "system/jack.omar";
+include "system/alpha_block.omar";
+include "system/crayon.omar";
+
+
+picture toys_picture with
+    render_mode is shaded;
+    field_of_view = 50;
+    eye = <0 -6 6>;
+    background = beige;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+is
+    distant_light from <.5 -.5 1> with
+        brightness = .5;
+    end;
+    distant_light from <-.3 -1 1> with
+        brightness = .5;
+    end;
+    plane with
+        color = light brown;
+        magnify by 3;
+    end;
+
+    // alphabet blocks
+    //
+    alpha_block "L" with
+        rotate by -5 around <0 0 1>;
+        move to <-1.8 -.9 .5>;
+        edge_color = yellow;
+        letter_color = red;
+        color = brown;
+    end;
+    alpha_block "O" with
+        rotate by 30 around <0 0 1>;
+        move to <-.5 .1 .5>;
+        edge_color = grey;
+        letter_color = white;
+        color = green;
+    end;
+    alpha_block "V" with
+        rotate by 20 around <0 0 1>;
+        move to <.6 -1.3 .5>;
+        edge_color = red;
+        letter_color = cyan;
+        color = magenta;
+    end;
+    alpha_block "E" with
+        rotate by 48 around <0 0 1>;
+        move to <1.9 .2 .5>;
+        edge_color = white;
+        letter_color = red;
+        color = blue;
+    end;
+
+    // balls
+    //
+    sphere with
+        material is plastic colored purple;
+        center = <-1.3 1.3 .6>;
+        radius = .6;
+    end;
+    sphere with
+        material is plastic colored yellow;
+        center = <-2.5 .8 .4>;
+        radius = .4;
+    end;
+
+    // crayons
+    //
+    crayon with
+        rotate by 120 around <0 0 1>;
+        move to <-1.3 0 .11>;
+        color = orange;
+    end;
+    crayon with
+        rotate by 60 around <0 0 1>;
+        move to <-.5 -1.2 .11>;
+        color = blue;
+    end;
+    crayon with
+        rotate by 180 around <0 0 1>;
+        move to <-1.5 -1.6 .11>;
+        rotate by -8 around <0 1 0> about <-2.5 -1.6 0>;
+        color = red;
+    end;
+
+    // toy train
+    //
+    train type's form with
+        material is plastic colored charcoal;
+        magnify by .02;
+        rotate by 125 around <0 0 1>;
+        move to <1 0 0>;
+    end;
+
+    // jacks
+    //
+    jack with
+        material is metal;
+        magnify by .25;
+        move to <1.6 -2 0>;
+    end;
+    jack with
+        material is metal;
+        magnify by .25;
+        rotate by 45 around <0 0 1>;
+        move to <2 -1.5 0>;
+    end;
+
+    // marbles
+    sphere with
+        material is metal;
+        center = <2.5 -.5 .2>;
+        radius = .2;
+    end;
+    sphere with
+        material is metal;
+        center = <2.1 -.9 .2>;
+        radius = .2;
+    end;
+end;    // toys_picture
+
+
+anim toys_anim
+    args type args;
+with
+    field_of_view = 50;
+    eye = <0 -6 6>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture toys_picture;
+end;    // toys_anim

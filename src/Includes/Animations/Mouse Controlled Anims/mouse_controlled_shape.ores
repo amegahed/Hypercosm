@@ -1,0 +1,71 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      mouse_controlled_shape.ores       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard animation subjects, which can be      }
+{       used to animate objects using standard user             }
+{       interactions.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/time.ores";
+include "system/args.ores";
+include "system/check_keys.ores";
+include "system/interactions.ores";
+include "system/trans_stacks.ores";
+include "system/lighting.ores";
+
+anim mouse_controlled_shape
+	shape thing;
+	in shape environment does none;
+	around shape stationary_environment does default_lights;
+	about vector point = lookat;
+	doing verb action does check_keys;
+	titled string type title is none;
+with
+	integer frames = 0;
+	double_buffer is on;
+is
+	interaction type interaction about point;
+	boolean done is false;
+
+	picture shape_picture is
+		thing with
+			trans = interaction's trans;
+		end;
+		if some environment then
+			environment with
+				trans = interaction's trans;
+			end;
+		end;
+		if some stationary_environment then
+			stationary_environment with
+				trans = interaction's camera;
+			end;    
+		end;
+	end;    // shape_picture
+
+	if some title then
+		window_name is title;
+	end;
+
+	while not done do
+		shape_picture;
+
+		// perform actions between frames
+		//
+		if some action then
+			action;
+		end;
+		interaction update;
+		if frames <> 0 then
+			if frame_number > frames then
+				done is true;
+			end;        
+		end; 
+	end;
+end;    // mouse_controlled_shape

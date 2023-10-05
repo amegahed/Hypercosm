@@ -1,0 +1,14 @@
+do test;
+
+
+verb test is
+	scalar x = -1;
+	vector vx = <1 -1 1>;
+	scalar y = -x;
+	vector vy = <x -x x>;
+	
+	write "x = ", x, ;
+	write "vx = ", vx, ;
+	write "y = ", y, ;
+	write "vy = ", vy, ;
+end;	// test

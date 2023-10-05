@@ -1,0 +1,67 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "physics_constraints.hcvm";
+	WebOutputDir "Website";
+	Alignment;
+	CommandLine;
+	Width "768";
+	Height "640";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar_main "physics_constraints.omar";
+		}
+	}
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "physics_constraints.html";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Textures\\Transparency\\transparent80.png";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Textures\\Grids\\labelled_grid.gif";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Textures\\Background\\background.jpg";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Textures\\Grids\\grid.png";
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\deselect.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\hide.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\select.wav";
+			resource "..\\..\\..\\..\\..\\..\\..\\Program Files\\Hypercosm\\Hypercosm Studio\\Sounds\\System Sounds\\show.wav";
+		}
+	}
+}

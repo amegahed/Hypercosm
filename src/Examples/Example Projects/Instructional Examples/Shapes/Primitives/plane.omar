@@ -1,0 +1,56 @@
+{***************************************************************}
+{                          plane.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do plane_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.ores";
+include "system/arrow_shapes.ores";
+
+shape labelled_plane is
+	shape plane_primitive is
+		plane with
+			magnify by 1.25;
+			move to <0 0 -.01>;
+		end;
+	end;
+	
+	plane_primitive with
+		material is glass colored plane_color;
+		render_mode is shaded_line;
+	end;
+	
+	arrow from <-.01 0 0> to <-.01 0 .5>;
+	futura_l_word "NORMAL" with
+		rotate by 90 around <1 0 0>;
+		move to <-.4 0 .25>;
+	end;
+	mark at <0 -.05 0>;
+	futura_l_word "ORIGIN" with
+		move to <0 -.15 0>;
+	end;
+end;    // labelled_plane
+
+shape plane_scene is
+	labelled_plane;
+	axes;
+end;    // plane_scene
+	
+	
+anim plane_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	window_name is "The Plane Primitive";
+	args check;
+is
+	mouse_controlled_shape plane_scene;
+end;    // plane_anim

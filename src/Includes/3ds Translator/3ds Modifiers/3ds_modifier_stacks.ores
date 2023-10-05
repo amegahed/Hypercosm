@@ -1,0 +1,296 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_modifier_stacks.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains modifier stack definitions that correspond     }
+{       to entities from Discreet's 3D Studio Max software.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/3ds_modifier.ores";
+include "system/3ds_object.ores";
+include "system/stacks.ores";
+include "system/rendering.ores";
+
+subject translated_3ds_modifier_stack
+extends
+	renderable object
+does
+	// constructor
+	//
+	verb new
+		of integer size = 10;
+	end;    // new
+	
+	// constructing methods
+	//
+	verb push
+		translated_3ds_stackable type element;
+	end;
+	verb pop;
+	translated_3ds_stackable type question popped;
+	verb clear;
+ 
+	// querying methods
+	//
+	translated_3ds_stackable type question peek;
+	integer question height;
+	boolean question is_empty;
+	
+	// random access stack methods
+	//
+	verb poke
+		translated_3ds_stackable type element;
+		to integer level;
+	end;
+	translated_3ds_stackable type question peer
+		at integer level;
+	end;
+	verb remove
+		integer level;
+	end;
+	
+	// modifier collapsing methods
+	//
+	verb collapse;
+	translated_3ds_stackable type question get_collapsed;
+	
+	// rendering methods
+	//
+	shape instance;
+has
+	// attributes
+	//
+	integer num_items = 0;
+	translated_3ds_stackable type items[];
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of integer size = 10;
+	is
+		dim none items[1 .. size];
+	end;    // new
+
+	//
+	// constructing methods
+	//
+		
+	verb push
+		translated_3ds_stackable type item;
+	is
+		num_items = itself + 1;
+		items[num_items] is item;
+	end;    // push
+
+	verb pop is
+		translated_3ds_stackable type element is popped;
+	end;    // pop
+	
+	
+	verb clear is
+		num_items = 0;
+	end;    // clear
+	
+	translated_3ds_stackable type question popped is
+		if num_items >= min items then
+			translated_3ds_stackable type item is items[num_items];
+			num_items = itself - 1;
+			answer item;
+		else
+			answer none;
+		end;
+	end;    // pop
+
+	//
+	// querying methods
+	//
+	
+	translated_3ds_stackable type question peek is
+		if num_items > 0 then
+			answer items[num_items];
+		else
+			answer none;
+		end;
+	end;    // peek
+	
+	integer question height is
+		answer num_items;
+	end;    // height
+	
+	boolean question is_empty is
+		answer num_items = 0;
+	end;    // is_empty
+	
+	//
+	// random access stack methods
+	//
+	
+	verb poke
+		translated_3ds_stackable type element;
+		to integer level;
+	is
+		items[level] is element;
+	end;    // poke
+	
+	  
+	translated_3ds_stackable type question peer         
+		at integer level;
+	is
+		if 0 < level <= num_items then
+			answer items[level];
+		else
+			answer none;
+		end;
+	end;    // peek
+	
+	verb remove
+		integer level;
+	is
+		if 0 < level <= num_items then
+		
+			// shift higher items down
+			//
+			for integer counter = level + 1 .. num_items do
+				items[counter - 1] is items[counter];
+			end;
+			num_items = itself - 1;  
+		end;
+	end;    // remove
+	
+	//
+	// modifier collapsing methods
+	//
+	
+	translated_3ds_stackable type question get_collapsed_modifier
+		translated_3ds_stackable type modifier;
+	is
+		while translated_3ds_collapsable type modifier do
+			boolean active;
+			
+			if translated_3ds_activatable type modifier then
+				translated_3ds_activatable type activatable is 
+					translated_3ds_activatable type modifier;
+				active is activatable is_activated;
+			else
+				active is true;
+			end;
+			
+			if not active then
+				answer modifier;
+			else
+				// collapse modifier with no arguments
+				//
+				translated_3ds_collapsable type collapsable is
+					translated_3ds_collapsable type modifier;
+				
+				// collapse modifier
+				//      
+				modifier is collapsable get_collapsed;          
+			end;
+		end;
+		
+		answer modifier;
+	end;    // get_collapsed_modifier
+	
+	verb collapse_level
+		integer reference level;
+	is
+		translated_3ds_stackable type modifier is peer at level;
+		boolean active;
+		
+		if translated_3ds_activatable type modifier then
+			translated_3ds_activatable type activatable is 
+				translated_3ds_activatable type modifier;
+			active is activatable is_activated;
+		else
+			active is true;
+		end;
+		
+		if active then
+	
+			// collapse modifier if possible
+			//                      
+			if translated_3ds_collapsable2 type modifier then
+			
+				// collapse modifier with 1 argument
+				//
+				translated_3ds_collapsable2 type collapsable is
+					translated_3ds_collapsable2 type modifier;
+				translated_3ds_stackable type argument is
+					translated_3ds_stackable type peer at (level - 1);
+							
+				// collapse modifier
+				//      
+				modifier is collapsable get_collapsed argument;
+				
+				// remove modifier
+				//
+				remove level;
+				
+				// replace lower modifier in stack with collapsed modifier
+				//
+				poke (get_collapsed_modifier modifier) to level - 1;
+			else
+				// replace modifier in stack with collapsed modifier
+				//
+				poke (get_collapsed_modifier modifier) to level;
+				
+				// go to next level
+				//
+				level = itself + 1;
+			end;
+		else
+			remove level;
+		end;
+	end;    // collapse_level
+	
+	verb collapse is
+		integer level = 1;
+		
+		// collapse modifiers in stack from bottom to top
+		//
+		while level <= height do
+			collapse_level level;
+		end;
+	end;    // collapse
+	
+	translated_3ds_stackable type question get_collapsed is
+		collapse;
+		answer popped;
+	end;    // get_collapsed
+	
+	//
+	// rendering method
+	//
+	  
+	shape instance is
+		if not is_empty then
+			collapse;
+			
+			// render top of stack
+			//
+			if some peek then
+				if renderable type peek then
+					renderable type renderable is renderable type peek;
+					renderable instance;
+				end;
+				
+				if recycleable type peek then
+					recycleable type recycleable is recycleable type peek;                      
+					recycleable recycle;
+				end;
+			end;
+			
+			clear;
+		end;
+	end;    // instance
+end;    // translated_3ds_modifier_stack
+
+translated_3ds_modifier_stack type modifier_stack;

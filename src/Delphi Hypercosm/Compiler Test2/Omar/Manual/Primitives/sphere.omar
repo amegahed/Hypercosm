@@ -1,0 +1,117 @@
+{***************************************************************}
+{                          sphere.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sphere_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+
+
+shape labelled_sphere with
+    scalar umin = -30;
+    scalar umax = 260;
+    scalar vmin = -67.5;
+    scalar vmax = 67.5;
+is
+	shape sphere_primitive is
+	    sphere with
+	        umin = static umin;
+	        umax = static umax;
+	        vmin = static vmin;
+	        vmax = static vmax;
+	    end;
+	end;
+	
+	outlined sphere_primitive with
+		material is glass colored sphere_color;
+	end;
+	
+    futura_l_word "VMIN" with
+        move to <1.25 0 0>;
+        rotate by 90 around <1 0 0>;
+        rotate by vmin around <0 -1 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    futura_l_word "VMAX" with
+        move to <1.25 0 0>;
+        rotate by 90 around <1 0 0>;
+        rotate by vmax around <0 -1 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    futura_l_word "UMIN" with
+        move to <1.25 0 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    futura_l_word "UMAX" with
+        move to <1.25 0 0>;
+        rotate by umax around <0 0 1>;
+    end;
+    mark at <0 0 0>;
+    futura_l_word "CENTER" with
+        rotate by 90 around <1 0 0>;
+        move to <0 -.001 0>;
+    end;
+
+    // arcs showing longitude
+    //
+    arrow_arc to umax with
+        radius = .5;
+    end;
+    arrow_arc to umin with
+        radius = .4;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umin around <0 0 1>;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umax around <0 0 1>;
+    end;
+
+    // arc showing lattitude
+    //
+    arrow_arc to vmax with
+        radius = .9;
+        rotate by 90 around <1 0 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    arrow_arc to vmin with
+        radius = .7;
+        rotate by 90 around <1 0 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by vmin around <0 1 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by vmax around <0 1 0>;
+        rotate by umin around <0 0 1>;
+    end;
+end;    // labelled_sphere
+
+
+anim sphere_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Sphere Primitive";
+    args check;
+is
+	shape scene is
+	    labelled_sphere;
+	    axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // sphere_anim

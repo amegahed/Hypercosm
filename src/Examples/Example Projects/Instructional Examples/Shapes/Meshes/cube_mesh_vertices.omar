@@ -1,0 +1,72 @@
+{***************************************************************}
+{                          cube_vertices.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do cube_vertices_anim;
+
+include "system/3d.ores";
+include "system/futura_l.ores";
+include "cube_mesh.omar";
+
+shape cube_mesh_vertices is
+	// top vertices
+	//
+	futura_l_7 with
+		rotate by 90 around <1 0 0>;
+		move to <1.1 1 .9>;
+	end;
+	futura_l_8 with
+		rotate by 90 around <1 0 0>;
+		move to <-.9 1 .9>;
+	end;
+	futura_l_5 with
+		rotate by 90 around <1 0 0>;
+		move to <-.9 -1 .9>;
+	end;
+	futura_l_6 with
+		rotate by 90 around <1 0 0>;
+		move to <1.1 -1 .9>;
+	end;
+	// bottom vertices
+	//
+	futura_l_3 with
+		rotate by 90 around <1 0 0>;
+		move to <1.1 1 -1.1>;
+	end;
+	futura_l_4 with
+		rotate by 90 around <1 0 0>;
+		move to <-.9 1 -1.1>;
+	end;
+	futura_l_1 with
+		rotate by 90 around <1 0 0>;
+		move to <-.9 -1 -1.1>;
+	end;
+	futura_l_2 with
+		rotate by 90 around <1 0 0>;
+		move to <1.1 -1 -1.1>;
+	end;
+end;    // cube_mesh_vertices
+
+shape cube_mesh_vertices_scene is
+	cube_mesh_vertices;
+	cube_mesh with
+		material is glass;
+	end;
+	cube_mesh with
+		render_mode is wireframe;
+		color = white;
+	end;
+end;    // cube_mesh_vertices_scene
+
+anim cube_vertices_anim with
+	eye = <2 -8 4>;
+	lookat = <0 0 0>;
+	field_of_view = 40;
+is
+	mouse_controlled_shape cube_mesh_vertices_scene;
+end;    // cube_vertices_anim

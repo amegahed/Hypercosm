@@ -1,0 +1,228 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    physics_constraints.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use constraints      }
+{       with the physics engine.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_constraints_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the 's' key to launch projectiles to get the      }
+{       shape to move.                                          }
+{                                                               }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "physics_test_projectile.ores";
+
+// box definition
+//
+scalar box_height = 2;
+scalar box_length = 2;
+scalar box_width = 2;
+
+shape box_shape is
+	block with
+		vertex = <-(box_width/2) -(box_length/2) -(box_height/2)>;
+		side1 = <(box_width) 0 0>;
+		side2 = <0 (box_length) 0>;
+		side3 = <0 0 (box_height)>;
+	end;
+end;    // box_shape
+
+// door definition
+//
+scalar door_height = 6;
+scalar door_length = .25;
+scalar door_width = 2.5;
+
+shape door_shape is
+	block with
+		vertex = <-(door_width/2) -(door_length/2) -(door_height/2)>;
+		side1 = <(door_width) 0 0>;
+		side2 = <0 (door_length) 0>;
+		side3 = <0 0 (door_height)>;
+	end;
+end;
+
+// sphere shape definition
+//
+scalar sphere_radius = .75;
+
+shape sphere_shape is
+	sphere with
+		radius = sphere_radius;
+	end;
+end;
+
+anim physics_constraints_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+is
+	physics_actor type box1_actor is none;
+	physics_actor type box2_actor is none;
+	physics_actor type door_actor is none;
+	physics_actor type sphere1_actor is none;
+	physics_actor type sphere2_actor is none;
+	physics_actor type sphere3_actor is none;
+	physics_generic_constraint type slider is none;
+	physics_constraint type rope is none;
+	physics_hinge_constraint type hinge is none;
+	renderable_physics_scene type physics;
+
+	verb draw is
+	
+		// display on screen instructions
+		//
+		overlay_text "Press 's' to shoot a projectile." at <0 .9 0>;
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+	   
+		// fire a projectile, only if we just pressed the key this frame
+		//
+		if key_down char_to_key of "s" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to physics;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+		 
+		if key_down char_to_key of "1" and some rope then
+			rope is none;
+		end;
+	end;    // check_keys
+		
+		
+	verb update is
+		draw;
+		check_keys;
+	end;    // update
+
+	shape instance with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+		physics instance;
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // instance  
+	
+	
+	// add the box1 shape
+	//
+	box1_actor is (new renderable_physics_box_actor rendering (new static_shape of box_shape) with
+		trans's origin = <-6 0 6>;
+		mass = 0;
+		height = box_height;
+		width = box_width;
+		length = box_length;
+		state is static_state
+	);
+	physics add_physics_actor box1_actor;            
+			
+	// add the box2 shape
+	//
+	box2_actor is (new renderable_physics_box_actor rendering (new static_shape of box_shape) with
+		trans's origin = <-6 0 3>;
+		mass = 10;
+		height = box_height;
+		width = box_width;
+		length = box_length
+	);
+	physics add_physics_actor box2_actor;
+	// create the constraint
+	//
+	rope is (new physics_generic_constraint connecting box1_actor to box2_actor with
+		trans's origin = <-6 0 5>;
+		angular_lower_limit = <1 1 1>;
+		angular_upper_limit  = <-1 -1 -1>);
+	
+	physics add_physics_constraint rope;
+	// add the door shape
+	//
+	door_actor is (new renderable_physics_box_actor rendering (new static_shape of door_shape) with
+		trans's origin = <0 0 (door_height/2)>;
+		mass = 10;
+		height = door_height;
+		width = door_width;
+		length = door_length
+	);
+	physics add_physics_actor door_actor;
+	// add the hinge constraint
+	//
+	hinge is (new physics_hinge_constraint anchoring door_actor around <0 0 1> about <(door_width/2) 0 0> with
+		upper_limit = 1;
+		lower_limit = -1);
+	
+	physics add_physics_constraint hinge;
+	// add sphere1 actor
+	//
+	sphere1_actor is (new renderable_physics_sphere_actor rendering (new static_shape of sphere_shape) with
+		trans's origin = <4 0 3>;
+		mass = 0;
+		radius = sphere_radius;
+		state is static_state
+	);
+	physics add_physics_actor sphere1_actor;
+	
+	// add sphere2 actor
+	//
+	sphere2_actor is (new renderable_physics_sphere_actor rendering (new static_shape of sphere_shape) with
+		trans's origin = <10 0 3>;
+		mass = 0;
+		radius = sphere_radius;
+		state is static_state
+	);
+	physics add_physics_actor sphere2_actor;
+	
+	// add sphere3 actor
+	//
+	sphere3_actor is (new renderable_physics_sphere_actor rendering (new static_shape of sphere_shape) with
+		trans's origin = <7 0 3>;
+		mass = 10;
+		radius = sphere_radius;
+		restitution = .85
+	);
+	physics add_physics_actor sphere3_actor;
+	// create the constraint 
+	//   
+	slider is (new physics_generic_constraint connecting sphere1_actor to sphere3_actor with
+		trans's origin = <10 0 3>;
+		linear_lower_limit = <1 0 0>;
+		linear_upper_limit  = <-1 0 0>;
+		angular_lower_limit  = <1 0 0>;
+		angular_upper_limit  = <-1 0 0>
+	);
+	
+	physics add_physics_constraint slider;
+	
+	// add the plane shape
+	//
+	physics add_physics_actor (new physics_plane_actor);
+	// turn on/off proxy rendering aka debug mode
+	//                       
+	physics set_render_proxies to true; 
+	// run!
+	//    
+	mouse_controlled_animated_shape instance doing update;
+end;    // physics_constraints_anim

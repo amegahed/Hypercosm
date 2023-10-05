@@ -1,0 +1,236 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           hashtables.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard hashtable definition and            }
+{       implementation.                                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+include "system/nodes.ores";
+include "system/printing.ores";
+
+//
+// this is a simple hash function which just adds up
+// the values of all of the characters in the string
+//
+
+integer question hashfunction
+	of string type string;
+	to integer size;
+is
+	integer sum = 0;
+	
+	for each char ch in string do
+		sum = itself + ord ch;
+	end;
+	answer sum mod size;
+end;    // hashfunction
+
+subject hashtable
+extends
+	printable object
+does
+	// constructor
+	//
+	verb new
+		of integer size = 147;
+	with
+		// this allows a user to change the actual
+		// hashfunction that is used to map strings
+		// to integer hashtable indices
+		//
+		integer question hashfunction
+			of string type string;
+			to integer size;
+		end;
+		hashfunction does global hashfunction;
+	end;
+	
+	// constructing methods
+	//
+	verb enter
+		the object type item is none;
+		as string type name;
+	end;    
+	verb remove_entry
+		named string type name;
+	end; 
+	
+	// querying methods
+	//
+	boolean question entry
+		named string type name;
+	end;
+	object type question item
+		named string type name;
+	end;
+	integer question entries;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//  
+	subject hash_node
+	extends
+		node
+	does
+		// constructor
+		//
+		verb new
+			containing object type item;
+			named string type key;
+		end;
+	has
+		public string type key;
+		public hash_node type next is none;
+	is
+		//
+		// constructor
+		//
+		
+		verb new
+			containing object type item;
+			named string type key;
+		is
+			node new containing item;
+			hash_node's key is key;
+		end;    
+	end;    // hash_node
+
+	// table of containers
+	//  
+	hash_node type table[];
+	integer number_of_entries;
+
+	// the actual hashfunction to be used
+	// 
+	integer question hashfunction
+		of string type string;
+		to integer size;
+	end;   
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of integer size = 147;
+	with
+		// this allows a user to change the actual
+		// hashfunction that is used to map strings
+		// to integer hashtable indices
+		//
+		integer question hashfunction
+			of string type string;
+			to integer size;
+		end;
+		hashfunction does global hashfunction;
+	is
+		dim none table[0 .. size];
+		number_of_entries = 0;
+		hashtable's hashfunction does hashfunction;
+	end;    // new
+
+	//
+	// constructing methods
+	//
+	
+	verb enter
+		the object type item is none;
+		as string type name;
+	is
+		hash_node type hash_node containing item named name;
+		integer index;
+		
+		index = hashfunction of name to num table;
+		hash_node's next is table[index];
+		table[index] is hash_node;
+		number_of_entries = itself + 1;
+	end;    // enter
+
+	verb remove_entry
+		named string type name;
+	is
+		integer index = hashfunction of name to num table;
+		hash_node type hash_node is table[index];
+		hash_node type reference hash_node_ptr refers to table[index];
+
+		while some hash_node do
+			if name matches hash_node's key then
+				hash_node_ptr is hash_node's next;
+				hash_node is none;
+			else
+				hash_node_ptr refers to hash_node's next;
+				hash_node is its next;
+			end;
+		end;
+	end;    // remove_entry
+
+	//
+	// querying methods
+	//
+	
+	boolean question entry
+		named string type name;
+	is
+		integer index = hashfunction of name to num table;
+		hash_node type hash_node is table[index];
+
+		while some hash_node do
+			if name matches hash_node's key then
+				answer true;
+			else
+				hash_node is its next;
+			end;
+		end;
+		
+		answer false;
+	end;    // entry
+
+	object type question item
+		named string type name;
+	is
+		integer index = hashfunction of name to num table;
+		hash_node type hash_node is table[index];
+		boolean found is false;
+
+		while not found and some hash_node do
+			if name matches hash_node's key then
+				found is true;
+			else
+				hash_node is hash_node's next;
+			end;
+		end;
+		
+		if found then
+			answer hash_node get;
+		else
+			answer none;
+		end;
+	end;    // item
+
+	integer question entries is
+		answer number_of_entries;
+	end;    // entries
+	
+	//    
+	// printing methods
+	//
+	
+	verb print is
+		for integer counter = min table .. max table do
+			for each hash_node type entry and its next in table[counter] do
+				write entry's key, ": ";
+				global print entry get;
+			end;
+		end;
+	end;    // print
+end;    // hashtable

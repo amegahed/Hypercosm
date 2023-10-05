@@ -1,0 +1,60 @@
+{***************************************************************}
+{                          foggy_p38.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do foggy_p38_picture;
+
+
+include "system/3d.ores";
+include "system/p38.omar";
+
+
+picture foggy_p38_picture with
+    scalar prop_angle = 0;
+
+    field_of_view = 55;
+    eye = <-5 -20 5>;
+    lookat = <4 0 0>;
+    background = <.7 .7 .9>;
+    fog_factor = 10;
+    render_mode is shaded;
+    shading is vertex;
+is
+    distant_light from <.3 -.5 1>;
+    flat dark green plane with
+        magnify by 10;
+        origin = <0 0 -.1>;
+        normal = <0 0 1>;
+    end;
+    metallic white p38 type's form with
+        gear_down is true;
+        prop_angle = static prop_angle;
+        rotate by 190 around <0 0 1>;
+        move to <0 -10 2.8>;
+    end;
+    metallic white p38 type's form with
+        gear_down is true;
+        prop_angle = static prop_angle;
+        rotate by 170 around <0 0 1>;
+        move to <0 10 2.8>;
+    end;
+end;    // foggy_p38_picture
+
+
+anim foggy_p38_anim with
+    render_mode is wireframe;
+is
+    integer frames = 0;
+
+    while true do
+        foggy_p38_picture with
+            prop_angle = frames * 20;
+        end;
+        frames = frames + 1;
+    end;
+end;    // foggy_p38_anim

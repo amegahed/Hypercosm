@@ -1,0 +1,242 @@
+{***************************************************************}
+{                       button_list.ores                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{              Contains button_list widget utilities.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "button.ores";
+
+
+adjective button_list_item_client
+does
+    verb set_selection
+        to integer index;
+    end;
+    verb set_mouseover
+        to integer index;
+    end;
+end;
+
+
+subject button_list_item
+extends
+    button
+does
+    verb new
+        labelled string type label is none;
+        as integer index;
+        for button_list_item_client type client;
+    with
+        color type border_color = white;
+        color type label_color = white;
+    end;
+    shape instance;
+has
+    public button_list_item type next is none;
+    
+    integer index;
+    
+    button_list_item_client type client is none;
+is
+    verb new
+        labelled string type label is none;
+        as integer index;
+        for button_list_item_client type client;
+    with
+        color type border_color = white;
+        color type label_color = white;
+    is
+        button new labelled label with
+            border_color = static border_color;
+            label_color = static label_color;
+        end;
+        
+        button_list_item's index = index;
+        button_list_item's client is client;
+    end;    // new
+    
+    shape instance
+    is
+        button static instance;
+        
+        if some client then
+            if some mouse_state then
+                if (mouse_state's pressed) or (mouse_state's clicks <> 0) then
+                    client set_selection to index;
+                end;
+            end;
+            
+            if mouse_is_over then
+                client set_mouseover to index;
+            end;
+        end;
+    end;    // instance
+end;    // button_list_item
+
+
+subject button_list
+extends
+    button_list_item_client object
+does
+    verb new
+        labelled string type label is none;
+        controls integer reference selection refers to none;
+    with
+        scalar label_size = 1;
+        color type border_color = white;
+        color type label_color = white;
+    end;
+    verb relabel
+        string type label;
+    end; 
+    shape instance;
+
+    verb add_item
+        labelled string type label is none;
+        as integer index;
+    with
+        color type border_color = white;
+        color type label_color = white;
+    end;
+
+    // button_list_item_client interface methods
+    verb set_selection
+        to integer index;
+    end;
+    verb set_mouseover
+        to integer index;
+    end;
+has
+    public integer reference selection;
+    public boolean just_selected is false;
+    public boolean mouse_is_over is false;
+    public integer item_mouse_is_over = 0;
+
+    public trans type label_trans;
+
+    // private attributes
+    //
+    string type label;
+    color type border_color;
+    color type label_color;
+    integer internal_selection = 0;
+    
+    button_list_item type item_list is none;
+    integer item_count = 0;
+is
+    verb new
+        labelled string type label is none;
+        controls integer reference selection refers to none;
+    with
+        scalar label_size = 1;
+        color type border_color = white;
+        color type label_color = white;
+    is
+        button_list's label is label;
+        button_list's border_color = border_color;
+        button_list's label_color = label_color;
+
+        magnify the label_trans by label_size;
+
+        if selection refers to none then
+            button_list's selection refers to internal_selection;
+        else
+            button_list's selection refers to selection;
+        end;
+    end;    // new
+
+
+    verb relabel
+        string type label;
+    is
+        button_list's label is label;
+    end;    // relabel
+
+
+    shape face is
+        parallelogram with
+            color = border_color;
+        end;
+    end;    // face
+
+
+    shape instance is
+        button_list_item type item is item_list;
+        integer item_number = 0;
+        scalar position1;
+        scalar spacing;
+        scalar scale_factor;
+        
+        just_selected is false;
+        mouse_is_over is false;
+        
+        scale_factor = 1 / (item_count + 1);
+        position1 = scale_factor - 1;
+        spacing = scale_factor * 2;
+        
+        while some item do
+            item's label_trans = label_trans;
+            
+            item instance with
+                scale by scale_factor along <0 1 0>;
+                move to <0 (position1 + (item_number * spacing)) .02>;
+            end;
+            
+            item_number = itself + 1;
+            item is item's next;
+        end;
+        
+        face;   
+        futura_l_word label with
+            color = label_color;
+            trans = label_trans;
+            scale by scale_factor along <0 1 0>;
+            move to <0 (position1 + (item_number * spacing)) .02>;
+        end;
+    end;    // instance
+
+
+    verb add_item
+        labelled string type label is none;
+        as integer index;
+    with
+        color type border_color = white;
+        color type label_color = white;
+    is
+        button_list_item type item is (new button_list_item type
+            labelled label
+            as index
+            for (button_list_item_client type button_list)
+        with
+            border_color = static border_color;
+            label_color = static label_color;);
+        
+        item's next is item_list;
+        item_list is item;
+        item_count = itself + 1;
+    end;    // add_item
+
+
+    verb set_selection
+        to integer index;
+    is
+        just_selected is true;
+        
+        if not (selection refers to none) then
+            selection = index;
+        end;
+    end;    // set_selection
+
+
+    verb set_mouseover
+        to integer index;
+    is
+        mouse_is_over is true;
+        item_mouse_is_over = index;
+    end;    // set_mouseover
+end;    // button

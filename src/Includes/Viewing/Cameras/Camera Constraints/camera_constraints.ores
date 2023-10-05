@@ -1,0 +1,60 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       camera_constraints.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains constraint systems used for restricting where  }
+{       a controllable camera can be moved.  The abstract       }
+{       subject camera_constraint is in camera.ores.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/above_plane.ores";
+include "system/inside_sphere.ores";
+include "system/outside_sphere.ores";
+
+//
+// This file includes three standard constraint system:
+//   constraint_above_plane
+//   constraint_inside_sphere
+//   constraint_outside_sphere
+//
+// To use them, pass a constraint object to the add_constraint method
+// of a controllable_camera.  For example:
+//
+
+{
+do constrained_barn_anim;
+include "system/3d.ores";
+include "system/scene_driver.ores";
+include "system/camera_constraints.ores";
+include "system/barn.omar";
+anim constrained_barn_anim
+with
+	eye = <6 -6 4>;
+	lookat = <0 0 .5>;
+is
+	controllable_camera type camera;
+	scene_driver type driver with
+		camera_array is [camera];
+	end;
+	
+	camera add_constraint
+		(new constraint_above_plane type);
+	
+	camera add_constraint
+		(new constraint_outside_sphere with radius = 5);
+	
+	driver animate_picture barn_picture;
+end;
+}
+
+//
+// A word of warning:  it is possible to combine constraints such that
+// the valid region has "corners" in it.  If the user navigates the
+// camera into a corner, she may find it difficult to get out.  Be
+// aware of this when you define your constraints.
+//

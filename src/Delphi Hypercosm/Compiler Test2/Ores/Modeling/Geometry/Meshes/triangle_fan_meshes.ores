@@ -1,0 +1,172 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	   triangle_fan_meshes.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains a set of mesh generation methods				}
+{		for meshes in the form of a triangular fan. 			}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+
+include "system/meshes.ores";
+include "system/mesh_topologies.ores";
+include "system/polygon_utils.ores";
+include "system/statistics.ores";
+
+
+mesh type question get_triangle_fan_mesh
+    of vlist type vertices;
+    oriented to vlist type normals is none;
+with
+    // topology parameters
+    //
+    boolean open is false;
+    
+    // rendering paramters
+    //    
+    boolean smoothing is true;
+    boolean one_sided is true;
+    boolean reversed is false;
+    
+    // texturing parameters
+    //
+    vlist type texcoords;
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is recycleable_mesh type's get;
+	integer perimeter_vertices = num vertices - 1;
+	integer sides;
+	
+	if open then
+		sides = perimeter_vertices - 1;
+	else
+		sides = perimeter_vertices;
+	end;
+
+	// create topology
+	//
+	mesh's topology is (get_triangle_fan_mesh_topology of sides with
+		open is static open;
+	    reversed is static reversed);
+
+    // create normals
+    //	    
+	if normals is none then
+	    vector normal = get_polygon_normal of vertices;
+	    
+	    if reversed then
+	        normal = -itself;
+	    end;
+	    dim normals[min vertices .. max vertices];
+	    for each vector n in normals do
+	        n = normal;
+	    end;
+	end;
+	
+	// create texture coordinates
+	//
+	if textured and texcoords is none then
+	    if mapping is none then
+	        mapping is unit_parametric_mapping;
+	    end;
+		texcoords is mapping get_texcoords at vertices towards normals;	    
+	end;
+	    	
+	// create geometry
+	//
+    mesh's geometry is recycleable_mesh_geometry type's get;
+    mesh's geometry set to vertices oriented to normals textured by texcoords;
+    
+	// set mesh rendering parameters
+	//
+	with mesh do
+		its smoothing is smoothing;
+		its mending is false;
+		its closed is one_sided;
+	end;	    
+	
+	answer mesh;
+end;    // get_triangle_fan_mesh
+
+
+mesh type question get_circular_triangle_fan_mesh with
+
+	// geometry parameters
+	//
+	scalar radius = 1;
+	scalar umin = 0;
+	scalar umax = 360;
+	
+	// tessellation parameters
+	//
+	integer sides = 8;
+	
+    // rendering paramters
+    //    
+    boolean smoothing is true;
+    boolean one_sided is true;
+    boolean reversed is false;
+    
+    // texturing parameters
+    //
+    boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;    
+is
+	vector vertices[];
+	scalar uspan;
+	boolean open;
+	
+	// compute range in longitude
+	//
+    umin = normalized_positive_angle of umin;
+    umax = normalized_positive_angle of umax;
+    if umax = 0 then
+    	umax = 360;
+    end;
+    if umax < umin then
+    	umin = itself - 360;
+    end;
+    uspan = umax - umin;
+	open is (uspan <> 360);
+	
+	// compute vertices
+	//
+	if open then
+		integer num_vertices = sides + 2;
+		dim vertices[1 .. num_vertices];
+		vertices[1] = <0 0 0>;
+		for integer counter = 0 .. sides do
+			scalar t = counter / sides;
+			scalar angle = umin + t * uspan;
+			vertices[counter + 2] = <(cos angle) (sin angle) 0> * radius;
+		end;
+	else
+		integer num_vertices = sides + 1;
+		dim vertices[1 .. num_vertices];
+		vertices[1] = <0 0 0>;
+		for integer counter = 0 .. sides - 1 do
+			scalar t = counter / sides;
+			scalar angle = umin + t * uspan;
+			vertices[counter + 2] = <(cos angle) (sin angle) 0> * radius;
+		end;
+	end;	
+	
+	// create triangle fan
+	//
+	answer (get_triangle_fan_mesh of vertices with
+		open is static open;
+		smoothing is static smoothing;
+		one_sided is static one_sided;
+		reversed is static reversed;
+		textured is static textured;
+		mapping is static mapping;
+	);
+end;	// get_circular_triangle_fan_mesh
+
+
+

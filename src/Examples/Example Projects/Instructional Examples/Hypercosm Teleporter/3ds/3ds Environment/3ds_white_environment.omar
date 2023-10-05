@@ -1,0 +1,34 @@
+do white_environment_anim;
+
+include "system/3d.ores";
+include "system/3ds_translator.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "3ds_objects.omar";
+
+translated_3ds_environment type white_environment with
+	background_color = white;
+	background_name is "white_background.jpg";
+	use_map is true;
+	
+	// lighting parameters
+	//
+	ambient_color = white * .5;
+	
+	// default light parameters
+	//
+	light_tint = white;
+	light_level = 1;
+end;    // white_environment
+
+anim white_environment_anim 
+	args type args;
+with
+	white_environment activate;
+	lookat = <0 0 -2>;
+	args check;
+is
+	mouse_controlled_tessellated_shape objects titled "White Environment" with
+		auto_zoom is on;
+	end;
+end;    // white_environment_anim

@@ -1,0 +1,149 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		   pixie_path.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard subject for creating a path			}
+{		behind a moving point in the form of a sparkly			}
+{		trail of pixie dust.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/path.ores";
+include "system/random.ores";
+include "system/transformations.ores";
+
+
+subject pixie_path
+extends
+    path
+does
+	// constructor
+	//
+    verb new
+        at vector location = <0 0 0>;
+    with
+        integer steps = 10;
+        integer particles = 20;
+        scalar size = 1;
+
+        // path colors
+        //
+        color type head_color = light light blue;
+        color type tail_color = red;
+
+        // path properties
+        //
+        boolean sparkle is on;
+        boolean diminishing is on;
+    end;    // new
+
+	// renderable method
+	//
+    shape instance;
+has
+	// attributes
+	//
+    scalar size;
+    integer particles;
+    color type head_color, tail_color;
+    boolean sparkle, diminishing;
+is
+	//
+	// constructor
+	//
+	
+	
+    verb new
+        at vector location = <0 0 0>;
+    with
+        integer steps = 10;
+        integer particles = 20;
+        scalar size = 1;
+
+        // path colors
+        //
+        color type head_color = light light blue;
+        color type tail_color = red;
+
+        // path properties
+        //
+        boolean sparkle is on;
+        boolean diminishing is on;
+    is
+        // call superclass constructor
+        //
+        path new at location with
+            steps = static steps;
+        end;
+
+        // init pixie path
+        //
+        with pixie_path do
+            its size = size;
+            its particles = particles;
+
+            // initialize path colors
+            //
+            its head_color = head_color;
+            its tail_color = tail_color;
+
+            // initialize path properties
+            //
+            its sparkle is sparkle;
+            its diminishing is diminishing;
+        end;
+    end;    // new
+
+
+    objective shape cloud with
+        integer particles = 10;
+    is
+        vector location[1..particles];
+
+        for integer counter = 1..particles do
+            location[counter] = vrandom <-1 -1 -1> to
+                <1 1 1>;
+        end;
+        points location;
+    end;    // cloud
+
+
+	//
+	// renderable method
+	//
+	
+	
+    shape instance is
+
+        // point cloud path;
+        //
+        for integer counter = 1 .. steps do
+            scalar t = (counter - 1) / (steps - 1);
+            vector direction = path_points[counter] - path_points[
+                counter - 1] + <0 0 .01>;
+            scalar radius;
+
+            if diminishing then
+                radius = t;
+            else
+                radius = 1 - t;
+            end;
+
+            cloud with
+                particles = pixie_path's particles;
+                magnify by size * radius;
+                if sparkle then
+                    rotate by random 0 to 360 around <0 0 1>;
+                end;
+                scale by 1 / (radius + .1) along direction;
+                move to path_points[counter] - direction;
+                color = head_color * t + tail_color * (1 - t);
+            end;
+        end;
+    end;    // instance
+end;    // pixie_path

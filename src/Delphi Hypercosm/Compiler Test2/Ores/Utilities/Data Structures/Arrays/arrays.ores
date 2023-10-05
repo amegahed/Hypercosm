@@ -1,0 +1,27 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		    arrays.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utilities which provide a few useful           }
+{       array utilities.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+verb write_indices
+    integer indices[];
+is
+    write "[";
+    for integer counter = min indices .. max indices do
+        write indices[counter];
+        if counter <> max indices then
+            write " ";
+        end;
+    end;
+    write "]";
+end;    // write_indices
+  

@@ -1,0 +1,116 @@
+{***************************************************************}
+{                          sun_dog.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ray_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/optics.ores";
+
+
+integer crystal_counter = 0;
+vector direction_array[1 .. 1000];
+
+
+shape ice_crystal is
+    prism with
+        sides = 6;
+        // scale by .5 along <1 0 0>;
+        // scale by .5 along <0 1 0>;
+    end;
+    {
+    sphere with
+        scale by .5 along <0 0 1>;
+    end;
+    block;
+    }
+end;    // ice_crystal
+
+
+picture ray_picture
+is
+    const scalar radius = 5;
+    vector sun_location = <radius 0 0>;
+    vector sun_direction = <-1 0 0>;
+    vector intersections[];
+    vector vertices[];
+
+    shape rotated_crystal is
+        transparent light blue ice_crystal with
+            rotation of vrandom <0 0 0> to <360 360 360>;
+            move to vrandom <-1 -1 -1> to <1 1 1>;
+        end;
+    end;
+
+    rotated_crystal;
+
+    // outside projection sphere
+    //
+    sphere with
+        radius = static radius;
+        color = white;
+        edges is silhouette;
+        render_mode is wireframe;
+    end;
+
+    intersections is refract_intersections at sun_location towards
+        sun_direction about rotated_crystal;
+
+    // draw intersection rays
+    //
+    if some intersections then
+        vector first_point = intersections[min intersections];
+        vector last_point = intersections[max intersections];
+
+        arrow from sun_location to first_point with
+            color = yellow;
+        end;
+        arrow_rays at intersections with
+            outside_color = yellow;
+            inside_color = red;
+        end;
+        arrow from last_point to last_point + sun_direction with
+            color = yellow;
+        end;
+
+        sun_direction = (normalized sun_direction) * radius;
+
+        // add new direction to list
+        //
+        crystal_counter = itself + 1;
+        if crystal_counter = max direction_array then
+            crystal_counter = min direction_array;
+        end;
+
+        direction_array[crystal_counter] = sun_direction;
+    end;
+
+    // draw points
+    //
+    dim vertices[1..crystal_counter];
+    vertices = direction_array[1..crystal_counter];
+    points vertices;
+end;    // ray_picture
+
+
+anim ray_anim
+    args type args;
+with
+    eye = <10 -15 10>;
+    field_of_view = 50;
+    double_buffer is on;
+    window_name is "Sun Dog";
+    render_mode is wireframe;
+    background = black;
+    args check;
+is
+    mouse_controlled_picture ray_picture;
+end;    // ray_anim

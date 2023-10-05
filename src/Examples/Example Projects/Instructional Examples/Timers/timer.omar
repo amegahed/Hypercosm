@@ -1,0 +1,119 @@
+do timer_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/timer.ores";
+include "stopwatch.omar";
+
+subject timer_actor
+extends
+	renderable timer
+does
+	// constructor
+	//
+	verb new;
+	
+	// rendering method
+	//
+	shape instance;
+	
+	// updating method
+	//
+	verb update;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new is
+		timer new;
+	end;    // new
+
+	//  
+	// rendering method
+	//
+	
+	
+	shape instance is
+		stopwatch with
+			time = timer get_time;
+			paused is timer is_paused;
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // instance
+	
+	//  
+	// updating method
+	//
+	
+	
+	verb check_keys is
+		integer key;
+		
+		reset_frame_events;
+		key = get_key;
+		
+		if key = char_to_key of " " then
+			reset;
+		elseif key = char_to_key of "p" then
+			pause;
+		elseif key = char_to_key of "u" then
+			resume;
+		elseif key = char_to_key of "t" then
+			toggle; 
+		elseif key = char_to_key of "+" then
+			set_rate to rate * 1.5;
+		elseif key = char_to_key of "-" then
+			set_rate to rate / 1.5;
+		elseif key = char_to_key of "r" then
+			reverse;
+		end;
+	end;    // check_keys
+	
+	
+	verb draw_instructions
+		at scalar x = -.9, y = .8; 
+	is
+		verb draw_line
+			string type line;
+		is
+			overlay_text line at <x y 0> with
+				horizontal_alignment is left;
+			end;
+			
+			// go to next line
+			//
+			y = itself - .1;
+		end;    // draw_line
+		
+		draw_line "Press 'space' to Reset";
+		draw_line "Press 'P' to Pause";
+		draw_line "Press 'U' to Unpause";
+		draw_line "Press 'T' to Toggle";
+		draw_line "Press '+' to Speed Up";
+		draw_line "Press '-' to Slow Down";
+		draw_line "Press 'R' to Reverse";   
+	end;    // draw_instructions
+	
+		
+	verb update is
+		check_keys;
+		draw_instructions;
+		
+		// call superclass method
+		//
+		timer static update;
+	end;    // update
+end;    // timer_actor
+
+anim timer_anim with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+	show_animation_control is false;
+is
+	timer_actor type timer_actor;
+	
+	mouse_controlled_actor timer_actor titled "Timer";
+end;    // timer_anim

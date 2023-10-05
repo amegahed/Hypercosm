@@ -1,0 +1,16 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            actors.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/timed_actors.ores";
+include "system/shape_actors.ores";
+include "system/manipulatable_actors.ores";

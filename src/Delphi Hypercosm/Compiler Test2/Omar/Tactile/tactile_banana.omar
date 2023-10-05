@@ -1,0 +1,38 @@
+do tactile_banana_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/banana.omar";
+
+
+anim tactile_banana_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape banana_shape is
+        write "making banana", ;
+        banana with
+            magnify by 1.5;
+            move to <0 0 1.5>;
+            rotate by 180 around <0 0 1>;
+        end;
+    end;    // banana_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape banana_shape titled "Tactile Banana" in floor;
+end;    // tactile_banana_anim

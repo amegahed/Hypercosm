@@ -1,0 +1,98 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          indexed_list.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       indexed list utilities.                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do test;
+
+include "system/printing.ores";
+include "system/indexed_list.ores";
+include "system/linked_list.ores";
+
+subject thing
+extends
+	printable printing object
+does
+	// constructor
+	//
+	verb new with
+		integer i = 0;
+	end;    // new
+
+	// converting method
+	//
+	string type question to_string;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	integer i;
+is
+	//
+	// constructor
+	//
+
+	verb new with
+		integer i = 0;
+	is
+		thing's i = i;
+	end;    // new
+
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		answer integer_to_string of i;
+	end;    // to_string
+
+	//
+	// printing method
+	//
+
+	verb print is
+		write "i = ", to_string, ;
+	end;    // print
+end;    // thing
+
+verb test is
+	thing type thing1 with
+		i = 5;
+	end;
+	thing type thing2 with
+		i = 10;
+	end;
+	thing type thing3 with
+		i = 15;
+	end;
+	linked_list type list;
+	indexed_list type indexed_list indexing list;
+	thing type thing is none;
+
+	indexed_list set_element 1 to thing1;  
+	indexed_list set_element 2 to thing2; 
+	indexed_list set_element 3 to thing3;
+	indexed_list insert thing1 before 1;
+	indexed_list insert thing2 before 2;
+	write "list:", ;
+	list print;
+	write;
+		
+	write "list number of items = ", list get_size, ;
+	write;
+	
+	write "list element #3: ";
+	thing is thing type indexed_list get_element 3;
+	print thing;
+	write;
+end;    // test

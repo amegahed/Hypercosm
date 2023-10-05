@@ -1,0 +1,60 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        vector_rotations.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard procedures for calculating       }
+{       results of rotations.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/vectors.ores";
+
+verb rotate_vector
+	vector reference direction;
+	by scalar angle;
+	around vector axis;
+is
+	vector x_axis = direction perpendicular axis;
+	vector y_axis = (axis cross x_axis) / vlength of axis;
+	vector z_axis = direction parallel axis;
+	scalar x = cos angle;
+	scalar y = sin angle;
+	direction = (x_axis * x) + (y_axis * y) + z_axis;
+end;    // rotate_vector
+
+vector question rotated_vector
+	vector direction;
+	by scalar angle;
+	around vector axis;
+is
+	vector x_axis = direction perpendicular axis;
+	vector y_axis = (axis cross x_axis) / vlength of axis;
+	vector z_axis = direction parallel axis;
+	scalar x = cos angle;
+	scalar y = sin angle;
+	answer (x_axis * x) + (y_axis * y) + z_axis;
+end;    // rotated_vector
+
+verb rotate_point
+	vector reference point;
+	by scalar angle;
+	around vector axis;
+	about vector origin = <0 0 0>;
+is
+	point = itself - origin;
+	rotate_vector point by angle around axis;
+	point = itself + origin;
+end;    // rotate_point
+
+vector question rotated_point
+	vector point;
+	by scalar angle;
+	around vector axis;
+	about vector origin = <0 0 0>;
+is
+	answer origin + rotated_vector (point - origin) by angle around axis;
+end;    // rotated_point

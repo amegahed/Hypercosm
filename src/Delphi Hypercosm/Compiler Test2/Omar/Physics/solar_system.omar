@@ -1,0 +1,158 @@
+{***************************************************************}
+{                          solar_system.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do solar_system_anim;
+
+
+include "system/3d.ores";
+include "system/native_shading.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/gravity.ores";
+include "system/common_materials.ores";
+
+
+image type cosmic_image named "stars.jpg";
+texture type cosmic_texture using cosmic_image with mipmapping is on; end;
+material type cosmic_background is constant_color white textured cosmic_texture;
+
+
+shape saturn is
+    sphere;
+    ring with
+        material is stone;
+        inner_radius = 1.2;
+        outer_radius = 1.8;
+    end;
+end;    // saturn
+
+
+shader fiery is
+        color type hue = blend light yellow to orange by random 0 to 1;
+        scalar opacity = abs (direction dot normal) ^ 4;
+
+        answer blend background to (hue * 4) by opacity;
+end;    // fiery
+
+
+verb init_solar_system
+    g_system type system;
+with
+    integer planets = 9;
+    scalar max_radius = 10;
+    scalar min_radius = 1;
+is
+    spinning_shape type planet is none;
+    shape form;
+
+
+    static shape orb is
+        sphere;
+    end;    // orb
+
+    static shape fiery_orb is
+        fiery sphere;
+        point_light with
+            brightness = 3;
+            color = light orange;
+        end;
+    end;    // fiery_orb
+
+
+    spinning_shape type sun in form of fiery_orb with
+        rpm = 30;
+        axis = <0 0 1>;
+    end;
+
+    // sun
+    //
+    system orbit sun with
+        size = 1;
+        mass = 100;
+        color = yellow;
+    end;
+
+    // planets
+    //
+    for integer counter = 1..planets do
+        vector center;
+        scalar size;
+        boolean found is false;
+
+        while not found do
+            vector point = (vrandom <-1 -1 -.1> to <1 1 .1>) *
+                max_radius;
+            scalar d = sqrt (point dot point);
+
+            if (d > min_radius) and (d < max_radius) then
+                found is true;
+                center = point;
+            end;
+        end;
+
+        // randomize planet sizes
+        //
+        size = random .2 to .6;
+
+        // larger planets may have rings
+        //
+        if (random 0 to 1) * size > .3 then
+            form does saturn;
+        else
+            form does orb;
+        end;
+
+        // create new planet
+        //
+        new planet in form of form with
+            rpm = random 20 to 50;
+            axis = <(random -.5 to .5) (random -.5 to .5) 1>;
+        end;
+
+        // orbit planet
+        //
+        system orbit planet at center with
+            size = static size;
+            mass = size ^ 3 / 10;
+            color = vrandom black to white;
+        end;
+    end;
+
+    // create orbital system
+    //
+    system init;
+end;    // init_solar_system
+
+
+anim solar_system_anim
+    args type args;
+with
+    field_of_view = 90;
+    eye = <0 -8 -1>;
+    double_buffer is on;
+    background = black;
+    ambient = black;
+    args check;
+is
+    g_system type g_system;
+
+    shape environment is
+        block with
+            material is cosmic_background;
+            magnify by 100;
+        end;
+    end;    // environment
+
+    init_solar_system g_system with
+        planets = 9;
+    end;
+
+    mouse_controlled_actor g_system in environment;
+end;    // solar_system_anim

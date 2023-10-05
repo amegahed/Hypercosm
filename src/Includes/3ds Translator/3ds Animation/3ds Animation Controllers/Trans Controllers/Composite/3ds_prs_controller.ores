@@ -1,0 +1,92 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        3ds_prs_controller.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_trans_controller.ores";
+
+subject translated_3ds_prs_controller 
+extends
+	renderable translated_3ds_trans_controller
+does
+	// constructor
+	//
+	verb new with
+		translated_3ds_trans_controller type position_controller is none;
+		translated_3ds_trans_controller type rotation_controller is none;
+		translated_3ds_trans_controller type scale_controller is none;
+	end;
+	
+	// transforming methods
+	//
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	translated_3ds_trans_controller type position_controller is none;
+	translated_3ds_trans_controller type rotation_controller is none;
+	translated_3ds_trans_controller type scale_controller is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		translated_3ds_trans_controller type position_controller is none;
+		translated_3ds_trans_controller type rotation_controller is none;
+		translated_3ds_trans_controller type scale_controller is none;
+	is
+		with translated_3ds_prs_controller do
+			its position_controller is position_controller;
+			its rotation_controller is rotation_controller;
+			its scale_controller is scale_controller;
+		end;
+	end;    // new
+	
+	//
+	// transforming methods
+	//
+	
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	is
+		if some scale_controller then
+			scale_controller transform trans at time;
+		end;
+		if some rotation_controller then
+			rotation_controller transform trans at time;
+		end;
+		if some position_controller then
+			position_controller transform trans at time;
+		end;
+	end;    // transform
+	
+	//
+	// rendering method
+	//
+	
+	shape instance is
+		if some position_controller then
+			if renderable type position_controller then
+				renderable type renderable is renderable type position_controller;
+				renderable instance;
+			end;
+		end;
+	end;    // instance
+end;    // translated_3ds_prs_controller

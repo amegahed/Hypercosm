@@ -1,0 +1,193 @@
+{***************************************************************}
+{                          projectile.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do projectile_anim;
+
+
+include "system/3d.ores";
+include "system/interactions.ores";
+include "system/check_keys.ores";
+include "system/cannon.omar";
+include "system/button_meter.omar";
+include "system/gauge.omar";
+
+
+scalar elevation = 0;
+scalar power = .5;
+integer path_counter = 1;
+vector path_location[1..500];
+vector last_marker = <0 0 0>;
+vector acceleration = <0 0 -.1>;
+scalar last_distance = 0;
+
+
+shape path with
+    integer steps = path_counter;
+is
+    vector trajectory[1..steps];
+
+    for integer counter = 1..steps do
+        trajectory[counter] = path_location[counter];
+    end;
+    line trajectory;
+end;    // path
+
+
+picture projectile_picture with
+    scalar angle = 0;
+    scalar power = 0;
+    boolean draw_cannon is true;
+    boolean draw_projectile is false;
+    vector location = <0 0 0>;
+
+    window_name is "Projectile";
+    edges is silhouette;
+    projection is perspective;
+    eye = <60 -100 30>;
+    field_of_view = 70;
+    lookat = <-40 0 40>;
+    background = sky_blue;
+is
+    distant_light from <.3 -.5 1>;
+    if draw_cannon then
+        cannon with
+            elevation = (90 + angle);
+            power = static power;
+        end;
+    end;
+
+    // projectile
+    //
+    if draw_projectile then
+        sphere with
+            move to location;
+        end;
+
+        // shadow
+        //
+        disk with
+            move to <(location dot <1 0 0>) 0 .01>;
+            color = black;
+        end;
+
+        // path of projectile
+        //
+        path;
+    end;
+
+    // marker of last hit
+    //
+    if (path_counter <> 1) then
+        disk with
+            radius = 2;
+            move to last_marker;
+            color = red;
+        end;
+    end;
+    plane with
+        magnify by 80;
+        move to <-40 0 0>;
+    end;
+end;    // projectile_picture
+
+
+picture instruments_picture with
+    window_name is "Instruments";
+    render_mode is wireframe;
+    background = black;
+is
+    static button_meter type elevation_meter labelled "Angle" from 0 to 90
+        controls elevation;
+    static button_meter type power_meter labelled "Power"
+        controls power;
+    gauge type distance_gauge labelled "Distance" from 0 to 150
+        shows last_distance;
+    scalar aspect_ratio = height / width;
+
+    elevation_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .65 0>;
+    end;
+    power_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+    distance_gauge instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.65 0>;
+    end;
+end;    // instruments_picture
+
+
+anim projectile_anim with
+    double_buffer is on;
+    render_mode is shaded;
+is
+    integer total_width = width;
+    boolean firing is false;
+    vector location = <0 0 0>;
+    vector velocity;
+    click type click;
+
+    while true do
+        instruments_picture with
+            width = trunc (total_width * 1 / 4);
+            h_center = (screen_width div 2) + ((
+                total_width - width) div 2);
+            ortho_view;
+        end;
+        projectile_picture with
+            draw_cannon is true;
+            draw_projectile is firing;
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((
+                total_width - width) div 2);
+            angle = elevation;
+            power = static power;
+            location = static location;
+        end;
+
+        check_keys;
+
+        if firing then
+            location = location + velocity;
+            velocity = velocity + acceleration;
+        end;
+
+        click is get_click;
+        while some click do
+            if click is down or click is double_click then
+                {fire projectile}
+                location = (<(-cos elevation) 0 (sin elevation)>)
+                    * 20 + <0 0 12>;
+                velocity = (<(-cos elevation) 0 (sin elevation)>)
+                    * power * 3;
+                path_counter = 0;
+
+                firing is true;
+            end;
+            click is get_click;
+        end;
+
+        if firing then
+            if (location dot <0 0 1>) <= 0 or
+                    (path_counter >= max path_location) then
+                firing is false;
+                last_marker = <(location dot <1 0 0>) 0 .01>;
+                last_distance = abs (location dot <1 0 0>);
+            else
+                path_counter = itself + 1;
+                path_location[path_counter] = location;
+            end;
+        end;
+    end;
+end;    // projectile_anim

@@ -1,0 +1,128 @@
+do manipulator_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/reporting_manipulators.ores";
+include "system/manipulator_group.ores";
+include "system/common_materials.ores";
+include "system/infinite_plane.ores";
+include "fish.omar";
+
+shape thing1 is
+	sphere with
+		move to <2 -2 1>;
+		material is plastic colored red;
+	end;
+end;    // thing1
+
+shape thing2 is 
+	paraboloid with
+		material is plastic poster "Panels.jpg";
+		scale by 2 along <0 0 1>;
+		move to <-2 2 2>;
+	end;
+end;    // thing
+
+shape thing3 is
+	torus with
+		outer_radius = 1.5;
+		inner_radius = .5;
+		move to <2 2 1>;
+		material is wood;
+	end;
+end;    // thing3
+
+shape thing4 is
+	static fish type fish;
+	fish instance with
+		magnify by .1;
+		rotate by 90 around <0 0 1>;
+		move to <-2 -2 1>;
+	end;
+end;    // thing4;
+
+reporting_translation_manipulator type manipulator1
+	reporting "Ball"
+	controlling thing1 
+with
+	handle_size = .5;
+end;
+reporting_rotation_manipulator type manipulator2
+	reporting "Gumdrop"
+	controlling thing2 around z_axis 
+with
+	handle_size = .5;
+end;
+reporting_orientation_manipulator type manipulator3
+	reporting "Doughnut" 
+	controlling thing3
+with
+	handle_size = .5;
+end;
+reporting_transformation_manipulator type manipulator4
+	reporting "Fish"
+	controlling thing4
+with
+	handle_size = .5;
+end;
+
+manipulator type manipulators[] is [manipulator1 manipulator2 manipulator3 manipulator4];
+manipulator_group type manipulator_group using manipulators;
+
+anim manipulator_anim
+	args type args;
+with
+	eye = <-10 -10 10>;
+	lookat = <0 0 1>;
+	show_manipulation_control is true;
+	show_clipping_control is true;
+	args check;
+is
+	material type ground_material is (plastic colored hypercosm_green poster "transparent_grid.png");
+	
+	shape scene with
+		scalar time = 0;
+	is
+		manipulator_group instance;
+		{
+		manipulator1 instance;
+		manipulator2 instance;
+		manipulator3 instance;
+		manipulator4 instance;
+		}
+		{
+		block with
+			move to <0 0 1>;
+			scale by .1 along <0 1 0>;
+			scale by 10 along <1 0 0>;
+			scale by 2 along <0 0 1>;
+			selection_set = selectable;
+		end;
+		}
+		
+		infinite_plane to 100 with
+			//time = static time;
+			//scale by .5 along <1 0 0>;
+			//rotate by (static time * 10) around <0 0 1>;
+			material is ground_material;
+		end;
+		
+		axes with
+			magnify by 5;
+		end;
+	end;
+	
+	verb update is
+		manipulator_group update;
+		{
+		manipulator1 update;
+		manipulator2 update;
+		manipulator3 update;
+		manipulator4 update;
+		}
+	end;
+	
+	mouse_controlled_animated_shape scene doing update
+		titled "Manipulators";
+end;    // manipulator_anim

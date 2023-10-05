@@ -1,0 +1,71 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           char_counting.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a selection of text parsing utilities          }
+{       for parsing characters.                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/char_parsing.ores";
+
+integer question get_text_char_count
+	// source text
+	//
+	of strings type text;
+is
+	integer char_count = 0; 
+	integer line_number = min text;
+	integer char_number = min text[line_number];
+	boolean done is false;
+	
+	while not done do
+		char ch is get_next_char at column char_number on line line_number of text;
+		if ch isn't null then
+			char_count = itself + 1;
+			skip_char at column char_number on line line_number of text;
+		else
+			done is true;
+		end;
+	end;
+	
+	answer char_count;
+end;    // get_text_char_count
+
+integer question get_char_count
+	// start
+	//
+	from column integer char_number1;
+	on line integer line_number1;
+	
+	// finish
+	//
+	to column integer char_number2;
+	line integer line_number2;
+	
+	// source text
+	//
+	of strings type text;
+is
+	integer char_count = 0; 
+	boolean done is false;
+	
+	while (line_number1 < line_number2) or 
+		(line_number1 = line_number2 and char_number1 <= char_number2) 
+		and not done
+	do
+		char ch is get_next_char at column char_number1 on line line_number1 of text;
+		if ch isn't null then
+			char_count = itself + 1;
+			skip_char at column char_number1 on line line_number1 of text;
+		else
+			done is true;
+		end;
+	end;
+	
+	answer char_count;
+end;    // get_char_count

@@ -1,0 +1,15 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            mesh_shapes.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains various forms of shape definitions for         }
+{       mesh shapes.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/smooth_lathe.ores";
+include "system/mobius_strip.ores";

@@ -1,0 +1,79 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	     curved_extrusion.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		curved extrusion.  										}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/meshes.ores";
+include "system/shapes.ores";
+include "system/tangents.ores";
+include "system/segmented_spline.ores";
+include "system/cubic_splines.ores";
+include "system/bezier_splines.ores";
+include "system/grid_mesh.ores";
+
+
+shape curved_extrusion
+    along segmented_spline type segmented_spline;
+    in integer steps;
+    of vector[] cross_section;
+with
+    boolean smoothing is true;
+    boolean mending is false;
+is
+	vcubic_spline type vcubic_spline is get_piecewise_vcubic_spline through segmented_spline;
+    segmented_spline type spline_vectors is vcubic_spline get_values in steps;
+    segmented_spline type tangent_vectors is get_vertex_tangents of spline_vectors;
+    vector grid[min spline_vectors .. max spline_vectors,
+        min cross_section .. max cross_section];
+    trans type trans;
+    vector prev_hose_direction, prev_hose_normal, prev_hose_normal2;
+    
+    // find initial orientation of hose
+    //
+    direct the trans from <0 0 1> to tangent_vectors[min tangent_vectors];
+    
+    // next hose orientation is determined from previous hose
+    // orientation to minimize 'kinks' in the hose
+    //
+    prev_hose_direction = normalized trans's z_axis;
+    prev_hose_normal = normalized trans's x_axis;
+    prev_hose_normal2 = normalized trans's y_axis;    
+
+    for integer counter1 = min spline_vectors .. max spline_vectors do
+        vector hose_direction = normalized tangent_vectors[counter1];
+        vector hose_normal = normalized (hose_direction cross
+            prev_hose_normal2);
+        vector hose_normal2 = -normalized (hose_direction cross
+            hose_normal);
+
+        trans's origin = spline_vectors[counter1];
+        trans's x_axis = hose_normal;
+        trans's y_axis = hose_normal2;
+        trans's z_axis = hose_direction;
+
+        for integer counter2 = min cross_section .. max cross_section do
+            grid[counter1, counter2] = trans transformed
+                cross_section[counter2];
+        end;
+
+        // advance hose orientation
+        //
+        prev_hose_direction = hose_direction;
+        prev_hose_normal = hose_normal;
+        prev_hose_normal2 = hose_normal2;
+    end;
+
+    quad_grid_mesh of grid with
+        smoothing is static smoothing;
+        mending is static mending;
+    end;
+end;    // curved_extrusion

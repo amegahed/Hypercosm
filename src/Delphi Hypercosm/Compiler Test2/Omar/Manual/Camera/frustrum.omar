@@ -1,0 +1,91 @@
+{***************************************************************}
+{                          frustrum.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do frustrum_anim;
+
+
+include "system/3d.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/camera.omar";
+include "system/arrow_shapes.ores";
+
+
+shape frustrum is
+    scalar width = .8;
+    scalar height = .6;
+    scalar depth = 6;
+    scalar diagonal = sqrt (sqr width + sqr height);
+    scalar l = sqrt (sqr depth + sqr diagonal);
+    scalar angle = 2 * atan (diagonal / depth / 2);
+    scalar theta = atan (height / width);
+
+    line [<0 0 0> (<width depth height>)];
+    line [<0 0 0> (<-width depth height>)];
+    line [<0 0 0> (<-width depth (-height)>)];
+    line [<0 0 0> (<width depth (-height)>)];
+    line [(<width depth height>) (<-width depth height>) (<-width
+        depth (-height)>) (<width depth (-height)>) (<width depth
+        height>)];
+    double_arrow_arc from -angle to angle with
+        radius = (l * .5);
+        arrow_head_width = arrow_head_width * 2;
+        rotate by 90 around <0 0 1>;
+        rotate by theta around <0 1 0>;
+    end;
+    futura_l_word "FIELD" with
+        rotate by 90 around <1 0 0>;
+        move to <0 (depth / 3) .2>;
+    end;
+    futura_l_word "OF" with
+        rotate by 90 around <1 0 0>;
+        move to <0 (depth / 3) 0>;
+    end;
+    futura_l_word "VIEW" with
+        rotate by 90 around <1 0 0>;
+        move to <0 (depth / 3) -.2>;
+    end;
+    arrow from <0 0 0> to <0 (depth * 2) 0> with
+        color = green;
+    end;
+    futura_l_word "LINE" with
+        rotate by 90 around <1 0 0>;
+        move to <0 (depth * 1) .2>;
+        color = green;
+    end;
+    futura_l_word "OF" with
+        rotate by 90 around <1 0 0>;
+        move to <0 (depth * 1) 0>;
+        color = green;
+    end;
+    futura_l_word "SIGHT" with
+        rotate by 90 around <1 0 0>;
+        move to <0 (depth * 1) -.2>;
+        color = green;
+    end;
+end;    // frustrum
+
+
+anim frustrum_anim with
+    eye = <2 -8 3>;
+    field_of_view = 30;
+    lookat = <0 3 0>;
+is
+	shape scene is
+	    camera with
+	        magnify by .35;
+	        color = white;
+	    end;
+	
+	    frustrum;
+	    axes;
+	end;
+	
+	mouse_controlled_shape scene;
+end;    // frustrum_pic

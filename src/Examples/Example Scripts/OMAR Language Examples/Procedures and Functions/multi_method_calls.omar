@@ -1,0 +1,67 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        multi_method_calls.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of             }
+{       multi method calls in the OMAR language.                }
+{                                                               }
+{       Multi method calls are simply a shorthand way           }
+{       of calling a method multiple times in a single          }
+{       line of code.                                           }
+{                                                               }
+{       There is no direct analogy for this language            }
+{       feature in languages such as C, C++, C#, Java,          }
+{       Python, Ruby, or Pascal.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do multi_method_example;
+
+include "system/hashtable.ores";
+include "system/linked_stack.ores";
+
+verb draw_line
+	from vector start;
+	to vector finish;
+is
+	write "drawing line from ", start, " to ", finish, ;
+end;    // draw_line
+
+verb multi_method_example
+is
+	linked_stack type stack;
+	hashtable type hashtable;
+	object type thing1 is none, thing2 is none, thing3 is none;
+	
+	// These three individual calls to the same procedure ...
+	//
+	draw_line from <0 0 0> to <1 0 0>;
+	draw_line from <1 0 0> to <0 1 0>;
+	draw_line from <0 1 0> to <0 0 1>;
+	
+	// ... can be replaced by
+	//
+	draw_line from <0 0 0> to <1 0 0>, from <1 0 0> to <0 1 0>, from <0 1 0> to <0 0 1>;
+	
+	// These three object oriented calls to the same method ...
+	//
+	stack push thing1;
+	stack push thing2;
+	stack push thing3;
+	
+	// ... can be replaced by
+	//
+	stack push thing1, thing2, thing3;
+	
+	// These two object oriented calls to the same method ...
+	//
+	hashtable enter thing1 as "fred";
+	hashtable enter thing2 as "barney";
+	
+	// ... can be replaced by
+	//
+	hashtable enter thing1 as "fred", thing2 as "barney";
+end;    // multi_method_example

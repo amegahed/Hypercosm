@@ -1,0 +1,51 @@
+{***************************************************************}
+{                          snow_family.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do snow_family_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/snowman.omar";
+
+shape snow_family is
+	// dad
+	//
+	snowman with
+		move to <-.7 0 0>;
+	end;
+	// mom
+	//
+	snowman with
+		magnify by .8;
+		move to <.7 0 0>;
+	end;
+	// kids
+	//
+	snowman with
+		magnify by .5;
+		move to <-.5 -1 0>;
+	end;
+	snowman with
+		magnify by .5;
+		rotate by 30 around <0 0 1>;
+		move to <.5 -1 0>;
+	end;
+end;    // snow_family
+
+anim snow_family_anim
+	args type args;
+with
+	eye = <5 -15 10>;
+	lookat = <0 0 1>;
+	field_of_view = 32;
+	window_name is "The Snow Family";
+	args check;
+is
+	mouse_controlled_shape snow_family;
+end;    // snow_family_anim

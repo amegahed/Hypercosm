@@ -1,0 +1,86 @@
+<root>
+	<group name="eyeball">
+		<sphere id="eye_white" radius="5">
+			<material id="iris_mat" diffuse = ".8 .8 .8" specular = "2 2 2" specular_power = "1.2" ambient = ".8 .8 .8" reflected = ".3 .3 .3" />
+        	</sphere>
+		<sphere id="iris" radius="2">
+			<trans origin="0 -4 0" />
+			<material id="iris_mat" diffuse = "0 0 0" specular = "0 0 0" specular_power = "0" ambient = "0 0 0" />
+		</sphere>
+	</group>
+	
+	<group name="mouth_part">
+		<cylinder id="mouth_left" radius=".5" height="8">
+			<material id="mouth_mat" diffuse = "0 0 0" specular = "0 0 0" specular_power = "0" ambient = "0 0 0" />
+		</cylinder>
+	</group>
+    
+	<group name="mouth">
+		<instance group="mouth_part" id="left_mouth_part">
+			<trans origin="-6 0 2" x_axis=".5 0 .5" z_axis =".5 0 -.5" />
+		</instance>
+		<instance group="mouth_part" id="middle_mouth_part">
+			<trans origin="0 0 0" x_axis="0 0 1" z_axis ="-1 0 0" />
+		</instance>
+		<instance group="mouth_part" id="right_mouth_part">
+			<trans origin="6 0 2" x_axis=".5 0 -.5" z_axis =".5 0 .5" />
+		</instance>
+	</group>
+	<group name="red_ball">
+		<sphere id="red_ball" radius="4">
+			<material id="red_ball_mat" diffuse = ".8 0 0" specular = "2 2 2" specular_power = "1.2" ambient = ".8 0 0" reflected = ".3 .3 .3" />
+		</sphere>
+	</group>
+	
+	<group name="hat">
+		<cone id="hat_cone" radius2="12" radius1="0" height="24">
+			<material id="hat_cone_mat" diffuse = "0 0 .8" specular = "2 2 2" specular_power = "1.2" ambient = "0 0 .8" reflected = ".3 .3 .3" />
+			<trans origin="0 0 12" />
+		</cone>
+		<clone group="red_ball" id="hat_tip">
+			<trans origin="0 0 24" />
+		</clone>
+		<clone group="red_ball" id="button1">
+			<trans origin="0 -9 6" x_axis=".3 0 0" y_axis="0 .3 0" z_axis="0 0 .3"/>
+		</clone>
+		<clone group="red_ball" id="button2">
+			<trans origin="0 -6 12" x_axis=".3 0 0" y_axis="0 .3 0" z_axis="0 0 .3"/>
+		</clone>
+		<clone group="red_ball" id="button3">
+			<trans origin="0 -3 18" x_axis=".3 0 0" y_axis="0 .3 0" z_axis="0 0 .3"/>
+		</clone>
+	</group>
+    
+	<group name="head">
+		<sphere id="skull" radius="20">
+			<material id="skull_mat" diffuse = "1 1 0" specular = "1 1 0" specular_power = "0" ambient = "1 1 0" />
+		</sphere>
+		<clone group="eyeball" id="left_eye">
+			<trans origin="-7 -15 6"/>
+		</clone>
+		<clone group="eyeball" id="right_eye">
+			<trans origin="7 -15 6"/>
+		</clone>
+		<clone group="mouth" id="mouth">
+			<trans origin="0 -17 -12"/>
+		</clone>
+		<clone group="red_ball" id="nose">
+			<trans origin="0 -22 0"/>
+		</clone>
+		<clone group="hat" id="hat">
+			<trans origin="0 0 16"/>
+		</clone>
+	</group>
+    
+	<scene>
+		<clone group="head" id="kyle">
+    			<trans origin="-7 0 -3" x_axis=".2 0 0" y_axis="0 .2 0" z_axis="0 0 .2"/>
+		</clone>
+		<clone group="head" id="chuck">
+    			<trans origin="7 0 -3" x_axis=".2 0 0" y_axis="0 .2 0" z_axis="0 0 .2"/>
+		</clone>
+		<clone group="head" id="abe">
+    			<trans origin="0 0 4" x_axis=".2 0 0" y_axis="0 .2 0" z_axis="0 0 .2"/>
+		</clone>
+	</scene>
+</root>

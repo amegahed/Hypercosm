@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          common_colors.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of OMAR's standard colors and      }
+{       color modification procedures.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/standard_colors.ores";
+
+const color type charcoal = <.25 .25 .25>;
+const color type orange = <1 .5 0>;
+const color type raspberry = <1 0 .5>;
+const color type sky_blue = <.6 .75 1>;
+const color type brown = <.35 .2 0>;
+const color type pink = <1 .6 .7>;
+const color type brick = <.5 .15 0>;
+const color type rust = <.7 .3 .1>;
+const color type maize = <.8 .7 0>;
+const color type aqua = <0 .75 .75>;
+const color type evergreen = <0 .4 .25>;
+const color type teal = <0 .75 .6>;
+const color type turquoise = <0 .7 .9>;
+const color type lavender = <.8 .6 .9>;
+const color type flesh = <.9 .7 .6>;
+const color type beige = <1 .9 .85>;
+const color type purple = <.6 .15 .75>;
+const color type azure = <.35 .3 .75>;
+const color type violet = <.5 0 .9>;
+const color type gold = <.9 .8 .3>;
+const color type eggplant = <.3 0 .2>;
+const color type olive = <.4 .5 0>;
+const color type lime_green = <.5 .8 0>;
+const color type hypercosm = <.75 .9 0>;

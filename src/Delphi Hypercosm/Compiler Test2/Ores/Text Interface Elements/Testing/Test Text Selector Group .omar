@@ -1,0 +1,47 @@
+do text_sensor_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "Text Selector.ores";
+include "Text Selector Group.ores";
+
+
+anim text_sensor_test with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action1 is
+        write "button1 pressed!", ;
+    end;
+    verb mouse_down_action2 is
+        write "button2 pressed!", ;
+    end;
+    verb mouse_down_action3 is
+        write "button3 pressed!", ;
+    end;
+    
+    text_selector_group type text_selector1 "button1" at <.75 .25 0> with
+        h_alignment is center;
+        mouse_down_action is (new action type of static mouse_down_action1);
+    end;
+    text_selector_group type text_selector2 "button2" linked to text_selector1 at <.75 0 0> with
+        h_alignment is center;
+        mouse_down_action is (new action type of static mouse_down_action2);
+    end;
+    text_selector_group type text_selector3 "button3" linked to text_selector1 at <.75 -.25 0> with
+        h_alignment is center;
+        mouse_down_action is (new action type of static mouse_down_action3);
+    end;
+    
+    picture test_picture is
+        text_selector1 draw;
+        text_selector2 draw;
+        text_selector3 draw;
+    end;    // test_picture
+    
+    while true do
+        test_picture;
+    end;
+end;    // text_sensor_test
+

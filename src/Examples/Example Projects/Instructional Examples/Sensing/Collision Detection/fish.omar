@@ -1,0 +1,282 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            fish.omar                   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of Hypercosm's endearing little   }
+{       animated fish mascot.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do fish_anim;
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/shapes.ores";
+include "system/linear_patch_hull.ores";
+include "system/anims.ores";
+include "system/args.ores";
+
+subject fish
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new with
+		scalar tail_wags_per_sec = 1 / 4;
+		scalar fin_wags_per_sec = 1;
+		scalar max_tail_deflection = 20;
+		scalar max_fin_deflection = 30;
+		integer blink_time = 50;
+	end;    // new
+	// rendering methods
+	//
+	objective shape form with
+		scalar tail_deflection = 0;
+		scalar fin_deflection = 0;
+		boolean blink is false;
+	end;
+	shape instance;
+has
+	// attributes
+	//
+	scalar tail_wags_per_sec, fin_wags_per_sec;
+	scalar max_tail_deflection, max_fin_deflection;
+	integer blink_time, next_blink = 0;
+is
+	// implementation
+	//
+	material type fin_material is chalk colored <.5 .8 0>;
+	//material type fish_material is metal colored blend dark blue to grey;
+	material type fish_material is (plastic textured (new
+		texture using new image named "scales.jpg")
+		with color = yellow);
+
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		scalar tail_wags_per_sec = 1 / 4;
+		scalar fin_wags_per_sec = 1;
+		scalar max_tail_deflection = 20;
+		scalar max_fin_deflection = 30;
+		integer blink_time = 50;
+	is
+		// call superclass constructor
+		//
+		timed_actor new;
+		
+		// set attributes
+		//
+		with fish do
+			its tail_wags_per_sec = tail_wags_per_sec;
+			its fin_wags_per_sec = fin_wags_per_sec;
+			its max_tail_deflection = max_tail_deflection;
+			its max_fin_deflection = max_fin_deflection;
+			its blink_time = blink_time;
+			its next_blink = trunc random from 0 to blink_time;
+		end;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+	
+	
+	objective shape body with
+		integer sections = 4;
+		integer steps = facets;
+	is
+		// body is sampled at 9 discrete points
+		//
+		linear_patch_hull
+			// cross section
+			(round_cross_section of sections)
+			// x displacement
+			[-18 -20 -17 -14 -10 -6 0 8 15]
+			// ymins
+			[0 -1.5 -2 -3 -5 -6 -6 -4 -2]
+			// ymaxes
+			[0 1.5 2 3 5 6 6 4 2]
+			// zmins
+			[1 -2 -3 -5 -7 -8 -8 -6 -2]
+			// zmaxes
+			[1 2 3 4 6 12 13 8 2]
+		with
+			rows = steps; columns = steps;
+			triangulate is off;
+			alternate is on;
+			mending is on;
+		end;
+	end;    // body
+
+	objective shape open_eye is
+		sphere with
+			radius = 1.8;
+			scale by .5 along <0 1 0>;
+			color = light light blue;
+		end;
+		{glossy charcoal} sphere with
+			radius = 1.5;
+			scale by .75 along <0 1 0>;
+			color = charcoal;
+		end;
+	end;    // open_eye
+
+	objective shape open_eyes is
+		open_eye with
+			rotate by 45 around <0 0 1>;
+			rotate by 45 around <0 1 0>;
+			rotate by 20 around <0 0 1>;
+			move to <-7.5 2.5 9>;
+		end;
+		open_eye with
+			rotate by -45 around <0 0 1>;
+			rotate by 45 around <0 1 0>;
+			rotate by -20 around <0 0 1>;
+			move to <-7.5 -2.5 9>;
+		end;
+	end;    // open_eyes
+
+	objective shape closed_eyes is
+		sphere with
+			radius = 1.5;
+			rotate by 45 around <0 1 0>;
+			scale by .1 along <0 0 1>;
+			move to <-7 2.5 9>;
+			color = light blue;
+		end;
+		sphere with
+			radius = 1.5;
+			rotate by 45 around <0 1 0>;
+			scale by .1 along <0 0 1>;
+			move to <-7 -2.5 9>;
+			color = light blue;
+		end;
+	end;    // closed_eyes
+
+	objective shape tail with
+		scalar angle = 0;
+	is
+		// end of tail
+		//
+		cone with
+			end1 = <0 0 0>;
+			end2 = <10 0 0>;
+			radius1 = 2;
+			radius2 = 0;
+		end;
+		sphere with
+			radius = 2;
+		end;
+		// upper tail
+		//
+		polygon2d [[0 2] [10 10] [20 15] [15 10] [10 0]] with
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+			rotate by angle around <-10 0 2> about <10 0 0>;
+			material is fin_material;
+		end;
+		// lower tail
+		//
+		polygon2d [[0 -2] [5 -4] [7 -6] [15 -10] [10 -5]
+			[10 0]]
+		with
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+			rotate by -angle around <-10 0 -2> about
+				<10 0 0>;
+			material is fin_material;
+		end;
+	end;    // tail
+
+	objective shape fin is
+		polygon2d [[0 0] [3 -5] [10 -10] [8 -4] [7 0]] with
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+		end;
+	end;    // fish_fin
+
+	objective shape form with
+		scalar tail_deflection = 0;
+		scalar fin_deflection = 0;
+		boolean blink is false;
+	is
+		body with
+			material is fish_material;
+		end;
+		if blink then
+			closed_eyes;
+		else
+			open_eyes;
+		end;
+		// top fin
+		//
+		polygon2d [[0 0] [6 3] [14 2] [10 1] [8 -5]] with
+			rotate by tail_deflection around <8 0 -5>;
+			move to <0 0 13>;
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+			material is fin_material;
+		end;
+		tail with
+			angle = tail_deflection;
+			rotate by tail_deflection around <0 0 1>;
+			move to <15 0 0>;
+			material is fish_material;
+		end;
+		// side fins
+		//
+		fin with
+			rotate by (fin_deflection - 45) around <1 0 0>;
+			move to <-10 -4 -4>;
+			material is fin_material;
+		end;
+		fin with
+			rotate by (45 - fin_deflection) around <1 0 0>;
+			move to <-10 4 -4>;
+			material is fin_material;
+		end;
+	end;    // shape
+
+	shape instance is
+		scalar time = timer get_time;
+		
+		form with
+			tail_deflection = sin (time * 360 *
+				tail_wags_per_sec) * max_tail_deflection;
+			fin_deflection = sin (time * 360 *
+				fin_wags_per_sec) * max_fin_deflection;
+			blink is (next_blink = 0);
+		end;
+		
+		if next_blink = 0 then
+			next_blink = trunc random from 0 to blink_time;
+		else
+			next_blink = next_blink - 1;
+		end;
+	end;    // instance
+end;    // fish
+
+anim fish_anim
+	args type args;
+with
+	double_buffer is on;
+	eye = <-50 -30 10>;
+	//interface_underlay is (new overlay poster "cockpit.png");
+	//interface_overlay is new overlay poster "white-frame.png";
+	args check;
+is
+	fish type fish;
+	targeted_camera type front_camera from <-50 0 0> to <0 0 0>;
+	targeted_camera type back_camera from <50 0 0> to <0 0 0>;
+		
+	cameras is [front_camera back_camera];
+	camera_labels is ["Front" "Back"];
+	mouse_controlled_actor fish titled "Fish!";
+end;    // fish_anim

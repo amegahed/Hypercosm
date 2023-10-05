@@ -1,0 +1,41 @@
+{***************************************************************}
+{                  native_data_resources.ores                   }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{         Contains the native data resource utilities.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "downloadable.ores";
+include "native_data_packing.ores";
+include "strings.ores";
+
+
+subject data_resource
+extends
+    downloadable object
+does
+    native verb new
+        named string type name;
+    with
+        string type fingerprints[] is none;
+        boolean bad_fingerprint_is_fatal is true;
+        boolean decompress_gzip_data is true;
+    end;
+
+    native verb free;
+
+    native verb extract_data
+        to data_container type destination_container;
+    end;
+
+    native download_status type question download_status;
+
+    native verb finish_loading;
+has
+    private long id;
+end;

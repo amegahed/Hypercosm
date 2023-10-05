@@ -1,0 +1,38 @@
+{***************************************************************}
+{                         interpolation.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains some standard linear interpolation				}
+{		functions.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+integer question interpolated_integer
+    from integer start;
+    to integer finish;
+    by scalar t;
+is
+    answer start + trunc ((finish - start) * t);
+end;    // interpolated_integer
+
+
+scalar question interpolated_scalar
+    from scalar start;
+    to scalar finish;
+    by scalar t;
+is
+    answer start + (finish - start) * t;
+end;    // interpolated_scalar
+
+
+vector question interpolated_vector
+    from vector start;
+    to vector finish;
+    by scalar t;
+is
+    answer start + (finish - start) * t;
+end;    // interpolated_vector

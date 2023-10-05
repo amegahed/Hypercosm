@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   searching.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a few utilities for searching collections.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/collections.ores";
+
+
+abstract subject search
+does
+    abstract boolean question found
+        object type element;
+    end;
+end;    // search
+
+
+object type question search
+    collection type collection;
+    using search type search;
+is
+    iterator type iterator is collection get_iterator;
+    
+    while not search found iterator get and iterator is_iterating do
+        iterator to_next;
+    end;
+    
+    answer iterator get;
+end;    // search

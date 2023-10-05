@@ -1,0 +1,88 @@
+{***************************************************************}
+{                          disk.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do disk_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/arrow_shapes.ores";
+
+
+shape labelled_disk with
+    scalar umin = -30;
+    scalar umax = 260;
+is
+	shape disk_primitive is
+	    disk with
+	        umin = static umin;
+	        umax = static umax;
+	        move to <0 0 -.01>;
+	    end;
+    end;
+    
+    outlined disk_primitive with
+		material is glass colored disk_color;
+    end;
+    
+    mark at <0 0 0>;
+    futura_l_word "UMIN" with
+        move to <1.25 0 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    futura_l_word "UMAX" with
+        move to <1.25 0 0>;
+        rotate by umax around <0 0 1>;
+    end;
+    arrow from <-.01 0 0> to <-.01 0 .5>;
+    futura_l_word "NORMAL" with
+        rotate by 90 around <1 0 0>;
+        move to <-.4 0 .25>;
+    end;
+
+    // arcs showing longitude
+    //
+    arrow_arc to umax with
+        radius = .25;
+    end;
+    arrow_arc to umin with
+        radius = .4;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umin around <0 0 1>;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umax around <0 0 1>;
+    end;
+    line [<-1 0 0> <-1 0 .8>];
+    double_arrow from <0 0 .75> to <-1 0 .75>;
+    futura_l_word "RADIUS" with
+        rotate by 90 around <1 0 0>;
+        move to <-.5 0 .65>;
+    end;
+end;    // labelled_disk
+
+
+anim disk_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Disk Primitive";
+    args check;
+is
+	shape scene is
+    	labelled_disk;
+    	axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // disk_anim

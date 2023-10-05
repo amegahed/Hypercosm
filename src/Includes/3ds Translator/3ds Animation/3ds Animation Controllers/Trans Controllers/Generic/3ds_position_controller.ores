@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     3ds_position_controller.ores       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_trans_controller.ores";
+include "system/3ds_point3_controlling.ores";
+include "system/rendering.ores";
+
+abstract subject translated_3ds_position_controller 
+extends
+	translated_3ds_trans_controller
+does
+	// constructor
+	//
+	verb new
+		controlled by translated_3ds_point3_controllable type controller;
+	end;
+	
+	// transforming method
+	//
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	end;
+has
+	// attributes
+	//
+	translated_3ds_point3_controllable type controller is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		controlled by translated_3ds_point3_controllable type controller;
+	is
+		translated_3ds_position_controller's controller is controller;  
+	end;    // new
+	
+	//
+	// transforming method
+	//
+		
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	is
+		move the trans to controller get_value at time;
+	end;    // transform
+end;    // translated_3ds_position_controller

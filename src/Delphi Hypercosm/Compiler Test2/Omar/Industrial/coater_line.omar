@@ -1,0 +1,348 @@
+{***************************************************************}
+{                          coater_line.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do coating_anim;
+
+
+include "system/3d.ores";
+include "system/conveyors.ores";
+include "system/anims.ores";
+include "system/solids.ores";
+include "system/shapes.ores";
+include "system/comparisons.ores";
+include "system/cabinet.omar";
+
+
+subject coater_line
+extends
+    timed_actor
+does
+    verb new with
+        scalar table_length = 20;
+        scalar table_width = 5;
+        scalar table_height = 4;
+        scalar bottom_line_height = 2;
+        scalar top_line_height = 4;
+        scalar tread_size = .5;
+        scalar tread_seperation = .1;
+        scalar tread_thickness = .1;
+    end;    // new
+
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    conveyor_belt type conveyor_belt is none;
+    scalar table_length;
+    scalar table_width;
+    scalar table_height;
+    scalar bottom_line_height;
+    scalar top_line_height;
+is
+    verb new with
+        scalar table_length = 20;
+        scalar table_width = 5;
+        scalar table_height = 4;
+        scalar bottom_line_height = 2;
+        scalar top_line_height = 4;
+        scalar tread_size = .5;
+        scalar tread_seperation = .1;
+        scalar tread_thickness = .1;
+    is
+        scalar radius;
+        
+        // initialize coater line's attributes
+        //
+        coater_line's table_length = table_length;
+        coater_line's table_width = table_width;
+        coater_line's table_height = table_height;
+        coater_line's bottom_line_height = bottom_line_height;
+        coater_line's top_line_height = top_line_height;
+
+        // make new conveyor belt
+        //
+        new conveyor_belt with
+            tread_length = static tread_size;
+            tread_width = static tread_size;
+            tread_seperation = static tread_seperation;
+            tread_thickness = static tread_thickness;
+        end;
+
+        // initial (bottom left) feeder rolls
+        //
+        radius = .75;
+        conveyor_belt add_roller at <(-table_length / 2 + radius + .5) 0
+            (table_height + radius)> with
+            radius = static radius;
+        end;
+        
+        radius = .75;
+        conveyor_belt add_roller at <(-table_length / 2 + 3) 0
+            (bottom_line_height + table_height - radius)> with
+            radius = static radius;
+        end;
+
+        // turn around rollers on right
+        //
+        radius = .75;
+        conveyor_belt add_roller at <(table_length / 2 - 1) 0
+            (bottom_line_height + table_height + radius)> using spoke_roller with
+            radius = static radius;
+        end;
+        
+        radius = .5;
+        conveyor_belt add_roller at <(table_length / 2 - 1) 0
+            (top_line_height + table_height - radius)> using spoke_roller with
+            radius = static radius;
+        end;
+
+        // take up roller on left
+        //
+        radius = .25;
+        conveyor_belt add_roller at <(-table_length / 2 + 3) 0
+            (top_line_height + table_height - radius)> with
+            radius = static radius;
+        end;
+        
+        radius = .75;
+        conveyor_belt add_roller at <(-table_length / 2 + radius + .5) 0
+            (top_line_height + table_height - radius - .5)> with
+            radius = static radius;
+        end;
+
+        // create belts
+        //
+        conveyor_belt add_belts with
+            orientation is true;
+        end;
+        conveyor_belt set_speed to 2;
+    end;    // new
+
+
+    verb advance
+        by scalar time_step;
+    is
+        conveyor_belt advance by time_step;
+    end;    // act
+
+
+    objective shape dryer with
+        scalar length = 6;
+        scalar width = 3;
+        scalar height = 1;
+    is
+        block with
+            material is plastic colored red;
+            scale by (length / 2) along <1 0 0>;
+            scale by (width / 2) along <0 1 0>;
+            scale by (height / 2) along <0 0 1>;
+        end;
+    end;    // dryer
+
+
+    objective shape coater with
+        scalar length = 6;
+        scalar width = 3;
+    is
+        extrude [[-.5 0] [.5 0] [0 -.5]] with
+            material is aluminum;
+        end;
+
+        // supports
+        //
+        cylinder with
+            material is aluminum;
+            end1 = <(-length / 2) (-width / 2) 0>;
+            end2 = <(length / 2) (width / 2) 0>;
+            radius = .1;
+        end;
+        cylinder with
+            material is aluminum;
+            end1 = <(-length / 2) (width / 2) 0>;
+            end2 = <(length / 2) (-width / 2) 0>;
+            radius = .1;
+        end;
+
+        // extruded goo
+        //
+        cylinder with
+            radius = .5;
+            umin = -90;
+            umax = 0;
+            rotate by 90 around <1 0 0>;
+            move to <-.5 0 -.5>;
+            scale by .5 along <0 1 0>;
+            scale by 4 along <1 0 0>;
+            color = grey;
+        end;
+    end;    // coater
+
+
+    objective shape supports with
+        scalar length = 6;
+        scalar width = 3;
+        scalar height = 9;
+    is
+        shape support is
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <0 0 height>;
+                radius = .1;
+            end;
+        end;    // support
+
+        support with
+            move to <(-length / 2) (-width / 2) 0>;
+        end;
+        support with
+            move to <(-length / 2) (width / 2) 0>;
+        end;
+        support with
+            move to <(length / 2) (-width / 2) 0>;
+        end;
+        support with
+            move to <(length / 2) (width / 2) 0>;
+        end;
+    end;    // supports
+
+
+    objective shape coater_dryer with
+        scalar length = 6;
+        scalar width = 3;
+        scalar coater_height = 2;
+        scalar dryer_height = 4;
+    is
+        supports with
+            material is aluminum;
+            length = static length;
+            width = static width;
+            height = larger of coater_height and dryer_height;
+        end;
+        coater with
+            length = static length;
+            width = static width;
+            move to <0 0 coater_height>;
+        end;
+        dryer with
+            length = static length;
+            width = static width;
+            move to <0 0 dryer_height>;
+        end;
+    end;    // coater_dryer
+
+
+    objective shape equipment with
+        scalar bottom_height = 2;
+        scalar top_height = 4;
+        scalar length = 10;
+        scalar separation = 1;
+    is
+        scalar unit_length = (length - separation) / 2;
+
+        coater_dryer with
+            length = unit_length;
+            coater_height = bottom_height;
+            dryer_height = top_height;
+            rotate by 180 around <0 0 1>;
+            move to <(-(unit_length + separation) / 2) 0 0>;
+        end;
+        coater_dryer with
+            length = unit_length;
+            coater_height = top_height;
+            dryer_height = bottom_height;
+            move to <((unit_length + separation) / 2) 0 0>;
+        end;
+    end;    // equipment
+
+
+    shape instance is
+        cabinet with
+            table_length = coater_line's table_length;
+            table_width = coater_line's table_width;
+            table_height = coater_line's table_height;
+            top_width = table_width - 1.5;
+            magnify the shader_trans by 5;
+        end;
+        equipment with
+            length = coater_line's table_length - 5;
+            bottom_height = bottom_line_height + 1;
+            top_height = top_line_height + 1;
+            move to <0 .5 table_height>;
+        end;
+        conveyor_belt instance with
+            move to <0 .5 0>;
+        end;
+    end;    // instance
+end;    // coater_line
+
+
+picture coating_picture with
+    eye = <10 -30 20>;
+    lookat = <.5 0 5>;
+    facets = 8;
+    render_mode is hidden_line;
+    field_of_view = 45;
+    width = 640;
+    height = 480;
+
+    {
+        facets = 0;
+        shadows is on;
+        reflections is on;
+        refractions is on;
+        }
+    save_pictures is on;
+is
+    coater_line type coater_line with
+        tread_seperation = .1;
+    end;
+
+    flat dark blue plane with
+        magnify by 15;
+    end;
+    metallic white coater_line instance;
+
+    {
+        spot_light to -.3 .5 -1 with
+                move to 30 -50 100;
+                angle = 30;
+                brightness = 100;
+        end;
+        }
+end;    // coating_picture
+
+
+anim coating_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-15 -20 15>;
+    lookat = <0 0 5>;
+    yaw = -2;
+    pitch = -2;
+    window_name is "Seperator Coating Line";
+    background = black;
+    args check;
+is
+    coater_line type coater_line with
+        tread_size = 0;
+    end;
+
+    static shape environment is
+        plane with
+            material is chalk textured new texture
+                using new image named "stucco.tga";
+            magnify by 15;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_actor coater_line in environment;
+end;    // coating_anim

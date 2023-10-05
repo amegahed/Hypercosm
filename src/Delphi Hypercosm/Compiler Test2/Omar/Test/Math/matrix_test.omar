@@ -1,0 +1,49 @@
+{***************************************************************}
+{                          matrix_test.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "matrices.ores";
+
+
+verb test is
+    matrix type matrix1 = [[1 2 3][4 5 6]];
+    matrix type matrix2 = [[7 8 9][10 11 12]];
+    matrix type matrix3 = [[1 2][3 4][5 6]];
+
+    // computed matrices
+    //
+    matrix type matrix4 is matrix1 plus matrix2;
+    matrix type matrix5 is matrix1 times matrix3;
+    matrix type matrix6 is matrix1 transposed;
+
+    write "matrix1 = ", ;
+    matrix1 print;
+    write "matrix2 = ", ;
+    matrix2 print;
+    write "matrix3 = ", ;
+    matrix3 print;
+
+    // write computed matrices
+    //
+    write "matrix1 plus matrix2 = ", ;
+    matrix4 print;
+    write "matrix1 times matrix3 = ", ;
+    matrix5 print;
+
+    // write transposed matrices
+    //
+    write "matrix1 transpose = ", ;
+    matrix6 print;
+
+    write "matrix2 transpose = ", ;
+    matrix2 transpose;
+    matrix2 print;
+end;    // test

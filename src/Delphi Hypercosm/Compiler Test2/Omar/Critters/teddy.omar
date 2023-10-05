@@ -1,0 +1,310 @@
+{***************************************************************}
+{                          teddy.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do teddy_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+
+
+subject teddy
+extends
+    step_actor
+does
+    objective shape form with
+        scalar head_rotation = 0;
+        scalar head_tilt = 0;
+        scalar leg_seperation = 20;
+        scalar r_arm_rotation = 20, l_arm_rotation = 20;
+        boolean protesting is true;
+    end;    // form
+
+    shape instance;
+is
+    objective shape ear is
+        sphere with
+            scale by .3 along <0 1 0>;
+
+            {stretch by 1.3 along 1 0 0;}
+            scale by 1.3 along <1 0 0>;
+        end;
+    end;    // ear
+
+
+    objective shape bear_eye is
+        sphere with
+            material is plastic colored blue;
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // bear_eye
+
+
+    objective shape snout is
+        paraboloid with
+            top = <0 4 0>;
+            base = <0 -2 0>;
+            radius = 5;
+            skew from <0 4 0> to <0 4 1>;
+        end;
+    end;    // snout
+
+
+    objective shape leg is
+        cylinder with
+            end1 = <0 7 0>;
+            end2 = <0 0 0>;
+            radius = 2;
+        end;
+        sphere with
+            radius = 2;
+        end;
+        sphere with
+            radius = 2;
+            scale by 1.4 along <0 0 1>;
+            rotate by -20 around <1 0 0>;
+            move to <0 7 .8>;
+        end;
+    end;    // leg
+
+
+    objective shape arm is
+        leg with
+            scale by .8 along <1 0 0>;
+        end;
+    end;    // arm
+
+
+    objective shape bear_sign is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 50>;
+            radius = 1;
+        end;
+
+        parallelogram with
+            material is chalk colored white;
+            vertex = <-20 0 50>;
+        side1 = <40 0 0>; side2 = <0 0 30>;
+        end;
+        cylinder with
+            end1 = <-20 0 50>;
+            end2 = <20 0 50>;
+            radius = .5;
+        end;
+        cylinder with
+            end1 = <-20 0 80>;
+            end2 = <20 0 80>;
+            radius = .5;
+        end;
+        cylinder with
+            end1 = <-20 0 50>;
+            end2 = <-20 0 80>;
+            radius = .5;
+        end;
+        cylinder with
+            end1 = <20 0 50>;
+            end2 = <20 0 80>;
+            radius = .5;
+        end;
+    end;    // bear_sign
+
+
+    objective shape arm_with_sign is
+        leg with
+            scale by .8 along <1 0 0>;
+        end;
+        bear_sign with
+            magnify by .3;
+            move to <0 7 0>;
+        end;
+    end;    // arm_with_sign
+
+
+    objective shape tube is
+        cylinder with
+            end1 = <4 0 0>;
+            end2 = <-4 0 0>;
+            radius = 10;
+        end;
+        sphere with
+            radius = 10;
+            rotate by 90 around <0 1 0>;
+            scale by .8 along <1 0 0>;
+            move to <4 0 0>;
+        end;
+        sphere with
+            radius = 10;
+            rotate by 90 around <0 1 0>;
+            scale by .8 along <1 0 0>;
+            move to <-4 0 0>;
+        end;
+    end;    // tube
+
+
+    objective shape body is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 15>;
+            radius1 = 10;
+            radius2 = 7;
+        end;
+        sphere with
+            radius = 6;
+
+            {stretch by 1.2 along 0 0 1;}
+            scale by 1.2 along <0 0 1>;
+            rotate by 25 around <1 0 0>;
+            move to <0 5.5 6.5>;
+        end;
+        sphere with
+            radius = 10;
+            scale by .3 along <0 0 1>;
+        end;
+    end;    // body
+
+
+    objective shape head is
+        tube with
+            scale by .8 along <0 0 1>;
+            rotate by -20 around <1 0 0>;
+        end;
+
+        {
+                tube with
+                        scale by .8 along 0 1 0;
+                end;
+
+                // forehead
+                //
+                tube with
+                        location = 0 5.2 4.2;
+                        scale by .5 along 0 1 0;
+                        scale by .8 along 1 0 0;
+                        {       scale by .6 along 0 0 1; }
+                        rotate by 42 around 1 0 0;
+                        magnification = .75;
+                end;
+
+                tube with
+                        location = 0 4.5 -3.5;
+                        scale by 1.3 along 0 1 0;
+                        rotate by -25 around 1 0 0;
+                        magnification = .75;
+                end;
+                }
+
+        ear with
+            magnify by 4;
+            rotate by 20 around <0 1 0>;
+            rotate by -10 around <1 0 0>;
+            rotate by -45 around <0 0 1>;
+            move to <-11 0 6>;
+        end;
+        ear with
+            magnify by 4;
+            rotate by -20 around <0 1 0>;
+            rotate by -10 around <1 0 0>;
+            rotate by 10 around <0 0 1>;
+            move to <11 -1 6>;
+        end;
+        bear_eye with
+            move to <-3.5 9.8 -1>;
+        end;
+        bear_eye with
+            move to <3.5 9.8 -1>;
+        end;
+        snout with
+            rotate by -40 around <1 0 0>;
+            move to <0 8.5 -5.3>;
+        end;
+    end;    // head
+
+
+    objective shape form with
+        scalar head_rotation = 0;
+        scalar head_tilt = 0;
+        scalar leg_seperation = 20;
+        scalar r_arm_rotation = 20, l_arm_rotation = 20;
+        boolean protesting is true;
+    is
+        head with
+            rotate by 10 around <1 0 0>;
+            rotate by head_tilt around <1 0 0>;
+            rotate by head_rotation around <0 0 1>;
+            magnify by .9;
+            move to <0 0 21>;
+        end;
+        body with
+            scale by .8 along <0 1 0>;
+        end;
+        arm with
+            rotate by l_arm_rotation around <1 0 0>;
+            rotate by -25 around <0 0 1>;
+            magnify by 1.5;
+            move to <7 0 11>;
+        end;
+        if protesting then
+            arm_with_sign with
+                rotate by 20 around <1 0 0>;
+                rotate by r_arm_rotation around <0 1 0>;
+                rotate by 25 around <0 0 1>;
+                magnify by 1.5;
+                move to <-7 0 11>;
+            end;
+        else
+            arm with
+                rotate by 20 around <1 0 0>;
+                rotate by r_arm_rotation around <0 1 0>;
+                rotate by 25 around <0 0 1>;
+                magnify by 1.5;
+                move to <-7 0 11>;
+            end;
+        end;
+        leg with
+            magnify by 2;
+            rotate by leg_seperation around <1 0 0>;
+            move to <6 0 0>;
+        end;
+        leg with
+            rotate by 20 around <0 1 0>;
+            magnify by 2;
+            rotate by -leg_seperation around <1 0 0>;
+            move to <-6 0 0>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        scalar angle = (steps / 40) * 360;
+
+        form with
+            head_rotation = sin angle * 30 + 10;
+            leg_seperation = sin (angle * 4) * 10;
+            l_arm_rotation = sin (angle * 1.5) * 30 + 40;
+            r_arm_rotation = sin (angle) * 10;
+            color = brown;
+        end;
+    end;    // instance
+end;    // teddy
+
+
+anim teddy_anim
+    args type args;
+with
+    eye = <30 85 50>;
+    lookat = <0 5 20>;
+    double_buffer is on;
+    args check;
+is
+    teddy type teddy;
+
+    mouse_controlled_actor teddy;
+end;    // teddy_anim

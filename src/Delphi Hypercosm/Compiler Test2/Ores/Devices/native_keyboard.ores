@@ -1,0 +1,21 @@
+{***************************************************************}
+{                       native_keyboard.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the native keyboard procedures.                }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+native integer question get_key; 
+native boolean question key_down integer key; end;
+native char question key_to_char integer key; end;
+native integer question char_to_key char c; end;

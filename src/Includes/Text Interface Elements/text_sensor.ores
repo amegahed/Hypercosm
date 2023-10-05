@@ -1,0 +1,247 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          text_sensor.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a text display that    }
+{        can respond to mouse clicks and mouse overs.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_text.ores";
+include "text_utils.ores";
+include "mouse_responder.ores";
+include "regions.ores";
+
+adjective drawable
+does
+	verb draw;
+end;    // drawable
+
+adjective hideable
+does
+	verb show;
+	verb hide;
+end;    // hideable
+
+subject text_sensor
+extends
+	drawable hideable mouse_responder
+does
+	// constructor
+	//
+	verb new
+		string type text;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+			   
+		// text colors
+		//
+		color type text_color = white, background = black;
+		boolean transparent_background is false;
+		
+		// user defined callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	end;
+	
+	// state changing methods
+	//
+	verb set_color
+		to color type text_color = white;
+		over color type background = black;
+	end;
+	verb set_text
+		to string type text;
+	end; 
+	
+	// querying methods
+	//
+	boolean question is_mouse_over;
+	
+	// redefined responses
+	//
+	verb mouse_over_response;
+	verb mouse_away_response;
+	
+	// drawing method
+	//
+	verb draw;
+	verb show;
+	verb hide;
+has
+	// attributes
+	//
+	public string type text;
+	
+	// colors
+	//
+	public color type text_color, background;
+	boolean transparent_background;
+	
+	// size and location information
+	//
+	public vector location;
+	public integer text_size, text_spacing;
+	public h_alignment type h_alignment;
+	
+	// bounding box
+	//
+	public region type region is none;
+	
+	// non public fields
+	//
+	boolean hidden is false;
+is
+	string type question padded_string
+		string type string;
+	is
+		string type string2;
+	
+		dim string2[1 .. num string + 2];
+		string2[1] is " ";
+		string2[2..num string + 1] = string[..];
+		string2[num string + 2] is " ";
+	
+		answer string2;
+	end;    // padded_string
+
+	//
+	// constructor
+	//
+	
+	verb new
+		string type text;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+		
+		// text colors
+		//
+		color type text_color = white, background = black;
+		boolean transparent_background is false;
+		
+		// user defined callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	is
+		// call superclass constructor
+		//
+		mouse_responder new with
+			mouse_down_action is static mouse_down_action;
+			mouse_up_action is static mouse_up_action;
+			mouse_over_action is static mouse_over_action;
+			mouse_away_action is static mouse_away_action;
+		end;
+			   
+		// initialize attributes
+		//
+		text_sensor's location = location;
+		text_sensor's text_size = text_size;
+		text_sensor's text_spacing = text_spacing;
+		text_sensor's h_alignment is h_alignment;
+		
+		// initialize colors
+		//
+		text_sensor's text_color = text_color;
+		text_sensor's background = background;
+		text_sensor's transparent_background is transparent_background;
+		
+		// position items
+		//
+		text_sensor's location = location;
+		
+		// initialize text
+		//
+		text_sensor set_text to text;
+	end;    // new
+	
+	//
+	// state changing methods
+	//
+	
+	verb set_color
+		to color type text_color = white;
+		over color type background = black;
+	is
+		text_sensor's text_color = text_color;
+		text_sensor's background = background;
+	end;    // set_color
+	
+	verb set_text
+		to string type text;
+	is
+		text_sensor's text is text;
+		region is text_region of text at location size text_size h_aligned h_alignment;
+	end;    // set_text
+	
+	//
+	// querying methods
+	//
+	
+	boolean question is_mouse_over is
+		if some region then
+			answer region contains get_mouse;
+		else
+			answer false;
+		end;
+	end;    // mouse_over
+	
+	//
+	// redefined responses
+	//
+	
+	verb mouse_over_response is
+		set_cursor to finger_point;
+		mouse_responder static mouse_over_response;
+	end;    // mouse_over_response
+	
+	verb mouse_away_response is
+		set_cursor to arrow;
+		mouse_responder static mouse_away_response;
+	end;    // mouse_away_response
+	
+	//
+	// drawing method
+	//
+	
+	verb draw is
+		if not hidden then
+			if some text then
+				overlay_text padded_string text at location with
+					size = text_size;
+					italic is true;
+					transparent_background is false;
+					h_align is h_alignment;               
+					color = text_color;
+					background_color = background;
+					transparent_background is static transparent_background;
+				end;
+			end;
+			
+			update;
+		end;
+	end;    // draw
+	
+	verb show is
+		hidden is false;
+	end;    // show
+	
+	verb hide is
+		hidden is true;
+	end;    // hide
+end;    // text_sensor

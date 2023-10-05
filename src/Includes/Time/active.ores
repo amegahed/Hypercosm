@@ -1,0 +1,76 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             active.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{               Contains standard procedures for                }
+{                 capturing and measuring time.                 }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "native_time.ores";
+include "booleans.ores";
+include "math.ores";
+include "time_conversions.ores";
+include "printing.ores";
+
+{***************************************************************}
+{                         time behaviors                        }
+{***************************************************************}
+
+adjective changeable does
+	verb update;
+end;    // changeable
+
+adjective advanceable does
+	verb advance
+		by scalar time_step;
+	end;
+end;    // advanceable
+
+adjective setable does
+	verb set
+		to scalar time;
+	end;
+end;    // setable
+
+adjective resetable does
+	verb reset;
+end;    // resetable
+
+adjective variable does
+	verb set_rate
+		to scalar rate = 1;
+	end;
+end;    // variable
+
+adjective pauseable does
+	verb pause;         // stop playing at current position
+	verb resume;        // resume playing at current position
+	verb toggle;        // toggle between play and pause
+end;    // pauseable
+
+adjective reversable does
+	verb play;          // play forwards
+	verb backup;        // play backwards
+	verb reverse;       // change directions
+end;    // reversable
+
+adjective mortal does
+	verb set_duration
+		to scalar duration;
+	end;
+	verb finish;
+end;    // mortal
+
+adjective cycleable does
+	verb set_autostop
+		to boolean state is true;
+	end;
+	verb set_autoreverse
+		to boolean state is true;
+	end;
+end;    // cycleable

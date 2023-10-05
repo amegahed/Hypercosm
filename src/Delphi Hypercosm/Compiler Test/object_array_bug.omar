@@ -1,0 +1,49 @@
+do test;
+
+
+subject thing
+does
+	verb new
+		of integer value = 0;
+	end;
+	verb print;
+has
+	// attributes
+	//
+	integer value;
+is
+	verb new
+		of integer value = 0;
+	is
+		thing's value = value;
+	end;	// new
+	
+	
+	verb print is
+		write "value = ", value, ;
+	end;	// print
+end;	// thing
+
+
+thing type things[] is [
+	new thing of 10
+	new thing of 20
+];
+
+
+verb do_stuff
+	using thing type things[];
+is
+	for each thing type thing in things do
+		thing print;
+	end;
+end;	// do_stuff
+
+
+verb test is
+	do_stuff using things;
+	do_stuff using [
+		new thing of 30
+		new thing of 40
+	];
+end;	// test

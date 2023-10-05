@@ -1,0 +1,32 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 	  n_gon.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of a standard filled shape		}
+{		in the form of an n sided convex polygon.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+
+
+shape n_gon with
+    integer sides = 8;
+is
+    vector vertex[1..sides];
+
+    for integer counter = 1..sides do
+        scalar theta = (counter / sides) * 360;
+        scalar x = cos theta;
+        scalar y = sin theta;
+
+        vertex[counter] = <x y 0>;
+    end;
+    
+    polygon vertex;
+end;    // n_gon

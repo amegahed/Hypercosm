@@ -1,0 +1,152 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          object_sorting.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of behaviors and utilities         }
+{       for sorting arrays and lists of objects.                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/lists.ores";
+
+{***************************************************************}
+{                       sortable behavior                       }
+{***************************************************************}
+
+adjective sortable
+does
+	boolean question greater
+		than sortable type sortable;
+	end;
+	boolean question less
+		than sortable type sortable;
+	end;
+end;    // sortable
+
+{***************************************************************}
+{                        sorting utilities                      }
+{***************************************************************}
+
+verb sort_objects
+	object type set[];
+with
+	enum order is ascending, descending;
+	order type order is ascending;
+is
+	sortable type x, y;
+	integer j;
+
+	for integer xindex = (1 + min set) .. max set do
+		x is sortable type set[xindex];
+		j = xindex - 1;
+		y is sortable type set[j];
+		
+		while j >= min set and
+			((order is ascending and y greater than x) or
+			(order is descending and y less than x))
+		do
+			set[j + 1] is set[j];
+			j = j - 1;
+			y is sortable type set[j];
+		end;
+		
+		set[j + 1] is set[xindex];
+	end;
+end;    // sort_objects
+
+{
+abstract subject linked_sortable
+extends
+	orderable listable
+does
+	// routines to perform sort
+	//
+	linked_sortable type question sorted;
+	reference verb sort;
+is
+	objective verb append
+		linked_sortable type linked_sortable;
+		to linked_sortable type reference first, last;
+	is
+		if some last then
+			last's next is linked_sortable;
+			last is linked_sortable;
+		else
+			first is linked_sortable;
+			last is linked_sortable;
+		end;
+	end;    // append
+
+	linked_sortable type question sorted is
+		linked_sortable type list1 is none, list2 is none;
+		linked_sortable type temp is none, last is none;
+		
+		// sort at least two objects
+		//
+		if some linked_sortable's next then
+
+			// split list
+			//
+			while some linked_sortable do
+
+				// add to list1
+				//
+				temp is linked_sortable;
+				linked_sortable is linked_sortable type (linked_sortable's next);
+				temp's next is list1;
+				list1 is temp;
+
+				// add to list2
+				//
+				if some linked_sortable then
+					temp is linked_sortable;
+					linked_sortable is linked_sortable type (linked_sortable's next);
+					temp's next is list2;
+					list2 is temp;
+				end;
+			end;    // while
+
+			// sort sublists
+			//
+			list1 is list1 sorted;
+			list2 is list2 sorted;
+
+			// merge lists
+			//
+			linked_sortable is none;
+			temp is none;       // tail of list
+
+			// move greater items to head of list
+			//
+			while some list1 and some list2 do
+				if list1 greater than list2 then
+					temp is list1;
+					list1 is linked_sortable type (list1's next);
+				else
+					temp is list2;
+					list2 is linked_sortable type (list2's next);
+				end;
+				temp's next is none;
+				append temp to linked_sortable last;
+			end;
+
+			// add remaining items to tail of list
+			//
+			if some list1 then
+				last's next is list1;
+			else
+				last's next is list2;
+			end;
+		end;
+		answer linked_sortable;
+	end;    // sort
+
+	reference verb sort is
+		linked_sortable is linked_sortable sorted;
+	end;    // sort
+end;    // linked_sortable
+}

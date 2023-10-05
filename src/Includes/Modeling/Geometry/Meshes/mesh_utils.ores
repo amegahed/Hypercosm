@@ -1,0 +1,167 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            mesh_utils.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some functions for gathering data about        }
+{       meshes and some shapes for alternate renderings of      }
+{       a mesh.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***************************************************************}
+{                     mesh querying methods                     }
+{***************************************************************}
+
+integer question mesh_edge
+	in integer edges[][];       // indices to vertices
+	from integer vertex1;
+	to integer vertex2;
+is
+	integer edge = 0;
+	for integer counter = min edges .. max edges do
+		integer vertices[] = edges[counter];
+		if vertex1 = vertices[1] and vertex2 = vertices[2] then
+			edge = counter;
+			break;
+		elseif vertex1 = vertices[2] and vertex2 = vertices[1] then
+			edge = -counter;
+			break;
+		end;
+	end;
+	answer edge;
+end;    // mesh_edge
+
+integer[] question mesh_faces
+	from integer sides[][];     // indices to vertices
+	and integer edges[][];      // indices to vertices
+is
+	integer faces[];        // indices to edges
+	integer face_index = 0, face_indices = 0;
+
+	// allocate space for face indices
+	//
+	for each integer side[] in sides do
+		face_indices = itself + num side + 1;
+	end;
+	dim faces[1..face_indices];
+
+	// find indices to edges from indices to vertices
+	//
+	for integer counter1 = min sides .. max sides do
+		integer side[] = sides[counter1];
+		integer vertex1, vertex2, edge;
+
+		for integer counter2 = min side .. max side - 1 do
+			vertex1 = side[counter2];
+			vertex2 = side[counter2 + 1];
+
+			// find side among edges
+			//
+			edge = mesh_edge in edges from vertex1 to vertex2;
+
+			// store edge index
+			//
+			face_index = itself + 1;
+			faces[face_index] = edge;
+		end;
+
+		// find side from last vertex back to first
+		//
+		vertex1 = side[max side];
+		vertex2 = side[min side];
+
+		// find side among edges
+		//
+		edge = mesh_edge in edges from vertex1 to vertex2;
+
+		// store edge index
+		//
+		face_index = itself + 1;
+		faces[face_index] = edge;
+
+		// store end of polygon delimeter
+		//
+		face_index = itself + 1;
+		faces[face_index] = 0;
+	end;
+
+	answer faces;
+end;    // mesh_faces
+
+{***************************************************************}
+{                     mesh rendering methods                    }
+{***************************************************************}
+
+shape mesh_vertices
+	vector vertices[];
+with
+	scalar radius = 1;
+is
+	for integer counter = min vertices .. max vertices do
+		sphere with
+			radius = static radius;
+			center = vertices[counter];
+		end;
+	end;
+end;    // mesh_vertices
+
+shape mesh_edges
+	integer edges[][];
+	to vector vertices[];
+with
+	scalar radius = 1;
+is
+	for integer counter = min edges..max edges do
+		vector vertex1 = vertices[edges[counter][1]];
+		vector vertex2 = vertices[edges[counter][2]];
+		cylinder with
+			end1 = vertex1;
+			end2 = vertex2;
+			radius = static radius;
+		end;
+	end;
+end;    // mesh_edges
+
+shape mesh_sides
+	integer sides[][];
+	through integer edges[][];
+	to vector vertices[];
+	colored color type colors[] is none;
+is
+	if some colors then
+
+		// multicolored faces
+		//
+		for integer counter = min sides..max sides do
+			integer side[] = sides[counter];
+			vector side_color = colors[min colors + counter mod num colors];
+			
+			if num side = 3 then
+				vector vertex1 = vertices[side[1]];
+				vector vertex2 = vertices[side[2]];
+				vector vertex3 = vertices[side[3]];
+				triangle vertex1 vertex2 vertex3 with
+					color = side_color;
+				end;
+			else
+				vector polyvert[1..num side];
+				for integer i = min side .. max side do
+					polyvert[i] = vertices[side[i]];
+				end;
+				polygon polyvert with
+					color = side_color;
+				end;
+			end;
+		end;    // for
+	else
+		// unicolored faces
+		//
+		mesh vertices edges (mesh_faces from sides and edges) with
+			closed is true;
+		end;
+	end;
+end;    // mesh_sides

@@ -1,0 +1,57 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         array_slices.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of subarray expressions in the OMAR             }
+{       language to copy slices from one array to another       }
+{       array.                                                  }
+{                                                               }
+{       Array slices are subportions of an array that           }
+{       may have a lower dimensionality than the array          }
+{       that they came from.  For example, you can take a       }
+{       2 dimensional slice out of a 3 dimensional array.       }       
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_slices_example;
+
+integer a[1 .. 5];
+integer b[1 .. 5, 1 .. 5];
+integer c[1 .. 5, 1 .. 5, 1 .. 5];
+
+verb init_arrays is
+	for each integer i in a do
+		i = 0;
+	end;
+	for each integer i in b do
+		i = 0;
+	end;
+	for each integer i in c do
+		i = 0;
+	end;
+end;    // init_arrays
+
+verb array_slices_example 
+is
+	init_arrays;
+	
+	// Copy 1 dimensional slice
+	//
+	a = b[1, ..];
+	a = c[1, 1, ..];    
+	a[1 .. 3] = b[1, 1 .. 3];
+	a[1 .. 3] = c[1, 1, 1 .. 3];
+	a[1 .. 3] = c[1 .. 3, 1, 1]; 
+	   
+	// Copy a 2 dimensional slice   
+	//  
+	b = c[1, .., ..];
+	b = c[1, 1 .. 5, 1 .. 5];
+	b = c[1 .. 5, 1 .. 5, 1];   
+	
+	write "ok!", ;
+end;    // array_slices_example

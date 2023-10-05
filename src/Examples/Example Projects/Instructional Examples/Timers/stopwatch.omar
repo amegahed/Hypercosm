@@ -1,0 +1,161 @@
+do stopwatch_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/clock_timer.ores";
+include "system/common_materials.ores";
+include "system/rod.ores";
+
+shape stopwatch with
+	scalar time = 0;
+	boolean paused is false;
+is
+	static shape dial is
+		triangle <0 .75 0> <-.1 -.5 0> <.1 -.5 0> with
+			material is plastic colored red;
+		end;
+	end;	// dial
+	
+	static shape tick_mark is
+		block with
+			move to <0 0 1>;
+			scale by .0125 along <1 0 0>;
+			scale by .05 along <0 1 0>;
+			scale by .0125 along <0 0 1>;
+		end;
+	end;	// tick_mark
+	
+	static shape tick_marks with
+		integer number = 60;
+	is
+		for integer counter = 1 .. number do
+			scalar angle = (counter - 1) * 360 / number;
+			
+			tick_mark with
+				if trunc angle mod 90 = 0 then
+					magnify by 2;
+				elseif trunc angle mod 15 = 0 then
+					magnify by 1.5;
+				end;
+			
+				move to <0 .75 0>;
+				rotate by angle around <0 0 1>;
+				material is plastic colored dark grey;
+			end;
+		end;
+	end;	// tick_marks
+	static shape axel is
+		sphere with
+			radius = .05;
+			move to <0 0 .1>;
+		end;
+		cylinder with
+			end1 = <0 0 0>;
+			end2 = <0 0 .1>;
+			radius = .025;
+		end;	
+	end;	// axel
+	
+	static shape button is
+		cylinder with
+			end1 = <0 0 -.05>;
+			end2 = <0 0 .15>;
+			radius = .075;
+			material is metal;
+		end;
+		rod with
+			end1 = <0 0 .15>;
+			end2 = <0 0 .3>;
+			radius = .1;
+			material is plastic colored dark grey;
+		end;
+	end;	// button
+	
+	static shape body
+	is
+		torus with
+			inner_radius = .7;
+			outer_radius = 1;
+			vmin = -90;
+			vmax = 90;
+		end;
+		disk with
+			move to <0 0 -.15>;
+			radius = .85;
+		end;
+		cylinder with
+			end1 = <0 0 -.15>;
+			end2 = <0 0 .15>;
+			radius = .85;
+		end;
+		// crystal
+		//
+		sphere with
+			radius = .85;
+			vmin = 0;
+			vmax = 90;
+			scale by .1 along <0 0 1>;
+			move to <0 0 .15>;
+			material is glass;
+		end;
+	end;	// body
+	
+	scalar angle = time / 60 * 360;
+		
+	// face
+	//
+	shape face is
+		disk with
+			normal = <0 0 1>;	
+		end;
+		dial with
+			move to <0 0 .1>;
+			rotate by -angle around <0 0 1>;
+		end;
+		tick_marks;
+		axel with
+			material is golden;
+			rotate by angle around <0 0 1>;
+		end;
+	end;
+		
+	body with
+		material is golden;
+	end;
+	face with
+		material is plastic colored white;
+	end;
+	
+	// top button
+	//
+	button with
+		rotate by -90 around <1 0 0>;
+		move to <0 1 0>;
+		if not paused then
+			move to <0 -.05 0>;
+		end;
+	end;
+	torus with
+		outer_radius = .25;
+		inner_radius = .2;
+		move to <0 1.25 0>;
+		material is golden;
+	end;
+end;	// stopwatch
+
+anim stopwatch_anim with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+is
+	shape scene with
+		scalar time = 0;
+	is
+		stopwatch with
+			time = static time;
+			rotate by 90 around <1 0 0>;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene;
+end;	// stopwatch_anim

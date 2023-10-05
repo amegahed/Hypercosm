@@ -1,0 +1,1070 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          polar_lander.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This simulation depicts NASA's Mars Polar Lander        }
+{       on the surface of the red planet, Mars.                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do polar_lander_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/actors.ores";
+include "system/shapes.ores";
+include "system/vectors.ores";
+include "system/random.ores";
+include "system/native_sound.ores";
+include "system/grid_shapes.ores";
+include "system/beveled_shapes.ores";
+include "pathcam.omar";
+
+texture type marsrockm using (new image named "mars_rock.jpg"); 
+material type mars_rock is chalk colored white textured marsrockm;
+texture type marspanoramam using (new image named "mars_panorama.png") with wraparound is false; end;   
+material type mars_panorama is constant_color white textured marspanoramam ;
+texture type mars_skym using (new image named "mars_sky.jpg");  
+material type mars_sky is constant_color white textured mars_skym;
+
+subject polar_lander
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new;
+	
+	// rendering method
+	//
+	shape instance;
+	
+	// animatiion method
+	//
+	verb update;
+	// methods for opening and closing the petals
+	//
+	verb open;
+	verb close;
+	// methods for operating the camera
+	//
+	verb extend_camera
+		by scalar step;
+	end;
+	verb rotate_camera
+		by scalar angle;
+	end;
+	
+	// methods for operating the thrusters
+	//
+	verb set_thrust
+		to scalar thrust;
+	end;
+	verb change_thrust
+		by scalar amount = .1;
+	end;
+has
+	// attributes
+	//
+	boolean opening is false, closing is false;
+	scalar opening_step = 5, closing_step = 5;
+	scalar petal_angle = 0;
+	pathcam type pathcam;
+	scalar thrust1 = 0, thrust2 = 0, thrust3 = 0;
+is
+	// implementation
+	//
+	const scalar max_petal_angle = 150;
+	material type solar_material is (plastic poster "satellite.jpg");
+	material type gold_foil is metal colored gold poster "wrinkles.jpg";
+	material type flame_material is constant_color white textured (new texture using 
+		(new image named "flame.png") with wraparound is false);
+	sound type rocket_sound named "noise.wav" with
+		looping is true;
+	end;
+
+	//
+	// constructor
+	//
+	
+	
+	verb new is
+		// call superclass method
+		//
+		timed_actor new;
+	end;    // new
+	
+	
+	//
+	// rendering methods
+	//
+	
+					
+	objective shape footpad is
+		disk with
+			radius = .5;
+		end;
+		cone with
+			end1 = <0 0 0>;
+			end2 = <0 0 .4>;
+			radius1 = .5;
+			radius2 = .9;
+		end;
+		cone with
+			end1 = <0 0 .4>;
+			end2 = <0 0 .3>;
+			radius1 = .9;
+			radius2 = 1;
+		end;
+	end;    // footpad
+	
+	
+	objective shape hinged_footpad is
+		shape hinge is
+			block with
+				move to <0 0 1>;
+				magnify by .2;
+				scale by 2 along <0 1 0>;
+				scale by .5 along <0 0 1>;
+				material is plastic colored dark grey;
+			end;
+			rod with
+				end1 = <0 -1 0>;
+				end2 = <0 1 0>;
+				umin = 0;
+				umax = 180;
+				move to <0 0 1>;
+				magnify by .2;
+				scale by 2 along <0 1 0>;
+				material is plastic colored dark grey;
+			end;
+		end;
+		
+		move to <0 0 .01>;
+		hinge;
+		footpad;
+	end;    // hinged_footpad
+	
+	
+	objective shape landing_leg with
+		vector attach = <0 0 0>;
+		vector brace1 = <-.5 1 0>;
+		vector brace2 = <-.5 -1 0>;
+		scalar length = 1;
+		scalar angle = 45;
+	is
+		shape leg 
+			from vector hip;
+			to vector foot;
+		is
+			cylinder with
+				end1 = hip;
+				end2 = foot + <0 0 .05>;
+				radius = .025;
+			end;
+			hinged_footpad with
+				magnify by .2;
+				move to foot;
+			end;
+		end;    // leg
+		
+		shape brace
+			from vector hip;
+			to vector foot;
+		is
+			vector direction = normalized (hip - foot);
+			
+			cylinder with
+				end1 = hip;
+				end2 = foot;
+				radius = .01;
+			end;
+			cylinder with
+				end1 = foot;
+				end2 = foot + direction * .9;
+				radius = .02;
+				material is golden;
+			end;
+			cylinder with
+				end1 = foot + direction * .9;
+				end2 = foot + direction;
+				radius = .02;
+				material is plastic colored dark grey;
+			end;
+		end;    // brace
+		
+		vector foot = attach + <length 0 0>;
+		
+		rotate_vector foot by angle around <0 1 0>;
+		leg from attach to foot;
+		brace from brace1 to foot + <0 .025 .05>;
+		brace from brace2 to foot + <0 -.025 .05>;
+	end;    // landing_leg
+	
+	
+	objective shape landing_legs with
+		scalar leg_angles[] = [45 45 45];
+	is
+		shape leg with
+			scalar angle = 45;
+		is
+			landing_leg with
+				angle = static angle;
+				attach = <1 0 0>;
+				brace1 = rotated_vector attach by 60 around <0 0 1>;
+				brace2 = rotated_vector attach by -60 around <0 0 1>;
+			end;
+		end;
+		
+		leg with
+			angle = leg_angles[1];
+		end;
+		leg with
+			angle = leg_angles[2];
+			rotate by 120 around <0 0 1>;
+		end;
+		leg with
+			angle = leg_angles[3];
+			rotate by 240 around <0 0 1>;
+		end;
+	end;    // landing_legs
+	
+	
+	objective shape lower_solar_panel with
+		scalar thickness = .05;
+	is
+		extrude [[1 0] [1 .7] [.8 1.4] [.5 1.4] [.5 1.5]
+				 [-.5 1.5] [-.5 1.4] [-.8 1.4] [-1 .7] [-1 0]]
+			along <0 0 1>
+		with
+			height = thickness;
+			material is aluminum;
+		end;
+		polygon [<1 0 0> <1 .7 0> <.8 1.4 0> <.5 1.4 0> <.5 1.5 0>
+				 <-.5 1.5 0> <-.5 1.4 0> <-.8 1.4 0> <-1 .7 0> <-1 0 0>]
+		with
+			magnify by .95 about <0 .7 0>;
+			move to <0 0 (thickness / 2 + .01)>;
+			material is solar_material;
+		end;
+	end;    // lower_solar_panel
+	
+	
+	objective shape upper_solar_panel with
+		scalar thickness = .05;
+	is
+		extrude [[1 0] [1 .5] [1.1 .6] [1.1 1] [1 1.4]
+				 [-1 1.4] [-1.1 1] [-1.1 .6] [-1 .5] [-1 0]]
+			along <0 0 1>
+		with
+			height = thickness;
+			material is aluminum;
+		end;
+		polygon [<1 0 0> <1 .5 0> <1.1 .6 0> <1.1 1 0> <1 1.4 0>
+				 <-1 1.4 0> <-1.1 1 0> <-1.1 .6 0> <-1 .5 0> <-1 0 0>]
+		with
+			magnify by .95 about <0 .7 0>;
+			move to <0 0 (thickness / 2 + .01)>;
+			material is solar_material;
+		end;
+	end;    // upper_solar_panel
+	
+	
+	objective shape hinge with
+		scalar hinge_radius = .05;
+	is
+		tube with
+			end1 = <-.1 0 0>;
+			end2 = <.1 0 0>;
+			inner_radius = hinge_radius / 2;
+			outer_radius = hinge_radius;
+			color = white;
+		end;
+	end;    // hinge
+	
+	
+	objective shape hinges with
+		scalar hinge_radius = .05;
+	is
+		hinge with
+			hinge_radius = static hinge_radius;
+			move to <-.4 0 0>;
+		end;
+		hinge with
+			hinge_radius = static hinge_radius;
+			move to <.4 0 0>;
+		end;
+		tube with
+			end1 = <-.5 0 0>;
+			end2 = <.5 0 0>;
+			outer_radius = hinge_radius / 2;
+			material is silver;
+		end;
+	end;    // hinges
+	
+	
+	objective shape solar_panels with
+		scalar angle = 150;
+	is
+		hinges with
+			hinge_radius = .05;
+		end;
+		upper_solar_panel with
+			rotate by 90 around <1 0 0>;
+			move to <0 0 .05>;
+		end;
+		lower_solar_panel with
+			rotate by 180 around <0 1 0>;
+			rotate by 90 around <1 0 0>;
+			move to <0 -.05 .05>;
+			rotate by angle around <1 0 0>;
+		end;
+	end;    // solar_panels
+	
+	
+	objective shape square_solar_panel with
+		scalar width = .2;
+		scalar height = .3;
+		scalar thickness = .025;
+	is
+		block with
+			scale by width along <1 0 0>;
+			scale by height along <0 1 0>;
+			scale by (thickness / 2) along <0 0 1>;
+			material is aluminum;
+		end;
+		parallelogram with
+			scale by width along <1 0 0>;
+			scale by height along <0 1 0>;
+			magnify by .95;
+			move to <0 0 (thickness / 2 + .01)>;
+			material is solar_material;
+		end;
+	end;    // square_solar_panel
+	
+	
+	objective shape panel_connector is
+		cylinder with
+			end1 = <-.25 0 0>;
+			end2 = <-.25 -.4 0>;
+			radius = .01;
+			material is plastic colored dark grey;
+		end;
+		cylinder with
+			end1 = <.25 0 0>;
+			end2 = <.25 -.4 0>;
+			radius = .01;
+			material is plastic colored dark grey;
+		end;
+	end;    // panel_connector
+	
+	
+	const scalar propellant_tank_radius = .33;
+	
+	
+	objective shape propellant_tank is
+		sphere with
+			radius = propellant_tank_radius;
+			material is gold_foil;
+		end;
+	end;    // propellant_tank
+	
+	
+	objective shape electronics_box is
+		beveled_block with
+			move to <0 0 1>;
+			scale by .2 along <1 0 0>;
+			scale by .3 along <0 1 0>;
+			scale by .125 along <0 0 1>;
+			material is gold_foil;
+		end;
+	end;    // electronics_box
+	
+	
+	objective shape meterology_mast with
+		scalar height = 1;
+	is
+		static shape static_mast is
+			cylinder with
+				end1 = <0 0 0>;
+				end2 = <0 0 .5>;
+				radius = .01;
+				material is aluminum;
+			end;
+		end;
+		static shape moveable_mast is
+			cylinder with
+				end1 = <0 0 0>;
+				end2 = <0 0 .5>;
+				radius = .005;
+				material is silver;
+			end;
+		end;
+		
+		beveled_block with
+			move to <0 0 1>;
+			scale by .075 along <1 0 0>;
+			scale by .075 along <0 1 0>;
+			scale by .1 along <0 0 1>;
+			material is plastic colored grey;
+		end;
+		static_mast with
+			move to <0 0 .1>;
+		end;
+		moveable_mast with
+			move to <0 0 (.1 + (.5 * height))>;
+		end;
+	end;    // meterology_mast
+	
+	
+	objective shape microphone is
+		block with
+			move to <0 0 1>;
+			scale by .075 along <1 0 0>;
+			scale by .05 along <0 1 0>;
+			scale by .15 along <0 0 1>;
+			material is plastic colored white;
+		end;
+		block with
+			move to <0 0 1>;
+			scale by .075 along <1 0 0>;
+			scale by .05 along <0 1 0>;
+			scale by .01 along <0 0 1>;
+			move to <0 0 .3>;
+			material is plastic colored red;
+		end;
+	end;    // microphone
+	
+	
+	objective shape uhf_antenna is
+		shape base with
+			scalar radius = .5;
+			scalar thickness = .05;
+		is
+			rod with
+				end1 = <0 0 (-thickness / 2)>;
+				end2 = <0 0 (thickness / 2)>;
+				radius = static radius;
+			end;
+		end;
+		
+		shape thing is
+			extrude [[-1 0] [-1 1] [1 1] [1 0] [.8 0] [.8 .9]
+					[-.8 .9] [-.8 0]]
+			with
+				scale by .4 along <1 0 0>;
+				scale by .1 along <0 1 0>;
+				scale by 1 along <0 0 1>;
+			end;
+		end;
+		
+		cylinder with
+			end1 = <0 0 0>;
+			end2 = <0 0 .75>;
+			radius = .25; 
+		end;
+		base with
+			move to <0 0 .5>;
+		end;
+		base with
+			move to <0 0 .75>;
+		end;
+		thing with
+			move to <0 0 .75>;
+		end;
+		thing with
+			rotate by 90 around <0 0 1>;
+			move to <0 0 .75>;
+		end;
+		rod with
+			end1 = <0 0 1.75>;
+			end2 = <0 0 2>;
+			radius = .1;
+		end;
+	end;    // uhf_antenna
+	
+	
+	objective shape antenna with
+		scalar heading = 0;
+		scalar pitch = 0;
+	is
+		static shape dish is
+			rod with
+				end1 = <0 -.1 0>;
+				end2 = <0 .1 0>;
+				radius = .1;
+			end;
+			paraboloid with
+				top = <0 0 .1>;
+				base = <0 0 .5>;
+				radius = .75;
+				material is chalk colored grey;
+			end;
+			cylinder with
+				end1 = <.1 0 .1>;
+				end2 = <.1 0 1>;
+				radius = .05;
+			end;
+			block with
+				magnify by .1;
+				move to <0 0 1>;
+				material is chalk colored grey;
+			end;
+		end;    // dish
+		
+		
+		static shape base is
+			rod with
+				end1 = <0 0 0>;
+				end2 = <0 0 .05>;
+				radius = .75;
+			end;
+		end;    // base
+		
+		static shape mast with
+			scalar pitch = 45;
+		is
+			static shape body is
+				cylinder with
+					end1 = <0 0 0>;
+					end2 = <0 0 .75>;
+					radius = .1;
+					material is aluminum;
+				end;
+				rod with
+					end1 = <0 -.3 .75>;
+					end2 = <0 .3 .75>;
+					radius = .25;
+				end;
+				cylinder with
+					end1 = <0 -.3 .75>;
+					end2 = <0 -.75 .75>;
+					radius = .1;
+					material is aluminum;
+				end;
+				rod with
+					end1 = <0 -.1 0>;
+					end2 = <0 .1 0>;
+					radius = .15;
+					move to <0 -.75 .75>;
+				end;
+				cylinder with
+					end1 = <0 -.75 .75>;
+					end2 = <0 -.75 3>;
+					radius = .1;
+					material is aluminum;
+				end;
+			end;
+			
+			body;
+			dish with
+				rotate by pitch around <0 1 0>;
+				move to <0 -.75 3>;
+			end;
+		end;
+		
+		// base
+		//
+		base;
+		mast with
+			pitch = static pitch;
+			rotate by heading around <0 0 1>;
+		end;
+	end;    // antenna
+	
+	
+	objective shape robotic_arm is
+		extrude [[-.5 0] [-.5 1] [-.1 1] [.5 0]] with
+			height = .5;
+			material is chalk colored dark grey;
+		end;
+	end;    // robotic_arm
+	
+	
+	objective shape rocket is
+		{
+		paraboloid with
+			top = <0 0 0>;
+			base = <0 0 -.2>;
+			radius = .075;
+			material is plastic colored dark grey;
+		end;
+		}
+		cone with
+			end1 = <0 0 0>;
+			end2 = <0 0 -.2>;
+			radius1 = .025;
+			radius2 = .075;
+			material is plastic colored dark grey;
+		end;
+	end;    // rocket
+	
+	
+	shape rocket_exhaust with
+		scalar thrust = 1;
+	is
+		cone with
+			end1 = <0 0 -.2>;
+			end2 = <0 0 (-.2 - thrust * .5)>;
+			radius1 = .075;
+			radius2 = .15;
+			rotate by (random from 0 to 360) around <0 0 1>;
+			material is flame_material;
+			render_mode is shaded;
+			shadows is false;
+		end;
+	end;    // rocket_exhaust
+	
+	
+	objective shape rocket_pair is
+		block with
+			scale by .2 along <1 0 0>;
+			scale by .1 along <0 1 0>;
+			scale by .05 along <0 0 1>;
+			material is plastic colored light grey;
+		end;
+		rocket with
+			move to <-.1 0 -.01>;
+		end;
+		rocket with
+			move to <.1 0 -.01>;
+		end;
+	end;    // rocket_pair
+	
+	
+	shape rocket_exhaust_pair with
+		scalar thrust = 1;
+	is
+		rocket_exhaust with
+			thrust = static thrust;
+			move to <-.1 0 -.01>;
+		end;
+		rocket_exhaust with
+			thrust = static thrust;
+			move to <.1 0 -.01>;
+		end;
+	end;    // rocket_exhaust_pair
+	
+	objective shape rocket_set is
+		rocket_pair with
+			move to <-.25 (-.86 - .1) .15>;
+		end;
+		rocket_pair with
+			move to <.25 (-.86 - .1) .15>;
+			rotate by -60 around <0 0 1>;
+		end;
+	end;    // rocket_set
+	
+	
+	shape rocket_exhaust_set with
+		scalar thrust = 1;
+	is
+		rocket_exhaust_pair with
+			thrust = static thrust;
+			move to <-.25 (-.86 - .1) .15>;
+		end;
+		rocket_exhaust_pair with
+			thrust = static thrust;
+			move to <.25 (-.86 - .1) .15>;
+			rotate by -60 around <0 0 1>;
+		end;
+	end;    // rocket_exhaust_set
+	
+	
+	shape rocket_exhausts is
+		if thrust1 <> 0 then
+			rocket_exhaust_set with
+				thrust = thrust1;
+			end;
+		end;
+		if thrust2 <> 0 then
+			rocket_exhaust_set with
+				thrust = thrust2;
+				rotate by 120 around <0 0 1>;
+			end;
+		end;
+		if thrust3 <> 0 then
+			rocket_exhaust_set with
+				thrust = thrust3;
+				rotate by 240 around <0 0 1>;
+			end;
+		end;
+	end;    // rocket_exhausts
+	
+	
+	static shape flame_disk is
+		paraboloid with
+			top = <0 0 .01>;
+			base = <0 0 0>;
+			radius = 1;
+			material is flame_material;
+			render_mode is shaded;
+			shadows is false;
+		end;
+		{
+		disk with
+			material is flame_material;
+		end;
+		}
+	end;    // flame_disk
+	
+	
+	shape ground_exhausts is
+		if thrust1 <> 0 then
+			flame_disk with
+				material is flame_material;
+				rotate by (random from 0 to 360) around <0 0 1>;
+				magnify by thrust1 * 2;
+				move to <1 0 0>;
+			end;
+		end;
+		if thrust2 <> 0 then
+			flame_disk with
+				material is flame_material;
+				rotate by (random from 0 to 360) around <0 0 1>;
+				magnify by thrust1 * 2;
+				move to <1 0 0>;
+				rotate by 120 around <0 0 1>;
+			end;
+		end;
+		if thrust3 <> 0 then
+			flame_disk with
+				material is flame_material;
+				rotate by (random from 0 to 360) around <0 0 1>;
+				magnify by thrust1 * 2;
+				move to <1 0 0>;
+				rotate by 240 around <0 0 1>;
+			end;
+		end;
+	end;    // ground_exhausts
+	
+	
+	objective shape small_solar_panels with
+		scalar spacing = .5;
+		scalar tilt = 60;
+		scalar spread = 30;
+	is
+		square_solar_panel with
+			rotate by tilt around <1 0 0>;
+			rotate by spread around <0 0 1>;
+			move to <(spacing / 2) 0 0>;
+		end;
+		square_solar_panel with
+			rotate by tilt around <1 0 0>;
+			rotate by (-spread) around <0 0 1>;
+			move to <(-spacing / 2) 0 0>;
+		end;
+	end;    // small_solar_panels
+	
+	
+	objective shape body is
+	
+		// main body shape
+		//
+		prism with
+			sides = 6;
+			scale by .25 along <0 0 1>;
+			move to <0 0 .25>;
+			material is metal poster "panels.jpg";
+		end;
+		prism with
+			sides = 6;
+			magnify by 1.05;
+			scale by .025 along <0 0 1>;
+			move to <0 0 .525>;
+			material is plastic colored white;
+		end;
+		
+		
+		// solar panel connectors
+		//
+		panel_connector with
+			move to <0 -.86 .25>;
+			rotate by 60 around <0 0 1>;
+		end;
+		panel_connector with
+			move to <0 -.86 .25>;
+			rotate by 240 around <0 0 1>;
+		end;
+		small_solar_panels with
+			move to <.1 -1.1 .4>;
+			rotate by -60 around <0 0 1>;
+		end;
+		
+		// spherical propellant tanks
+		//
+		propellant_tank with
+			move to <.25 (-.86 - propellant_tank_radius) .25>;
+		end;
+		propellant_tank with
+			move to <-.25 (-.86 - propellant_tank_radius) .25>;
+			rotate by 180 around <0 0 1>;
+		end;
+		
+		// instruments
+		//
+		microphone with
+			rotate by 60 around <0 0 1>;
+			move to <.1 -.5 .55>;
+		end;
+		electronics_box with
+			move to <-.45 0 .55>;
+			rotate by -30 around <0 0 1>;
+		end;
+		uhf_antenna with
+			magnify by .25;
+			move to <.15 0 .55>;
+			material is golden;
+		end;
+		robotic_arm with
+			magnify by .3;
+			rotate by -60 around <0 0 1>;
+			move to <.5 .7 .55>;
+		end;
+		
+		// descent thrusters
+		//
+		rocket_set;
+		rocket_set with
+			rotate by 120 around <0 0 1>;
+		end;
+		rocket_set with
+			rotate by 240 around <0 0 1>;
+		end;
+	end;    // body
+	
+	
+	shape instance is
+		scalar leg_angle = 15 + 5 * sqr thrust1;
+		scalar leg_angles[] = [leg_angle leg_angle leg_angle];
+		scalar height = 2 * sin leg_angle;
+		scalar time = timer get_time;
+		
+		shape parts is
+			body;
+			solar_panels with
+				angle = petal_angle;
+				magnify by .75;
+				rotate by -45 around <1 0 0>;
+				move to <0 -1.25 .25>;
+				rotate by 60 around <0 0 1>;
+			end;
+			solar_panels with
+				angle = petal_angle;
+				magnify by .75;
+				rotate by -45 around <1 0 0>;
+				move to <0 -1.25 .25>;
+				rotate by 240 around <0 0 1>;
+			end;
+			landing_legs with
+				leg_angles = static leg_angles;
+				material is aluminum;
+			end;
+			pathcam instance with
+				magnify by .75;
+				rotate by -60 around <0 0 1>;
+				move to <.45 .3 .55>;
+			end;
+			antenna with
+				heading = time * 90;
+				pitch = 45 + sin (time * 10) * 45;
+				magnify by .25;
+				move to <-.55 -.45 .55>;
+				material is plastic colored white;
+			end;
+			meterology_mast with
+				height = petal_angle / max_petal_angle;
+				move to <-.25 (-.86 - .075) .25>;
+			end;
+			
+			// rocket thrust
+			//
+			rocket_exhausts;
+			
+			if thrust1 > 0 then
+				point_light with
+					color = blend (light yellow) to red by (random from 0 to 1);
+					brightness = (random from 0 to thrust1);
+				end;
+			end;
+		end;
+		
+		parts with
+			move to <0 0 height>;
+		end;
+		ground_exhausts with
+			move to <0 0 .1>;
+		end;
+	end;    // instance
+
+	//
+	// animation methods
+	//
+	
+	
+	verb step_open is
+		petal_angle = itself + opening_step;
+		if petal_angle >= max_petal_angle then
+			petal_angle = max_petal_angle;
+			opening is false;
+		end;
+	end;    // step_open
+
+	verb step_closed is
+		petal_angle = itself - closing_step;
+		if petal_angle <= 0 then
+			petal_angle = 0;
+			closing is false;
+		end;
+	end;    // step_closed
+
+	verb update is
+		if opening then
+			step_open;
+		elseif closing then
+			step_closed;
+		end;
+		
+		pathcam update;
+		
+		// call superclass method
+		//
+		timed_actor static update;
+	end;    // update
+
+	verb open is
+		opening is true;
+		closing is false;
+	end;    // open
+
+	verb close is
+		opening is false;
+		closing is true;
+	end;    // close
+
+	verb extend_camera
+		by scalar step;
+	is
+		pathcam extend by step;
+	end;    // lower_camera
+
+	verb rotate_camera
+		by scalar angle;
+	is
+		pathcam rotate by angle;
+	end;    // rotate_camera
+	
+	
+	verb set_thrust
+		to scalar thrust;
+	is
+		if thrust = 0 then
+			rocket_sound stop;
+		elseif thrust > 0 and thrust1 = 0 then
+			rocket_sound play;
+		end;
+		
+		rocket_sound set_volume to thrust * .1;
+		
+		thrust1 = thrust;
+		thrust2 = thrust;
+		thrust3 = thrust;
+	end;    // set_thrust
+	
+	
+	verb change_thrust
+		by scalar amount = .1;
+	is
+		if thrust1 = 0 and amount > 0 then
+			rocket_sound play;
+		end;
+		
+		thrust1 = clamp (thrust1 + amount) from 0 to 1;
+		thrust2 = clamp (thrust2 + amount) from 0 to 1;
+		thrust3 = clamp (thrust3 + amount) from 0 to 1;
+		
+		rocket_sound set_volume to thrust1;
+		
+		if thrust1 = 0 then
+			rocket_sound stop;
+		end;
+	end;
+end;    // polar_lander
+
+shape environment is
+	// unshadowed ground
+	//
+	parallelogram with
+		material is mars_rock;
+		magnify by 20;
+		shadows is false;
+		move to <0 0 -.05>;
+	end;
+	
+	// shadowed ground
+	//
+	parallelogram with
+		magnify by 5;
+		material is mars_rock;
+	end;
+	
+	cylinder with
+		material is mars_panorama;
+		end1 = <0 0 .3>;
+		end2 = <0 0 0>;
+		edges is silhouette;
+		magnify by 18;
+		shadows is off;
+	end;
+	
+	sphere with
+		material is mars_sky;
+		vmin = 0;
+		vmax = 89.99;
+		edges is silhouette;
+		magnify by 20;
+		shadows is off;
+	end;
+end;    // environment
+
+polar_lander type polar_lander;
+
+anim polar_lander_anim
+	args type args;
+with
+	eye = <-1 -6 2>;
+	lookat = <0 0 1>;
+	double_buffer is on;
+	background = light brick;
+	ambient = background * .5;
+	background_name is none;
+	//stay_above_plane is true;
+	args check;
+is
+	verb check_keys is
+		if key_down char_to_key of "c" then
+			polar_lander close;
+		elseif key_down char_to_key of "o" then
+			polar_lander open;
+		elseif key_down char_to_key of "u" then
+			polar_lander extend_camera by .1;
+		elseif key_down char_to_key of "d" then
+			polar_lander extend_camera by -.1;
+		elseif key_down char_to_key of "r" then
+			polar_lander rotate_camera by 15;
+		elseif key_down char_to_key of "e" then
+			polar_lander rotate_camera by -15;
+		elseif key_down char_to_key of "+" then
+			polar_lander change_thrust by .1;
+		elseif key_down char_to_key of "-" then
+			polar_lander change_thrust by -.1;
+		end;
+		global check_keys;
+	end;    // check_keys
+	mouse_controlled_actor polar_lander
+		within new static_shape of environment
+		titled "Mars Polar Lander" doing check_keys;
+end;    // pathfinder_anim

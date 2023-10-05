@@ -1,0 +1,182 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     3ds_xyz_to_uvw_mapping.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains xyz to uvw mapping definitions corresponding   }
+{       to entities from Discreet's 3D Studio Max software.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_uvw_mapping.ores";
+
+subject translated_3ds_xyz_to_uvw_mapping
+extends
+	translated_3ds_uvw_mapping
+does
+	// constructor
+	//
+	verb new with
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+	end;
+	
+	// setting method
+	//
+	verb set with
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+	end;
+		
+	// texture mapping methods
+	//
+	texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	end;
+	
+	// copying and cloning methods
+	//
+	verb copy
+		from translated_3ds_xyz_to_uvw_mapping type source;
+	end;
+	translated_3ds_xyz_to_uvw_mapping type question clone;
+	
+	// recycling methods
+	//
+	objective translated_3ds_xyz_to_uvw_mapping type question get;
+	reference verb recycle;
+has
+private 
+	// recycling attributes
+	//
+	translated_3ds_xyz_to_uvw_mapping type next is none;    
+is
+	// recycling free list
+	//
+	translated_3ds_xyz_to_uvw_mapping type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new with
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+	is
+		translated_3ds_uvw_mapping new with
+			u_tile = static u_tile;
+			v_tile = static v_tile;
+			w_tile = static w_tile;
+		end;
+		
+		if verbose_recycling then
+			write "new 3ds xyz to uvw mapping", ;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set with
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+	is
+		// reset texture mapping attributes
+		//      
+		with translated_3ds_uvw_mapping do
+			its u_tile = u_tile;
+			its v_tile = v_tile;
+			its w_tile = w_tile;
+		end;    
+	end;    // set
+	
+	//
+	// texture mapping methods
+	//
+		
+	texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	is
+		scalar u, v, w;
+		
+		// get coordinates of point in texture space
+		//
+		point = get_transformed_point point;
+		
+		// scale texture coordinates
+		//
+		u = point.x * u_tile;   
+		v = point.y * v_tile;
+		w = point.z * w_tile;
+		
+		answer <u v w>;
+	end;    // get_texcoord
+	
+	//  
+	// copying and cloning methods
+	//
+		
+	verb copy
+		from translated_3ds_xyz_to_uvw_mapping type source;
+	is    
+		translated_3ds_uvw_mapping static copy from source;
+	end;    // copy
+	
+	
+	translated_3ds_xyz_to_uvw_mapping type question clone is
+		translated_3ds_xyz_to_uvw_mapping type new_mapping;
+		new_mapping copy from translated_3ds_xyz_to_uvw_mapping;
+		answer new_mapping;
+	end;    // clone
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_xyz_to_uvw_mapping type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_xyz_to_uvw_mapping type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_xyz_to_uvw_mapping;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_xyz_to_uvw_mapping;
+		
+		translated_3ds_xyz_to_uvw_mapping is none;
+	end;        // recycle  
+end;    // translated_3ds_xyz_to_uvw_mapping
+
+//
+// procedural interface
+//
+
+verb translated_3ds_xyz_to_uvw_mapping with
+	scalar u_tile = 1, v_tile = 1, w_tile = 1;
+is
+	translated_3ds_xyz_to_uvw_mapping type translated_3ds_xyz_to_uvw_mapping is
+		translated_3ds_xyz_to_uvw_mapping type's get;
+		
+	translated_3ds_xyz_to_uvw_mapping set with
+		u_tile = static u_tile;
+		v_tile = static v_tile;
+		w_tile = static w_tile;
+	end;
+	
+	modifier_stack push translated_3ds_stackable type translated_3ds_xyz_to_uvw_mapping;
+end;    // translated_3ds_xyz_to_uvw_mapping

@@ -1,0 +1,686 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      native_data_packing.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native data_container, data_packer, and    }
+{       data_unpacker subjects, which are mechanisms for        }
+{       transferring raw byte data into and out of a Hypercosm  }
+{       applet.  They are used primarily for networking and     }
+{       data_resource handling.                                 }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "strings.ores";
+
+// Endianness controls the order in which the bytes of an integral or scalar
+// value are stored in memory.  The endian order you choose when reading
+// integers, shorts, longs, scalars, doubles, complexes, or vectors must match
+// the order that was used when the data were written.  The endian order does
+// not affect the packing or unpacking of bytes or chars.
+//
+// Little endian is the order naturally used by Intel processors.
+// Big endian is the order naturally used by Motorola processors, and is the
+// default for many internet protocols.
+//
+// The default endianness of a data_container is big.
+//
+enum endian is little, big;
+
+// The data_container subject is the shared functionality of the data_packer
+// and data_unpacker mechanisms.  Each data_container has a buffer of bytes
+// stored in the native interpreter.  The bytes can be written and read by
+// using the pack and unpack methods of the data_packer and data_unpacker.
+//
+abstract subject data_container
+does
+	// min_index and max_index return the indexes of the first and last bytes
+	// of the data_container's buffer.  If the buffer is empty, max_index will
+	// be less than min_index.  The min_index is set when the data_packer or
+	// data_unpacker is created.
+	//
+	native integer question min_index;
+	native integer question max_index;
+	
+	// length returns the number of bytes in the buffer.
+	//
+	integer question length;
+	
+	// get_index and set_index refer to the current byte position within the
+	// data_container's buffer.  For a data_packer, the next item packed will
+	// be stored at the current position, and for a data_unpacker, the next
+	// item unpacked will be read from the current position.  Both packing and
+	// unpacking cause the current position to advance by the number of bytes
+	// written or read.  When setting the index, the value passed in is clamped
+	// to the range from min_index to (max_index + 1).
+	//
+	native integer question get_index;
+	
+	native verb set_index
+		to integer index;
+	end;
+	
+	// get_endian and set_endian refer to the byte order conversion used when
+	// packing and unpacking short, integer, long, scalar, double, complex,
+	// and vector values.
+	//
+	// The default is big endian.
+	//
+	native endian type question get_endian;
+	
+	native verb set_endian
+		to endian type endian;
+	end;
+	
+	// extract_data and append_data allow blocks of data to be copied from the
+	// data_container's buffer into the buffer of some other data_container.
+	// extract_data completely replaces the contents of the buffer of the
+	// destination_container, and sets the destination_container's index to its
+	// min_index.  append_data places the copied data at the end of the
+	// destination_container's buffer, and leaves the destination_container's
+	// index alone.  Both methods are unaffected by the source data_container's
+	// index and endian settings.  Both methods can be used to copy a subrange
+	// of the source data_container's buffer, by setting the start_index and
+	// end_index parameters to the indexes in the source data_container of the
+	// first and last bytes to be copied.
+	//
+	native verb extract_data
+		to data_container type destination_container;
+	with
+		integer start_index = min_index;
+		integer end_index = max_index;
+	end;
+	
+	native verb append_data
+		to data_container type destination_container;
+	with
+		integer start_index = min_index;
+		integer end_index = max_index;
+	end;
+has
+	// attributes
+	//
+	private long id;
+is
+	integer question length
+	is
+		integer len = (max_index - min_index) + 1;
+		if len < 0 then
+			answer 0;
+		else
+			answer len;
+		end;
+	end;
+end;    // data_container
+
+{***************************************************************}
+// The data_unpacker subject is a data_container from which data can be read.
+// The unpack methods can be divided into two categories:  methods that unpack
+// one item, and methods that unpack an array of items.
+//
+// When unpacking an array of items, an array of the requested length is
+// returned.  If the end of the data buffer is reached before unpacking all
+// the requested items, the remaining items are set to 0.  The number of
+// items actually unpacked is returned in the unpacked_length return parameter.
+//
+// When unpacking a single item, if there are not enough bytes left in the
+// data buffer after the current index, then 0 is returned and the unpacked
+// return parameter is set to false.
+//
+subject data_unpacker
+extends
+	data_container
+does
+	// constructor
+	//
+	native verb new with
+		integer min_index = 0;
+	end;
+	
+	native verb free;
+	
+	// Unpack an array of bytes from the buffer
+	//
+	native byte[] question unpack_bytes
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one byte from the buffer
+	//
+	byte question unpack_byte
+	return
+		boolean unpacked;
+	end;
+
+	// Unpack an array of chars from the buffer
+	//
+	native string type question unpack_chars
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one char from the buffer
+	//
+	char question unpack_char
+	return
+		boolean unpacked;
+	end;
+
+	// Unpack an array of shorts from the buffer
+	//
+	native short[] question unpack_shorts
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one short from the buffer
+	//
+	short question unpack_short
+	return
+		boolean unpacked;
+	end;
+
+	// Unpack an array of integers from the buffer
+	//
+	native integer[] question unpack_integers
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one integer from the buffer
+	//
+	integer question unpack_integer
+	return
+		boolean unpacked;
+	end;
+
+	{
+	// Packing and unpacking of longs is not enabled in the interpreter,
+	// because internally longs are only 32 bits and not 64 bits.
+	//
+
+	// Unpack an array of longs from the buffer
+	//
+	native long[] question unpack_longs
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one long from the buffer
+	//
+	long question unpack_long
+	return
+		boolean unpacked;
+	end;
+	}
+
+	// Unpack an array of scalars from the buffer
+	//
+	native scalar[] question unpack_scalars
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one scalar from the buffer
+	//
+	scalar question unpack_scalar
+	return
+		boolean unpacked;
+	end;
+
+	// Unpack an array of doubles from the buffer
+	//
+	native double[] question unpack_doubles
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one double from the buffer
+	//
+	double question unpack_double
+	return
+		boolean unpacked;
+	end;
+
+	// Unpack an array of complexes from the buffer
+	//
+	native complex[] question unpack_complexes
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one complex from the buffer
+	//
+	complex question unpack_complex
+	return
+		boolean unpacked;
+	end;
+
+	// Unpack an array of vectors from the buffer
+	//
+	native vector[] question unpack_vectors
+		length integer length;
+	return
+		integer unpacked_length;
+	end;
+
+	// Unpack one vector from the buffer
+	//
+	vector question unpack_vector
+	return
+		boolean unpacked;
+	end;
+is
+	byte question unpack_byte
+	return
+		boolean unpacked;
+	is
+		byte bytes[];
+		integer number;
+		bytes is unpack_bytes length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer bytes[1];
+		else
+			unpacked is false;
+		end;
+		answer 0;
+	end;
+
+	char question unpack_char
+	return
+		boolean unpacked;
+	is
+		char chars[];
+		integer number;
+		chars is unpack_chars length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer chars[1];
+		else
+			unpacked is false;
+		end;
+		answer chr 0;
+	end;
+
+	short question unpack_short
+	return
+		boolean unpacked;
+	is
+		short shorts[];
+		integer number;
+		shorts is unpack_shorts length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer shorts[1];
+		else
+			unpacked is false;
+		end;
+		answer 0;
+	end;
+
+	integer question unpack_integer
+	return
+		boolean unpacked;
+	is
+		integer integers[];
+		integer number;
+		integers is unpack_integers length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer integers[1];
+		else
+			unpacked is false;
+		end;
+		answer 0;
+	end;
+
+	{
+	// Packing and unpacking of longs is not enabled in the interpreter,
+	// because internally longs are only 32 bits and not 64 bits.
+	//
+	long question unpack_long
+	return
+		boolean unpacked;
+	is
+		long longs[];
+		integer number;
+		longs is unpack_longs length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer longs[1];
+		else
+			unpacked is false;
+		end;
+		answer 0;
+	end;
+	}
+
+	scalar question unpack_scalar
+	return
+		boolean unpacked;
+	is
+		scalar scalars[];
+		integer number;
+		scalars is unpack_scalars length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer scalars[1];
+		else
+			unpacked is false;
+		end;
+		answer 0.0;
+	end;
+
+	double question unpack_double
+	return
+		boolean unpacked;
+	is
+		double doubles[];
+		integer number;
+		doubles is unpack_doubles length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer doubles[1];
+		else
+			unpacked is false;
+		end;
+		answer 0.0;
+	end;
+
+	complex question unpack_complex
+	return
+		boolean unpacked;
+	is
+		complex complexes[];
+		integer number;
+		complexes is unpack_complexes length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer complexes[1];
+		else
+			complex a = < 0.0 0.0 >;
+			unpacked is false;
+			answer a;
+		end;
+	end;
+
+	vector question unpack_vector
+	return
+		boolean unpacked;
+	is
+		vector vectors[];
+		integer number;
+		vectors is unpack_vectors length 1 return number;
+		if number > 0 then
+			unpacked is true;
+			answer vectors[1];
+		else
+			vector a = < 0.0 0.0 0.0 >;
+			unpacked is false;
+			answer a;
+		end;
+	end;
+end;    // data_unpacker
+
+{***************************************************************}
+// The data_packer subject is a data_container to which data can be written.
+// All the pack methods will write their data to the location specified by
+// the current index, and will increment the index appropriately.  If the
+// pack operation would write past the end of the buffer, the buffer will be
+// grown larger to hold the data.
+//
+subject data_packer
+extends
+	data_container
+does
+	// constructor
+	//
+	native verb new with
+		integer min_index = 0;
+	end;
+	
+	// destructor
+	//
+	native verb free;
+	
+	// The reserve method requests that the interpreter allocates an internal
+	// buffer of at least requested_bytes bytes long.  This is an optional
+	// step for optimization - if an applet is about to pack a large amount of
+	// data, it may call reserve to reduce the number of times the interpreter
+	// will need to grow the data_packer's buffer.  If requested_bytes is less
+	// than the length of the data, the interpreter may shrink the internal
+	// buffer to fit the data;  if the length of the data is 0 then the
+	// interpreter may deallocate the buffer entirely.  The interpreter is
+	// free to ignore all calls to reserve.
+	//
+	native verb reserve
+		integer requested_bytes;
+	end;
+	
+	// set_length sets the max_index of the data_packer's buffer to
+	// (min_index + bytes - 1).  If the data_packer's length before the
+	// set_length call was less than bytes, the new bytes will be appended to
+	// the end of the data_packer's buffer, and are initialized to 0.  If the
+	// data_packer's length before the set_length call was more than bytes,
+	// the data starting with (min_index + bytes) will be discarded.
+	//
+	native verb set_length
+		to integer bytes;
+	end;
+	
+	// clear resets the data_packer and discards all the data it contains.
+	// It is implemented as set_length to 0.
+	//
+	verb clear;
+	
+	// Pack an array of bytes into the buffer
+	//
+	native verb pack_bytes
+		byte buffer[];
+	end;
+
+	// Pack one byte into the buffer
+	//
+	verb pack_byte
+		byte item;
+	end;
+
+	// Pack an array of chars into the buffer
+	//
+	native verb pack_chars
+		char buffer[];
+	end;
+
+	// Pack one char into the buffer
+	//
+	verb pack_char
+		char item;
+	end;
+
+	// Pack an array of shorts into the buffer
+	//
+	native verb pack_shorts
+		short buffer[];
+	end;
+
+	// Pack one short into the buffer
+	//
+	verb pack_short
+		short item;
+	end;
+
+	// Pack an array of integers into the buffer
+	//
+	native verb pack_integers
+		integer buffer[];
+	end;
+
+	// Pack one integer into the buffer
+	//
+	verb pack_integer
+		integer item;
+	end;
+
+	{
+	Packing and unpacking of longs is not enabled in the interpreter,
+	because internally longs are only 32 bits and not 64 bits.
+
+	// Pack an array of longs into the buffer
+	//
+	native verb pack_longs
+		long buffer[];
+	end;
+
+	// Pack one long into the buffer
+	//
+	verb pack_long
+		long item;
+	end;
+	}
+
+	// Pack an array of scalars into the buffer
+	//
+	native verb pack_scalars
+		scalar buffer[];
+	end;
+
+	// Pack one scalar into the buffer
+	//
+	verb pack_scalar
+		scalar item;
+	end;
+
+	// Pack an array of doubles into the buffer
+	//
+	native verb pack_doubles
+		double buffer[];
+	end;
+
+	// Pack one double into the buffer
+	//
+	verb pack_double
+		double item;
+	end;
+
+	// Pack an array of complexes into the buffer
+	//
+	native verb pack_complexes
+		complex buffer[];
+	end;
+
+	// Pack one complex into the buffer
+	//
+	verb pack_complex
+		complex item;
+	end;
+
+	// Pack an array of vectors into the buffer
+	//
+	native verb pack_vectors
+		vector buffer[];
+	end;
+
+	// Pack one vector into the buffer
+	//
+	verb pack_vector
+		vector item;
+	end;
+is
+	verb clear
+	is
+		set_length to 0;
+	end;
+
+	verb pack_byte
+		byte item;
+	is
+		byte bytes[1..1];
+		bytes[1] = item;
+		pack_bytes bytes;
+	end;
+
+	verb pack_char
+		char item;
+	is
+		char chars[1..1];
+		chars[1] is item;
+		pack_chars chars;
+	end;
+
+	verb pack_short
+		short item;
+	is
+		short shorts[1..1];
+		shorts[1] = item;
+		pack_shorts shorts;
+	end;
+
+	verb pack_integer
+		integer item;
+	is
+		integer integers[1..1];
+		integers[1] = item;
+		pack_integers integers;
+	end;
+
+	{
+	Packing and unpacking of longs is not enabled in the interpreter,
+	because internally longs are only 32 bits and not 64 bits.
+
+	verb pack_long
+		long item;
+	is
+		long longs[1..1];
+		longs[1] = item;
+		pack_longs longs;
+	end;
+	}
+
+	verb pack_scalar
+		scalar item;
+	is
+		scalar scalars[1..1];
+		scalars[1] = item;
+		pack_scalars scalars;
+	end;
+
+	verb pack_double
+		double item;
+	is
+		double doubles[1..1];
+		doubles[1] = item;
+		pack_doubles doubles;
+	end;
+
+	verb pack_complex
+		complex item;
+	is
+		complex complexes[1..1];
+		complexes[1] = item;
+		pack_complexes complexes;
+	end;
+
+	verb pack_vector
+		vector item;
+	is
+		vector vectors[1..1];
+		vectors[1] = item;
+		pack_vectors vectors;
+	end;
+end;    // data_packer

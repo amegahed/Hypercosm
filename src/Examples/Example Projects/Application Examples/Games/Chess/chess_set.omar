@@ -1,0 +1,304 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           chess_set.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a chess set that allows        }
+{       you to add and remove pieces.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do chess_set_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "chess.ores";
+include "chess_pieces.ores";
+include "chess_board.omar";
+
+subject chess_set
+does
+	verb new with
+		material type dark_material is black_marble;
+		material type light_material is white_marble;
+		scalar thickness = .1;
+	end;
+	// routines to modify chess set
+	//
+	verb add
+		chess_piece type chess_piece;
+	end;
+	verb delete
+		chess_piece type chess_piece;
+	end;
+	verb delete_piece
+		at integer row, column;
+	end;
+	// routines to construct chess set
+	//
+	verb init;
+	verb add_pawn
+		at integer row, column;
+		to chess_color type chess_color;
+	end;
+	verb add_rook
+		at integer row, column;
+		to chess_color type chess_color;
+	end;
+	verb add_bishop
+		at integer row, column;
+		to chess_color type chess_color;
+	end;
+	verb add_knight
+		at integer row, column;
+		to chess_color type chess_color;
+	end;
+	verb add_queen
+		at integer row, column;
+		to chess_color type chess_color;
+	end;
+	verb add_king
+		at integer row, column;
+		to chess_color type chess_color;
+	end;
+	// routines to instantiate chess set
+	//
+	shape instance;
+	// routines to select chess pieces
+	//
+	verb find_position
+		of integer reference row, column;
+		at vector location;
+	end;
+	verb get_piece
+		chess_piece type reference chess_piece;
+		at integer row, column;
+	end;
+has
+	public scalar thickness;
+	public integer black_pieces, white_pieces;
+	public chess_piece type chess_pieces[, ];
+	
+	// materials
+	//
+	public material type dark_material is none;
+	public material type light_material is none;
+is
+	verb new with
+		material type dark_material is black_marble;
+		material type light_material is white_marble;
+		scalar thickness = .1;
+	is
+		chess_set's dark_material is dark_material;
+		chess_set's light_material is light_material;
+		chess_set's thickness = thickness;
+		dim none chess_pieces[1..8, 1..8];
+		black_pieces = 0;
+		white_pieces = 0;
+	end;    // new
+
+	verb add
+		chess_piece type chess_piece;
+	is
+		integer row = chess_piece's row;
+		integer column = chess_piece's column;
+		chess_pieces[row, column] is chess_piece;
+		when chess_piece's chess_color is
+			black:
+				black_pieces = itself + 1;
+			end;
+			white:
+				white_pieces = itself + 1;
+			end;
+		end;
+	end;    // add
+
+	verb delete
+		chess_piece type chess_piece;
+	is
+		integer row = chess_piece's row;
+		integer column = chess_piece's column;
+		chess_pieces[row, column] is none;
+		when chess_piece's chess_color is
+			black:
+				black_pieces = itself - 1;
+			end;
+			white:
+				white_pieces = itself - 1;
+			end;
+		end;
+	end;    // delete
+
+	verb delete_piece
+		at integer row, column;
+	is
+		chess_piece type chess_piece is chess_pieces[row, column];
+		if some chess_piece then
+			delete chess_piece;
+		end;
+	end;    // delete_piece
+
+	verb add_pawn
+		at integer row, column;
+		to chess_color type chess_color;
+	is
+		renderable_pawn type pawn at row column in chess_color;
+		add pawn;
+	end;    // add_pawn
+
+	verb add_rook
+		at integer row, column;
+		to chess_color type chess_color;
+	is
+		renderable_rook type rook at row column in chess_color;
+		add rook;
+	end;    // add_rook
+
+	verb add_bishop
+		at integer row, column;
+		to chess_color type chess_color;
+	is
+		renderable_bishop type bishop at row column in chess_color;
+		add bishop;
+	end;    // add_bishop
+
+	verb add_knight
+		at integer row, column;
+		to chess_color type chess_color;
+	is
+		renderable_knight type knight at row column in chess_color;
+		add knight;
+	end;    // add_knight
+
+	verb add_queen
+		at integer row, column;
+		to chess_color type chess_color;
+	is
+		renderable_queen type queen at row column in chess_color;
+		add queen;
+	end;    // add_queen
+
+	verb add_king
+		at integer row, column;
+		to chess_color type chess_color;
+	is
+		renderable_king type king at row column in chess_color;
+		add king;
+	end;    // add_king
+
+	verb clear is
+		for integer row = 1 .. 8 do
+			for integer column = 1 .. 8 do
+				chess_pieces[row, column] is none;
+			end;
+		end;
+	end;    // clear
+
+	verb init is
+		clear;
+		// add white pieces
+		//
+		for integer column = 1 .. 8 do
+			add_pawn at 2 column to white;
+		end;
+		add_rook at 1 1 to white, at 1 8 to white;
+		add_bishop at 1 3 to white, at 1 6 to white;
+		add_knight at 1 2 to white, at 1 7 to white;
+		add_queen at 1 4 to white;
+		add_king at 1 5 to white;
+		// add black pieces
+		//
+		for integer column = 1 .. 8 do
+			add_pawn at 7 column to black;
+		end;
+		add_rook at 8 1 to black, at 8 8 to black;
+		add_bishop at 8 3 to black, at 8 6 to black;
+		add_knight at 8 2 to black, at 8 7 to black;
+		add_queen at 8 4 to black;
+		add_king at 8 5 to black;
+	end;    // new
+
+	shape piece
+		chess_piece type chess_piece;
+	is
+		(renderable type chess_piece) instance with
+			move to <0 0 thickness>;
+			
+			// set material
+			//
+			when chess_piece's chess_color is
+				black:
+					material is dark_material;
+				end;
+				white:
+					material is light_material;
+				end;
+			end;    // case
+		end;
+	end;    // piece
+
+	shape pieces is
+		for integer row = 1 .. 8 do
+			for integer column = 1 .. 8 do
+				chess_piece type chess_piece is
+					chess_pieces[row, column];
+				if some chess_piece then
+					piece chess_piece;
+				end;
+			end;
+		end;
+	end;    // pieces
+
+	shape instance is
+		// chess board
+		//
+		chess_board with
+			dark_material is static dark_material;
+			light_material is static light_material;
+			thickness = static thickness;
+		end;
+		// plane with magnify by 4; end;
+		// chess pieces
+		//
+		pieces;
+	end;    // instance
+
+	verb find_position
+		of integer reference row, column;
+		at vector location;
+	is
+		scalar x = location dot <1 0 0>;
+		scalar y = location dot <0 1 0>;
+		column = trunc (x + 5);
+		row = trunc (y + 5);
+	end;    // find_position
+
+	verb get_piece
+		chess_piece type reference chess_piece;
+		at integer row, column;
+	is
+		chess_piece is chess_pieces[row, column];
+	end;    // get_piece
+end;    // chess_set
+
+anim chess_set_anim
+	args type args;
+with
+	eye = <5 -10 10>;
+	lookat = <0 0 -1>;
+	double_buffer is on;
+	window_name is "Chess!";
+	args check;
+is
+	chess_set type chess_set with
+		//dark_material is plastic colored dark raspberry;
+		//light_material is plastic colored light orange;
+	end;
+	shape scene is
+		chess_set instance;
+	end;
+	chess_set init;
+	mouse_controlled_shape scene;
+end;    // chess_set_anim

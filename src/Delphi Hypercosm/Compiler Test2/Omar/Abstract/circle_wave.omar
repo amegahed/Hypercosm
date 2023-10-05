@@ -1,0 +1,149 @@
+{***************************************************************}
+{                          circle_wave.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do circle_wave_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+subject circle_wave
+extends
+    timed_actor
+does
+    objective shape form with
+        scalar offset = 0;
+        integer steps = 7;
+        scalar radius = 1;
+        scalar umin = 0;
+        scalar umax = 360;
+    end;    // form
+
+    shape instance;
+is
+    material type wave_material is metal colored aqua;
+
+
+    objective shape form with
+        scalar offset = 0;
+        integer steps = 7;
+        scalar radius = 1;
+        scalar umin = 0;
+        scalar umax = 360;
+    is
+        scalar phase = offset - trunc offset;
+        boolean orientation is trunc offset mod 2 = 0;
+        scalar stepsize = radius / steps;
+
+        sphere with
+            radius = stepsize * phase;
+            umin = static umin;
+            umax = static umax;
+            vmin = 0;
+            vmax = 90;
+            if orientation then
+                scale by -1 along <0 0 1>;
+            end;
+        end;
+        for integer counter = 1..(steps - 1) do
+            if even counter then
+
+                // crests
+                //
+                torus with
+                    inner_radius = (counter + phase - 1) * stepsize;
+                    outer_radius = (counter + phase) * stepsize;
+                    umin = static umin;
+                    umax = static umax;
+                    vmin = 0;
+                    vmax = 180;
+                    if orientation then
+                        scale by -1 along <0 0 1>;
+                    end;
+                end;
+            else
+
+                // troughs
+                //
+                torus with
+                    inner_radius = (counter + phase -
+                        1) * stepsize;
+                    outer_radius = (counter + phase) *
+                        stepsize;
+                    umin = static umin;
+                    umax = static umax;
+                    vmin = 180;
+                    vmax = 360;
+                    if orientation then
+                        scale by -1 along
+                        <0 0 1>;
+                    end;
+                end;
+            end;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            material is wave_material;
+            offset = static time * 3;
+        end;
+    end;    // instance
+end;    // circle_wave
+
+
+picture circle_wave_picture
+        args type args;
+with
+    eye = <1 -2 1>;
+    field_of_view = 65;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+    ambient = white * .8;
+    background = black;
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    sphere with
+        center = <0 0 .5>;
+        radius = .1;
+        magnify the shader_trans by .2;
+    end;
+    sphere with
+        center = <0 0 .7>;
+        radius = .025;
+        magnify the shader_trans by .2;
+    end;
+    circle_wave type's form with
+        steps = 10;
+        umax = 270;
+        magnify the shader_trans by .2;
+    end;
+end;    // circle_wave_picture
+
+
+anim circle_wave_anim
+    args type args;
+with
+    eye = <1 -2 1>;
+    field_of_view = 65;
+    double_buffer is on;
+    facets = 6;
+    edges is all;
+    args check;
+is
+    circle_wave type circle_wave;
+
+    mouse_controlled_actor circle_wave;
+end;    // circle_wave_anim

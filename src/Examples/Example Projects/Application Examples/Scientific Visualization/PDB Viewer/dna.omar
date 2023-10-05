@@ -1,0 +1,34 @@
+do dna_anim;
+
+include "3d.ores";
+include "anims.ores";
+include "collaborative_transformation_manipulators.ores";
+include "manipulator_groups.ores";
+include "collaborative_anims.ores";
+include "pdb_molecule.ores";
+
+shape adenosine is
+    pdb_molecule type molecule from "adenosine.pdb";
+    molecule instance;
+end;    // adenosine
+
+shape thymine is
+    pdb_molecule type molecule from "thymine.pdb";
+    molecule instance;
+end;    // thymine
+
+collaborative_transformation_manipulator type adenosine_manipulator
+    named "Adenosine" controlling adenosine {in "angstroms"};
+collaborative_transformation_manipulator type thymine_manipulator
+    named "Thymine" controlling thymine {in "angstroms"};
+manipulator type manipulators[] is [adenosine_manipulator thymine_manipulator];
+manipulator_group type manipulator_group using manipulators;
+
+anim dna_anim
+    args type args;
+with
+    eye = <-30 0 30>;
+    facets = 4;
+is    
+    collaborative_mouse_controlled_actor manipulator_group;
+end;    // dna_anim

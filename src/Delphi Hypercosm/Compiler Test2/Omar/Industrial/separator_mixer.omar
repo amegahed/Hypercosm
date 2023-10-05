@@ -1,0 +1,196 @@
+{***************************************************************}
+{                          separator_mixer.omar                 }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do seperator_mixer_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/pipes.ores";
+include "system/cabinet.omar";
+include "system/mixer.omar";
+
+
+subject seperator_mixer
+extends
+    timed_actor
+does
+    verb new with
+        scalar table_length = 15;
+        scalar table_width = 5;
+        scalar table_height = 4;
+        scalar pipe_radius = .2;
+        scalar globule_radius = .175;
+        scalar spacing = .5;
+        scalar rpm = 60;
+    end;    // new
+
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    // separator line's attributes
+    //
+    scalar table_length;
+    scalar table_width;
+    scalar table_height;
+
+    // animated plumbing attributes
+    //
+    scalar pipe_radius;
+    scalar globule_radius;
+    scalar spacing;
+
+    // mixers
+    //
+    mixer type mixer1 is none;
+    mixer type mixer2 is none;
+is
+    verb new with
+        scalar table_length = 15;
+        scalar table_width = 5;
+        scalar table_height = 4;
+        scalar pipe_radius = .2;
+        scalar globule_radius = .175;
+        scalar spacing = .5;
+        scalar rpm = 60;
+    is
+        // initialize separator line's attributes
+        //
+        seperator_mixer's table_length = table_length;
+        seperator_mixer's table_width = table_width;
+        seperator_mixer's table_height = table_height;
+
+        // initialize animated plumbing attributes
+        //
+        seperator_mixer's pipe_radius = pipe_radius;
+        seperator_mixer's globule_radius = globule_radius;
+        seperator_mixer's spacing = spacing;
+
+        // initialize mixers
+        //
+        new mixer1 with
+            left_label is "Kynar";
+            right_label is "Plasticizer";
+            pipe_radius = static pipe_radius;
+            seperator_mixer's globule_radius = globule_radius;
+            seperator_mixer's spacing = spacing;
+            rpm = static rpm;
+        end;
+        new mixer2 with
+            left is false;
+            right_label is "Acetone";
+            pipe_radius = static pipe_radius;
+            seperator_mixer's globule_radius = globule_radius;
+            seperator_mixer's spacing = spacing;
+            rpm = static rpm;
+        end;
+    end;    // new
+
+
+    verb advance
+        by scalar time_step;
+    is
+        timed_actor static advance by time_step;
+        mixer1 advance by time_step;
+        mixer2 advance by time_step;
+    end;    // step
+
+
+    shape mixers is
+        scalar mixer1_offset = -4;
+        scalar mixer2_offset = 1;
+        scalar collector_offset = 6;
+
+        mixer1 instance with
+            move to <mixer1_offset 0 0>;
+        end;
+        mixer2 instance with
+            move to <mixer2_offset 0 0>;
+        end;
+
+        // collection tank
+        //
+        cylinder with
+            end1 = <collector_offset 0 0>;
+            end2 = <collector_offset 0 3>;
+            radius = 1.5;
+            color = red;
+        end;
+
+        // pipes from left mixer to right mixer
+        //
+        s_pipeline from <mixer1_offset 0 1> to
+            <(mixer2_offset - 1) 0 3>
+        with
+            vertical_offset = .5;
+            radius = pipe_radius;
+            globule_radius = static globule_radius;
+            spacing = static spacing;
+            factor = .75;
+            offset = time;
+            color = white;
+        end;
+
+        // pipes from right mixer to storage
+        //
+        s_pipeline from <mixer2_offset 0 1> to
+            <(collector_offset - 1) 0 3>
+        with
+            vertical_offset = .5;
+            radius = pipe_radius;
+            globule_radius = static globule_radius;
+            spacing = static spacing;
+            factor = .75;
+            offset = time;
+            color = white;
+        end;
+    end;    // mixers
+
+
+    shape instance is
+        cabinet with
+            table_length = seperator_mixer's table_length;
+            table_width = seperator_mixer's table_width;
+            table_height = seperator_mixer's table_height;
+            top_width = table_width - 1.5;
+            magnify the shader_trans by 5;
+        end;
+
+        mixers with
+            move to <0 .5 table_height>;
+        end;
+    end;    // instance
+end;    // seperator_mixer
+
+
+anim seperator_mixer_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-15 -20 15>;
+    lookat = <0 0 5>;
+    yaw = -2;
+    pitch = -2;
+    window_name is "Separator Coating Material Mixer";
+    background = black;
+    args check;
+is
+    seperator_mixer type seperator_mixer;
+
+    shape environment is
+        plane with
+            magnify by 15;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_actor seperator_mixer in environment;
+end;    // seperator_mixer_anim

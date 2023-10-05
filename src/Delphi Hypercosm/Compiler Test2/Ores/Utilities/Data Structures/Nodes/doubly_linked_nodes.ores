@@ -1,0 +1,131 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm       doubly_linked_nodes.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a standard subject for nodes that can  		}
+{		be strung together into lists.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/nodes.ores";
+include "system/recycling.ores";
+
+
+subject doubly_linked_node
+extends
+	recycleable node
+does
+    // constructor
+    //
+	verb new
+		containing object type item;
+		from doubly_linked_node type prev is none;
+		to doubly_linked_node type next is none;
+	end;
+	
+	// attributes setting methods
+	//
+	verb set_node
+		containing object type item;
+		from doubly_linked_node type prev is none;
+		to doubly_linked_node type next is none;
+	end;
+	
+	// recycling methods
+	//
+	objective doubly_linked_list_node type question get_node
+		containing object type item;
+		from doubly_linked_node type prev is none;
+		to doubly_linked_node type next is none;
+	end;
+	reference verb recycle;
+has
+    // doubly linked list node attributes
+    //
+	public doubly_linked_node type prev is none;
+	public doubly_linked_node type next is none;
+is
+    // free list used for recycling
+    //
+    singly_linked_node type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+	verb new
+		containing object type item;
+		from doubly_linked_node type prev is none;
+		to doubly_linked_node type next is none;
+	is
+		node new containing item;
+		with doubly_linked_node do
+			its prev is prev;
+			its next is next;
+		end;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set_node
+		containing object type item;
+		from doubly_linked_node type prev is none;
+		to doubly_linked_node type next is none;
+	is
+		with doubly_linked_node do
+			its item is item;
+			its prev is prev;
+			its next is next;
+		end;
+	end;	// set_node
+	
+    
+    //
+	// recycling methods
+	//
+	
+	
+	objective doubly_linked_list_node type question get_node
+		containing object type item;
+		from doubly_linked_node type prev is none;
+		to doubly_linked_node type next is none;
+	is
+		if free_list is none then
+		
+			// create new node
+			//
+			answer new doubly_linked_node containing item from prev to next;
+		else
+			// get node from free list
+			//
+			doubly_linked_node type temp is free_list;
+			free_list is its next;
+			
+			temp set_node containing item from prev to next;
+			answer temp;
+		end;
+	end;	// get_node
+	
+	
+	reference verb recycle is	
+		item is none;
+		
+		// add node to free list
+		//
+		doubly_linked_node's next is free_list;
+		free_list is doubly_linked_node;
+		
+		doubly_linked_node is none;
+	end;		// recycle
+end;	// doubly_linked_node

@@ -1,0 +1,67 @@
+do tactile_braille_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/grid_meshes.ores";
+include "system/grids.ores";
+
+
+anim tactile_braille_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape braille_character is
+        shape bump is
+            sphere with
+                radius = .25;
+                vmin = 0;
+            end;
+            disk with
+                radius = .25;
+            end;
+        end;
+        
+        block with
+            move to <0 0 1>;
+            scale by 1.5 along <0 1 0>;
+            scale by .125 along <0 0 1>;
+        end;
+        
+        bump with
+            move to <-.5 1 .251>;
+        end;
+        bump with
+            move to <-.5 0 .251>;
+        end;
+        bump with
+            move to <.5 0 .251>;
+        end;
+        bump with
+            move to <-.5 -1 .251>;
+        end;
+    end;    // braille_character
+          
+    shape braille_shape is
+        write "making braille", ;
+        braille_character with
+            magnify by 2;
+        end;
+    end;    // braille_shape
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape braille_shape titled "Tactile Braille" in floor;
+end;    // tactile_braille_anim

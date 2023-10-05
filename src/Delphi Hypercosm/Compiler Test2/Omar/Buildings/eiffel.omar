@@ -1,0 +1,419 @@
+{***************************************************************}
+{                          eiffel.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do eiffel_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape eiffel_tower is
+    shape lightning_rod is
+        sphere with
+            center = <0 0 5>;
+            radius = 4;
+        end;
+        cylinder with
+            end1 = <0 0 15>;
+            end2 = <0 0 30>;
+            radius = 2;
+        end;
+        cylinder with
+            end1 = <0 0 15>;
+            end2 = <0 0 50>;
+            radius = 1;
+        end;
+    end;    // lightning_rod
+
+
+    shape lookout is
+        shape side is
+            cylinder with
+                end1 = <10 10 0>;
+                end2 = <5 5 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <10 -10 0>;
+                end2 = <10 10 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <10 -10 5>;
+                end2 = <10 10 5>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <10 10 0>;
+                end2 = <10 10 5>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <10 10 5>;
+                end2 = <0 0 15>;
+                radius = 1;
+            end;
+        end;    // side
+
+        side;
+        side with
+            rotate by 90 around <0 0 1>;
+        end;
+        side with
+            rotate by 180 around <0 0 1>;
+        end;
+        side with
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // lookout
+
+
+    shape upper_deck is
+        shape side is
+            cylinder with
+                end1 = <20 20 0>;
+                end2 = <15 15 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <20 -20 0>;
+                end2 = <20 20 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <20 -20 5>;
+                end2 = <20 20 5>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <20 20 0>;
+                end2 = <20 20 5>;
+                radius = 1;
+            end;
+        end;    // side
+
+        side;
+        side with
+            rotate by 90 around <0 0 1>;
+        end;
+        side with
+            rotate by 180 around <0 0 1>;
+        end;
+        side with
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // upper_deck
+
+
+    shape lower_deck is
+        shape side is
+            cylinder with
+                end1 = <40 40 0>;
+                end2 = <30 30 0>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <40 -40 0>;
+                end2 = <40 40 0>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <40 -40 10>;
+                end2 = <40 40 10>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <40 40 0>;
+                end2 = <40 40 10>;
+                radius = 2;
+            end;
+        end;    // side
+
+        side;
+        side with
+            rotate by 90 around <0 0 1>;
+        end;
+        side with
+            rotate by 180 around <0 0 1>;
+        end;
+        side with
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // lower_deck
+
+
+    shape tower_top is
+        shape side is
+            cylinder with
+                end1 = <10 -10 100>;
+                end2 = <10 10 100>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <15 15 50>;
+                end2 = <5 5 150>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <5 -5 150>;
+                end2 = <5 5 150>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <15 15 50>;
+                end2 = <5 -5 150>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <30 30 0>;
+                end2 = <15 15 50>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <30 -30 0>;
+                end2 = <15 15 50>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <15 -15 50>;
+                end2 = <30 30 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <30 -10 0>;
+                end2 = <15 0 50>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <30 10 0>;
+                end2 = <15 0 50>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <15 15 50>;
+                end2 = <15 -15 50>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <15 0 50>;
+                end2 = <5 0 150>;
+                radius = 1;
+            end;
+        end;    // side
+
+        side;
+        side with
+            rotate by 90 around <0 0 1>;
+        end;
+        side with
+            rotate by 180 around <0 0 1>;
+        end;
+        side with
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // tower_top
+
+
+    shape bottom is
+        shape side is
+            cylinder with
+                end1 = <30 -30 50>;
+                end2 = <30 -60 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <20 -35 40>;
+                end2 = <60 -60 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <30 30 50>;
+                end2 = <30 60 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <20 35 40>;
+                end2 = <60 60 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <35 -20 40>;
+                end2 = <60 -60 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <35 20 40>;
+                end2 = <60 60 0>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <60 60 0>;
+                end2 = <30 30 50>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <30 30 50>;
+                end2 = <30 -30 50>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <30 -60 0>;
+                end2 = <20 -35 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <60 -30 0>;
+                end2 = <35 -20 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <60 30 0>;
+                end2 = <25 20 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <35 20 40>;
+                end2 = <35 -20 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <30 60 0>;
+                end2 = <20 35 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <60 -60 0>;
+                end2 = <60 -30 0>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <60 60 0>;
+                end2 = <60 30 0>;
+                radius = 3;
+            end;
+            cylinder with
+                end1 = <30 -30 50>;
+                end2 = <20 -35 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <30 -30 50>;
+                end2 = <35 -20 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <30 30 50>;
+                end2 = <35 20 40>;
+                radius = 2;
+            end;
+            cylinder with
+                end1 = <30 30 50>;
+                end2 = <20 35 40>;
+                radius = 2;
+            end;
+        end;    // side
+
+        side;
+        side with
+            rotate by 90 around <0 0 1>;
+        end;
+        side with
+            rotate by 180 around <0 0 1>;
+        end;
+        side with
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // bottom
+
+
+    shape stuff is
+        bottom;
+        tower_top with
+            move to <0 0 50>;
+        end;
+        lower_deck with
+            move to <0 0 50>;
+        end;
+        upper_deck with
+            move to <0 0 100>;
+        end;
+        lookout with
+            move to <0 0 200>;
+        end;
+        lightning_rod with
+            move to <0 0 200>;
+        end;
+    end;    // stuff
+
+    // finally...
+    //
+    stuff with
+        material is golden;
+        scale by 1.25 along <0 0 1>;
+    end;
+end;    // eiffel_tower
+
+
+picture eiffel_picture with
+    field_of_view = 55;
+    eye = <100 -550 300>;
+    lookat = <80 0 110>;
+    projection is fisheye;
+    eye = <1 1 2>;
+    field_of_view = 180;
+    field_of_view = 60;
+    eye = <0 -400 300>;
+    lookat = <0 0 150>;
+    width = trunc (height * .75);
+    facets = 4;
+
+    {
+        shading = pixel;
+        shadows = on;
+        }
+is
+    distant_light from <.3 -.5 1>;
+    eiffel_tower with
+        material is chalk colored light orange;
+        rotate by 20 around <0 0 1>;
+    end;
+    ring with
+        color = light grey;
+        center = <0 0 1>;
+        normal = <0 0 1>;
+        inner_radius = 30;
+        outer_radius = 40;
+    end;
+    plane with
+        color = dark green;
+        magnify by 80;
+    end;
+end;    // eiffel_picture
+
+
+anim eiffel_anim
+    args type args;
+with
+    eye = <100 -500 300>;
+    lookat = <0 0 150>;
+    double_buffer is on;
+    facets = 2;
+    args check;
+is
+    shape scene is
+        eiffel_tower;
+        plane with
+            color = evergreen;
+            magnify by 50;
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // eiffel_anim

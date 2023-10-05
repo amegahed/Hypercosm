@@ -1,0 +1,60 @@
+{***************************************************************}
+{                          parallelogram.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do parallelogram_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/arrow_shapes.ores";
+
+
+shape labelled_parallelogram is
+	shape parallelogram_primitive is
+	    parallelogram with
+	        move to <0 0 -.01>;
+	    end;
+	end;
+	
+	outlined parallelogram_primitive with
+		material is glass colored parallelogram_color;
+	end;
+	
+    mark at <-1 -1 0>;
+    futura_l_word "VERTEX" with
+        move to <-1 -1.15 0>;
+    end;
+    arrow from <-1 -1 0> to <1 -1 0>;
+    arrow from <-1 -1 0> to <-1 1 0>;
+    futura_l_word "SIDE1" with
+        move to <1 -1.15 0>;
+    end;
+    futura_l_word "SIDE2" with
+        move to <-1 1.15 0>;
+    end;
+end;    // labelled_parallelogram
+
+
+anim parallelogram_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Parallelogram Primitive";
+    args check;
+is
+	shape scene is
+		labelled_parallelogram;
+		axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // parallelogram_anim

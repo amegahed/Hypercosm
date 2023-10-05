@@ -1,0 +1,72 @@
+{***************************************************************}
+{                          ball.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bouncing_ball;
+
+
+include "system/3d.ores";
+const vector gravity = <0 0 -9.8066>;
+
+{acceleration due to gravity}
+const scalar ballradius = 1;
+
+
+shape ground is
+    plane with
+        color = blue;
+        magnify by 20;
+        move to <0 0 (-ballradius)>;
+    end;
+end;    // ground
+
+
+picture ball_picture with
+    vector location = <0 0 0>;
+
+    eye = <5 -20 15>;
+    lookat = <5 4 0>;
+is
+    distant_light from <.3 -.5 1>;
+    sphere with
+        center = location;
+        color = red;
+        radius = ballradius;
+    end;
+    ground with
+        render_mode is wireframe;
+    end;
+end;    // ball_picture
+
+
+anim bouncing_ball with
+    double_buffer is on;
+is
+    vector balllocation = <0 0 10>;
+    vector ballvelocity = <.1 0 0>;
+    scalar time = 0;
+    scalar balllocationz;
+    scalar ballvelocityz;
+
+    while (time < 150) do
+        ballvelocity = ballvelocity + gravity / 80;
+        balllocation = balllocation + ballvelocity;
+        balllocationz = balllocation dot <0 0 1>;
+        if (balllocationz < 0) then
+            balllocation = balllocation - (<0 0 1.01> *
+                balllocationz);
+            ballvelocityz = ballvelocity dot <0 0 1>;
+            ballvelocity = ballvelocity - (<0 0 1.9> *
+                ballvelocityz);
+        end;
+        ball_picture with
+            location = balllocation;
+        end;
+        time = time + 1;
+    end;
+end;    // bouncing_ball

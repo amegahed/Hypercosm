@@ -1,0 +1,35 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            boolean.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of usage of        }
+{       the boolean data type in the OMAR language.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do boolean_example;
+
+// boolean constant
+//
+boolean found is false;
+// boolean comparison expression
+//
+boolean overflow is (100 > 10);
+// boolean logical expressions
+//
+boolean done is found or overflow;
+boolean ok is found and not overflow;
+
+verb boolean_example is
+	write "This example declares, assigns, and prints", ;
+	write "values for a series of boolean variables:", ;
+	write;
+	
+	write "found is ", found, ;
+	write "overflow is ", overflow, ;
+	write "done is ", done, ;
+	write "ok is ", ok, ;
+end;    // boolean_example

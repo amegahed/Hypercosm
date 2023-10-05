@@ -1,0 +1,127 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            swapping.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some useful standard little methods for        }
+{       swapping values.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***************************************************************}
+{               swapping methods for enumerated types           }
+{***************************************************************}
+
+verb swap_booleans
+	boolean reference boolean1;
+	and boolean reference boolean2;
+is
+	boolean temp is boolean1;
+	boolean1 is boolean2;
+	boolean2 is temp;
+end;    // swap_booleans
+
+verb swap_chars
+	char reference char1;
+	and char reference char2;
+is
+	char temp is char1;
+	char1 is char2;
+	char2 is temp;
+end;    // swap_chars
+
+{***************************************************************}
+{               swapping methods for integer types              }
+{***************************************************************}
+
+verb swap_bytes
+	byte reference byte1;
+	and byte reference byte2;
+is
+	byte temp = byte1;
+	byte1 = byte2;
+	byte2 = temp;
+end;    // swap_bytes
+	
+verb swap_shorts
+	short reference short1;
+	and short reference short2;
+is
+	short temp = short1;
+	short1 = short2;
+	short2 = temp;
+end;    // swap_shorts
+
+verb swap_integers
+	integer reference integer1;
+	and integer reference integer2;
+is
+	integer temp = integer1;
+	integer1 = integer2;
+	integer2 = temp;
+end;    // swap_integers
+
+verb swap_longs
+	long reference long1;
+	and long reference long2;
+is
+	long temp = long1;
+	long1 = long2;
+	long2 = temp;
+end;    // swap_longs
+
+{***************************************************************}
+{               swapping methods for scalar types               }
+{***************************************************************}
+
+verb swap_scalars
+	scalar reference scalar1;
+	and scalar reference scalar2;
+is
+	scalar temp = scalar1;
+	scalar1 = scalar2;
+	scalar2 = temp;
+end;    // swap_scalars
+
+verb swap_doubles
+	double reference double1;
+	and double reference double2;
+is
+	double temp = double1;
+	double1 = double2;
+	double2 = temp;
+end;    // swap_doubles
+
+verb swap_complex
+	complex reference complex1;
+	and complex reference complex2;
+is
+	complex temp = complex1;
+	complex1 = complex2;
+	complex2 = temp;
+end;    // swap_complex
+
+verb swap_vectors
+	vector reference vector1;
+	and vector reference vector2;
+is
+	vector temp = vector1;
+	vector1 = vector2;
+	vector2 = temp;
+end;    // swap_vectors
+
+{***************************************************************}
+{               swapping methods for object types               }
+{***************************************************************}
+
+verb swap_objects
+	object type reference object1;
+	and object type reference object2;
+is
+	object type temp is object1;
+	object1 is object2;
+	object2 is temp;
+end;    // swap_objects

@@ -1,0 +1,49 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          rounded_rod.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       rounded rod.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_shapes.ores";
+
+shape rounded_rod with
+	vector end1 = <0 0 -1>;
+	vector end2 = <0 0 1>;
+	scalar radius = 1;
+	scalar umin = 0, umax = 360;
+is
+	vector axis = end1 - end2;
+	
+	cylinder with
+		radius = static radius;
+		end1 = static end1;
+		end2 = static end2;
+		umin = static umin;
+		umax = static umax;
+	end;
+	sphere with
+		radius = static radius;
+		direct from <0 0 1> to axis;
+		move to end1;
+		umin = static umin;
+		umax = static umax;
+		vmin = 0;
+		vmax = 90;
+	end;
+	sphere with
+		radius = static radius;
+		direct from <0 0 1> to axis;
+		move to end2;
+		umin = static umin;
+		umax = static umax;
+		vmin = -90;
+		vmax = 0;
+	end;
+end;    // rounded_rod

@@ -1,0 +1,62 @@
+<html>
+<head>
+<link href="styles/text_styles.css" rel="stylesheet" type="text/css">
+<link href="styles/table_styles.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+body {
+	background-color: #FFFFFF;
+}
+-->
+</style>
+<title>Untitled</title>
+</head>
+<body>
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="1"><table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><span class="label">
+            <input name="radiobutton" type="radio" value="radiobutton" onClick="setColor('red')">
+            Red</span></td>
+          <td><span class="label">
+            <input name="radiobutton" type="radio" value="radiobutton" onClick="setColor('green')">
+            Green </span></td>
+          <td><span class="label">
+            <input name="radiobutton" type="radio" value="radiobutton" onClick="setColor('blue')">
+            Blue </span></td>
+          <td><span class="label">
+            <input name="radiobutton" type="radio" value="radiobutton" onClick="setColor('orange')">
+            Orange </span></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td width="100%" height="100%"><div id="applet" style="width:100%; height:100%; border: 0px"></div></td>
+  </tr>
+</table>
+</body>
+<script language="javascript" type="text/javascript" src="scripts/utilities/web_browser_sniffer.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/web_browser_utils.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/web_browser_plug_ins.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/utilities/hc_checkforplayer.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/components/component.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/applet/hc_applet.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/applet/hc_scriptable_applet.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/resources/hc_transparency_resources.js"></script>
+<script language="javascript" type="text/javascript" src="scripts/resources/hc_default_resources.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+var applet = new HCScriptableApplet("applet", "applet/javascript_message_test.hcvm", getDefaultResources("applet/resources"));
+function setColor(color) {
+ 
+  // send message to applet
+  //
+  applet.sendMessage("-color " + color);
+}
+function receiveMessage(message) {
+  // alert(message);
+}
+//]]>
+</script>
+</html>

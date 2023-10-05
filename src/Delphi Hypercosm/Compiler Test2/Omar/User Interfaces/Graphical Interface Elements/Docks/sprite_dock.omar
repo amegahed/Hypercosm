@@ -1,0 +1,44 @@
+do animated_popup_dock_anim;
+
+
+include "system/3d.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/disappearing_popup_dock.ores";
+include "system/sprite_selector.ores";
+
+
+anim animated_popup_dock_anim
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	sprite_selector type rotate_selector poster "rotate_icon.gif";
+	sprite_selector type zoom_selector poster "zoom_icon.gif";
+	sprite_selector type pan_selector poster "pan_icon.gif";
+	sprite_selector type help_selector poster "help_icon.gif";	
+	sprite_selector type smooth_selector poster "smooth_icon.gif";
+	sprite_selector type flat_selector poster "flat_icon.gif";
+	sprite_selector type outline_selector poster "outline_icon.gif";
+	sprite_selector type wireframe_selector poster "wireframe_icon.gif";
+
+	components type components is [rotate_selector zoom_selector pan_selector 
+		smooth_selector flat_selector outline_selector wireframe_selector help_selector];
+		
+	dock type dock is (new disappearing_popup_dock containing components with
+		motion is rotate;
+		randomized_motion is false;
+	);
+	
+	picture scene is
+		sphere;
+		default_lights;
+		default_background at 100;
+		dock overlay at 10;
+	end;	// scene
+
+	while true do
+		scene;
+	end;
+end;	// animated_popup_dock_anim

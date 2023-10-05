@@ -1,0 +1,49 @@
+do translated_3ds_materials_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/rectangular_grid.ores";
+include "system/message_listening_multi_actor.ores";
+// 3ds materials
+//
+include "3ds_standard_material.omar";
+include "3ds_textured_standard_material.omar";
+include "3ds_standard_animated_material.omar";
+include "3ds_textured_standard_animated_material.omar";
+include "3ds_animated_opacity.omar";
+
+anim translated_3ds_materials_anim 
+	args type args;
+with
+	eye = <5 -10 5> * 25;
+	lookat = <0 0 12.5>;
+	field_of_view = 32;
+	background_name is none;
+	background = light grey;
+	args check;
+is
+	shape environment is
+		rectangular_grid with
+			h_steps = 25;
+			v_steps = 25;
+			magnify by 50;
+			render_mode is wireframe;
+			color = grey;
+		end;
+	end;    // environment
+	
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_tessellated_shape of standard_material_scene) 
+		named "standard_material";
+	multi_actor add_actor (new animated_tessellated_shape of textured_standard_material_scene) 
+		named "textured_standard_material";
+	multi_actor add_actor (new animated_tessellated_shape of standard_animated_material_scene) 
+		named "standard_animated_material";
+	multi_actor add_actor (new animated_tessellated_shape of textured_standard_animated_material_scene) 
+		named "textured_standard_animated_material";
+	multi_actor add_actor (new animated_tessellated_shape of animated_opacity_scene) 
+		named "animated_opacity";
+	  
+	mouse_controlled_actor multi_actor within new static_shape of environment;
+end;    // translated_3ds_materials_anim

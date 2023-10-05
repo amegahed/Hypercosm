@@ -1,0 +1,55 @@
+{***************************************************************}
+{                          views.ores                           }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{ 		Contains standard procedures for setting standard 		}
+{		views.  												}
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/native_viewing.ores";
+include "system/native_display.ores";
+include "system/vectors.ores";
+
+
+verb ortho_view 
+    from scalar left = -1, bottom = -1;
+    to scalar right = 1, top = 1; 
+is
+    scalar screen_aspect_ratio;
+    scalar window_aspect_ratio;
+    scalar ortho_aspect_ratio;
+    scalar ortho_height, ortho_width;
+    scalar x_center, y_center;
+    scalar diagonal;
+    integer i;
+
+    x_center = (left + right) / 2;
+    y_center = (bottom + top) / 2;
+    ortho_width = (right - left);
+    ortho_height = (top - bottom);
+    screen_aspect_ratio = screen_height / screen_width;
+    window_aspect_ratio = (height / width);
+    ortho_aspect_ratio = ortho_height / ortho_width;
+    aspect_ratio = (screen_aspect_ratio / window_aspect_ratio) * 
+        ortho_aspect_ratio;
+    diagonal = sqrt (sqr (right - left) + sqr (bottom - top));
+    i = sign (right - left) * sign (top - bottom) * 2;
+
+    // set viewing parameters
+    //
+    eye = <x_center y_center i>;
+    lookat = <x_center y_center 0>;
+    projection is orthographic;
+    field_of_view = diagonal;
+    roll = 0;
+end;    // ortho_view
+
+
+verb raster_view is
+    ortho_view from 0 height to width 0;
+end;    // raster_view

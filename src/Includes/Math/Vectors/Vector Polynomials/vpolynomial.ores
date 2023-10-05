@@ -1,0 +1,123 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          vpolynomial.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the subject "vpolynomial" which can be used    }
+{       to evaluate 3-dimensional polynomial functions of       }
+{       arbitrary degree (linear, cubic, etc.)                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+{***************************************************************}
+{       This class is used to represent vector polynomial       }
+{       functions of the form:                                  }
+{                                                               }
+{   x = cx[n] * x^(n) + cx[n - 1] * x^(n - 1) + ... cx[0] * 1   }
+{   y = cy[n] * y^(n) + cy[n - 1] * x^(n - 1) + ... cy[0] * 1   }
+{   z = cz[n] * z^(n) + cz[n - 1] * z^(n - 1) + ... cz[0] * 1   }
+{                                                               }
+{   where cx[0..n] are the x coefficients for each degree,      }
+{         cy[0..n] are the y coefficients for each degree,      }
+{   and   cz[0..n] are the z coefficients for each degree.      }
+{                                                               }
+{***************************************************************}
+
+subject vpolynomial 
+extends
+	vector[]
+does
+	// getting methods
+	//
+	vector question get_value
+		at scalar t;
+	end;
+	vector[] question get_values 
+		in integer steps;
+	end;
+	vpolynomial type question get_derivative;
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// getting methods
+	//
+	
+	vector question get_value
+		at scalar t;
+	is
+		vector sum = <0 0 0>;
+		scalar tn = 1;
+		for integer power = 0 .. max vpolynomial do
+			sum = itself + vpolynomial[power] * tn; 
+			tn = itself * t;
+		end;
+		answer sum; 
+	end;    // get_value
+ 
+	vector[] question get_values 
+		in integer steps;
+	is
+		if steps > 0 then
+			vector curve[0 .. steps]; 
+	
+			for integer step = 0 .. steps do
+				scalar t = step / steps;
+				curve[step] = vpolynomial get_value at t;
+			end;
+	
+			answer curve;
+		else
+			answer none;
+		end;
+	end;    // get_values
+
+	vpolynomial type question get_derivative is
+		vpolynomial type vpolynomial2;
+		dim vpolynomial2[0 .. max vpolynomial - 1];
+		for integer power = 1 .. max vpolynomial do
+			vector vcoefficient = vpolynomial[power];
+			vpolynomial2[power - 1] = vcoefficient * power; 
+		end;
+		answer vpolynomial2;
+	end;    // get_derivative
+
+	verb print_component
+		char name[];
+		vector axis;
+	is
+		integer power = max vpolynomial;
+		
+		// write scalar polynomial
+		//
+		while power > 1 do
+			write vpolynomial[power] dot axis, name, "^", power, 
+				" + ";
+			power = itself - 1;
+		end;
+		if max vpolynomial >= 1 then
+			write vpolynomial[power] dot axis, name, " + ";
+		end;
+		if max vpolynomial >= 0 then
+			write vpolynomial[0] dot axis, ;
+		end;
+	end;    // print_component
+
+	//
+	// printing methods
+	//
+	
+	verb print is
+		print_component "x" (<1 0 0>);
+		write;
+		print_component "y" (<0 1 0>);
+		write;
+		print_component "z" (<0 0 1>);
+		write;
+	end;    // print
+end;    // vpolynomial

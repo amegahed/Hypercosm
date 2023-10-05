@@ -1,0 +1,150 @@
+{***************************************************************}
+{                          platonic.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+//do platonic_solids_anim;
+do platonic_solids_picture;
+
+
+include "system/3d.ores";
+include "system/solids.ores";
+include "system/surfaces.ores";
+include "system/tetrahed.omar";
+include "system/hexahed.omar";
+include "system/octahed.omar";
+include "system/dodecahed.omar";
+include "system/icosahed.omar";
+
+
+shape platonic_solids with
+    boolean show_vertices is on;
+    boolean show_edges is on;
+    boolean show_faces is on;
+is
+    scalar angle = 360 / 5;
+    scalar d = 2;
+
+    flat marble grey tetrahedron with
+        show_vertices is static show_vertices;
+        show_edges is static show_edges;
+        show_faces is static show_faces;
+        move to <d 0 0>;
+    end;
+    flat marble light blue hexahedron with
+        show_vertices is static show_vertices;
+        show_edges is static show_edges;
+        show_faces is static show_faces;
+        move to <d 0 0>;
+        rotate by angle around <0 0 1>;
+    end;
+    flat marble brown octahedron with
+        show_vertices is static show_vertices;
+        show_edges is static show_edges;
+        show_faces is static show_faces;
+        move to <d 0 0>;
+        rotate by (angle * 2) around <0 0 1>;
+    end;
+    flat marble purple dodecahedron with
+        show_vertices is static show_vertices;
+        show_edges is static show_edges;
+        show_faces is static show_faces;
+        move to <d 0 0>;
+        rotate by (angle * 3) around <0 0 1>;
+    end;
+    flat marble gold icosahedron with
+        show_vertices is static show_vertices;
+        show_edges is static show_edges;
+        show_faces is static show_faces;
+        move to <d 0 0>;
+        rotate by (angle * 4) around <0 0 1>;
+    end;
+end;    // platonic_solids
+
+
+shape bubbles is
+    scalar angle = 360 / 5;
+    scalar d = 2;
+
+    transparent white sphere with
+        move to <d 0 0>;
+    end;
+    transparent white sphere with
+        move to <d 0 0>;
+        rotate by angle around <0 0 1>;
+    end;
+    transparent white sphere with
+        move to <d 0 0>;
+        rotate by (angle * 2) around <0 0 1>;
+    end;
+    transparent white sphere with
+        move to <d 0 0>;
+        rotate by (angle * 3) around <0 0 1>;
+    end;
+    transparent white sphere with
+        move to <d 0 0>;
+        rotate by (angle * 4) around <0 0 1>;
+    end;
+end;    // bubbles
+
+
+picture platonic_solids_picture with
+    eye = <0 -10 10>;
+    lookat = <0 0 .5>;
+    ambient = white * .4;
+    field_of_view = 40;
+    background = sky_blue;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+
+    {
+        save_pictures is on;
+        show_pictures is off;
+        antialiasing is on;
+        supersampling = 4;
+    }
+is
+    distant_light from <.3 -.5 1> with
+        brightness = .75;
+    end;
+    spot_light towards <-40 30 -40> with
+        move to <40 -30 40>;
+        brightness = 45;
+        angle = 8;
+    end;
+    sphere with
+        material is copper;
+        center = <0 0 1>;
+    end;
+    platonic_solids with
+        move to <0 0 1>;
+    end;
+    bubbles with
+        move to <0 0 1>;
+    end;
+
+    plane with
+        magnify by 2;
+        magnify the shader_trans by 15;
+        rotate the shader_trans by 30 around <0 0 1>;
+    end;
+end;    // platonic_solids_picture
+
+
+anim platonic_solids_anim
+    args type args;
+with
+    eye = <0 -10 10>;
+    lookat = <0 0 .5>;
+    field_of_view = 40;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture platonic_solids_picture;
+end;    // platonic_solids_anim

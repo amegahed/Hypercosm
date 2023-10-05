@@ -1,0 +1,51 @@
+do arc_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_arc.ores";
+include "system/3ds_extrude.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/3ds_cameras.ores";
+	
+	
+anim arc_anim
+is
+	material type hyper_material is plastic poster "hyper.jpg";
+	
+	shape scene with
+		scalar time = 0;
+	is	
+		translated_3ds_arc with
+		    radius = 50;
+		    pie_slice is true;
+		    from_angle = 0;
+			to_angle = 240 + sin(time * 90) * 120;
+		    steps = 8;
+		    
+		    translated_3ds_extrude with
+                amount = 50;
+                segments = 3;
+                cap_start is true;
+                cap_end is true;
+                capping_kind is morph;
+                output_kind is mesh;
+                gen_mapping_coords is true;
+                gen_mat_IDs is true;
+                use_shape_IDs is false;
+                smooth is true;
+        		active is true;
+		    end;
+		    
+		    material is hyper_material;
+    	end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Extruded Arc" with
+		auto_camera is true;
+	end;
+end;	// arc_anim

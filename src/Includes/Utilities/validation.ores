@@ -1,0 +1,27 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           validation.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some behavior definitions for validating       }
+{       objects.                                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective validifyable
+does
+	boolean question is_valid;
+end;    // validifyable
+
+adjective validateable
+does
+	verb validate;
+end;    // validateable
+
+adjective invalidateable
+does
+	verb invalidate;
+end;    // invalidateable

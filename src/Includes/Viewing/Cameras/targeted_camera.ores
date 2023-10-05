@@ -1,0 +1,127 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         targeted_camera.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard camera control definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/camera.ores";
+
+subject targeted_camera
+extends
+	camera
+does
+	// constructor
+	//
+	verb new
+		from vector location;
+		to vector lookat = <0 0 0>;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens parameters
+		//
+		scalar field_of_view = 60;
+		
+		// tilt parameters
+		//
+		scalar pitch = 0;
+		scalar yaw = 0;
+		scalar roll = 0;
+	end;
+
+	// querying methods
+	//
+	objective targeted_camera type question get_current;
+		
+	// rendering methods
+	//
+	shape instance;
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		from vector location;
+		to vector lookat = <0 0 0>;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens parameters
+		//
+		scalar field_of_view = 60;
+		
+		// tilt parameters
+		//
+		scalar pitch = 0;
+		scalar yaw = 0;
+		scalar roll = 0;
+	is
+		// call superclass constructor
+		//
+		camera new at location towards (lookat - location) oriented by up_vector with
+			
+			// set camera lens and focus parameters
+			//          
+			field_of_view = static field_of_view;
+			distance = vlength of (lookat - location);
+			
+			// set tilt parameters
+			//
+			pitch = static pitch;
+			yaw = static yaw;
+			roll = static roll;         
+		end;
+	end;    // new
+	
+	//
+	// querying methods
+	//
+	
+	objective targeted_camera type question get_current is
+	
+		// create camera using current global viewing attributes
+		//
+		answer (new targeted_camera from global eye to global lookat
+			oriented by <0 0 1>
+		with
+			field_of_view = global field_of_view;
+		);
+	end;    // get_current
+	
+	//
+	// rendering methods
+	//
+	
+	shape instance is
+		vector lookat = get_lookat;
+		
+		viewpoint static instance;
+		cone with
+			end1 = location;
+			end2 = lookat;
+			radius1 = 0;
+			radius2 = tan (field_of_view / 2) * distance;
+			render_mode is wireframe;
+			color = white;
+		end;
+		mark at lookat;
+	end;    // instance
+			
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		write "targeted camera at ", get_location, " towards ", get_direction, 
+			" oriented by ", get_up_vector, " with fov = ", field_of_view, ;
+	end;    // print
+end;    // targeted_camera

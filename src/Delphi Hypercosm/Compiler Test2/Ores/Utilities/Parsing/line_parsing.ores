@@ -1,0 +1,76 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  line_parsing.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a selection of text parsing utilities.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/strings.ores";
+
+
+verb skip_blank_lines
+
+    // text position
+    //
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+    of strings type text;
+is
+	if some text then		
+	    while (line_number >= min text) and (line_number <= max text)
+	    	and not some text[line_number]
+	    do
+	    	// go to next line
+	    	//
+	        line_number = itself + 1;
+        
+			if (line_number >= min text) and (line_number <= max text)
+				and some text[line_number]
+			then
+		    	char_number = min text[line_number];
+		    else
+		    	char_number = 1;
+	        end;
+	    end;
+    end;
+end;    // skip_blank_lines
+
+
+verb parse_next_line
+	string type reference string;
+
+    // text position
+    //    
+    at column integer reference char_number;
+    on line integer reference line_number;
+    
+    // source text
+    //
+    of strings type text;
+is
+	// goto beginning of line
+	//
+	if char_number <> min text[line_number] then
+		line_number = itself + 1;
+		char_number = min text[line_number];
+	end;
+	
+	string is none;
+	string = text[line_number];
+	
+	// goto next line
+	//
+	line_number = itself + 1;
+	char_number = min text[line_number];	
+end;	// parse_next_line
+
+

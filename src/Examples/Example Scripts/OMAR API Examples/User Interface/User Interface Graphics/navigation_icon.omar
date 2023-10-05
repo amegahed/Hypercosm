@@ -1,0 +1,88 @@
+do navigation_icon_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+anim navigation_icon_anim with
+	width = 512;
+	height = 512;
+	eye = <50 -50 50>;
+	projection is perspective;
+	field_of_view = 2;
+	facets = 8;
+	background_name is none;
+	background = white;
+is
+	shape triple_rotate_arrow is
+		scalar gap = 0;
+		material type arrow_material is chalk colored white poster "horizontal_arrow.gif";
+		
+		cylinder with
+			umin = 0 + gap;
+			umax = 120 - gap;
+			radius = 1;
+			scale by .75 along <0 0 1>;
+			material is arrow_material;
+		end;
+		cylinder with
+			umin = 120 + gap;
+			umax = 240 - gap;
+			radius = 1;
+			scale by .75 along <0 0 1>;
+			material is arrow_material;
+		end;
+		cylinder with
+			umin = 240 + gap;
+			umax = 360 - gap;
+			radius = 1;
+			scale by .75 along <0 0 1>;
+			material is arrow_material;
+		end;
+	end;	// triple_rotate_arrow
+	shape double_rotate_arrow is
+		scalar gap = 0;
+		
+		cylinder with
+			umin = 180 + gap;
+			umax = 360 - gap;
+			radius = 1;
+			scale by -.5 along <0 0 1>;
+			scale by -1 along <0 1 0>;
+			material is plastic colored white poster "right_arrow.gif";
+		end;
+		cylinder with
+			umin = 180 + gap;
+			umax = 360 - gap;
+			radius = 1;
+			scale by -.5 along <0 0 1>;
+			material is plastic colored white poster "right_arrow.gif";
+		end;
+	end;	// double_rotate_arrow
+	
+	shape scene is
+		block with
+			magnify by .5;
+			material is plastic colored orange;
+		end;
+		triple_rotate_arrow with
+			rotate by -45 around <0 0 1>;
+		end;
+		
+		parallelogram with
+			magnify by .75;
+			material is plastic colored white poster "translate_arrow.gif";
+			orient from <0 0 1> to <1 -1 1>;
+			move to <.25 -.25 .25>;
+			//rotate by -45 around <0 0 1>;
+		end;
+		
+        {
+		triple_rotate_arrow with
+			rotate by -45 around <0 0 1>;
+			rotate by 90 around <0 1 0>;
+		end;
+		}
+	end;
+		
+	mouse_controlled_shape scene;
+end;	// navigation_icon_anim

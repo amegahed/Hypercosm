@@ -1,0 +1,396 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  3ds_donut.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains donut definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+
+include "system/3ds_shape.ores";
+include "system/3ds_editable_spline.ores";
+include "system/3ds_modifier_stacks.ores";
+
+
+subject translated_3ds_donut
+extends
+    translated_3ds_collapsable translated_3ds_shape
+does
+    // constructor
+    //
+	verb new with
+
+	    // geometry parameters
+	    //
+        scalar radius1 = .5;
+        scalar radius2 = 1;
+        	
+        // shape parameters
+        //
+        integer steps = 4;
+        boolean optimize is false;
+        boolean adaptive is false;
+        boolean renderable is false;
+        scalar thickness = 1;
+        
+        // texturing parameters
+        // 
+        boolean gen_mapping_coords is false;
+	end;
+	
+    // attributes setting method
+    //
+	verb set with
+
+	    // geometry parameters
+	    //
+        scalar radius1 = .5;
+        scalar radius2 = 1;
+        	
+        // shape parameters
+        //
+        integer steps = 4;
+        boolean optimize is false;
+        boolean adaptive is false;
+        boolean renderable is false;
+        scalar thickness = 1;
+        
+        // texturing parameters
+        // 
+        boolean gen_mapping_coords is false;
+	end;
+	
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_donut type question get;
+	reference verb recycle;	
+has
+    // geometry attributes
+    //
+    scalar radius1;
+    scalar radius2;
+    
+private	
+	// recycling attributes
+	//
+	translated_3ds_donut type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_donut type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+
+	    // geometry parameters
+	    //
+        scalar radius1 = .5;
+        scalar radius2 = 1;
+        
+        // shape parameters
+        //
+        integer steps = 4;
+        boolean optimize is false;
+        boolean adaptive is false;
+        boolean renderable is false;
+        scalar thickness = 1;
+        
+        // texturing parameters
+        //
+        boolean gen_mapping_coords is false;
+	is
+	    translated_3ds_shape new with
+	    
+			// set shape parameters
+			//
+            steps = static steps;
+            optimize is static optimize;
+            adaptive is static adaptive;
+            renderable is static renderable;
+            thickness = static thickness;
+            
+            // set texturing parameters
+            // 
+            gen_mapping_coords is static gen_mapping_coords;	    
+	    end;
+
+		if verbose_recycling then
+			write "new 3ds donut", ;
+		end;
+				    
+		with translated_3ds_donut do
+		
+			// set geometry attributes
+			//
+            its radius1 = radius1;
+            its radius2 = radius2;
+		end;
+	end;	// new
+	
+
+	//
+    // attributes setting method
+    //
+    
+    
+	verb set with
+
+	    // geometry parameters
+	    //
+        scalar radius1 = .5;
+        scalar radius2 = 1;
+        	
+        // shape parameters
+        //
+        integer steps = 4;
+        boolean optimize is false;
+        boolean adaptive is false;
+        boolean renderable is false;
+        scalar thickness = 1;
+        
+        // texturing parameters
+        // 
+        boolean gen_mapping_coords is false;
+    is
+		with translated_3ds_donut do
+		
+			// set geometry attributes
+			//
+            its radius1 = radius1;
+            its radius2 = radius2;
+            
+			// set shape parameters
+			//
+            its steps = steps;
+            its optimize is optimize;
+            its adaptive is adaptive;
+            its renderable is renderable;
+            its thickness = thickness;
+            
+            // set texturing parameters
+            // 
+            its gen_mapping_coords is gen_mapping_coords;
+		end;    
+	end;	// set
+	
+	
+    //		
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+	    const integer num_segments = 4;
+        translated_3ds_spline_vertices type vertices1, vertices2;
+        translated_3ds_spline_segments type segments1, segments2;
+        translated_3ds_spline type spline1 of segments1, spline2 of segments2;
+        translated_3ds_splines type splines is none;
+        translated_3ds_editable_spline type editable_spline is none;
+        
+        // geometric variables
+        //
+    	scalar angle = 360 / num_segments;
+    	scalar a = (sin angle) * (sqrt (4 + 3 * sqr tan (angle / 2)) - 1);
+                	
+        // create vertices1
+        //
+        dim none vertices1[1 .. num_segments];
+        for integer counter = 1 .. num vertices1 do
+			scalar t = (counter - 1) / num vertices1;
+			scalar u = t * 360;
+			scalar x = cos u;
+			scalar y = sin u;
+			vector point = <x y 0> * radius1;
+			vector tangent = <-y x 0> * radius1 * a;
+			vertices1[counter] is translated_3ds_bezier_vertex
+				at point from (-tangent / 3) to (tangent / 3);
+        end;
+        
+        // create vertices2
+        //
+        dim none vertices2[1 .. num_segments];
+        for integer counter = 1 .. num vertices2 do
+			scalar t = (counter - 1) / num vertices2;
+			scalar u = t * 360;
+			scalar x = cos u;
+			scalar y = sin u;
+			vector point = <x y 0> * radius2;
+			vector tangent = <-y x 0> * radius2 * a;
+			vertices2[counter] is translated_3ds_bezier_vertex
+				at point from (-tangent / 3) to (tangent / 3);
+        end;
+        
+        // create segments1
+        //
+        dim none segments1[1 .. num_segments];
+        for integer counter = 1 .. num_segments - 1 do
+            segments1[counter] is translated_3ds_spline_segment type's get;
+            segments1[counter] set curve from vertices1[counter] to vertices1[counter + 1];
+        end;
+        segments1[num_segments] is translated_3ds_spline_segment type's get;
+        segments1[num_segments] set curve from vertices1[num_segments] to vertices1[1];
+
+        // create segments2
+        //
+        dim none segments2[1 .. num_segments];
+        for integer counter = 1 .. num_segments - 1 do
+            segments2[counter] is translated_3ds_spline_segment type's get;
+            segments2[counter] set curve from vertices2[counter] to vertices2[counter + 1];
+        end;
+        segments2[num_segments] is translated_3ds_spline_segment type's get;
+        segments2[num_segments] set curve from vertices2[num_segments] to vertices2[1];
+
+		// create spline1
+		//
+        spline1 is translated_3ds_spline type's get;
+        spline1 append_vertices vertices1;
+        spline1 append_segments segments1;
+        				
+		// create spline2
+		//
+        spline2 is translated_3ds_spline type's get;
+        spline2 append_vertices vertices2;
+        spline2 append_segments segments2;
+        	      
+      	// reverse direction of hole
+      	//
+      	if radius1 < radius2 then
+			spline1 reverse;
+		else
+			spline2 reverse;
+		end;
+		
+        // create splines
+        //
+        if radius1 > radius2 then
+        	splines is [spline1 spline2];
+        else
+        	splines is [spline2 spline1];
+        end;
+		
+		// create editable spline
+		//
+        editable_spline is translated_3ds_editable_spline type's get;
+        editable_spline set to splines with
+        
+            // set shape parameters
+            //
+            steps = static steps;
+            optimize is static optimize;
+            adaptive is static adaptive;
+            renderable is static renderable;
+            thickness = static thickness;
+            
+            // texturing parameters
+            // 
+            gen_mapping_coords is static gen_mapping_coords;
+        end;
+                     
+        recycle;               
+        answer editable_spline;
+	end;	// get_collapsed
+	
+	
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_donut type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_donut type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else	
+			// create new
+			//
+			answer new translated_3ds_donut;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_donut;
+		
+		translated_3ds_donut is none;
+	end;		// recycle	
+end;	// translated_3ds_donut
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_donut with
+
+    // geometry parameters
+    //
+    scalar radius1 = .5;
+    scalar radius2 = 1;
+    
+    // shape parameters
+    //
+    integer steps = 4;
+    boolean optimize is false;
+    boolean adaptive is false;
+    boolean renderable is false;
+    scalar thickness = 1;
+    
+    // texturing parameters
+    // 
+    boolean gen_mapping_coords is false;
+        
+    // modifier stack
+    //
+	translated_3ds_donut type translated_3ds_donut is translated_3ds_donut type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_donut;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_donut set with
+
+	    // set geometry parameters
+	    //
+        radius1 = static radius1;
+        radius2 = static radius2;
+        
+        // set shape parameters
+        //
+        steps = static steps;
+        optimize is static optimize;
+        adaptive is static adaptive;
+        renderable is static renderable;
+        thickness = static thickness;
+        
+        // set texturing parameters
+        // 
+        gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_donut

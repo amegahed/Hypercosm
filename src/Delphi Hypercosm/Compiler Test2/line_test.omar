@@ -1,0 +1,28 @@
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+anim test with
+	render_mode is pointplot;
+is				
+	picture scene is
+		integer number = 250;
+		scalar radius = 5;
+		vector vertices[0 .. number];
+	
+		for integer counter = 0 .. number do
+			scalar t = counter / number;
+			scalar angle = t * 360 + get_seconds * 10;
+			scalar x = cos (angle * 5) * radius;
+			scalar y = sin (angle * 3) * radius;
+			vertices[counter] = <x y 0>;
+		end;
+		
+		line vertices;
+	end;	// scene
+	
+	mouse_controlled_picture scene;
+end;	// test

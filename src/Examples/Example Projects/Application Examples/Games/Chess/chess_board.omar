@@ -1,0 +1,148 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           chess_board.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of a chess board.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do chess_board_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/chess_materials.ores";
+
+shape chess_board with
+	material type dark_material is black_marble;
+	material type light_material is white_marble;
+	scalar thickness = .2;
+	integer steps = 2;
+	boolean show_home is true;
+is
+	const integer h_steps = 8, v_steps = 8;
+	
+	
+	// indicators of black and white home sides
+	//
+		
+		
+	static shape even_home_row with
+		scalar thickness = .2;
+	is
+		block with
+			scale by 4 along <1 0 0>;
+			scale by .2 along <0 1 0>;
+			scale by (thickness / 1) along <0 0 1>;
+			move to <0 4.2 (thickness / 1)>;
+		end;
+	end;    // even_home_row
+	
+	
+	static shape odd_home_row with
+		scalar thickness = .2;
+	is
+		block with
+			scale by 4 along <1 0 0>;
+			scale by .2 along <0 1 0>;
+			scale by (thickness / 1) along <0 0 1>;
+			move to <0 -4.2 (thickness / 1)>;
+		end;
+	end;    // odd_home_row
+
+	static shape chess_square with
+		scalar thickness = .2;
+	is
+		if thickness <> 0 then
+			block with
+				scale by .5 along <1 0 0>;
+				scale by .5 along <0 1 0>;
+				scale by (thickness / 2) along <0 0 1>;
+				move to <0 0 (thickness / 2)>;
+			end;
+		else
+			parallelogram with
+				scale by .5 along <1 0 0>;
+				scale by .5 along <0 1 0>;
+			end;
+		end;
+		{
+		parallelogram with
+			magnify by .25;
+			move to <0 0 (thickness - .01)>;
+		end;
+		}
+	end;    // chess_square
+
+	static shape even_squares with
+		scalar thickness = .2;
+	is
+		for integer v = 0 .. v_steps - 1 do
+			for integer h = 0 .. h_steps - 1 do
+				scalar h_offset = (h_steps - 1) / 2;
+				scalar v_offset = (v_steps - 1) / 2;
+				
+				if (h + v) mod 2 = 0 then
+					chess_square with
+						thickness = static thickness;
+						move to <(h - h_offset) (v - v_offset) 0>;
+					end;
+				end;
+			end;
+		end;
+	end;    // even_squares
+	
+	
+	static shape odd_squares with
+		scalar thickness = .2;
+	is
+		for integer v = 0 .. v_steps - 1 do
+			for integer h = 0 .. h_steps - 1 do
+				scalar h_offset = (h_steps - 1) / 2;
+				scalar v_offset = (v_steps - 1) / 2;
+				
+				if (h + v) mod 2 <> 0 then
+					chess_square with
+						thickness = static thickness;
+						move to <(h - h_offset) (v - v_offset) 0>;
+					end;
+				end;
+			end;
+		end;
+	end;    // odd_squares
+	
+	
+	even_squares with
+		thickness = static thickness;
+		material is dark_material;
+	end;
+	odd_squares with
+		thickness = static thickness;
+		material is light_material;
+	end;
+	if show_home then
+		even_home_row with
+			thickness = static thickness;
+			material is dark_material;
+		end;
+		odd_home_row with
+			thickness = static thickness;
+			material is light_material;
+		end;    
+	end;
+end;    // chess_board
+
+anim chess_board_anim
+	args type args;
+with
+	eye = <5 -15 10>;
+	double_buffer is on;
+	args check;
+is
+	shape scene is
+		chess_board;
+	end;
+	mouse_controlled_shape scene;
+end;    // chess_board_anim

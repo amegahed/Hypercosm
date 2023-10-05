@@ -1,0 +1,163 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       numbered_checklist.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition for methods and             }
+{       structures to parse and store a checklist where         }
+{       each entry in the checklist may be multiple lines       }
+{       of text.                                                } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/multiline_checklist.ores";
+include "system/text_file_resources.ores";
+include "system/parsing.ores";
+
+subject numbered_checklist
+extends
+	multiline_checklist type
+does
+	// parsing methods
+	//
+	reference verb parse
+		from strings type text;
+	end;
+
+	reference verb input
+		from string type filename;
+	end;
+
+	// resizing method
+	//
+	reference verb resize
+		to integer number;
+	end;
+		
+	// printing method
+	//
+	verb print;
+is 
+	objective integer question parse_number_of_steps
+		from strings type text;
+	is
+		integer line_number = min text;
+		integer char_number = min text[line_number];
+		integer steps = 0;
+		
+		while (line_number <= max text) do
+			integer number;
+			
+			scan_through_whitespace 
+				at column char_number on line line_number of text;
+			
+			// parse checklist number
+			//
+			parse_integer number
+				at column char_number on line line_number of text;
+				
+			// update step number
+			//
+			if number > steps then
+				steps = number;
+			end;
+			
+			scan_to_next_blank_line 
+				at column char_number on line line_number of text;
+		end;
+		
+		answer steps;
+	end;    // parse_number_of_steps
+	
+	//
+	// parsing methods
+	//
+		
+	reference verb parse
+		from strings type text;
+	is
+		integer line_number = min text;
+		integer char_number = min text[line_number];
+		integer steps = parse_number_of_steps from text;
+		integer block_begin, block_end;
+		if steps > 0 then       
+			dim numbered_checklist[1 .. steps];
+			
+			while (line_number <= max text) do
+				integer number;
+				
+				scan_through_whitespace 
+					at column char_number on line line_number of text;
+	
+				if (line_number <= max text) then
+						   
+					// parse checklist number
+					//
+					parse_integer number
+						at column char_number on line line_number of text;
+						
+					line_number = itself + 1;
+					
+					// copy strings
+					//
+					block_begin = line_number;
+					scan_to_next_blank_line 
+						at column char_number on line line_number of text;
+					block_end = line_number;
+					
+					if block_end > block_begin then    
+						numbered_checklist[number][1 .. block_end - block_begin] = text[block_begin .. block_end - 1];
+					end;
+				end;
+			end;
+		end;    // if
+	end;    // parse
+	
+	reference verb input
+		from string type filename;
+	is
+		text_resource type checklist_resource named filename;  
+		
+		// wait for file to download
+		//
+		checklist_resource finish_loading;
+	   
+		// parse checklist from file
+		//
+		parse from checklist_resource get_lines;      
+	end;    // input
+	
+	//
+	// resizing method
+	//
+	
+	reference verb resize
+		to integer number;
+	is
+		numbered_checklist type new_checklist;
+		
+		dim new_checklist[1 .. number];
+		for integer counter = min numbered_checklist .. max numbered_checklist do
+			new_checklist[counter] is numbered_checklist[counter];
+		end;
+		
+		numbered_checklist is new_checklist;
+	end;    // resize
+	
+	//
+	// printing method
+	//
+		
+	verb print is
+		integer step_number = 1;
+		for each multiline_step type multiline_step in numbered_checklist do
+			write "Step #", step_number, ": ";
+			multiline_step print;
+			write;
+			step_number = itself + 1;
+		end;
+	end;    // print
+end;    // numbered_checklist

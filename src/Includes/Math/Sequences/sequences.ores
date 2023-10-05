@@ -1,0 +1,16 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           sequences.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a set of finite explicit sequence              }
+{       definitions for different types.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/sequence.ores";
+include "system/isequence.ores";
+include "system/vsequence.ores";

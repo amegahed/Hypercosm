@@ -1,0 +1,40 @@
+{***************************************************************}
+{                           isequence.ores						}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a finite explicit integer		}
+{		sequence.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+subject isequence
+extends
+    integer[]
+does
+	// interpolation method
+	//
+    integer question get_value
+        at scalar t;
+    end;
+is
+    integer question get_value
+        at scalar t;
+    is
+        if t = 0 then
+            answer isequence[min isequence];
+        elseif t = 1 then
+            answer isequence[max isequence];
+        else
+            scalar t_index = min isequence + (num isequence - 1) * t;
+            integer min_index = trunc t_index;
+            integer max_index = trunc (t_index + 1);
+            answer interpolated_integer 
+            	from isequence[min_index] to isequence[max_index] 
+            	by (t_index - min_index);
+        end;
+    end;    // get_value
+end;    // isequence

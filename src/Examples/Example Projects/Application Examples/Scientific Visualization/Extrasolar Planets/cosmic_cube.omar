@@ -1,0 +1,96 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           cosmic_cube.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This simulation depicts a starry sky box.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do cosmic_cube_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape grid_cube with
+	scalar texture_scale = 8;
+is  
+	shape unit_grid is
+		mesh 
+			// vertices
+			//
+			[<-1 -1 0> <-1 1 0> <1 1 0> <1 -1 0>]
+			
+			// edges
+			//
+			[[1 2] [2 3] [3 4] [4 1]]
+			
+			// faces
+			//
+			[1 2 3 4 0]
+		with
+			texcoords = [(<-1 -1 0> * texture_scale) (<-1 1 0> * texture_scale)
+				(<1 1 0> * texture_scale) (<1 -1 0> * texture_scale)];
+		end;
+	end;
+	shape unit_grid_pair is
+		unit_grid with
+			trans's origin = <0 0 1>;
+			trans's x_axis = <1 0 0>;
+			trans's y_axis = <0 1 0>;
+			trans's z_axis = trans's x_axis cross trans's y_axis;
+		end;
+		unit_grid with
+			trans's origin = <0 0 -1>;
+			trans's x_axis = <1 0 0>;
+			trans's y_axis = <0 -1 0>;
+			trans's z_axis = trans's x_axis cross trans's y_axis;
+		end;
+	end;    // unit_grid_pair
+	
+	  
+	shape unit_grid_block is
+		// top and bottom faces
+		//
+		unit_grid_pair;
+		
+		// left and right faces
+		//
+		unit_grid_pair with
+			rotate by 90 around <0 1 0>;
+		end;
+		
+		// front and back faces
+		//
+		unit_grid_pair with
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // unit_grid_block
+	
+	unit_grid_block;    
+end;    // grid_cube
+
+shape cosmic_cube is
+	grid_cube with
+		material is constant_color white poster "stars.jpg";
+		render_mode is shaded;
+		shadows is off;
+	end;
+end;    // cosmic_cube
+
+anim cosmic_cube_anim with
+	eye = <2 -8 4>;
+is
+	shape scene with
+		scalar time = 0;
+	is
+		cosmic_cube with
+			magnify by 100;
+			move to eye;
+		end;
+	end;    // scene
+		  
+	mouse_controlled_animated_shape scene;
+end;    // cosmic_cube_anim

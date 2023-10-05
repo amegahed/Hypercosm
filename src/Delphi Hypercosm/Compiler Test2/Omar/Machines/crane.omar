@@ -1,0 +1,279 @@
+{***************************************************************}
+{                          crane.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do crane_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/trusses.ores";
+include "system/anims.ores";
+
+
+shape crane is
+    shape edge
+        from vector end1;
+        to vector end2;
+    is
+        cylinder with
+            end1 = static end1;
+            end2 = static end2;
+            radius = .01;
+        end;
+    end;    // edge
+
+
+    shape cab_side is
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <-1 0 3>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-1 0 3>;
+            end2 = <.75 0 3>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <.75 0 3>;
+            end2 = <1.5 0 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <1.5 0 1>;
+            end2 = <1 0 0>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <1 0 0>;
+            end2 = <-1 0 0>;
+            radius = .1;
+        end;
+    end;    // cab_side
+
+
+    shape cab is
+        cab_side with
+            move to <0 -1 0>;
+        end;
+        cab_side with
+            move to <0 1 0>;
+        end;
+        cylinder with
+            end1 = <-1 -1 0>;
+            end2 = <-1 1 0>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-1 -1 3>;
+            end2 = <-1 1 3>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <.75 -1 3>;
+            end2 = <.75 1 3>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <1.5 -1 1>;
+            end2 = <1.5 1 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <1 -1 0>;
+            end2 = <1 1 0>;
+            radius = .1;
+        end;
+        transparent blue extrude [[-1 0] [-1 3] [.75 3] [1.5 1]
+            [1 0]]
+        with
+            height = 2;
+        end;
+    end;    // cab
+
+
+    shape block1_truss is
+        block_truss with
+            x_steps = 2;
+            y_steps = 2;
+            z_steps = 20;
+            x_edge does static edge;
+            y_edge does static edge;
+            z_edge does static edge;
+            scale the trans by 2 along <0 0 1>;
+            scale the trans by .1 along <1 0 0>;
+            scale the trans by .1 along <0 1 0>;
+        end;
+    end;    // block1_truss
+
+
+    shape counterweight is
+        block with
+            material is chalk colored grey;
+            scale by .1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+            scale by .2 along <0 0 1>;
+        end;
+    end;    // counterweight
+
+
+    shape cargo is
+        i_beam from <-.5 0 -.4> to <.5 0 -.2> with
+            material is chalk colored rust;
+            width = .03;
+            height = .03;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <-.5 0 -.4>;
+            end2 = <0 0 0>;
+            radius = .01;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <.5 0 -.2>;
+            end2 = <0 0 0>;
+            radius = .01;
+        end;
+    end;    // cargo
+
+
+    shape top_brace is
+        triangle <-.1 -.1 .1> <.1 -.1 .1> <0 -.1 .5>;
+        triangle <-.1 .1 .1> <.1 .1 .1> <0 .1 .5>;
+        cylinder with
+            end1 = <0 -.1 .5>;
+            end2 = <0 .1 .5>;
+            radius = .01;
+        end;
+    end;    // top_brace
+
+
+    shape top_truss is
+        block1_truss with
+            material is plastic colored red;
+            rotate by 90 around <0 1 0>;
+        end;
+        top_brace with
+            move to <-.75 0 0>;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <-2 -.1 .1>;
+            end2 = <-.75 -.1 .5>;
+            radius = .01;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <2 -.1 .1>;
+            end2 = <-.75 -.1 .5>;
+            radius = .01;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <-2 .1 .1>;
+            end2 = <-.75 .1 .5>;
+            radius = .01;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <2 .1 .1>;
+            end2 = <-.75 .1 .5>;
+            radius = .01;
+        end;
+    end;    // top_truss
+
+
+    shape turntable is
+        cylinder with
+            end1 = <0 0 4>;
+            end2 = <0 0 4.1>;
+            radius = .25;
+        end;
+        disk with
+            move to <0 0 4.1>;
+            radius = .25;
+        end;
+        disk with
+            move to <0 0 4>;
+            radius = .25;
+        end;
+    end;    // turntable
+
+
+    shape cargo_and_cable is
+        block with
+            material is chalk colored light grey;
+            scale by .1 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+            scale by .05 along <0 0 1>;
+            move to <0 0 4.05>;
+        end;
+        cargo with
+            rotate by 30 around <0 0 1>;
+            move to <0 0 2>;
+        end;
+        cylinder with
+            material is plastic colored white;
+            end1 = <0 0 4>;
+            end2 = <0 0 2>;
+            radius = .01;
+        end;
+    end;    // cargo_and_cable
+
+    block1_truss with
+        material is plastic colored red;
+        move to <0 0 2>;
+    end;
+    top_truss with
+        material is plastic colored red;
+        move to <.75 0 4.2>;
+    end;
+    turntable with
+        material is plastic colored red;
+    end;
+    cab with
+        material is plastic colored white;
+        magnify by .15;
+        move to <0 -.3 4.1>;
+    end;
+    counterweight with
+        move to <-1 -.15 4>;
+    end;
+    counterweight with
+        move to <-1 .15 4>;
+    end;
+
+    // cargo
+    //
+    cargo_and_cable with
+        move to <2 0 0>;
+    end;
+end;    // crane
+
+
+anim crane_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <2 -10 4>;
+    lookat = <0 0 2>;
+    render_mode is wireframe;
+    args check;
+is
+    shape scene is
+        crane;
+        plane with
+        magnify by 10;
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // crane_anim

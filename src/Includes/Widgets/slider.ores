@@ -1,0 +1,188 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             slider.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a subject definition for a slider widget.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "interactions.ores";
+include "picking.ores";
+
+shape default_slider_handle
+is
+	disk with
+		material is constant_color lime_green;
+		render_mode is shaded;
+		center = <-.05 0 0>;
+		radius = .1;
+		umin = -90;
+		umax = 90;
+		scale by 1.5 along <1 0 0> about center;        
+	end;
+end;
+
+subject slider
+extends
+	mouse_state_filter object
+does
+	// constructor
+	//
+	verb new 
+		controls scalar reference value refers to none;
+		from scalar min_value = 0;
+		to scalar max_value = 1;
+		dragged by shape handle_shape does default_slider_handle;
+	with
+		color type border_color = white;
+		color type bar_color = red;
+	end;
+
+	// querying methods
+	//
+	boolean question accept_click at vector location; end;
+	boolean question in_region at vector location; end;
+
+	// rendering methods
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public scalar reference value;
+	public boolean mouse_is_over is false;
+	public mouse_state type mouse_state is none;    // allocated in new
+
+	// private attributes
+	//
+	scalar min_value;
+	scalar max_value;
+	color type border_color;
+	color type bar_color;
+	shape handle_shape does default_slider_handle;
+	scalar internal_value;
+is
+	//
+	// constructor
+	//
+
+	verb new 
+		controls scalar reference value refers to none;
+		from scalar min_value = 0;
+		to scalar max_value = 1;
+		dragged by shape handle_shape does default_slider_handle;
+	with
+		color type border_color = white;
+		color type bar_color = red;
+	is
+		slider's min_value = min_value;
+		slider's max_value = max_value;
+		slider's border_color = border_color;
+		slider's bar_color = bar_color;
+		slider's handle_shape does handle_shape;
+
+		if value refers to none then
+			slider's value refers to internal_value;
+			internal_value = min_value;
+		else
+			slider's value refers to value;
+			if min_value > max_value then
+				value = clamp value from max_value to min_value;
+			else
+				value = clamp value from min_value to max_value;
+			end;
+		end;
+
+		mouse_state is (new mouse_state type with filter is slider;);
+	end;    // new
+
+	//
+	// querying methods
+	//
+
+	boolean question accept_click
+		at vector location;
+	is
+		answer in_region at location;
+	end;    // accept_click
+
+	boolean question in_region
+		at vector location;
+	is
+		if mouse_state's down then
+			answer yes;
+		else
+			answer (xy_plane_touched at location with
+				restrict_to_bounds is true;
+				min_bounds = <(-0.9) (-0.9) 0>;
+				max_bounds = <0.9 0.9 0>;);
+		end;
+	end;    // in_region
+
+	//
+	// rendering methods
+	//
+
+	shape face is
+		render_mode is wireframe;
+		parallelogram with
+			magnify by .999;
+			color = border_color;
+		end;
+		parallelogram with
+			scale by .9 along <1 0 0>;
+			scale by .9 along <0 1 0>;
+			move to <0 0 .1>;
+		end;
+	end;    // face
+
+	shape instance is
+		scalar x;
+
+		if some mouse_state then
+			mouse_state update;
+			if (mouse_state's down) or (mouse_state's released) or
+					(mouse_state's clicks <> 0) then
+				if not (value refers to none) then
+					vector plane_location;
+					if (xy_plane_touched at mouse_state's location
+							return plane_location) then
+						x = ((clamp (plane_location.x / 0.9) from -1 to 1) + 1) / 2;
+						value = min_value + (x * (max_value - min_value));
+					end;
+				end;
+			end;
+		end;
+
+		mouse_is_over is in_region at get_mouse;
+
+		if value refers to none then
+			x = 0;
+		else
+			x = (value - min_value) / (max_value - min_value);
+		end;
+
+		if some handle_shape then
+			handle_shape with
+				scale by .9 along <1 0 0>;
+				scale by .9 along <0 1 0>;
+				move to <((x * 1.8) - 0.9) 0 -1>;
+			end;
+		end;
+
+		if x > 0 then
+			parallelogram with
+				scale by (x * 0.9) along <1 0 0>;
+				scale by .9 along <0 1 0>;
+				move to <(-0.9 * (1 - x)) 0 1>;
+				color = bar_color;
+			end;
+		end;
+
+		face;
+	end;    // instance
+end;    // slider

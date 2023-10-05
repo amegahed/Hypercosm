@@ -1,0 +1,49 @@
+do lathed_line_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_line.ores";
+include "system/3ds_lathe.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim lathed_line_anim
+is
+	material type hyper_material is plastic poster "hyper.jpg";
+	
+	shape scene with
+		scalar time = 0;
+	is
+		translated_3ds_line of [
+			translated_3ds_connected_spline through [
+				translated_3ds_corner_vertex at <7 0 0> 
+				translated_3ds_corner_vertex at <7 0 30>
+				translated_3ds_corner_vertex at <40 0 15> 
+				translated_3ds_corner_vertex at <15 0 50>
+				translated_3ds_corner_vertex at <30 0 40>
+				translated_3ds_corner_vertex at <7 0 75>
+				translated_3ds_corner_vertex at <20 0 65>
+				translated_3ds_corner_vertex at <0 0 100>
+			]] 
+		with
+			translated_3ds_lathe with
+				degrees = 240 + sin(time * 90) * 120;
+				segments = 16;
+				gen_mapping_coords is true;
+				cap_start is true;
+				cap_end is true;
+			end;
+			
+		    material is hyper_material;
+		end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Lathed Line" with
+		auto_camera is on;
+	end;
+end;	// lathed_line_anim

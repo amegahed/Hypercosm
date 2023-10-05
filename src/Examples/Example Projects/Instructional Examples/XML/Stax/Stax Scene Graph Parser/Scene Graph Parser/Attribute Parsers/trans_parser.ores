@@ -1,0 +1,46 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          trans_parser.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a parser for parsing vector          }
+{       transformations from an XML stream.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2007 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/trans.ores";
+include "system/xml_reading.ores";
+
+verb parse_trans
+	trans type reference trans;
+	from xml_reading type xml_reader;
+is
+	// parse start element
+	//      
+	xml_reader require start_element named "trans";
+	
+	// parse attributes
+	//
+	for integer counter = 1 .. xml_reader get_attribute_count do
+		string type name is xml_reader get_attribute_name of counter;
+		string type value is xml_reader get_attribute_value of counter;
+		
+		if name matches "origin" then
+			trans's origin = value to_vector;
+		elseif name matches "x_axis" then
+			trans's x_axis = value to_vector;
+		elseif name matches "y_axis" then
+			trans's y_axis = value to_vector;
+		elseif name matches "z_axis" then
+			trans's z_axis = value to_vector;
+		end;
+	end;
+	xml_reader skip_element;
+	// parse end element
+	//  
+	xml_reader require end_element named "trans";       
+	xml_reader skip_element;
+end;    // parse_trans

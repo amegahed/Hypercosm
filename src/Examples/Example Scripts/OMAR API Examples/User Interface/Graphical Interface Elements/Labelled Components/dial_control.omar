@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            dial_control.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a dial control        }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do dial_control_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/dial_control.ores";
+include "system/check_keys.ores";
+
+anim dial_control_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	scalar lod = 0;
+		
+	dial_control type dial_control labelled "LOD" at 25;
+	
+	picture scene is
+		sphere;
+		dial_control overlay at 1;
+		default_lights;
+		default_background at 10;
+	end;    // scene
+	
+	dial_control set_location to <-.8 .8 0>;
+	while true do
+		scene;
+		dial_control update;
+		check_keys;
+	end;
+end;    // dial_control_anim

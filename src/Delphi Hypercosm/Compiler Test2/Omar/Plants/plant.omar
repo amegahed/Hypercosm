@@ -1,0 +1,125 @@
+{***************************************************************}
+{                          plant.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do plant_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape plant is
+    shape leaf is
+        triangle <5 0 -.2> <3 -.8 0> <3 .8 0>;
+        triangle <3 -.8 -.2> <3 .8 0> <0 0 0>;
+        cone with
+            end1 = <5 0 -.2>;
+            end2 = <3 0 0>;
+            radius1 = 0;
+            radius2 = .1;
+        end;
+        cone with
+            end1 = <3 0 0>;
+            end2 = <0 0 0>;
+            radius1 = .1;
+            radius2 = 0;
+        end;
+    end;    // leaf
+
+
+    shape stalk is
+        leaf with
+            rotate by 10 around <0 1 0>;
+            rotate by 0 around <0 0 1>;
+            move to <0 0 20>;
+        end;
+        leaf with
+            rotate by 10 around <0 1 0>;
+            rotate by 45 around <0 0 1>;
+            move to <0 0 20>;
+        end;
+        leaf with
+            rotate by 10 around <0 1 0>;
+            rotate by -45 around <0 0 1>;
+            move to <0 0 20>;
+        end;
+        leaf with
+            rotate by 10 around <0 1 0>;
+            rotate by 90 around <0 0 1>;
+            move to <0 0 20>;
+        end;
+        leaf with
+            rotate by 10 around <0 1 0>;
+            rotate by -90 around <0 0 1>;
+            move to <0 0 20>;
+        end;
+        cylinder with
+            end1 = <0 0 20>;
+            end2 = <0 0 0>;
+            radius = .15;
+        end;
+    end;    // stalk
+
+
+    shape stalk_group is
+        stalk with
+            rotate by 10 around <0 1 0>;
+            rotate by 0 around <0 0 1>;
+            move to <0 0 0>;
+        end;
+        stalk with
+            rotate by 10 around <0 1 0>;
+            rotate by 40 around <0 0 1>;
+            move to <0 0 4>;
+        end;
+        stalk with
+            rotate by 10 around <0 1 0>;
+            rotate by 240 around <0 0 1>;
+            move to <0 0 2>;
+        end;
+    end;    // stalk_group
+
+    stalk_group;
+    stalk_group with
+        rotate by 90 around <0 0 1>;
+        move to <0 0 3>;
+    end;
+    stalk_group with
+        rotate by 180 around <0 0 1>;
+        move to <0 0 5>;
+    end;
+    stalk_group with
+        rotate by 270 around <0 0 1>;
+        move to <0 0 6>;
+    end;
+    stalk with
+        rotate by 135 around <0 0 1>;
+        move to <0 0 11>;
+    end;
+end;    // plant
+
+
+anim plant_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <0 -30 50>;
+    lookat = <0 0 20>;
+    background = sky_blue;
+    args check;
+is
+    shape thing is
+        distant_light from <.3 -.5 1>;
+        plant with
+            material is plastic colored dark green polished semi shiny;
+        end;
+    end;    // thing
+
+    mouse_controlled_shape thing;
+end;    // plant_anim

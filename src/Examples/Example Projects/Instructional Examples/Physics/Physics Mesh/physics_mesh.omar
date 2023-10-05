@@ -1,0 +1,90 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        phsyics_mesh.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of the           }
+{       physics mesh                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_mesh_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press the 's' key to launch projectiles to get the      }
+{       shape to move.                                          }
+{                                                               }
+{***************************************************************}
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "physics_test_projectile.ores";
+include "teapot_physics_mesh.ores";
+
+anim physics_mesh_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+	lookat = <0 0 3>;
+is
+	renderable_physics_scene type physics;    
+	verb draw is
+	
+		// draw on screen instructions
+		//
+		overlay_text "Press 's' to shoot a projectile." at <0 .9 0>; 
+	end;    // draw
+	
+	
+	verb check_keys is
+		static boolean s_down_last_frame is false;
+			   
+		// fire a projectile, only if we just pressed the key this frame
+		//
+		if key_down char_to_key of "s" then 
+			if not s_down_last_frame then
+				add_and_fire_projectile to physics;
+			end;
+			s_down_last_frame is true;
+		else
+			s_down_last_frame is false;
+		end;
+	end;    // check_keys
+	
+	
+	verb update is
+		draw;
+		check_keys;
+	end;    // update
+	
+	shape scene with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+				
+		physics instance;
+		infinite_plane to 100 with
+			material is ground_material;
+			one_sided is false;
+		end;
+	end;    // scene
+	
+	
+	physics add_physics_actor teapot_physics_mesh;
+	
+	// add the plane shape
+	//
+	physics add_physics_actor (new physics_plane_actor);
+	// turn on/off proxy rendering aka debug mode
+	//                         
+	physics set_render_proxies to true; 
+	// run!
+	//    
+	mouse_controlled_animated_shape scene doing update;
+end;    // physics_mesh_anim

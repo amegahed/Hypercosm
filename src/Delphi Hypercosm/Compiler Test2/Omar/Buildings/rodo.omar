@@ -1,0 +1,169 @@
+{***************************************************************}
+{                          rodo.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rodo_picture;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+
+
+shape rodo is
+    shape arch is
+        extrude [[-11 0] [-10 0] [-9 6] [-8 9] [-7 12] [-6 16]
+            [-5 17] [-4 19] [-3 21] [-2 24] [-1 27] [0 30]
+            [1 27] [2 24] [3 21] [4 19] [5 17] [6 16]
+            [7 12] [8 9] [9 6] [10 0] [11 0] [11 35]
+            [-11 35]]
+        with
+            rotate by -90 around <1 0 0>;
+        end;
+    end;    // arch
+
+
+    shape column is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 -130>;
+            radius = 2;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 -8>;
+            radius1 = 4;
+            radius2 = 1.5;
+        end;
+        block with
+            scale by 12 along <1 0 0>;
+            scale by 12 along <0 0 1>;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 -125>;
+            end2 = <0 0 -145>;
+            radius1 = 3;
+            radius2 = 6;
+        end;
+        sphere with
+            material is plastic colored red;
+            center = <0 0 -125>;
+            radius = 8;
+            scale by .1 along <0 0 1>;
+        end;
+    end;    // column
+
+
+    shape floor is
+        disk with
+            center = <0 0 15.5>;
+            radius = 67;
+        end;
+        cylinder with
+            end1 = <0 0 15.5>;
+            end2 = <0 0 11.5>;
+            radius = 67;
+        end;
+        disk with
+            center = <0 0 11.5>;
+            radius = 72;
+        end;
+        cylinder with
+            end1 = <0 0 11.5>;
+            end2 = <0 0 7.5>;
+            radius = 72;
+        end;
+        disk with
+            center = <0 0 7.5>;
+            radius = 77;
+        end;
+        cylinder with
+            end1 = <0 0 7.5>;
+            end2 = <0 0 0>;
+            radius = 77;
+        end;
+    end;    // floor
+
+
+    shape dome_part with
+        integer columns = 12;
+    is
+        for integer counter = 1..columns do
+            scalar angle = counter / columns * 360;
+
+            arch with
+                scale by .65 along <0 1 0>;
+                move to <60 0 0>;
+                rotate by angle around <0 0 1>;
+            end;
+            column with
+                move to <60 0 0>;
+                rotate by angle around <0 0 1>;
+            end;
+        end;
+    end;    // dome part
+
+
+    shape dome_top_fillet is
+        hyperboloid2 with
+            top = <0 0 75>;
+            base = <0 0 0>;
+            radius = 80;
+            eccentricity = .8;
+            scale by .25 along <1 0 0>;
+        end;
+    end;    // dome_top_fillet
+
+
+    shape dome_top with
+        integer steps = 13;
+    is
+        paraboloid with
+            top = <0 0 60>;
+            base = <0 0 0>;
+            radius = 80;
+        end;
+        for integer counter = 1..steps do
+            scalar angle = counter / steps * 360;
+
+            dome_top_fillet with
+                rotate by angle around <0 0 1>;
+            end;
+        end;
+    end;    // dome_top
+
+    dome_top with
+        material is copper;
+        move to <0 0 170>;
+    end;
+    dome_part with
+        material is chalk colored brown;
+        move to <0 0 160>;
+    end;
+    floor with material is plastic colored grey; end;
+end;    // rodo
+
+
+picture rodo_picture
+    args type args;
+with
+    eye = <0 -500 205>;
+    lookat = <0 0 100>;
+    field_of_view = 70;
+    render_mode is shaded;
+    background = sky_blue;
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    plane with
+        color = light brown;
+        magnify by 100;
+    end;
+    rodo with
+        material is chalk colored light brown;
+    end;
+end;    // rodo_picture

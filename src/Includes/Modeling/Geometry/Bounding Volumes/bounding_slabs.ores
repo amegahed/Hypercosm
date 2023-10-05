@@ -1,0 +1,96 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         bounding_slabs.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a definition for axis aligned centered        }
+{        bounding regions.                                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/slabs.ores";
+include "system/volume_bounding.ores";
+
+subject bounding_slab
+extends
+	volume_bounding slab
+does
+	// constructor
+	//
+	verb new
+		of vector size;
+		at vector center = <0 0 0>;
+	end;
+	
+	// volume bounding methods
+	//
+	boolean question contains
+		vector point;
+	end;
+	vector question get_min;
+	vector question get_max;
+	vector question get_size;
+	vector question get_center;
+	
+	// converting methods
+	//
+	string type question to_string;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of vector size;
+		at vector center = <0 0 0>;
+	is
+		// call superclass constructor
+		//
+		slab new of size at center;
+	end;    // new
+	
+	//
+	// volume bounding methods
+	//
+	
+	boolean question contains
+		vector point;
+	is
+		vector low = get_min, high = get_max;
+		answer (low.x < point.x < high.x) and
+			(low.y < point.y < high.y) and
+			(low.z < point.z < high.z); 
+	end;    // contains
+	
+	vector question get_min is
+		answer center - size / 2;
+	end;    // get_min
+	
+	vector question get_max is
+		answer center + size / 2;
+	end;    // get_max
+	
+	vector question get_size is
+		answer size;
+	end;    // get_size
+	
+	vector question get_center is
+		answer center;
+	end;    // get_center
+	
+	//
+	// converting methods
+	//
+	
+	string type question to_string is
+		string type string is "bounding slab";
+		string add " of size ";
+		string add vector_to_string of size;
+		string add " centered on ";
+		string add vector_to_string of center;
+		answer string;
+	end;    // to_string
+end;    // bounding_slab

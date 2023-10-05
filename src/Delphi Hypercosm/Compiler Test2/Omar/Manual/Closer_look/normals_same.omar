@@ -1,0 +1,64 @@
+{***************************************************************}
+{                          normals_same.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do normals_same_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+
+
+shape poly_obj is
+    scalar x = .8;
+    scalar y = .8;
+    scalar z = 0;
+
+    scalar x1 = .4;
+    scalar y1 = 0;
+    scalar z1 = 1;
+
+    vector p1 = <-x y z>;
+    vector p2 = <x y z>;
+    vector p3 = <x (-y) z>;
+    vector p4 = <-x (-y) z>;
+
+    vector n1 = <-x1 y1 z1>;
+    vector n2 = <x1 y1 z1>;
+    vector n3 = <x1 (-y1) z1>;
+    vector n4 = <-x1 (-y1) z1>;
+
+    shaded_polygon [p1 p2 p3 p4]
+        [(p1 + n1) (p2 + n2) (p3 + n3) (p4 +  n4)];
+
+    arrow from p1 to (p1 + n1);
+    arrow from p2 to (p2 + n2);
+    arrow from p3 to (p3 + n3);
+    arrow from p4 to (p4 + n4);
+end;    // poly_obj
+
+
+anim normals_same_anim with
+    eye = <2 -8 4>;
+    lookat = <0 0 .25>;
+    field_of_view = 30;
+    render_mode is shaded;
+    shading is vertex;
+is
+	shape scene is
+	    axes with
+	        move to <0 0 .01>;
+	    end;
+	    poly_obj;
+	end;
+	
+	mouse_controlled_shape scene;
+end;    // normals_same_picture

@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          collecting.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of collecting behavior for        }
+{       immutable ("read-only") collections.                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/iterators.ores";
+
+adjective collectable
+does
+	// collection querying methods
+	//
+	boolean question is_empty;
+	integer question get_size;
+	
+	// collection searching methods
+	//
+	boolean question contains
+		object type element;
+	end;
+	
+	// collection iteration methods
+	//
+	iterable type question get_iterable;
+	verb iterate
+		verb action
+			on each object type element;
+		end;
+	end;
+	  
+	// converting methods
+	//
+	object type[] question to_array;
+end;    // collectable

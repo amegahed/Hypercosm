@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		volume_bounding.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains an abstract definition of bounding 			}
+{		behaviors for volumetric bounding.						}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/centering.ores";
+include "system/scaling.ores";
+
+
+adjective volume_containing
+does
+    boolean question contains
+    	vector point;
+    end;
+end;	// volume_containing
+
+
+adjective volume_bounding
+extends
+	volume_containing centerable scaleable
+does
+	vector question get_min;
+	vector question get_max;
+end;	// volume_bounding
+
+
+adjective volume_boundable
+does
+	volume_bounding type question get_bounds;
+end;	// volume_boundable
+
+
+adjective volume_reboundable
+does
+	verb set_bounds
+		to volume_bounding type bounds;
+	end;
+end;	// volume_reboundable

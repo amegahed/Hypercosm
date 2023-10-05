@@ -1,0 +1,38 @@
+{***************************************************************}
+{                          constants.ores                       }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{               Contains some standard math constants.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+//
+// some commonly used irrational numbers
+//
+
+
+const scalar pi = 3.141593;
+const scalar e = 2.71828;
+const scalar golden_mean = 0.618034;
+
+
+//
+// some commonly used roots
+//
+
+
+const scalar sqrt_2 = 1.414214;
+const scalar sqrt_3 = 1.732051;
+
+
+//
+// not really infinity, but a reasonably huge number
+//
+
+
+const scalar infinity = 1.0e+37;
+const integer max_integer = 2147483647;

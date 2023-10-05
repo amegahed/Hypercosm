@@ -1,0 +1,205 @@
+{***************************************************************}
+{                          volume.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do volume_anim;
+
+
+include "system/3d.ores";
+include "system/vector_volumes.ores";
+include "system/fields.ores";
+include "system/shapes.ores";
+include "system/fields.ores";
+include "system/densities.ores";
+include "system/physics.ores";
+include "system/interactions.ores";
+include "system/check_keys.ores";
+include "system/toggle.omar";
+include "system/button_meter.omar";
+include "system/selector.omar";
+
+
+boolean capping is true;
+boolean do_shading is false;
+scalar threshold = .5;
+vector orientation = <0 0 0>;
+selector type selector labelled "Shape";
+
+
+// 3d field of density values
+//
+density_field type density_field using noisy_field
+    from <-2 -2 -2> to <2 2 2>
+with
+    x_steps = 10;
+    y_steps = 10;
+    z_steps = 10;
+end;
+
+
+// lattices defining geometric shape of field
+//
+vector_volume type sphere_vertex is (square_sphere_vector_volume 
+	10 of 10 by 10 with roundness = 1);
+vector_volume type cylinder_vertex is (square_cylinder_vector_volume 
+	10 of 10 by 10 with roundness = 1);
+
+
+shape volume_shape with
+    scalar threshold = .5;
+    boolean capping is on;
+    integer selection = 1;
+is
+    if selection = 1 then
+        volume density_field's density with
+            threshold = static threshold;
+            capping is static capping;
+            color = block_color;
+        end;
+    elseif selection = 2 then
+        volume density_field's density in form of cylinder_vertex with
+            threshold = static threshold;
+            capping is static capping;
+            color = cylinder_color;
+        end;
+    elseif selection = 3 then
+        volume density_field's density in form of sphere_vertex with
+            threshold = static threshold;
+            capping is static capping;
+            color = sphere_color;
+        end;
+    end;
+    axes with
+        magnify by 1.5;
+    end;
+end;    // volume_shape
+
+
+picture volume_picture with
+    eye = <0 -8 4>;
+    projection is perspective;
+    background = white;
+    field_of_view = 35;
+    if do_shading then
+        render_mode is shaded;
+    else
+        render_mode is wireframe;
+    end;
+is
+    scalar x = orientation dot <1 0 0>;
+    scalar y = orientation dot <0 1 0>;
+
+    distant_light from <.3 -.5 1>;
+
+    {flat light show_texture} volume_shape with
+        threshold = static threshold;
+        capping is static capping;
+        selection = selector's selection;
+        outline is subtle;
+        rotate by (y * 360) around -trans's x_axis;
+        rotate by (x * 360) around trans's z_axis;
+    end;
+end;    // volume_picture
+
+
+picture instruments_picture with
+    background = black;
+is
+    static toggle type shading_switch labelled "Shading"
+        controls do_shading;
+    static toggle type capping_switch labelled "Capping"
+        controls capping;
+    static button_meter type threshold_meter labelled "Threshold"
+        from 0 to .7 controls threshold;
+    scalar aspect_ratio = height / width;
+
+    shading_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .8 0>;
+    end;
+    capping_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .5 0>;
+    end;
+    render_mode is wireframe;
+    selector instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+    threshold_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.65 0>;
+    end;
+end;    // instruments_picture
+
+
+anim volume_anim with
+    double_buffer is on;
+is
+    integer total_width = width;
+    boolean first_frame is true;
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging orientation);
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+        default_cursor is arrow;
+    end;
+
+    // selection shapes
+    //
+    static shape thing1 is
+        block with
+            rotation of <10 20 30>;
+        end;
+    end;    // thing1
+    static shape thing2 is
+        cylinder with
+            rotate by 90 around <1 0 0>;
+            rotation of <10 20 30>;
+        end;
+    end;    // thing2
+    static shape thing3 is
+        sphere with
+            rotation of <10 20 30>;
+        end;
+    end;    // thing3
+
+    selector add thing3 as 3;
+    selector add thing2 as 2;
+    selector add thing1 as 1;
+
+    while true do
+        if mouse_down or first_frame or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+
+        volume_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((
+                total_width - width) div 2);
+        end;
+
+        interaction update;
+
+        first_frame is false;
+    end;
+end;    // volume_anim

@@ -1,0 +1,219 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		  volume_extents.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of volumetric extents which		}
+{		form an axis aligned bounding box in 3 dimensions.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/volume_bounding.ores";
+include "system/validation.ores";
+include "system/printing.ores";
+include "system/constants.ores";
+include "system/string_conversions.ores";
+include "system/comparisons.ores";
+
+
+vector max_extent = <infinity infinity infinity>;
+vector min_extent = <-infinity -infinity -infinity>;
+
+
+subject volume_extents
+extends
+	validifyable invalidateable volume_bounding scribable object
+does
+	// constructor
+	//
+    verb new
+	    from vector low = max_extent;
+	    to vector high = min_extent;
+    end;
+
+    // attribute setting methods
+    //
+    verb set
+    	from vector low;
+    	to vector high;
+    end;
+    verb invalidate;
+    
+    // attribute querying methods
+    //
+    boolean question is_valid;
+    
+    // volume bounding methods
+    //
+    boolean question contains
+    	vector point;
+    end;
+    vector question get_min;
+    vector question get_max;
+    vector question get_size;
+    vector question get_center;
+            
+    // construction methods
+    //
+    verb extend
+        to vector point;
+    end;
+    verb expand
+    	to volume_bounding type bounds;
+    end;
+        
+    // operators
+    //	
+    volume_extents type question plus
+		volume_bounding type bounds;
+    end;
+   
+    // scribable method
+    //
+    string type question to_string;
+has
+	// volume extents attributes
+	//
+    vector low, high; 
+is
+	//
+	// constructor
+	//
+	
+	
+    verb new
+	    from vector low = max_extent;
+	    to vector high = min_extent;
+    is
+    	set from low to high;
+    end;    // new
+
+
+	//    
+    // attribute setting methods
+    //
+    
+    
+    verb set
+    	from vector low;
+    	to vector high;
+    is
+		with volume_extents do
+			its low = low;
+			its high = high;
+		end;
+    end;	// set
+    
+    
+	verb invalidate is
+		low = max_extent;
+	    high = min_extent;
+	end;	// invalidate
+    
+    
+	//
+    // attribute querying methods
+    //
+    
+
+	boolean question is_valid is
+		answer low <> max_extent or high <> min_extent;
+	end;	// is_valid
+	
+
+	//
+    // volume bounding methods
+    //
+    
+    
+    boolean question contains
+    	vector point;
+    is		
+    	answer (low.x <= point.x <= high.x) and
+    		(low.y <= point.y <= high.y) and
+    		(low.z <= point.z <= high.z); 
+    end;	// contains
+    
+
+	vector question get_min is
+		answer low;
+	end;	// get_min
+	
+	
+	vector question get_max is
+		answer high;
+	end;	// get_max
+	
+	    	            
+    vector question get_size is
+        answer (high - low);
+    end;    // get_size
+    
+    
+    vector question get_center is
+        answer (low + high) / 2;
+    end;    // get_center
+	
+		    
+	//
+    // construction methods
+    //
+    
+            
+    verb extend
+        to vector point;
+    is
+        low.x = smaller of low.x and point.x;
+        low.y = smaller of low.y and point.y;
+        low.z = smaller of low.z and point.z;
+        high.x = larger of high.x and point.x;
+        high.y = larger of high.y and point.y;
+        high.z = larger of high.z and point.z;
+    end;    // extend
+    
+
+    verb expand
+    	to volume_bounding type bounds;
+   	is
+		if some bounds then
+			extend to bounds get_min;
+			extend to bounds get_max;
+		end;
+    end;	// expand
+    
+
+	//
+    // operators
+    //	
+    
+    
+    volume_extents type question plus
+		volume_bounding type bounds;
+    is
+    	volume_extents type extents from low to high;
+    	extents expand to bounds;
+    	answer extents;
+    end;	// plus
+
+	
+	//
+    // scribable methods
+    //
+    
+    
+	string type question to_string is
+    	string type string is "volume extents";
+    	string add " from ";
+    	string add vector_to_string of low;
+    	string add " to ";
+    	string add vector_to_string of high;
+    	answer string;
+    end;	// print
+end;    // volume_extents
+
+
+const volume_extents type unit_extents from <-1 -1 -1> to <1 1 1>;

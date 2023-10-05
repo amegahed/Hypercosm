@@ -1,0 +1,723 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       doubly_linked_lists.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utilities which provide a few useful           }
+{       listing utilities for doubly linked lists.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/collections.ores";
+include "system/lists.ores";
+include "system/doubly_linked_list_iterators.ores";
+
+subject doubly_linked_list
+extends
+	doubly_linked_listable list_indexable list
+does
+	// list construction methods
+	//
+	verb append_first
+		object type element;
+	end;
+	verb append_last
+		object type element;
+	end;
+	
+	// list querying methods
+	//      
+	object type question get_first;
+	object type question get_last;
+	
+	// doubly linked list deconstruction and querying methods
+	//
+	verb remove_first;
+	verb remove_last;    
+	object type question removed_first;
+	object type question removed_last;
+	
+	// list indexing methods
+	//    
+	object type question indexed
+		by integer index;
+	end;
+	integer question get_index
+		of object type element;
+	end;
+	
+	// collection construction methods
+	//
+	verb add
+		object type element;
+	end;
+	verb remove
+		object type element;
+	end;
+	verb clear;
+	
+	// collection querying methods
+	//
+	boolean question contains
+		object type element;
+	end;
+	
+	// collection iteration methods
+	//
+	doubly_linked_list_iterator type question get_iterator;
+has
+	// attributes
+	//
+	struct node has
+		object type element is none;
+		node type next is none, prev is none;
+	end;
+
+	// list of doubly linked container nodes
+	//
+	node type head is none;
+	node type tail is head;
+is
+	//
+	// private doubly linked list iterator class
+	//
+	
+	subject doubly_linked_list_iterator_implementation
+	extends
+		doubly_linked_list_iterator
+	does
+		// constructor
+		//
+		verb new
+			of doubly_linked_list type list;
+		end;
+		
+		// iterator querying methods
+		//
+		object type question element;
+		boolean question is_iterating;
+		boolean question is_done;
+		
+		// forward iteration methods
+		//
+		verb to_first;
+		verb to_next;
+		boolean question has_next;
+		object type question next;
+		
+		// backwards iteration methods
+		//
+		verb to_last;
+		verb backup;
+		boolean question has_prev;
+		object type question prev;
+		
+		// doubly linked list insertion methods
+		//
+		verb insert
+			object type element;
+			at iterator_direction type direction is next;
+		end;
+		
+		// doubly linked list deletion and querying methods
+		//
+		verb remove_next;
+		verb remove_prev;
+		object type question removed_next;
+		object type question removed_prev;
+	has
+		// attributes
+		//
+		doubly_linked_list type list;
+		node type current;
+	is
+		//
+		// constructor
+		//
+		
+		verb new
+			of doubly_linked_list type list;
+		is
+			with doubly_linked_list_iterator_implementation do
+				its list is list;
+				its current is list's head;
+			end;
+		end;    // new
+		
+		//
+		// iterator methods
+		//
+		
+		object type question element is
+			if some current then
+				answer current's element;
+			else
+				answer none;
+			end;
+		end;    // element
+		
+		boolean question is_iterating is
+			answer some current;
+		end;    // is_iterating
+				
+		boolean question is_done is
+			answer current is none;
+		end;    // is_done
+		
+		//        
+		// forward list iteration methods
+		//
+		
+		verb to_first is
+			current is list's head;
+		end;    // to_first
+		
+		
+		verb to_next is
+			if not finished then
+				current is its next;
+			end;
+		end;    // to_next
+		 
+		boolean question has_next is
+			if not finished then
+				answer some current's next;
+			else
+				answer false;
+			end;
+		end;    // has_next
+		
+		object type question next is
+			if has_next then
+				answer current's next's element;
+			else
+				answer none;
+			end;
+		end;    // next
+		
+		//
+		// backward list iteration methods
+		//
+		
+		verb to_last is
+			current is list's tail;
+		end;    // to_last
+		
+		verb backup is
+			if not finished then
+				current is its prev;
+			end;
+		end;    // backup
+				
+		boolean question has_prev is
+			if not finished then
+				answer some current's prev;
+			else
+				answer false;
+			end;
+		end;    // has_prev
+		
+		object type question prev is
+			if has_prev then
+				answer current's prev's element;
+			else
+				answer none;
+			end;
+		end;    // prev
+		
+		//                       
+		// doubly linked list insertion methods
+		//
+		
+		verb insert_next
+			object type element;
+		is
+			// create new node
+			//
+			node type node;
+			node's element is element;
+			
+			// add new node to list
+			//
+			if not finished then
+			
+				// add node to existing list
+				//
+				if some current's next then
+				
+					// insert into middle of list
+					//
+					node's next is current's next;
+					node's prev is current;
+					current's next's prev is node;
+					current's next is node;
+				else
+					// insert into tail of list
+					//
+					node's prev is current;
+					current's next is node;
+					list's tail is node;
+				end;
+			else
+				// begin new list
+				//
+				list's head is node;
+				list's tail is node;
+				current is node;
+			end;
+		end;    // insert_next
+		
+		verb insert_prev
+			object type element;
+		is
+			// create new node
+			//
+			node type node;
+			node's element is element;
+			
+			// add new node to list
+			//
+			if not finished then
+			
+				// add node to existing list
+				//
+				if some current's prev then
+				
+					// insert into middle of list
+					//
+					node's prev is current's prev;
+					node's next is current;
+					current's prev's next is node;
+					current's prev is node;
+				else
+					// insert into head of list
+					//
+					node's next is current;
+					current's prev is node;
+					list's head is node;
+				end;
+			else
+				// begin new list
+				//
+				list's head is node;
+				list's tail is node;
+				current is node;
+			end;
+		end;    // insert_prev
+		
+		verb insert
+			object type element;
+			at iterator_direction type direction is next;
+		is
+			when direction is
+				prev:
+					insert_prev element;
+				end;
+				
+				next:
+					insert_next element;
+				end;
+			end;    
+		end;    // insert
+		
+		//      
+		// doubly linked list deletion and querying methods
+		//
+		
+		verb remove is
+		
+			// remove and discard current reference
+			//
+			object type element is removed;
+		end;    // remove
+					   
+		verb remove_next is
+		
+			// remove and discard next reference
+			// 
+			object type element is removed_next;
+		end;    // remove_next
+		
+		verb remove_prev is
+		
+			// remove and discard prev reference
+			//
+			object type element is removed_prev;
+		end;    // remove_prev
+		
+		object type question removed is
+		   if not finished then
+				object type element is current's element;
+				
+				// unlink current from next
+				//
+				if some next then  
+					next's prev is current's prev;
+				end;
+				
+				// unlink current from prev
+				//
+				if some prev then
+					prev's next is current's next;
+				end;
+				// go to next element
+				//
+				current is its next;
+				
+				// return current node's element
+				//                
+				answer element;
+			else
+				answer none;
+			end;
+		end;    // removed
+				
+		object type question removed_next is
+		   if not finished then
+		   
+				// find next node from current node
+				//
+				node type next is current's next;
+				
+				if some next then      
+					if some next's next then
+					
+						// remove from middle of list
+						//
+						next's next's prev is current;
+						current's next is next's next; 
+					else
+						// remove from tail of list
+						//
+						current's next is none;
+						list's tail is current;
+					end;
+					
+					// return next node's element
+					//
+					answer next's element;
+				else
+					answer none;
+				end;
+			else
+				answer none;
+			end;
+		end;    // removed_next
+		
+		object type question removed_prev is
+		   if not finished then
+		   
+				// find prev node from current node
+				//
+				node type prev is current's prev;
+				
+				if some prev then      
+					if some prev's prev then
+					
+						// remove from middle of list
+						//
+						prev's prev's next is current;
+						current's prev is prev's prev; 
+					else
+						// remove from head of list
+						//
+						current's prev is none;
+						list's head is current;
+					end;
+					
+					// return next node's element
+					//
+					answer prev's element;
+				else
+					answer none;
+				end;
+			else
+				answer none;
+			end;
+		end;    // removed_prev
+	end;    // doubly_linked_list_iterator_implementation
+	
+	//    
+	// doubly linked list construction methods
+	//
+	
+	verb prepend
+		object type element;
+	is
+		// create new node
+		//
+		node type node;
+		node's element is element;
+
+		// add to head of list
+		// 
+		if some head then
+		
+			// add to head of existing list
+			//
+			node's next is head;
+			head's prev is node;
+		else
+			// begin new list
+			//
+			tail is node;
+		end;
+		head is node;
+				
+		elements = itself + 1;
+	end;    // prepend
+	
+	verb append
+		object type element;
+	is
+		// create new node
+		//
+		node type node;
+		node's element is element;
+
+		// add to tail of list
+		// 
+		if some tail then
+		
+			// add to tail of existing list
+			//
+			node's prev is tail;
+			tail's next is node;
+		else
+			// begin new list
+			//
+			head is node;
+		end;
+		tail is node;
+		
+		elements = itself + 1;
+	end;    // append    
+		  
+	verb insert
+		object type element;
+		at list_position type position is tail;
+	is
+		when position is
+			head:
+				prepend element;
+			end;
+			
+			tail:
+				append element;
+			end;
+		end;
+	end;    // insert 
+	
+	//        
+	// doubly linked list querying methods
+	//
+   
+	object type question get_first is
+		answer head's element;
+	end;    // get_first
+	
+	object type question get_last is
+		answer tail's element;
+	end;    // get_last
+	
+	object type question retreived
+		at list_position type position is head;
+	is
+		when position is
+			head:
+				answer get_first;
+			end;
+			
+			tail:
+				answer get_last;
+			end;
+		end;
+	end;    // retreived
+	
+	//     
+	// doubly linked list deconstruction and querying methods
+	//
+	   
+	verb remove_first is
+		object type element is removed_first;
+	end;    // remove_first
+	
+	verb remove_last is
+		object type element is removed_last;
+	end;    // remove_last
+	 
+	object type question removed_first is
+		if some head then
+			node type node is head;
+		
+			// remove from head of list
+			//
+			head's next's prev is none;
+			head is head's next;
+			if head is none then
+				tail is none;
+			end;
+			
+			elements = itself - 1;
+			
+			answer node's element;
+		else
+			answer none;
+		end;   
+	end;    // removed_first
+	
+	object type question removed_last is
+		if some tail then
+			node type node is tail;
+		
+			// remove from tail of list
+			//
+			tail's prev's next is none;
+			tail is tail's prev;
+			if tail is none then
+				head is none;
+			end;
+			
+			elements = itself - 1;
+			
+			answer node's element;
+		else
+			answer none;
+		end;  
+	end;    // removed_last
+	
+	//    
+	// list indexing method
+	//
+	
+	object type question indexed
+		by integer index;
+	is
+		if 1 <= index <= elements then
+			node type node is head;
+		
+			for integer counter = 1 .. index - 1 do
+				node is its next;
+			end;
+			
+			answer node's element; 
+		else
+			answer none;
+		end;
+	end;    // indexed
+	
+	integer question get_index
+		of object type element;
+	is
+		integer counter = 1;
+		node type node is head;
+		boolean found is false;
+		
+		while some node and not found do
+			if node's element is element then
+				found is true;
+			else
+				node is its next;
+				counter = itself + 1;
+			end;
+		end;
+		
+		if found then
+			answer counter;
+		else
+			answer 0;
+		end;
+	end;    // get_index
+	
+	//                  
+	// collection construction methods
+	//
+	
+	verb add
+		object type element;
+	is
+		add_last element;
+	end;    // add
+	
+	verb remove
+		object type element;
+	is
+		node type node is head;
+		boolean found is false;
+		
+		// find node and its prev
+		//
+		while some node and not found do
+			if node's element is element then
+				found is true;
+			else
+				node is its next;
+			end;
+		end;
+
+		// remove node from list
+		//
+		if found then
+			if some node's prev then
+			
+				// remove from middle of list
+				//
+				node's prev's next is node's next;
+			else
+				// remove from head of list
+				//
+				head is node's next;
+			end;
+			
+			if some node's next then
+			
+				// remove from middle of list
+				//
+				node's next's prev is node's prev;
+			else
+				// remove from tail of list
+				//
+				tail is node's prev;
+			end;
+			
+			node's next is none;
+			node's prev is none;
+			
+			elements = itself - 1;
+		end;
+	end;    // remove
+	 
+	verb clear is
+		head is none;
+		tail is none;
+	end;    // clear
+	
+	//    
+	// collection querying methods
+	//
+	
+	boolean question contains
+		object type element;
+	is
+		node type node is head;
+		
+		// search for node in list
+		//
+		while some node do
+			if node's element is element then
+				answer true;
+			else
+				node is its next;
+			end;
+		end;
+		
+		answer false;
+	end;    // contains
+   
+	doubly_linked_list_iterator type question get_iterator is
+		answer new doubly_linked_list_iterator_implementation type of doubly_linked_list;
+	end;    // get_iterator
+end;    // doubly_linked_list

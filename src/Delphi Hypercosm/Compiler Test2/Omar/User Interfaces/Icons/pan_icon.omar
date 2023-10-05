@@ -1,0 +1,33 @@
+do pan_icon_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+anim pan_icon_anim with
+	width = 256;
+	height = 256;
+	eye = <50 -50 50>;
+	projection is perspective;
+	field_of_view = 2;
+	facets = 8;
+	background_name is none;
+	background = white;
+is	
+	shape scene is
+		block with
+			magnify by .5;
+			material is plastic colored orange;
+		end;
+		parallelogram with
+			magnify by .75;
+			material is plastic colored white poster "translate_arrow.gif";
+			orient from <0 0 1> to <1 -1 1>;
+			move to <.25 -.25 .25>;
+			//rotate by -45 around <0 0 1>;
+		end;
+	end;
+		
+	mouse_controlled_shape scene;
+end;	// pan_icon_anim

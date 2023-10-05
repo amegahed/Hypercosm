@@ -1,0 +1,448 @@
+{***************************************************************}
+{                            text.ores                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{               Contains standard 3D text utilities             }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+
+include "native_text.ores";
+include "strings.ores";
+include "glyphs.ores";
+include "simple_font.ores";
+
+
+subject text_style
+does
+    verb new with
+        font_family type font_family is simple_font;
+        boolean bold is false;
+        boolean italic is false;
+        boolean underline is false;
+
+        scalar size = 1;    // The height of an uppercase letter
+        scalar depth = 0;
+        scalar length = 0;
+        
+        h_alignment type h_align is center;
+        v_alignment type v_align is middle;
+        
+        color type color = white;
+        material type material is none;
+    end;
+has
+    public font_family type font_family is none;
+    public boolean bold;
+    public boolean italic;
+    public boolean underline;
+    public scalar size;
+    public scalar depth;
+    public scalar length;
+    public h_alignment type h_align;
+    public v_alignment type v_align;
+    public color type color;
+    public material type material is none;
+is
+    verb new with
+        font_family type font_family is simple_font;
+        boolean bold is false;
+        boolean italic is false;
+        boolean underline is false;
+
+        scalar size = 1;
+        scalar depth = 0;
+        scalar length = 0;
+        
+        h_alignment type h_align is center;
+        v_alignment type v_align is middle;
+
+        color type color = white;
+        material type material is none;
+    is
+        text_style's font_family is font_family;
+        text_style's bold is bold;
+        text_style's italic is italic;
+        text_style's underline is underline;
+
+        text_style's size = size;
+        text_style's depth = depth;
+        text_style's length = length;
+        
+        text_style's h_align is h_align;
+        text_style's v_align is v_align;
+        
+        text_style's color = color;
+        text_style's material is material;
+    end;
+end;
+
+
+text_style type simple_text;
+
+
+// *** text ***
+// Hypercosm's standard text shape. You can use the text shape to
+// create a broad variety of differently-styled text.
+// 
+// A description of the "text" parameters:
+//
+//  string:     The character string to be drawn as text.
+//
+//  text_style: The text_style that the text will use. The text_style
+//              subject is defined above. It provides "text" with
+//              all the information it needs about how the text
+//              should be drawn.
+//
+//              The "text_style" parameter should never be given a
+//              "none" value, as "text" requires some default
+//              "text_style".
+//
+//              You can easily override the defaults given to "text"
+//              in its "text_style" by changing the values of the
+//              other "text" parameters.    
+//
+//              By default, "text" uses the "simple_text" text_style,
+//              which means that:
+//                  the default font_family is simple_font,
+//                  the default bold is false,
+//                  the default italic is false,
+//                  the default underline is false,
+//                  the default size = 1,
+//                  the default depth = 0,
+//                  the default length = 0,
+//                  the default h_align is center,
+//                  the default v_align is middle,
+//                  the default color = white,
+//                  the default material is none.
+//
+//  font_family:The font family that the text will use. The default
+//              font family, "simple_font", is the recommended font
+//              family because it uses the most basic geometric shapes
+//              and therefore affects applet file sizes the least.
+//
+//  bold:       Controls whether or not the text is bold.
+//  italic:     Controls whether or not the text is italic.
+//
+//              Note that bold and italic can both be set to true to
+//              produce a Bold Italic style. However, not all font
+//              families provide Bold, Italic, and Bold Italic
+//              styles. If you attempt to use a style does not exist
+//              for a particular font family, "text" will use another
+//              style of the same font family.
+//  
+//  underline:  Controls whether or not the text is underlined.
+//
+//  size:       Sets the size of the text. Specifically, size controls
+//              the height of a typical uppercase letter.
+//
+//              Note that some glyphs may extend higher or lower than
+//              uppercase letters. For example, "g" and "y" both
+//              extend lower, and "(" extends both higher and lower.
+//              Also, note that if size = 1, a word like "ace" will be
+//              less than one unit high, because it contains no
+//              full-sized glyphs.
+//
+//  depth:      Controls the depth of extruded "3D" text. If depth = 0,
+//              then the text is planar.
+//
+//  length:     Controls the length of the text string. To adjust
+//              the length of the text string, "text" increases (or
+//              decreases) the space between glyphs. If the value of
+//              "length" is small enough, glyphs will overlap.
+//
+//              By default, the length parameter is given a 0 value,
+//              which means that the text uses the font's standard
+//              spacing. If you need to know the length of a standard-
+//              spaced text string, you can use the "text_length"
+//              question defined below.
+//
+//  h_align:    Controls the horizontal alignment of the text.
+//
+//              You can assign "h_align" three different values:
+//                  left:   left edge of text is at z-axis.
+//                  center: text is centered on the z-axis.
+//                  right:  right edge of text is at z-axis.
+//
+//  v_align:    Controls the vertical alignment of the text.
+//
+//              You can assign "v_align" three different values:
+//                  top:    top edge of uppercase letters is at x-axis.
+//                  middle: uppercase letters centered on x-axis.
+//                  bottom: bottom edge of uppercase letters at x-axis.
+//
+//  color:      Controls the color of the text.
+//  material:   Controls the material of the text.
+//
+//
+shape text
+    string type string;
+    using text_style type text_style is simple_text;
+with
+    font_family type font_family is text_style's font_family;
+    boolean bold is text_style's bold;
+    boolean italic is text_style's italic;
+    boolean underline is text_style's underline;
+
+    scalar size = text_style's size;
+    scalar depth = text_style's depth;
+    scalar length = text_style's length;
+    
+    h_alignment type h_align is text_style's h_align;
+    v_alignment type v_align is text_style's v_align;
+    
+    color type color = text_style's color;
+    material type material is text_style's material;
+is
+    glyph_set type glyph_set is none;
+    glyph type glyphs[];
+    scalar std_glyph_height; // = glyph ascent line - base line
+                             // (does not include extent below base
+                             //  line, as in lowercase g, p, or y)
+    scalar glyph_z_center;   // = (glyph ascent line + base line) / 2
+    scalar size_scalar;
+    scalar glyph_spacing;
+    scalar blank_glyph_width;
+    scalar glyph_width, prev_glyph_width;
+    scalar x_move = 0, z_move = 0;
+
+    global color = color;
+    global material is material;
+
+    
+    if font_family is none then
+        write "Error: text must be assigned a font_family.",;
+        exit;
+    end;
+    
+
+    if bold and italic then
+        glyph_set is font_family's bold_italic_set;
+    elseif bold then
+        glyph_set is font_family's bold_set;
+    elseif italic then
+        glyph_set is font_family's italic_set;
+    else
+        glyph_set is font_family's plain_set;
+    end;
+
+
+    glyphs is glyph_set's glyphs;
+    std_glyph_height = glyph_set ascent_line - glyph_set base_line;
+    glyph_z_center = (glyph_set ascent_line + glyph_set base_line) / 2;
+    size_scalar = size / std_glyph_height;
+    blank_glyph_width = std_glyph_height / 4;
+
+
+    // Determine text length and glyph spacing:
+    //
+    if length = 0 then      // Use default glyph spacing
+    
+        glyph_spacing = glyph_set glyph_spacing;
+    
+        for integer i = min string .. max string do
+            if some glyphs[ord string [i]] then
+                length = itself + glyphs[ord string[i]]'s width;
+            else
+                length = itself + blank_glyph_width;
+            end;
+        end;
+
+        length = itself + (num string - 1) * glyph_spacing;
+        length = itself * size_scalar;
+
+    else                    // Adjust spacing for specified length
+
+        scalar glyphs_length = 0;
+
+        for integer i = min string .. max string do
+            if some glyphs[ord string [i]] then
+                glyphs_length = itself + glyphs[ord string[i]]'s width;
+            else
+                glyphs_length = itself + blank_glyph_width;
+            end;                
+        end;
+        
+        glyphs_length = itself * size_scalar;
+        glyph_spacing = (length - glyphs_length) /
+                        ((num string - 1) * size_scalar);
+    end;
+    
+    // Adjust text alignment:
+    //
+    when h_align is
+        center:
+            x_move = -length/2;
+        end;
+        
+        right:
+            x_move = -length;
+        end;
+    end;
+
+    when v_align is
+        top:
+            z_move = -(glyph_set ascent_line) * size_scalar;
+        end;
+        
+        middle:
+            z_move = ((std_glyph_height / 2) -
+                     (glyph_set ascent_line)) * size_scalar;
+        end;
+        
+        bottom:
+            z_move = -(glyph_set base_line) * size_scalar;
+        end;
+    end;
+
+    // Underline, if specified:
+    //
+    if underline then
+        parallelogram with
+            vertex = <0 0 ((glyph_set base_line * size_scalar) -
+                           (size / 8))>;
+            side1 = <length 0 0>;
+            side2 = <0 0 (size / 16)>;
+            move to <x_move 0 z_move>;
+        end;
+    end;
+                    
+    // Draw the first glyph:
+    //    
+    if some glyphs[ord string[min string]] then
+        prev_glyph_width = glyphs[ord string[min string]]'s width;       
+
+        x_move = itself + (prev_glyph_width / 2) * size_scalar;
+        
+        glyphs[ord string[min string]]'s figure with
+            depth = static depth;
+            magnify by size_scalar;
+            move to <x_move 0 z_move>;
+        end;
+    else
+        prev_glyph_width = blank_glyph_width;
+        x_move = itself + (prev_glyph_width / 2) * size_scalar;
+    end;
+
+    // Draw the remaining glyphs:
+    //
+    for integer i = (min string + 1) .. max string do
+        if some glyphs[ord string[i]] then
+            glyph_width = glyphs[ord string[i]]'s width;
+        else
+            glyph_width = blank_glyph_width;
+        end;
+        
+        x_move = itself + (prev_glyph_width/2 + glyph_spacing +
+                 glyph_width/2) * size_scalar;
+                 
+        if some glyphs[ord string[i]] then
+            glyphs[ord string[i]]'s figure with
+                depth = static depth;
+                magnify by size_scalar;
+                move to <x_move 0 z_move>;
+            end;
+        end;
+        
+        prev_glyph_width = glyph_width;
+    end;
+end;
+
+
+// *** text_length ***
+// Returns the length of the text shape that would be created
+// by "text" for "string" with length = 0.
+//
+scalar question text_length
+    of string type string;
+    using text_style type text_style is simple_text;
+with
+    font_family type font_family is text_style's font_family;
+    boolean bold is text_style's bold;
+    boolean italic is text_style's italic;
+    scalar size = text_style's size;
+is
+    glyph_set type glyph_set is none;
+    glyph type glyphs[];
+    scalar std_glyph_height;
+    scalar size_scalar;
+    scalar blank_glyph_width;
+    scalar glyph_spacing;
+    scalar length = 0;
+
+    if font_family is none then
+        write "Error: text_length must be assigned a font_family.",;
+        exit;
+    end;
+    
+    if bold and italic then
+        glyph_set is font_family's bold_italic_set;
+    elseif bold then
+        glyph_set is font_family's bold_set;
+    elseif italic then
+        glyph_set is font_family's italic_set;
+    else
+        glyph_set is font_family's plain_set;
+    end;
+    
+    glyphs is glyph_set's glyphs;
+    std_glyph_height = glyph_set ascent_line - glyph_set base_line;
+    size_scalar = size / std_glyph_height;
+    blank_glyph_width = std_glyph_height / 4;
+    glyph_spacing = glyph_set glyph_spacing;
+
+    for integer i = min string .. max string do
+        if some glyphs[ord string [i]] then
+            length = itself + glyphs[ord string[i]]'s width;
+        else
+            length = itself + blank_glyph_width;
+        end;
+    end;
+
+    length = itself + (num string - 1) * glyph_spacing;
+    length = itself * size_scalar;
+
+    answer length;
+end;
+
+
+// *** text_descent ***
+// Returns the number of units a glyph might extend below the font's
+// base line. This number is important for such glyphs as g, y, or (,
+// which extend lower than a typical uppercase letter.
+//
+scalar question text_descent
+    of text_style type text_style is simple_text;
+with
+    font_family type font_family is text_style's font_family;
+    boolean bold is text_style's bold;
+    boolean italic is text_style's italic;
+    scalar size = text_style's size;
+is
+    glyph_set type glyph_set is none;
+    scalar std_glyph_height;
+    scalar size_scalar;
+
+    if font_family is none then
+        write "Error: text_length must be assigned a font_family.",;
+        exit;
+    end;
+    
+    if bold and italic then
+        glyph_set is font_family's bold_italic_set;
+    elseif bold then
+        glyph_set is font_family's bold_set;
+    elseif italic then
+        glyph_set is font_family's italic_set;
+    else
+        glyph_set is font_family's plain_set;
+    end;
+    
+    std_glyph_height = glyph_set ascent_line - glyph_set base_line;
+    size_scalar = size / std_glyph_height;
+
+    answer ((glyph_set base_line - glyph_set descent_line)
+           * size_scalar);
+end;

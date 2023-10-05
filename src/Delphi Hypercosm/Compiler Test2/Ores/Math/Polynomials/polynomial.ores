@@ -1,0 +1,112 @@
+{***************************************************************}
+{                        polynomial.ores                        }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{      Contains the subject "polynomial" which can be used      }
+{     to evaluate polynomial functions of arbitrary degree      }
+{                     (linear, cubic, etc.)                     }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+subject polynomial 
+extends
+    scalar[]
+does
+	// evaluation methods
+	//
+    scalar question get_value
+        at scalar t;
+    end;
+    scalar[] question get_values 
+        in integer steps;
+    end;
+    polynomial type question get_derivative;
+    
+    // printable methods
+    //
+    verb print;
+is
+    //
+	// evaluation methods
+	//
+	
+	
+    scalar question get_value
+        at scalar t;
+    is
+        scalar sum = 0;
+        scalar tn = 1;
+
+        for integer power = 0 .. max polynomial do
+            sum = itself + polynomial[power] * tn; 
+            tn = itself * t;
+        end;
+
+        answer sum; 
+    end;    // get_value
+
+ 
+    scalar[] question get_values 
+        in integer steps;
+    is
+        scalar curve[0 .. steps];    
+
+        for integer step = 0 .. steps do
+        	scalar t = step / steps;
+            curve[step] = polynomial get_value at t;
+        end;
+
+        answer curve;
+    end;    // get_values
+
+
+    polynomial type question get_derivative is
+        polynomial type polynomial2;
+
+        dim polynomial2[0 .. max polynomial - 1];
+
+        for integer power = 1 .. max polynomial do
+            scalar coefficient = polynomial[power];
+            polynomial2[power - 1] = coefficient * power; 
+        end;
+
+        answer polynomial2;
+    end;    // get_derivative
+
+
+    //
+    // printable methods
+    //
+    
+    
+    verb print is
+        integer power = max polynomial;
+
+        while power > 1 do
+            write polynomial[power], "x^", power, " + ";
+            power = itself - 1;
+        end;
+        if max polynomial >= 1 then
+            write polynomial[power], "x + ";
+        end;
+        if max polynomial >= 0 then
+            write polynomial[0], ;
+        end;
+    end;    // print
+end;    // polynomial
+
+
+polynomial type question new_polynomial
+	of scalar coefficients[];
+is
+	polynomial type polynomial;
+	dim polynomial[0 .. num coefficients - 1];
+	for integer counter = min coefficients .. max coefficients do
+		polynomial[max coefficients - counter] = coefficients[counter];
+	end;
+	answer polynomial;
+end;	// new_polynomial

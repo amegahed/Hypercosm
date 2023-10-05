@@ -1,0 +1,358 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         interactions.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard animation subjects, which can be      }
+{       used to animate objects using standard user             }
+{       interactions.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_sensing.ores";
+include "vectors.ores";
+include "transformations.ores";
+
+boolean question in_window
+	vector v;
+is
+	scalar x = v dot <1 0 0>;
+	scalar y = v dot <0 1 0>;
+	answer abs x < 1 and abs y < 1;
+end;    // in_window
+
+subject mouse_tracker 
+does
+	// constructor
+	//
+	verb new with
+		integer button_number = 1;
+	end;    // new
+
+	// upating method
+	//
+	verb update;
+has
+	// attributes
+	//      
+	public boolean up is false;
+	public boolean down is false;
+	public boolean dragged is false;
+	public vector location = <0 0 0>;
+	public vector direction = <0 0 0>;
+
+	// private state info
+	// 
+	integer button_number;
+	boolean previous_down is false;
+	vector previous_mouse = <0 0 0>;
+is
+	//
+	// constructor
+	//
+
+	verb new with
+		integer button_number = 1;
+	is
+		mouse_tracker's button_number = button_number;
+	end;    // new
+
+	//
+	// upating method
+	//
+
+	verb update is
+		vector current_mouse = get_mouse;
+		boolean current_down is mouse_down button button_number;
+
+		// check for mouse events
+		//
+		up is previous_down and not current_down;
+		down is in_window current_mouse and current_down and
+			not previous_down;
+		dragged is previous_down and current_down and 
+			current_mouse <> previous_mouse and in_window 
+			current_mouse;
+
+		// update mouse tracking 
+		//
+		if dragged then
+			direction = current_mouse - previous_mouse;
+			location = itself + direction;
+		else
+			direction = <0 0 0>;
+		end;
+
+		// update current state
+		//
+		previous_down is current_down;
+		previous_mouse = current_mouse;
+	end;    // update
+end;    // mouse_tracker 
+
+static subject camera_tracker 
+extends
+	trans
+does
+	// constructor
+	//
+	verb new;
+
+	verb zoom
+		by scalar factor;
+	end;    // zoom
+
+	verb place;
+
+	verb roll
+		to scalar angle = 0;
+	end;    
+has
+	// attributes
+	//
+	public scalar field_of_view;
+	public scalar distance;
+is
+	//
+	// constructor
+	//
+
+	verb new is
+		trans new with
+			origin = eye;
+			y_axis = normalized (lookat - eye);
+			z_axis = normalized (<0 0 1> perpendicular y_axis);
+			x_axis = y_axis cross z_axis;
+		end;
+		camera_tracker's field_of_view = global field_of_view;
+		camera_tracker's distance = vlength of (eye - lookat);
+		revolve the camera_tracker by -global roll around y_axis;
+	end;    // new
+
+	verb zoom
+		by scalar factor;
+	is
+		field_of_view = itself * factor;
+	end;    // zoom
+
+	verb place is
+		eye = origin;
+		lookat = origin + (y_axis * distance);
+		global field_of_view = field_of_view;
+	end;    // place
+
+	verb roll
+		to scalar angle = 0;
+	is
+		scalar x, y;
+		y = (z_axis parallel <0 0 1>) dot <0 0 1>;
+		x = <0 0 1> dot x_axis;
+		global roll = (arctan x y) + angle; 
+	end;    // roll
+end;    // camera_tracker
+
+subject interaction 
+does
+	// constructor
+	//
+	verb new 
+		about vector point = lookat;
+	with
+		integer rotate_button = 1;
+		integer pan_button = 3;
+		integer zoom_roll_button = 2;
+
+		// do we the viewer to tilt from side to side
+		// or must they remain upright
+		//
+		boolean rolling is false;
+	end;    // new
+
+	// updating method
+	//
+	verb update;
+has
+	// attributes
+	//
+	public vector point;
+	public scalar distance;
+	public vector direction;
+	public camera_tracker type camera;
+	public trans type trans;
+
+	// private interaction data
+	//
+	public mouse_tracker type mouse[];
+	mouse_tracker type rotate_mouse is none;
+	mouse_tracker type pan_mouse is none;
+	mouse_tracker type zoom_roll_mouse is none;
+
+	// private status data 
+	//
+	scalar roll_angle; 
+	boolean rolling; 
+is
+	// this factor regulates how quickly rotations are performed 
+	// around singularities (where the angular delta is infinite) 
+	//
+	const scalar factor = 1;
+
+	//
+	// constructor
+	//
+
+	verb new 
+		about vector point = lookat;
+	with
+		integer rotate_button = 1;
+		integer pan_button = 3;
+		integer zoom_roll_button = 2;
+
+		// do we the viewer to tilt from side to side
+		// or must they remain upright
+		//
+		boolean rolling is false;
+	is
+		interaction's point = point;
+		distance = vlength of (eye - lookat);
+		direction = <0 0 0>;
+
+		// init mouse trackers
+		//
+		dim none mouse[1..3];
+		new mouse[1] with
+			button_number = 1;
+		end;
+		new mouse[2] with
+			button_number = 2;
+		end;
+		new mouse[3] with
+			button_number = 3;
+		end;
+
+		// init mouse functions
+		//
+		rotate_mouse is mouse[rotate_button];
+		pan_mouse is mouse[pan_button];
+		zoom_roll_mouse is mouse[zoom_roll_button];
+
+		// init status data
+		//
+		roll_angle = global roll;
+		interaction's rolling is rolling;
+	end;    // new
+
+	verb update_object is
+		scalar x, y, angle;
+		vector trans_point;
+		vector right_vector2, line_of_sight2, up_vector2;
+
+		// rotate object
+		//
+		if rotate_mouse's dragged then
+			x = rotate_mouse's direction dot <1 0 0> * -180;
+			y = rotate_mouse's direction dot <0 1 0> * -180;
+			rotate the trans by (-x) around camera's 
+				z_axis about point;
+			rotate the trans by y around camera's 
+				x_axis about point;
+			trans_point = trans transformed point;
+
+			// rotate camera around line of sight to object
+			//
+			line_of_sight2 = normalized (trans_point - camera's origin);
+			up_vector2 = normalized (camera's z_axis perpendicular line_of_sight2);
+			right_vector2 = line_of_sight2 cross up_vector2;
+
+			// roll camera to keep object level
+			//
+			x = (up_vector2 parallel trans's z_axis) dot
+				trans's z_axis;
+			y = trans's z_axis dot right_vector2;
+
+			// angle 0 to 360
+			//
+			angle = arctan y x - roll_angle;
+			if angle > 180 then
+				angle = itself - 360;
+			end;
+			if x < factor then
+				angle = itself * abs (x / factor);
+			end;
+			revolve the camera by angle around line_of_sight2;
+		end;
+	end;    // update_object 
+
+	verb update_camera is
+
+		// pan camera
+		//
+		if pan_mouse's dragged then
+			scalar x = -pan_mouse's direction dot <1 0 0>; 
+			scalar y = -pan_mouse's direction dot <0 1 0>;
+			scalar diagonal = sqrt (sqr width + sqr height);
+			scalar x_factor = field_of_view * (width / diagonal) / 2;
+			scalar y_factor = field_of_view * (height / diagonal) / 2;
+			
+			revolve the camera by (-x * x_factor) around camera's z_axis;
+			revolve the camera by (y * y_factor) around camera's x_axis;
+		end;
+
+		// move camera
+		// 
+		if zoom_roll_mouse's down then
+			direction = normalized project get_mouse;
+		end;
+
+		if zoom_roll_mouse's dragged then
+			scalar x = zoom_roll_mouse's direction dot <1 0 0>; 
+			scalar y = zoom_roll_mouse's direction dot <0 1 0>; 
+			if abs x < abs y then
+				camera translate by direction * y * -distance;
+			else
+				if rolling then
+					roll_angle = itself + (x * 180);
+				end;
+			end;
+		end;
+
+		// roll camera to keep level to object
+		//
+		if pan_mouse's dragged or zoom_roll_mouse's dragged then
+			scalar x = (camera's z_axis parallel trans's 
+				z_axis) dot trans's z_axis;
+			scalar y = trans's z_axis dot camera's x_axis;
+			// angle 0 to 360
+			scalar angle = arctan y x - roll_angle;
+			if angle > 180 then
+				angle = itself - 360;
+			end;
+			if x < factor then
+				angle = itself * abs (x / factor);
+			end;
+			revolve the camera by angle around camera's y_axis;
+		end;
+
+		// actually place camera
+		//
+		camera place;
+		camera roll to 0;
+	end;    // update_camera 
+
+	verb update is
+
+		// update the object and camera
+		//
+		update_object;
+		update_camera;
+
+		// update mouse trackers 
+		//
+		mouse[1] update;
+		mouse[2] update;
+		mouse[3] update;
+	end;    // update
+end;    // interaction

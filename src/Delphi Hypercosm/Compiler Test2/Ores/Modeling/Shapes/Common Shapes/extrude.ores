@@ -1,0 +1,253 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		   extrude.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of an		}
+{		extrusion.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/swapping.ores";
+include "system/native_shapes.ores";
+include "system/mesh_utils.ores";
+include "system/transformations.ores";
+
+
+shape extrude
+    scalar points[, ];
+    along vector axis = <0 1 0>;
+with
+    scalar height = 1;
+    boolean smoothing is false;
+is
+    verb swap
+        vector reference point1;
+        and vector reference point2;
+    is
+        vector point3;
+        point3 = point1;
+        point1 = point2;
+        point2 = point3;
+    end;    // swap
+
+
+    shape body is
+        if (num points[] = 2) then
+            vector vertices[];
+            integer edges[,];
+            integer faces[];
+            integer sides[][];
+            vector vertex1, vertex2, vertex3, normal;
+            boolean convex;
+
+            // create vertices of extrusion
+            //
+            dim vertices[min points .. (num points * 2 + min points) - 1];
+            for integer counter = min points .. max points do
+                scalar x = points[counter, min points[]];
+                scalar y = points[counter, max points[]];
+
+                vector top_point = <x y (height / 2)>;
+                vector bottom_point = <x y (-height / 2)>;
+
+                vertices[counter] = bottom_point;
+                vertices[counter + num points] = top_point;
+            end;
+
+            // find convexity of extrusion
+            //
+            vertex1 = vertices[max points];
+            vertex2 = vertices[min points];
+            vertex3 = vertices[min points + 1];
+            normal = (vertex2 - vertex1) cross (vertex3 - vertex2);
+            convex is normal dot <0 0 1> > 0;
+
+            // swap order of vertices if convex
+            //
+            if not convex then
+                integer halfway = min points + (num points - 1) div 2;
+                integer counter = max points;
+
+                for integer index = min points .. halfway do
+
+                    // swap top vertices
+                    //
+                    swap vertices[index] and vertices[counter];
+
+                    // swap bottom vertices
+                    //
+                    swap vertices[index + num points] and
+                        vertices[counter + num points];
+
+                    counter = itself - 1;
+                end;
+            end;
+
+            // create edges of extrusion
+            //
+            dim edges[1 .. num points * 3, 1..2];
+            for integer counter = 1 .. num points do
+
+                // create bottom edges
+                //
+                integer index1 = counter;
+                integer index2 = counter + 1;
+
+                // wraparound
+                //
+                if index1 mod num points = 0 then
+                    index2 = itself - num points;
+                end;
+
+                edges[counter, 1] = index1;
+                edges[counter, 2] = index2;
+
+                // create top edges
+                //
+                edges[counter + num points, 1] = index1 + num points;
+                edges[counter + num points, 2] = index2 + num points;
+
+                // create vertical edges
+                //
+                edges[counter + num points * 2, 1] = index1;
+                edges[counter + num points * 2, 2] = index1 + num points;
+            end;
+
+            // create side faces of extrusion
+            //
+            dim sides[1 .. num points + 2];
+            for integer counter = 1 .. num points do
+                integer index1 = counter;
+                integer index2 = counter + 1;
+
+                dim sides[counter][1..4];
+                if index1 mod num points = 0 then
+                    index2 = itself - num points;
+                end;
+
+                sides[counter][1] = index1;
+                sides[counter][2] = index2;
+                sides[counter][3] = index2 + num points;
+                sides[counter][4] = index1 + num points;
+            end;
+
+            // create bottom face of extrusion
+            //
+            dim sides[num points + 1][1 .. num points];
+            for integer index = 1 .. num points do
+                sides[num points + 1][index] = num points + 1 - index;
+            end;
+
+            // create top face of extrusion
+            //
+            dim sides[num points + 2][1 .. num points];
+            for integer index = 1 .. num points do
+                sides[num points + 2][index] = index + num points;
+            end;
+
+            // create mesh shape
+            //
+            faces is mesh_faces from sides and edges;
+            mesh vertices edges faces with
+                smoothing is static smoothing;
+                closed is true;
+            end;
+        else
+            write "error - the extrude shape must take an", ;
+            write "        array of height, radius pairs.", ;
+        end;
+    end;
+
+    body with
+        if axis <> <0 0 1> then
+            if axis = <1 0 0> then
+                rotate by -90 around <0 0 1>;
+                rotate by -90 around <0 1 0>;
+            elseif axis = <0 1 0> then
+                rotate by 90 around <1 0 0>;
+            else
+                direct from <0 0 1> to axis;
+            end;
+        end;
+    end;
+end;    // extrude
+
+
+shape extrude2
+    scalar vertex[, ];
+    along vector axis = <0 1 0>;
+with
+    scalar height = 1;
+    boolean capping is true;
+    boolean closing is true;
+is
+    shape body is
+        integer x = min vertex[];
+        integer y = max vertex[];
+
+        if (y - x + 1 = 2) then
+            integer first = min vertex;
+            integer last = max vertex;
+            vector point[first..last];
+            
+            // make sides of extrusion
+            //
+            for integer counter = first..last do
+                integer index1 = counter, index2;
+                vector point1, point2;
+
+                if (counter = last) then
+                    index2 = first;
+                else
+                    index2 = counter + 1;
+                end;
+                
+                if counter <> last or closing then
+                    point1 = <vertex[index1, x] vertex[index1, y] (-height / 2)>;
+                    point2 = <vertex[index2, x] vertex[index2, y] (-height / 2)>;
+                    parallelogram with
+                        vertex = point1;
+                        side1 = point2 - point1;
+                        side2 = (<0 0 height>);
+                    end;
+                end;
+            end;
+
+            if capping then
+                // make faces of extrusion
+                //
+                for integer counter = first..last do
+                    point[counter] = <vertex[counter, x] vertex[counter, y]
+                        (-height / 2)>;
+                end;
+                polygon point;
+                for integer counter = first..last do
+                    point[counter] = <vertex[counter, x] vertex[counter, y]
+                        (height / 2)>;
+                end;
+                polygon point;
+            end;
+        else
+            write "error - the extrude shape must take an", ;
+            write "        array of height, radius pairs.", ;
+        end;
+    end;    // body
+
+    body with
+        if axis <> <0 0 1> then
+            if axis = <1 0 0> then
+                rotate by -90 around <0 0 1>;
+                rotate by -90 around <0 1 0>;
+            elseif axis = <0 1 0> then
+                rotate by 90 around <1 0 0>;
+            else
+                direct from <0 0 1> to axis;
+            end;
+        end;
+    end;
+end;    // extrude2

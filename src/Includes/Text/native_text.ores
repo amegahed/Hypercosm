@@ -1,0 +1,83 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          native_text.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains native overlay_text declaration.               }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_display.ores";
+include "colors.ores";
+
+enum h_alignment is left, center, right;
+enum v_alignment is top, middle, bottom;
+
+// *** overlay_text ***
+// overlay_text draws text using a font chosen from the system that the
+// applet is running on.  The text is drawn at the end of the frame, on
+// top of any 3D primitives that are in the scene (in other words, the
+// overlay text is not depth buffered, it is always drawn on top).  Text
+// from multiple calls to overlay_text will be drawn in the order that
+// the calls are made.
+//
+// The font_family string allows you to specify a case-insensitive
+// comma-separated list of font names for the Player to look for.  If
+// the font_family is left as none, the Player will look for Arial, and
+// if it can't find it, will fall back to some system default font
+// (at which point the font appearance is not guaranteed to be anything
+// like what you want).  Several sample font family strings are provided
+// below.
+//
+// The size parameter is in pixels and is the height of the text (the
+// font ascent plus the font descent).  The text will be drawn using the
+// best available match to the requested size.  Be sure to allow a
+// margin of error in the font size in your applet - allow some space in
+// the applet in case the text is drawn up to 10% larger than it appears
+// on your computer.  Also, you should set the size to be a fraction of
+// your window height, so that the text is resized proportionally if
+// your applet is run at a different window size.  Finally, be cautious
+// of using text with a small size (for example 12 pixels or smaller) as
+// it may not be drawn well.
+//
+// overlay_text is a verb, not a shape.  The location where it draws is
+// not affected by 'move to' or other transformations.  The overlay_text
+// calls must be executed on every frame that you want the text to
+// appear, so be wary of calls to overlay_text from within a shape.  If
+// a shape's parameters don't change from one frame to the next,
+// Hypercosm's shape optimizer will cause that shape's code to only be
+// executed once.  Therefore any calls to overlay_text will only be
+// executed once, and the text will only be visible for one frame.  Call
+// overlay_text from your picture, or from shapes that are not optimized.
+const string type times_overlay_font_family =
+	"times,times new roman";
+const string type serif_overlay_font_family =
+	"times,times new roman,palatino";
+const string type sans_serif_overlay_font_family =
+	"arial,verdana,helvetica";
+
+native verb overlay_text
+	string type string;
+	at vector position = <0 0 0>;
+with
+	string type font_family is none;
+	boolean bold is false;
+	boolean italic is false;
+	boolean underline is false;
+	
+	integer size = height div 20;
+	
+	h_alignment type h_align is center;
+	v_alignment type v_align is middle;
+	
+	color type color = white;
+	
+	boolean transparent_background is true;
+	color type background_color = black;
+end;

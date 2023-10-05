@@ -1,0 +1,112 @@
+{***************************************************************}
+{                          dimensions.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do dimensions_anim;
+
+
+include "system/3d.ores";
+include "system/abs_trans.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+include "system/snowman.omar";
+
+
+picture dimensions_picture with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <0 0 .85>;
+is
+    static shape scene is
+        scalar h1 = 3.6 * .5;
+        scalar h2 = 3.6 * .2;
+
+        snowman with
+            magnify by .5;
+            color = white;
+        end;
+        snowman with return with
+            dimensions of <.6 .6 .6>;
+            color = red;
+        end;
+        block with
+            magnify by .3;
+            move to <0 0 .3>;
+            color = white;
+        end;
+
+        {
+        line [(0 0 h1) (.8 0 h1)];
+        line [(0 0 h2) (.6 0 h2)];
+
+        double_arrow from (.6 0 0) to (.6 0 h2) with
+            arrowhead_length = arrowhead_length * 2;
+        end;
+        double_arrow from (.8 0 0) to (.8 0 h1);
+        }
+
+        futura_l_word "DIMENSIONS" with
+            rotate by 90 around <1 0 0>;
+            move to <-1 0 .75>;
+        end;
+        axes;
+    end;    // scene
+
+    scene;
+    axes;
+end;    // dimensions_picture
+
+
+anim dimensions_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <0 0 .85>;
+    args check;
+is
+	shape scene is
+        scalar h1 = 3.6 * .5;
+        scalar h2 = .6;
+
+        snowman with
+            magnify by .5;
+            color = white;
+			render_mode is wireframe;
+        end;
+        snowman with 
+            color = red;
+			render_mode is wireframe;
+        return with
+            dimensions of <.6 .6 .6>;
+        end;
+        block with
+            magnify by .3;
+            move to <0 0 .3>;
+            color = white;
+			render_mode is wireframe;
+        end;
+
+        line [<0 0 h1> <.8 0 h1>];
+        line [<0 0 h2> <.6 0 h2>];
+
+        double_arrow from <.6 0 0> to <.6 0 h2> with
+            arrow_head_length = itself * 2;
+        end;
+        double_arrow from <.8 0 0> to <.8 0 h1>;
+
+        futura_l_word "DIMENSIONS" with
+            rotate by 90 around <1 0 0>;
+            move to <-1 0 .75>;
+        end;
+        axes;
+	end;	// scene
+
+    mouse_controlled_shape scene titled "The Dimensions Transformation";
+end;    // dimensions_anim

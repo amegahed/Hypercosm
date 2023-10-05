@@ -1,0 +1,30 @@
+do rectangle_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_rectangle.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim rectangle_anim
+is
+	shape scene with
+		scalar time = 0;
+	is
+		translated_3ds_rectangle with
+		    width = 75;
+		    length = 50 + sin(time * 90) * 25;
+		    corner_radius = 10;
+		    steps = 10;
+    	end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Rectangle" with
+		auto_camera is on;
+	end;
+end;	// rectangle_anim

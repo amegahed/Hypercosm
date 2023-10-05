@@ -1,0 +1,216 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          bubble_stream.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard subjects for creating bubble          }
+{       paths or trails behind moving shapes.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/actors.ores";
+include "system/random.ores";
+include "system/trans_stacks.ores";
+include "system/bubbles.ores";
+
+subject bubble_stream
+extends
+	timed_actor
+does
+	verb new 
+		at vector location = <0 0 0>;
+		towards vector min_velocity = <0 0 10>, max_velocity = <0 0 20>;
+	with
+		scalar min_release_rate = 5, max_release_rate = 10;
+		
+		// bubble parameters
+		//
+		scalar min_expansion_speed = .5, max_expansion_speed = 1;
+		scalar min_wobble_size = .1, max_wobble_size = .1;
+		scalar min_wobble_speed = .25, max_wobble_speed = .25;
+		scalar min_lifetime = 0, max_lifetime = 1;
+	end;
+	
+	verb move
+		to vector location;
+	end;
+	verb advance
+		by scalar time_step;
+	end;
+	verb update;
+	
+	// rendering method
+	//
+	shape instance;
+has
+	// bubble stream parameters
+	//
+	vector location;
+	vector min_velocity, max_velocity;
+	scalar min_release_rate, max_release_rate;
+	scalar min_expansion_speed, max_expansion_speed;
+	scalar min_wobble_size, max_wobble_size;
+	scalar min_wobble_speed, max_wobble_speed;
+	scalar min_lifetime, max_lifetime;
+	
+	// bubble stream state information
+	//
+	scalar time_until_next_release = 0;
+	bubble type bubble_list is none;
+is
+	bubble type bubble_free_list is none; 
+	
+	
+	verb new 
+		at vector location = <0 0 0>;
+		towards vector min_velocity = <0 0 10>, max_velocity = <0 0 20>;
+	with
+		scalar min_release_rate = 5, max_release_rate = 10;
+		
+		// bubble parameters
+		//
+		scalar min_expansion_speed = .5, max_expansion_speed = 1;
+		scalar min_wobble_size = .1, max_wobble_size = .1;
+		scalar min_wobble_speed = .25, max_wobble_speed = .25;
+		scalar min_lifetime = 0, max_lifetime = 1;
+	is
+		// call superclass constructor
+		//
+		timed_actor new;
+		
+		// set_attributes
+		//
+		with bubble_stream do
+			its location = location;
+			its min_velocity = min_velocity;
+			its max_velocity = max_velocity;
+			its min_release_rate = min_release_rate;
+			its max_release_rate = max_release_rate;
+			its min_expansion_speed = min_expansion_speed;
+			its max_expansion_speed = max_expansion_speed;
+			its min_wobble_size = min_wobble_size;
+			its max_wobble_size = max_wobble_size;
+			its min_wobble_speed = min_wobble_speed;
+			its max_wobble_speed = max_wobble_speed;
+			its min_lifetime = min_lifetime;
+			its max_lifetime = max_lifetime;
+		end;
+	end;    // new
+	
+	verb release_bubble is
+		bubble type bubble is none;       
+		
+		if some bubble_free_list then
+			bubble is bubble_free_list;
+			bubble_free_list is bubble_free_list's next;
+			
+			renew bubble at location towards (vrandom from min_velocity to max_velocity) with
+				expansion_speed = random from min_expansion_speed to max_expansion_speed;
+				wobble_size = random from min_wobble_size to max_wobble_size;
+				wobble_speed = random from min_wobble_speed to max_wobble_speed;
+				lifetime = random from min_lifetime to max_lifetime;
+			end;
+		else
+			new bubble at location towards (vrandom from min_velocity to max_velocity) with
+				expansion_speed = random from min_expansion_speed to max_expansion_speed;
+				wobble_size = random from min_wobble_size to max_wobble_size;
+				wobble_speed = random from min_wobble_speed to max_wobble_speed;
+				lifetime = random from min_lifetime to max_lifetime;
+			end;         
+		end;
+		
+		// add bubble to list
+		//
+		bubble's next is bubble_list;
+		bubble_list is bubble;
+	end;    // release_bubble
+	
+	verb advance_bubbles
+		by scalar time_step;
+	is
+		for each bubble type bubble and its next in bubble_list do
+			bubble advance by time_step;
+		end;
+	end;    // advance_bubbles
+	
+ 
+	verb free_bubble
+		bubble type reference bubble;
+	is
+		bubble's next is bubble_free_list;
+		bubble_free_list is bubble;
+		bubble is none;
+	end;    // free_bubble
+	
+	verb free_popped_bubbles is
+		bubble type bubble is bubble_list;
+		bubble type prev_bubble is none;
+		
+		bubble type temp is none;
+		while some bubble do
+			if bubble popped then
+				temp is bubble;
+				bubble is temp's next;
+				if some prev_bubble then
+					prev_bubble's next is bubble;
+				else
+					bubble_list is bubble;
+				end;
+				free_bubble temp;
+			end;
+			prev_bubble is bubble;
+			if some bubble then
+				bubble is its next;
+			end;
+		end;
+	end;    // free_popped_bubbles
+   
+	verb move
+		to vector location;
+	is
+		bubble_stream's location = location;
+	end;    // move
+	
+			   
+	verb advance
+		by scalar time_step;
+	is
+		advance_bubbles by time_step;
+		
+		// new bubbles are born
+		//
+		time_until_next_release = itself - time_step;
+		if time_until_next_release < 0 then
+			scalar release_rate = random from min_release_rate to max_release_rate;
+			
+			release_bubble;
+			time_until_next_release = 1 / release_rate;
+		end;
+		
+		// and old bubbles die...
+		//
+		free_popped_bubbles;
+	end;    // advance
+	
+	verb update is
+		scalar prev_time = timer get_time;
+		
+		// call superclass method
+		//
+		timed_actor static update;
+		
+		// advance bubbles
+		//
+		advance by (timer get_time - prev_time);
+	end;    // update
+	
+	   
+	shape instance is
+		for each bubble type bubble and its next in bubble_list do
+			bubble instance;
+		end;
+	end;    // instance
+end;    // bubble_stream

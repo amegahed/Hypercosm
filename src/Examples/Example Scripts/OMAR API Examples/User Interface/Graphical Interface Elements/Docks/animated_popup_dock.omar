@@ -1,0 +1,67 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        animated_popup_dock.omar        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of an animated popup     }
+{       dock user interface component.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do animated_popup_dock_anim;
+
+include "system/3d.ores";
+include "system/pivoting_popup_dock.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/popup_dock.ores";
+include "system/args.ores";
+
+anim animated_popup_dock_anim
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	boolean initial_popup_enabled is false;
+	
+	popup_dock type dock is (new pivoting_popup_dock with
+		popup_enabled is initial_popup_enabled;
+	);
+	
+	verb enable_popup_action is
+		dock set_popup_enabled to true;
+	end;
+	
+	verb disable_popup_action is
+		dock set_popup_enabled to false;
+	end;    
+	
+	icon type disappearing_icon poster "popup_icon.gif" labelled "Popup"
+		selecting (new action of enable_popup_action)
+		deselecting (new action of disable_popup_action)
+	with
+		selected is initial_popup_enabled;
+	end;
+	
+	picture scene is
+		sphere;
+		default_lights;
+		default_background at 100;
+		dock overlay at 10;
+		dock update;
+	end;    // scene
+	
+	// construct dock
+	//
+	//add_icons to dock;
+	dock add disappearing_icon;
+	
+	// run
+	//
+	while true do
+		scene;
+	end;
+end;    // animated_popup_dock_anim

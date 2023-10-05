@@ -1,0 +1,80 @@
+{***************************************************************}
+{                          cloudy_sr71.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cloudy_sr71;
+
+
+include "system/3d.ores";
+include "system/sphereflake.omar";
+include "system/sr71.omar";
+include "system/random.ores";
+
+
+shape clouds with
+    integer number = 8;
+is
+    shape cloud is
+        sphereflake with
+            level = 2;
+            magnify by .2;
+        end;
+    end;    // cloud
+
+
+    for integer counter = 1..number do
+        cloud with
+            move to vrandom <-1 -1 -1> to <1 1 1>;
+        end;
+    end;
+end;    // clouds
+
+
+picture cloudy_sr71
+    args type args;
+with
+    eye = <-10 -30 15>;
+    lookat = <.5 0 15>;
+    field_of_view = 65;
+    background = sky_blue;
+    render_mode is shaded;
+    shading is face;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is off;
+    fog_factor = 100;
+    max_refractions = 10;
+    args check;
+is
+    distant_light from <-.5 -.5 1>;
+    fuzzy white clouds with
+        magnify by 15;
+        move to <10 0 15>;
+    end;
+    fuzzy white clouds with
+        magnify by 15;
+        rotate by 20 around <0 1 0>;
+        move to <0 0 10>;
+    end;
+    fuzzy white clouds with
+        rotate by 10 around <1 1 0>;
+        magnify by 15;
+        move to <-10 0 10>;
+    end;
+    metallic white sr71 with
+        magnify by .1;
+        rotate by 20 around trans's x_axis; // roll
+        rotate by -10 around trans's y_axis;    // pitch
+        move to <0 0 20>;
+        thrust = 1;
+    end;
+    flat light brown plane with
+        magnify by 100;
+    end;
+end;    // cloudy_sr71

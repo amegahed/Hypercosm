@@ -1,0 +1,31 @@
+do cube_mesh_example_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// transformations
+//
+include "cube_mesh_vertices.omar";
+include "cube_mesh_edges.omar";
+include "cube_mesh_faces.omar";
+
+anim cube_mesh_example_anim 
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 40;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new static_shape of cube_mesh) 
+		named "mesh";
+	multi_actor add_actor (new static_shape of cube_mesh_vertices_scene) 
+		named "mesh_vertices";
+	multi_actor add_actor (new static_shape of cube_mesh_edges_scene) 
+		named "mesh_edges";
+	multi_actor add_actor (new static_shape of cube_mesh_faces_scene) 
+		named "mesh_faces";
+				
+	mouse_controlled_actor multi_actor;
+end;    // cube_mesh_example_anim

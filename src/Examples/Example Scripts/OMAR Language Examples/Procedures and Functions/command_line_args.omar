@@ -1,0 +1,37 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        command_line_args.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of             }
+{       command line arguments in the OMAR language.            }
+{                                                               }
+{       Command line arguments are a way of passing             }
+{       data into a program.                                    }
+{                                                               }
+{       In the OMAR language, command line arguments            }
+{       work similarly to how they work in C or C++.            }
+{                                                               }
+{       The one difference is that instead of having            }
+{       argc and argv parameters as in C, we only only          }
+{       need one parameter for the array of strings.            }
+{       This is because the OMAR language has smart             }
+{       arrays and therefore we don't need the argc             }
+{       parameter to tell us how big the array is.              } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do write_args;
+
+include "system/native_string.ores";
+
+verb write_args
+	string type args[];
+is
+	write "The command line arguments are:", ;
+	for integer counter = min args .. max args do
+		write "argument[", counter, "] = ", args[counter], ;
+	end;
+end;    // write_args

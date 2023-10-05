@@ -1,0 +1,594 @@
+{***************************************************************}
+{                          train.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do interactive_train;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/check_keys.ores";
+include "system/interactions.ores";
+include "system/common_materials.ores";
+
+
+subject train
+extends
+    timed_actor
+does
+    objective shape form with
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+has
+    public scalar speed = 10;
+is
+    objective shape smokestack is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 20>;
+            radius1 = 3;
+            radius2 = 8;
+        end;
+        cone with
+            end1 = <0 0 20>;
+            end2 = <0 0 25>;
+            radius1 = 8;
+            radius2 = 5;
+        end;
+    end;    // smokestack
+
+
+    objective shape dome1 is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 10>;
+            radius = 7;
+        end;
+        sphere with
+            center = <0 0 10>;
+            radius = 7;
+            vmin = 0;
+        end;
+    end;    // dome1
+
+
+    objective shape dome2 is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 12>;
+            radius = 8;
+        end;
+        paraboloid with
+            top = <0 0 17>;
+            base = <0 0 12>;
+            radius = 8;
+        end;
+    end;    // dome2
+
+
+    objective shape side is
+        polygon2d [[0 0] [25 0] [25 35] [15 35] [15 20] [5 20]
+            [5 35] [0 35]]
+        with
+            origin = <0 0 0>;
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+        end;
+    end;    // side
+
+
+    objective shape cab is
+        polygon2d [[20 0] [20 35] [10 40] [-10 40] [-20 35]
+            [-20 0] [-10 0] [-10 35] [10 35] [10 0]]
+        with
+            origin = <0 0 -15>;
+            x_axis = <0 1 0>;
+            y_axis = <0 0 1>;
+        end;    // front
+        polygon2d [[30 -10] [30 10] [0 10] [0 -10]] with
+            origin = <0 0 25.1>;
+            x_axis = <1 0 0>;
+            y_axis = <0 1 0>;
+        end;    // roof top
+        polygon2d [[30 0] [30 20] [0 20] [0 0]] with
+            origin = <0 -10 25.1>;
+            x_axis = <1 0 0>;
+            y_axis = <0 -2 -1>;
+        end;    // roof side
+        polygon2d [[30 0] [30 20] [0 20] [0 0]] with
+            origin = <0 10 25.1>;
+            x_axis = <1 0 0>;
+            y_axis = <0 2 -1>;
+        end;    // roof side
+        side with
+            move to <0 20 -15>;
+        end;
+        side with
+            move to <0 -20 -15>;
+        end;
+    end;    // cab
+
+
+    objective shape boiler is
+        cab with
+            move to <38 0 0>;
+        end;
+        dome1 with
+            material is golden;
+            move to <-10 0 8>;
+        end;
+        dome2 with
+            material is golden;
+            move to <18 0 8>;
+        end;
+        cylinder with
+            end1 = <-50 0 0>;
+            end2 = <0 0 0>;
+            radius = 10;
+        end;
+        cylinder with
+            end1 = <-45 0 -12>;
+            end2 = <20 0 -12>;
+            radius = 5;
+        end;
+        cone with
+            end1 = <0 0 0>;
+            end2 = <20 0 0>;
+            radius1 = 10;
+            radius2 = 15;
+        end;
+        cylinder with
+            end1 = <20 0 0>;
+            end2 = <50 0 0>;
+            radius = 15;
+        end;
+
+        // front
+        paraboloid with
+            top = <-51 0 0>;
+            base = <-49 0 0>;
+            radius = 10;
+        end;
+        disk with
+            material is plastic colored red;
+            center = <-51 0 0>;
+            normal = <1 0 0>;
+            radius = 3;
+        end;
+
+        // headlight
+        cylinder with
+            end1 = <-49 0 14>;
+            end2 = <-41 0 14>;
+            radius = 4;
+        end;
+
+        // reflector
+        paraboloid with
+            material is silver;
+            top = <-47 0 14>;
+            base = <-48 0 14>;
+            radius = 4;
+        end;
+    end;    // boiler
+
+
+    objective shape big_wheel is
+
+        // axel
+        cylinder with
+            end1 = <0 14 0>;
+            end2 = <0 -14 0>;
+            radius = 3;
+        end;
+        disk with
+            center = <0 14 0>;
+            normal = <0 -1 0>;
+            radius = 3;
+        end;
+        disk with
+            center = <0 -14 0>;
+            normal = <0 1 0>;
+            radius = 3;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 12 0>;
+            end2 = <0 14 0>;
+            radius = 10;
+        end;
+        disk with
+            center = <0 12 0>;
+            normal = <0 -1 0>;
+            radius = 11;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 -12 0>;
+            end2 = <0 -14 0>;
+            radius = 10;
+        end;
+        disk with
+            center = <0 -12 0>;
+            normal = <0 1 0>;
+            radius = 11;
+        end;
+    end;    // wheel
+
+
+    objective shape little_wheel is
+
+        // axel
+        cylinder with
+            end1 = <0 14 0>;
+            end2 = <0 -14 0>;
+            radius = 1;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 12 0>;
+            end2 = <0 14 0>;
+            radius = 3;
+        end;
+        disk with
+            center = <0 12 0>;
+            normal = <0 -1 0>;
+            radius = 4;
+        end;
+        cylinder with
+            material is silver;
+            end1 = <0 -12 0>;
+            end2 = <0 -14 0>;
+            radius = 3;
+        end;
+        disk with
+            center = <0 -12 0>;
+            normal = <0 1 0>;
+            radius = 4;
+        end;
+    end;    // little wheel
+
+
+    objective shape cowcatcher is
+        polygon2d [[5 0] [25 0] [10 20] [5 10]] with
+            origin = <0 0 0>;
+            x_axis = <-2 0 -1>;
+            y_axis = <0 -3 -1>;
+        end;
+        polygon2d [[5 0] [25 0] [10 20] [5 10]] with
+            origin = <0 0 0>;
+            x_axis = <-2 0 -1>;
+            y_axis = <0 3 -1>;
+        end;
+    end;    // cowcatcher
+
+
+    objective shape drivers with
+        scalar d = 0;
+    is
+        const scalar pi = 3.1415;
+        const scalar circumference = pi * 10;
+        scalar angle, x, y;
+
+        disk with
+            center = <-45 0 0>;
+            normal = <1 0 0>;
+            radius = 5;
+        end;
+        cylinder with
+            end1 = <-37.5 0 0>;
+            end2 = <-37.5 0 10>;
+            radius = 4;
+        end;
+        disk with
+            center = <-37.5 0 10>;
+            normal = <0 0 1>;
+            radius = 4;
+        end;
+        cylinder with
+            end1 = <-45 0 0>;
+            end2 = <-30 0 0>;
+            radius = 5;
+        end;
+
+        // driver from piston to first wheel
+        //
+        angle = d / circumference * 360;
+        x = cos -angle * 5;
+        y = sin -angle * 5;
+
+        cylinder with
+            material is silver;
+            end1 = <-30 0 0>;
+            end2 = <(x - 5) 0 y>;
+            radius = 1;
+        end;
+
+        // driver from first wheel to second wheel
+        //
+        cylinder with
+            material is silver;
+            end1 = <(x - 5) 0 y>;
+            end2 = <(x + 20) 0 y>;
+            radius = 1;
+        end;
+
+        angle = itself - 45;
+        x = cos -angle * 8;
+        y = sin -angle * 8;
+
+        cylinder with
+            material is silver;
+            end1 = <(x + 20) 0 y>;
+            end2 = <(x + 55) 0 y>;
+            radius = 1;
+        end;
+    end;    // drivers
+
+
+    objective shape chassis with
+        scalar distance = 0;
+    is
+        const scalar pi = 3.1415;
+        const scalar little_circumference = pi * 3;
+        const scalar big_circumference = pi * 10;
+        scalar angle;
+
+        drivers with
+            d = distance;
+            move to <0 -15 0>;
+        end;
+        drivers with
+            d = distance;
+            move to <0 15 0>;
+        end;
+
+        // draw little wheels
+        //
+        angle = distance / little_circumference * 360;
+        little_wheel with
+            rotate by angle around <0 1 0>;
+            move to <-30 0 -7>;
+        end;
+        little_wheel with
+            rotate by angle around <0 1 0>;
+            move to <-45 0 -7>;
+        end;
+        angle = distance / big_circumference * 360;
+        big_wheel with
+            rotate by angle around <0 1 0>;
+            move to <-5 0 0>;
+        end;
+        big_wheel with
+            rotate by angle around <0 1 0>;
+            move to <20 0 0>;
+        end;
+        big_wheel with
+            rotate by angle around <0 1 0>;
+            move to <55 0 0>;
+        end;
+        cowcatcher with
+            material is plastic colored red;
+            move to <-46 0 5>;
+        end;
+
+        // these cylinders form the frame under the boiler
+        //
+        cylinder with
+            end1 = <-50 5 0>;
+            end2 = <60 5 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-50 -5 0>;
+            end2 = <60 -5 0>;
+            radius = 3;
+        end;
+    end;    // chassis
+
+
+    objective shape form with
+        scalar t = 0;
+    is
+                color = dark grey;
+
+        chassis with
+                        distance = t;
+            move to <0 0 12>;
+        end;
+        smokestack with
+            move to <-30 0 41>;
+        end;
+        boiler with
+            move to <0 0 32>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+                        t = time * -speed;
+        end;
+    end;    // instance
+end;    // train
+
+
+shape water_tower with
+    scalar angle = 0;
+is
+    if (angle < -30) then
+        angle = -30;
+    end;
+
+    // legs
+    cylinder with
+        material is chalk colored brown;
+        end1 = <10 10 0>;
+        end2 = <10 10 30>;
+        radius = 2;
+    end;
+    cylinder with
+        material is chalk colored brown;
+        end1 = <-10 10 0>;
+        end2 = <-10 10 30>;
+        radius = 2;
+    end;
+    cylinder with
+        material is chalk colored brown;
+        end1 = <-10 -10 0>;
+        end2 = <-10 -10 30>;
+        radius = 2;
+    end;
+    cylinder with
+        material is chalk colored brown;
+        end1 = <10 -10 0>;
+        end2 = <10 -10 30>;
+        radius = 2;
+    end;
+    cylinder with
+        material is silver;
+        end1 = <0 0 30>;
+        end2 = <0 0 60>;
+        radius = 18;
+    end;
+
+    // roof
+    cone with
+        material is silver;
+        end1 = <0 0 60>;
+        end2 = <0 0 70>;
+        radius1 = 20;
+        radius2 = 0;
+    end;
+
+    // spout
+    cone with
+        material is silver;
+        end1 = <0 -15 35>;
+        end2 = <0 -35 40>;
+        radius1 = 3;
+        radius2 = 2;
+        rotate by angle around <1 0 0>;
+    end;
+    cone with
+        material is silver;
+        end1 = <0 -35 40>;
+        end2 = <0 -40 38>;
+        radius1 = 2;
+        radius2 = 1.5;
+        rotate by angle around <1 0 0>;
+    end;
+end;    // water_tower
+
+
+shape tracks is
+    block with
+        material is silver;
+        scale by 500 along <1 0 0>;
+        move to <-100 13 0>;
+    end;
+    block with
+        material is silver;
+        scale by 500 along <1 0 0>;
+        move to <-100 -13 0>;
+    end;
+end;    // tracks
+
+
+picture train_picture with
+    scalar t = 0;
+
+    eye = <-150 -180 -6>;
+    field_of_view = 80;
+is
+    distant_light from <.3 -.5 1>;
+    water_tower with
+        material is chalk colored brown;
+        angle = 0;
+        rotate by -45 around <0 0 1>;
+        move to <-50 45 -32>;
+    end;
+    train type's form with
+        t = static t;
+        move to <t 0 -31>;
+    end;
+    tracks with
+        move to <0 0 -31>;
+    end;
+end;    // train_picture
+
+
+anim passing_train with
+    double_buffer is on;
+is
+    scalar d = 0;
+    scalar speed = 0;
+
+    while d > -600 do
+        train_picture with
+            lookat = <d 0 -5>;
+            t = d;
+        end;
+
+        check_keys;
+        d = d + speed;
+        speed = speed - .1;
+    end;
+end;    // passing_train
+
+
+anim repeating_train_anim is
+    while true do
+        passing_train;
+    end;
+end;    // repeating_train_anim
+
+
+anim interactive_train
+    args type args;
+with
+    double_buffer is on;
+    facets = 6;
+    render_mode is wireframe;
+    args check;
+is
+    mouse_state type mouse;
+    scalar distance = 0;
+
+    while true do
+        train_picture with
+            t = distance;
+            lookat = <distance 0 -5>;
+        end;
+
+        check_keys;
+        mouse update;
+        if mouse's dragged then
+            distance = itself + mouse's direction dot <1 0 0>
+                * (abs (distance * 5) + 100);
+        end;
+    end;
+end;    // interactive_train
+
+
+anim train_anim
+    args type args;
+with
+    eye = <-80 -150 50>;
+    lookat = <0 0 30>;
+    double_buffer is on;
+    args check;
+is
+    train type train;
+
+    mouse_controlled_actor train;
+end;    // train_anim

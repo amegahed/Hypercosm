@@ -1,0 +1,17 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           reporting.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+adjective reportable
+does
+	verb report;
+end;    // reportable

@@ -1,0 +1,93 @@
+{***************************************************************}
+{                          field_cube.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do field_cube_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/densities.ores";
+include "system/fields.ores";
+
+
+subject field_cube
+extends
+    actor
+does
+    verb new with
+        vector velocity = <0 0 -.25>;
+        integer x_steps = 8, y_steps = 8, z_steps = 8;
+        scalar scale = 1;
+    end;
+    shape instance;
+    verb act;
+has
+    integer x_steps, y_steps, z_steps;
+    scalar scale;
+    vector velocity;
+    vector offset = <0 0 0>;
+is
+    verb new with
+        vector velocity = <0 0 -.25>;
+        integer x_steps = 8, y_steps = 8, z_steps = 8;
+        scalar scale = 1;
+    is
+        field_cube's velocity = velocity;
+        field_cube's scale = scale;
+        field_cube's x_steps = x_steps;
+        field_cube's y_steps = y_steps;
+        field_cube's z_steps = z_steps;
+    end;    // new
+
+
+    shape instance
+    is
+        density_field type density_field using noisy_field
+            from (<-1 -1 -1> * scale + offset)
+            to (<1 1 1> * scale + offset)
+        with
+            x_steps = static x_steps;
+            y_steps = static y_steps;
+            z_steps = static z_steps;
+        end;
+        volume density_field's density with
+            threshold = .5;
+            capping is true;
+            color = light red;
+        end;
+        block with
+            render_mode is wireframe;
+        end;
+
+        density_field's density is none;
+    end;    // instance
+
+
+    verb act is
+        const scalar speed = .25;
+        vector direction = normalize (vnoise (offset + <.5 .5 .5>));
+        vector velocity = (direction - <.5 .5 .5>) * speed;
+
+        offset = itself + velocity;
+    end;    // step
+end;    // field_cube
+
+
+anim field_cube_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <2 -4 2>;
+    lookat = <0 0 -.2>;
+    args check;
+is
+    field_cube type field_cube;
+    mouse_controlled_actor field_cube;
+end;    // field_cube_anim

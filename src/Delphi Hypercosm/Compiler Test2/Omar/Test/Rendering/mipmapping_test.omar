@@ -1,0 +1,32 @@
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+texture type grid_texture using (new image named "grid2.jpg") with
+    mipmapping is on;
+    interpolation is on;
+end;
+
+
+shape scene is
+    scalar x = 10;
+    
+    polygon [<-1 -1 0> <1 -1 0> <1 1 0> <-1 1 0>] with
+        texcoords = [<-x -x 0> <x -x 0> <x x 0> <-x x 0>];
+        magnify by 100;
+        material is plastic textured grid_texture;
+    end;
+    block with
+        move to <0 0 1>;
+        magnify by 2;
+        material is plastic poster "grid.jpg";
+    end;
+end;
+
+
+anim test is
+    mouse_controlled_shape scene;
+end;

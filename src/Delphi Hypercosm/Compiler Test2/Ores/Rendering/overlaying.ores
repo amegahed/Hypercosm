@@ -1,0 +1,19 @@
+{***************************************************************}
+{                          overlaying.ores                 		}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains an definition for a generalized user    		}
+{		interface component.									}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+adjective overlayable
+does
+	shape overlay
+		at scalar distance;
+	end;
+end;	// overlayable

@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            references.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of references in the OMAR language.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do references_example;
+
+integer a = 0, b = 0;
+integer reference c refers to none;
+
+verb references_example is
+	if c refers to none then        // c will refer to either a or to b depending upon 
+		c refers to a;              // whether c has been previously assigned
+	else
+		c refers to b;
+	end;
+	
+	c = 47;                         // Assign the value 47 to either a or to b
+	write "a = ", a, ;
+	write "b = " ,b, ;
+end;    // references_example

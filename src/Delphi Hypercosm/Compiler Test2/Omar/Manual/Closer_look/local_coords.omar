@@ -1,0 +1,63 @@
+{***************************************************************}
+{                          local_coords.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do local_coords_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+
+
+vector question project_point
+    vector point;
+is
+    scalar x = point dot <1 0 0>;
+    scalar y = point dot <0 1 0>;
+
+    answer <x y 0>;
+end;    // project_point
+
+
+anim local_coords_anim with
+    eye = <2 -8 4>;
+    lookat = <1 0 1>;
+    field_of_view = 30;
+is
+    vector point1, point2;
+    vector point3, point4;
+
+	shape scene is
+	    axes;
+	
+	    cylinder with
+	        magnify by .5;
+	        rotate by 15 around <1 0 0>;
+	        rotate by 45 around <0 1 0>;
+	        move to <.75 1 1>;
+	
+	        axes with
+	            magnify by 2 about <.75 1 1>;
+	        end;
+	
+	        point1 = <.75 1 1>;
+	        point2 = <.75 1 1> + trans's x_axis * 2;
+	    end;
+	
+	    point3 = project_point point1;
+	    point4 = project_point point2;
+	
+	    line [point1 point3];
+	    line [point2 point4];
+	    arrow from point3 to point4 with color = red; end;
+	end;
+	mouse_controlled_shape scene;
+end;    // local_coords_anim

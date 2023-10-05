@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         3ds_multi_material.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains material definitions that correspond to        }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_material.ores";
+
+subject translated_3ds_multi_material
+extends
+	translated_3ds_material
+does
+	// constructor
+	//
+	verb new with
+		translated_3ds_materials type sub_materials;
+	end;
+	
+	// querying methods
+	//
+	material type question to_material;
+has
+	// attributes
+	//
+	public translated_3ds_materials type sub_materials is none; 
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		translated_3ds_materials type sub_materials;
+	is
+		translated_3ds_multi_material's sub_materials is sub_materials;
+	end;    // new
+	
+	//  
+	// querying methods
+	//
+	
+	material type question to_material is
+		if some sub_materials then
+			if some sub_materials[1] then
+				answer sub_materials[1] to_material;
+			else
+				answer none;
+			end;
+		else
+			answer none;
+		end;
+	end;    // to_material
+end;    // translated_3ds_multi_material

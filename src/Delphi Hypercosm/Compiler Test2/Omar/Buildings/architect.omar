@@ -1,0 +1,196 @@
+{***************************************************************}
+{                          architect.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do door_picture;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+
+
+shape square_frame is
+    cube with
+        scale by .1 along <1 0 0>;
+        scale by .1 along <0 1 0>;
+        move to <.9 0 0>;
+    end;
+    cube with
+        scale by .1 along <1 0 0>;
+        scale by .1 along <0 1 0>;
+        move to <-.9 0 0>;
+    end;
+    cube with
+        scale by .1 along <0 0 1>;
+        scale by .1 along <0 1 0>;
+        scale by .8 along <1 0 0>;
+        move to <0 0 .9>;
+    end;
+    cube with
+        scale by .1 along <0 0 1>;
+        scale by .1 along <0 1 0>;
+        scale by .8 along <1 0 0>;
+        move to <0 0 -.9>;
+    end;
+end;    // square_frame
+
+
+shape window is
+    cube with
+        material is plastic colored light blue;
+        scale by .1 along <1 0 0>;
+        scale by .005 along <0 1 0>;
+        scale by .15 along <0 0 1>;
+    end;    // window glass
+    square_frame with
+        scale by .1 along <1 0 0>;
+        scale by .2 along <0 1 0>;
+        scale by .15 along <0 0 1>;
+    end;    // window frame
+    cube with
+        scale by .01 along <0 0 1>;
+        scale by .01 along <0 1 0>;
+        scale by .1 along <1 0 0>;
+    end;    // windowsill
+end;    // window
+
+
+shape bay_window is
+    cube with
+        material is plastic colored light blue;
+        scale by .2 along <1 0 0>;
+        scale by .005 along <0 1 0>;
+        scale by .15 along <0 0 1>;
+    end;    // window glass
+    square_frame with
+        scale by .2 along <1 0 0>;
+        scale by .2 along <0 1 0>;
+        scale by .15 along <0 0 1>;
+    end;    // window frame
+end;    // bay_window
+
+
+shape six_windows is
+    window with
+        move to <-.5 0 .25>;
+    end;
+    window with
+        move to <.0 0 .25>;
+    end;
+    window with
+        move to <.5 0 .25>;
+    end;
+    window with
+        move to <-.5 0 -.25>;
+    end;
+    window with
+        move to <.0 0 -.25>;
+    end;
+    window with
+        move to <.5 0 -.25>;
+    end;
+end;    // six_windows
+
+
+shape door_panel is
+    cube with
+        scale by .15 along <1 0 0>;
+        scale by .02 along <0 1 0>;
+        scale by .2 along <0 0 1>;
+    end;
+end;    // door_panel
+
+
+shape doorknob is
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 -.15 0>;
+        radius = .02;
+    end;
+    sphere with
+        radius = .05;
+        scale by .5 along <0 1 0>;
+        move to <0 -.15 0>;
+    end;
+end;    // doorknob
+
+
+shape door with
+    boolean panels is true;
+is
+    cube with
+        scale by .5 along <1 0 0>;
+        scale by .05 along <0 1 0>;
+    end;
+
+    // panels on door
+    if panels then
+        door_panel with
+            move to <.2 -.05 .7>;
+        end;
+        door_panel with
+            move to <-.2 -.05 .7>;
+        end;
+        door_panel with
+            move to <.2 -.05 .25>;
+        end;
+        door_panel with
+            move to <-.2 -.05 .25>;
+        end;
+        door_panel with
+            move to <.2 -.05 -.7>;
+        end;
+        door_panel with
+            move to <-.2 -.05 -.7>;
+        end;
+        door_panel with
+            move to <.2 -.05 -.25>;
+        end;
+        door_panel with
+            move to <-.2 -.05 -.25>;
+        end;
+    end;
+end;    // door
+
+
+shape front_door with
+    boolean panels is off;
+is
+    door with
+        color = light brown;
+        panels is static panels;
+    end;
+    doorknob with
+        material is golden;
+        move to <.4 0 0>;
+    end;
+end;    // front_door
+
+
+shape garage_door is
+    door with
+        scale by 2.2 along <1 0 0>;
+    end;
+end;    // garage_door
+
+
+shape stairs is
+    extrude [[0 0] [1 0] [1 1] [.8 1] [.8 .8] [.6 .8] [.6 .6]
+        [.4 .6] [.4 .4] [.2 .4] [.2 .2] [.0 .2]]
+    with
+        rotate by 90 around <0 0 1>;
+    end;
+end;    // stairs
+
+
+picture door_picture with
+    eye = <1 -3 2>;
+is
+    distant_light from <1 -2 3>;
+    door;
+end;    // door_picture

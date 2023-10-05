@@ -1,0 +1,50 @@
+{***************************************************************}
+{                        auto_cameras.ores                      }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains standard methods for automatic camera			}
+{		placement.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+include "system/shape_querying.ores";
+include "system/targeted_camera.ores";
+include "system/free_camera.ores";
+
+
+camera type question get_shape_camera
+	on shape thing;
+with
+	boolean set_lookat is true;
+is
+	volume_bounding type bounds is get_shape_bounds of thing;
+	vector direction = normalized (lookat - eye);
+	scalar distance = vlength of bounds get_size * 1.5;
+	vector eye = lookat - direction * distance;
+			
+	if set_lookat then
+		answer (new targeted_camera from eye to bounds get_center);
+	else
+		answer (new free_camera at eye towards direction with
+			distance = static distance;
+		);
+	end;
+end;	// get_shape_camera
+
+
+verb place_shape_camera
+	on shape thing;
+with
+	boolean set_lookat is true;
+is
+	camera type camera is (get_shape_camera on thing with
+		set_lookat is static set_lookat;
+	);
+	camera print;
+	camera activate;
+end;	// place_shape_camera

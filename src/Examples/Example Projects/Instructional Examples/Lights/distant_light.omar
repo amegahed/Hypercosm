@@ -1,0 +1,54 @@
+{***************************************************************}
+{                          distant.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do distant_light_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/arrows.ores";
+include "system/square_grid.ores";
+include "system/common_materials.ores";
+include "system/futura_l.ores";
+
+shape distant_light_scene with
+	scalar time = 0;
+is
+	scalar angle = time * 90;
+	scalar z = .25 + sin (time * 45) * .25;
+	vector v = rotated_vector <.5 -.25 z> by angle around <0 0 1>;
+	distant_light from v;
+	arrow from <-1 0 1> to <-1 0 1> + v;
+	arrow from <1 0 1> to <1 0 1> + v;
+	futura_l_word "DISTANT LIGHT" with
+		rotate by 90 around <1 0 0>;
+		move to <0 0 1.1>;
+	end;
+	square_grid with
+		material is wood;
+		magnify by 1.25;
+	end;
+	sphere with
+		material is plastic colored red;
+		center = <0 0 .25>;
+		radius = .25;
+	end;
+end;    // distant_light_scene
+	
+	
+anim distant_light_anim with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .25>;
+	render_mode is shaded;
+	shading is vertex;
+	facets = 16;
+is
+	mouse_controlled_animated_shape distant_light_scene lit by none;
+end;    // distant_light_anim

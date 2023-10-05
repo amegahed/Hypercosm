@@ -1,0 +1,79 @@
+do prs_controller_anim;
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+include "trans_marker.omar";
+
+shape prs_controller_scene with
+	scalar time = 0;
+is
+	static translated_3ds_linear_position_controller type position_controller of [
+		<-50 0 0> <-25 25 0> <0 0 0> <25 -25 0> <50 0 0>
+	] at converted_3ds_ticks_array_from_frames_array of [
+		0 25 50 75 100
+	];  // position_controller
+	
+	static translated_3ds_linear_float_controller type x_rotation_controller of [
+		(0 * degrees_to_radians)
+		(90 * degrees_to_radians)
+	] at converted_3ds_ticks_array_from_frames_array of  [
+		50
+		75
+	];  // x_rotation_controller
+	
+	static translated_3ds_linear_float_controller type z_rotation_controller of [
+		(0 * degrees_to_radians)
+		(90 * degrees_to_radians)
+	] at converted_3ds_ticks_array_from_frames_array of  [
+		25
+		50
+	];  // z_rotation_controller
+			
+	static translated_3ds_xyz_rotation_controller type rotation_controller with
+		x_rotation_controller is static x_rotation_controller;
+		z_rotation_controller is static z_rotation_controller;
+	end;    // rotation_controller
+	
+	static translated_3ds_linear_scale_controller type scale_controller of [
+		(new translated_3ds_scale_value of <1 1 1>)
+		(new translated_3ds_scale_value of <.1 .1 .1>)
+	] at converted_3ds_ticks_array_from_frames_array of  [
+		75
+		100
+	];  // scale_controller
+	
+	static translated_3ds_prs_controller type prs_controller with
+		position_controller is static position_controller;
+		rotation_controller is static rotation_controller;
+		scale_controller is static scale_controller;
+	end;    // prs_controller
+	
+	static scalar duration = converted_3ds_seconds_from_frames of 100;
+	position_controller instance;
+	trans_marker with
+		prs_controller apply to trans at (converted_3ds_ticks_from_seconds of (smod time to duration));
+	end;
+end;    // prs_controller_scene
+
+anim prs_controller_anim with
+	eye = <200 -200 200>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_shape prs_controller_scene
+		within new static_shape of environment 
+		titled "3DS PRS Controller";
+end;    // prs_controller_anim

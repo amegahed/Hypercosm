@@ -1,0 +1,43 @@
+{***************************************************************}
+{                           arial.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{               Displays the arial plain glyph set.             }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+do arial_anim;
+
+
+include "system/text.ores";
+include "system/anims.ores";
+include "system/arial.ores";
+
+
+shape words is
+    text_style type style1 with
+        font_family is arial;
+        color = light green;
+    end;
+
+    string type line3 is "asdfghjkl;'ASDFGHJKL:";
+    line3 add [double_quote];
+    
+    move to <0 0 3>;
+    text "`1234567890-=~!@#$%^&*()_+" using style1;
+    move to <0 0 -2>;
+    text "qwertyuiop[]\QWERTYUIOP{}|" using style1;
+    move to <0 0 -2>;
+    text line3 using style1;
+    move to <0 0 -2>;
+    text "zxcvbnm,./ZXCVBNM<>?" using style1;
+end;
+
+
+anim arial_anim with
+    eye = <0 -24 0>;
+is
+    mouse_controlled_shape words;
+end;

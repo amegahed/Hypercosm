@@ -1,0 +1,232 @@
+{***************************************************************}
+{                          specs.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do specs_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+
+
+shape specs is
+    shape beveled_rim is
+        ring with
+            center = <0 -1.5 0>;
+            normal = <0 1 0>;
+            inner_radius = 21;
+            outer_radius = 22;
+        end;    // front
+        ring with
+            center = <0 1.5 0>;
+            normal = <0 1 0>;
+            inner_radius = 21;
+            outer_radius = 22;
+        end;    // back
+
+        cylinder with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            radius = 23;
+        end;    // outside
+        cylinder with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            radius = 20;
+        end;    // inside
+
+        cone with
+            end1 = <0 -1.5 0>;
+            end2 = <0 -.5 0>;
+            radius1 = 22;
+            radius2 = 23;
+        end;
+        cone with
+            end1 = <0 -1.5 0>;
+            end2 = <0 -.5 0>;
+            radius1 = 21;
+            radius2 = 20;
+        end;
+
+        cone with
+            end1 = <0 1.5 0>;
+            end2 = <0 .5 0>;
+            radius1 = 22;
+            radius2 = 23;
+        end;
+        cone with
+            end1 = <0 1.5 0>;
+            end2 = <0 .5 0>;
+            radius1 = 21;
+            radius2 = 20;
+        end;
+    end;    // beveled_rim
+
+
+    shape rim is
+        torus with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            inner_radius = 20;
+            outer_radius = 23;
+        end;
+    end;    // rim
+
+
+    shape lens is
+
+        // front surface
+        paraboloid with
+            top = <0 -8 0>;
+            base = <0 -.5 0>;
+            radius = 20;
+        end;
+
+        // back surface
+        paraboloid with
+            top = <0 -4 0>;
+            base = <0 .5 0>;
+            radius = 20;
+        end;
+    end;    // lens
+
+
+    shape bridge is
+        cylinder with
+            end1 = <-10 -5 5>;
+            end2 = <10 -5 5>;
+            radius = 1.5;
+        end;
+        sphere with
+            center = <-10 -5 5>;
+            radius = 1.5;
+        end;
+        sphere with
+            center = <10 -5 5>;
+            radius = 1.5;
+        end;
+        cylinder with
+            end1 = <-10 -5 5>;
+            end2 = <-15 0 0>;
+            radius = 1.5;
+        end;
+        cylinder with
+            end1 = <10 -5 5>;
+            end2 = <15 0 0>;
+            radius = 1.5;
+        end;
+    end;    // bridge
+
+
+    shape side is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 100 0>;
+            radius = 1.5;
+        end;
+        cylinder with
+            end1 = <0 100 0>;
+            end2 = <0 120 10>;
+            radius = 1.5;
+        end;
+        cylinder with
+            end1 = <0 120 10>;
+            end2 = <0 140 10>;
+            radius = 1.5;
+        end;
+        cylinder with
+            end1 = <0 140 10>;
+            end2 = <0 170 -23>;
+            radius = 1.5;
+        end;
+    end;    // side
+
+
+    shape left_side is
+
+        // hinge part
+        //
+        cylinder with
+            end1 = <-1 0 0>;
+            end2 = <-10 0 0>;
+            radius = 1.5;
+        end;
+        cylinder with
+            end1 = <-10 0 2>;
+            end2 = <-10 0 -2>;
+            radius = 1.5;
+        end;
+        sphere with
+            center = <-10 0 2>;
+            radius = 2;
+        end;
+        sphere with
+            center = <-10 0 -2>;
+            radius = 2;
+        end;
+        side with
+            move to <-10 0 0>;
+            rotation of <0 0 -20>;
+        end;
+    end;    // left_side
+
+
+    glassy light pink lens with
+        move to <-35 0 23>;
+    end;    // left lens
+
+    glassy light pink lens with
+        move to <35 0 23>;
+    end;    // right lens
+
+    rim with
+        move to <-35 0 23>;
+    end;    // left rim
+
+    rim with
+        move to <35 0 23>;
+    end;    // right rim
+
+    bridge with
+        rotate by -15 around <1 0 0>;
+        move to <0 0 30>;
+    end;
+    left_side with
+        move to <-55 0 23>;
+    end;
+    left_side with
+        scaling of <-1 1 1>;
+        move to <55 0 23>;
+    end;
+end;    // specs
+
+
+anim specs_anim
+    args type args;
+with
+    eye = <100 -250 200>;
+    lookat = <0 0 20>;
+    double_buffer is on;
+    args check;
+is
+    shape specs1 is
+        specs with
+            material is golden;
+            move to <0 -40 0>;
+        end;
+    end;
+    shape environment is
+        plane with
+            magnify by 100;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_shape specs1 in environment;
+end;    // specs_anim

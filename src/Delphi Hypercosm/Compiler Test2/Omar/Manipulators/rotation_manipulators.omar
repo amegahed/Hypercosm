@@ -1,0 +1,41 @@
+do rotation_manipulator_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/reporting_rotation_manipulator.ores";
+include "system/common_materials.ores";
+include "system/fish.omar";
+
+
+anim rotation_manipulator_anim
+	args type args;
+with
+    eye = <-10 -10 10>;
+    lookat = <0 0 1>;
+    args check;
+is
+	shape thing is
+	    static fish type fish;
+	    fish instance with
+	        magnify by .1;
+	        rotate by 90 around <0 0 1>;
+	    end;
+	end;    // thing;
+
+	reporting_rotation_manipulator type rotation_manipulator around z_axis controlling thing
+	    named "Fish" with
+	    handle_size = .5;
+	end;
+	
+    shape scene is
+        plane with
+            magnify by 10;
+            material is glass;
+        end;
+    end;
+    
+    mouse_controlled_actor rotation_manipulator in scene 
+    	titled "Rotation Manipulator";
+end;    // rotation_manipulator_anim

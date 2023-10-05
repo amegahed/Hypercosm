@@ -1,0 +1,41 @@
+{***************************************************************}
+{                          lines.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do lines_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.ores";
+include "system/arrow_shapes.ores";
+
+shape random_lines with
+	integer number = 25;
+is
+	for integer counter = 1 .. number do
+		line [vrandom from <-1 -1 -1> to <1 1 1>
+			vrandom from <-1 -1 -1> to <1 1 1>];
+	end;
+end;    // random_lines
+
+shape lines_scene is
+	random_lines;
+	axes;
+end;    // lines_scene
+	
+	
+anim lines_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	window_name is "The Lines Primitive";
+	args check;
+is
+	mouse_controlled_shape lines_scene;
+end;    // lines_anim

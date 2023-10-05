@@ -1,0 +1,78 @@
+{***************************************************************}
+{                          limit.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do limit_anim;
+
+include "system/3d.ores";
+include "system/abs_trans.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.ores";
+include "system/snowman.omar";
+
+shape limit_scene with
+	scalar time = 0;
+is
+	static material type material1 is glass colored white;
+	static material type material2 is glass colored red;
+	scalar h = 3.6 * .5;
+	scalar x = .5 + cos (time * 90) * .5;
+	trans type trans2;
+	snowman with
+		magnify by .5;
+		material is material1;
+		edges is silhouette;
+		render_mode is shaded_line;
+	end;
+	
+	snowman with
+		magnify by .5;
+		material is material2;
+		edges is silhouette;
+		render_mode is shaded_line;
+	return with
+	
+		// apply the "limit" transformation
+		//
+		limit x_min to x;
+		
+		// save the transformation to
+		// draw the bounding box later
+		//
+		trans2 = trans;
+	end;
+	
+	// annotations
+	//
+	arrow from <0 0 (h / 2)> to <x 0 (h / 2)>;
+	block with
+		trans = trans2;
+		color = white;
+		render_mode is wireframe;
+	end;
+	overlay_text "limit <enum dimension> to <scalar value>;" at <0 .85 0>;
+	{
+	futura_l_word "LIMIT" with
+		rotate by 90 around <1 0 0>;
+		move to <-1 0 .75>;
+	end;
+	}
+end;    // limit_scene
+	
+	
+anim limit_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	mouse_controlled_animated_shape limit_scene;
+end;    // limit_anim

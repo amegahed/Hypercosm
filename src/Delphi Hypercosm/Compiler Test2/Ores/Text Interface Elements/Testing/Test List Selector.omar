@@ -1,0 +1,29 @@
+do list_selector_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "strings.ores";
+include "native_text.ores";
+include "List Selector.ores";
+
+
+anim list_selector_test with
+    background = dark blue;
+    double_buffer is on;
+is
+    list_selector type list_selector using ["this" "that" "other thing"] at <.75 0 0> with
+        h_alignment is center;
+        highlight_color = yellow;
+        background = dark grey;
+        highlight_background = dark red;
+    end;
+    
+    picture list_selector_picture is
+        list_selector draw;
+    end;
+    
+    while true do
+        list_selector_picture;
+    end;
+end;    // list_selector_test

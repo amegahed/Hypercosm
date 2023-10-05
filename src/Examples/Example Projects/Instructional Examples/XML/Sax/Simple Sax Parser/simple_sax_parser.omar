@@ -1,0 +1,61 @@
+do parse_xml;
+
+include "system/printing.ores";
+include "system/string_utils.ores";
+include "system/xml_resource.ores";
+include "system/native_sax_parser.ores";
+
+verb start_element
+	named string type name;
+	of string type attributes[];
+is
+	indent;
+	write "<", name;
+	
+	for integer counter = 1 .. num attributes do
+		if is_odd counter then
+		
+			// write name
+			//
+			write " ", attributes[counter];
+		else
+			// write value
+			//
+			write "=", get_double_quotated attributes[counter];
+		end;
+	end;
+	
+	write ">",;
+	indentation = itself + 1;
+end;	// start_element
+
+verb end_element
+	named string type name;
+	of string type value;
+is
+	indentation = itself - 1;
+	indent;	
+	write "</", name, ">",;
+end;	// end_element
+
+verb parse_xml is
+	xml_resource type xml_resource named "scene.xml";
+	string type xml is xml_resource get_xml;
+	string type elements[] is ["root" "scene" "block" "sphere" "cylinder" "cone" "group" "instance" "clone" "material" "trans"];
+	
+	// set up handlers
+	//
+	for each string type element in elements do
+		xml_add_element_attributes_handler named element calling start_element;
+		xml_add_element_value_handler named element calling end_element;
+	end;
+	// write start document
+	//	
+	write "--- START ---", ;
+	// write body of xml document
+	//	
+	xml_parse_string xml;
+	// write end document
+	//		
+	write "--- END ---", ;
+end;	// parse_xml

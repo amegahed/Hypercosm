@@ -1,0 +1,33 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   comparing.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a few utilities for defining comparisons       }
+{       between objects.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+adjective comparable
+does
+    boolean question same
+        as comparable type item;
+    end;
+end;    // comparable
+
+
+adjective orderable
+extends
+    comparable
+does
+    boolean question less
+        orderable type item;
+    end;
+    boolean question greater
+        orderable type item;
+    end;
+end;    // orderable

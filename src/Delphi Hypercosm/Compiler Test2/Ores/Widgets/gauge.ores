@@ -1,0 +1,103 @@
+{***************************************************************}
+{                          gauge.ores                           }
+{         Object-Oriented Modelling and Rendering (OMAR)        }
+{***************************************************************}
+{                                                               }
+{        Contains a subject definition for a gauge widget.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "interactions.ores";
+include "futura_l.ores";
+include "picking.ores";
+
+
+subject gauge
+does
+    verb new
+        labelled string type label is none;
+        from scalar min_value = 0;
+        to scalar max_value = 1;
+        shows scalar reference value refers to none;
+    with
+        scalar span = 240;
+    end;
+    shape instance;
+has
+    public scalar reference value;
+
+    // private attributes
+    //
+    string type label;
+    scalar min_value, max_value, internal_value;
+    scalar span;
+is
+    verb new
+        labelled string type label is none;
+        from scalar min_value = 0;
+        to scalar max_value = 1;
+        shows scalar reference value refers to none;
+    with
+        scalar span = 240;
+    is
+        gauge's label is label;
+        gauge's min_value = min_value;
+        gauge's max_value = max_value;
+        gauge's span = span;
+        gauge's internal_value = (min_value + max_value) / 2;
+
+        if value refers to none then
+            gauge's value refers to internal_value;
+        else
+            gauge's value refers to value;
+        end;
+    end;    // new
+
+
+    objective shape face with
+        scalar span = 180;
+    is
+        ring with
+            inner_radius = .9;
+            material is constant_color white;
+            color = white;
+        end;
+        ring with
+            render_mode is wireframe;
+            umin = 0;
+            umax = span;
+            outer_radius = .8;
+            inner_radius = .7;
+            rotate by (90 - span / 2) around <0 0 1>;
+            color = light red;
+        end;
+    end;    // face
+
+
+    objective shape dial is
+        triangle <0 .9 0> <-.1 -.25 0> <.1 -.25 0>;
+    end;    // dial
+
+
+    shape instance is
+        scalar angle;
+
+        value = clamp value from min_value to max_value;
+        angle = (value - min_value) / (max_value - min_value) * span;
+        dial with
+            material is constant_color light blue;
+            rotate by ((span / 2) - angle) around <0 0 1>;
+            move to <0 0 .1>;
+            color = light blue;
+        end;
+        face with
+            span = gauge's span;
+        end;
+        futura_l_word label with
+            move to <0 -.5 0>;
+        end;
+    end;    // instance
+end;    // gauge
+

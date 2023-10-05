@@ -1,0 +1,65 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         tree_iterators.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition to store hierarchical       }
+{       trees.                                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/iterators.ores";
+
+subject tree_iterator
+extends
+	iterator
+does
+	// constructor
+	//
+	verb new
+		over hierarchical type tree;
+	end;
+	
+	// absolute iterator navigation methods
+	//
+	abstract verb to_first;
+	
+	// relative iterator navigation method
+	//
+	abstract verb to_next;
+has
+	// attributes
+	//
+	hierarchical type tree is none;
+	stack type iterator_stack;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		over hierarchical type tree;
+	is
+		iterator_stack clear;
+		with tree_iterator do
+			its tree is tree;
+		end;
+	end;    // new
+	
+	//
+	// absolute iterator navigation methods
+	//
+	
+	verb to_first is
+	end;    // to_first
+	
+	//
+	// relative iterator navigation method
+	//
+	
+	abstract verb to_next is
+	end;    // to_next
+end;    // tree_iterator

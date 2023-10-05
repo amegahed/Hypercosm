@@ -1,0 +1,41 @@
+do tactile_sphere_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/meshes.ores";
+include "system/grids.ores";
+
+
+anim tactile_sphere_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape sphere_shape is
+        write "making sphere", ;
+        quad_mesh of (globe_grid 10 by 20) with
+            move to <0 0 1>;
+            magnify by 2;
+            smoothing is on;
+            mending is on;
+            material is wood;
+        end;
+    end;    // sphere_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape sphere_shape titled "Tactile Sphere" in floor;
+end;    // tactile_sphere_anim

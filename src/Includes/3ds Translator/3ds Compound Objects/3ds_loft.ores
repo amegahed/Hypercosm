@@ -1,0 +1,753 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            3ds_loft.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains loft definitions that correspond to            }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_object.ores";
+include "system/3ds_shape.ores";
+include "system/3ds_editable_spline.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/polygon_meshes.ores";
+include "system/grid_meshes.ores";
+
+subject translated_3ds_loft
+extends
+	translated_3ds_collapsable translated_3ds_texturable_object
+does
+	// constructor
+	//
+	verb new with
+		// creation method parameters
+		//
+		translated_3ds_shape type path is none;
+		translated_3ds_shape type cross_section is none;
+			
+		// tessellation parameters
+		//
+		integer path_steps = 5;
+		integer shape_steps = 5;
+		
+		// surface parameters
+		//
+		boolean smooth_length is true;
+		boolean smooth_width is true;
+				
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		
+		// optimization parameters
+		//
+		boolean optimize_shapes is false;
+		boolean optimize_path is false;
+		boolean adaptive_path_steps is false;
+		boolean contour is false;
+		boolean banking is false;
+		boolean constant_cross_section is false;
+		boolean linear_interpolation is false;
+		boolean flip_normals is false;
+		boolean quad_sides is false;
+		boolean transform_degrade is false;
+		
+		// display parameters
+		//
+		boolean skin is true;
+		boolean skin_in_shaded is false;
+	end;
+	
+	// setting method
+	//
+	verb set with
+		
+		// creation method parameters
+		//
+		translated_3ds_shape type path is none;
+		translated_3ds_shape type cross_section is none;
+			
+		// tessellation parameters
+		//
+		integer path_steps = 5;
+		integer shape_steps = 5;
+		
+		// surface parameters
+		//
+		boolean smooth_length is true;
+		boolean smooth_width is true;
+				
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		
+		// optimization parameters
+		//
+		boolean optimize_shapes is false;
+		boolean optimize_path is false;
+		boolean adaptive_path_steps is false;
+		boolean contour is false;
+		boolean banking is false;
+		boolean constant_cross_section is false;
+		boolean linear_interpolation is false;
+		boolean flip_normals is false;
+		boolean quad_sides is false;
+		boolean transform_degrade is false;
+		
+		// display parameters
+		//
+		boolean skin is true;
+		boolean skin_in_shaded is false;
+	end;
+
+	// collapsing methods
+	//    
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_loft type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	translated_3ds_shape type path is none;
+	translated_3ds_shape type cross_section is none;
+
+	// tessellation attributes
+	//
+	integer path_steps;
+	integer shape_steps;
+		
+	// surface attributes
+	//
+	boolean smooth_length;
+	boolean smooth_width;
+	
+	// capping attributes
+	//
+	boolean cap_start is true;
+	boolean cap_end is true;
+				
+	// mapping attributes
+	//
+	boolean gen_mapping_coords;
+	boolean gen_mat_IDs;
+	boolean use_shape_IDs;
+	
+	// optimization attributes
+	//
+	boolean optimize_shapes;
+	boolean optimize_path;
+	boolean adaptive_path_steps;
+	boolean contour;
+	boolean banking;
+	boolean constant_cross_section;
+	boolean linear_interpolation;
+	boolean flip_normals;
+	boolean quad_sides;
+	boolean transform_degrade;
+	
+	// display attributes
+	//
+	boolean skin;
+	boolean skin_in_shaded;
+private 
+	// recycling attributes
+	//
+	translated_3ds_loft type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_loft type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new with
+	
+		// creation method parameters
+		//
+		translated_3ds_shape type path is none;
+		translated_3ds_shape type cross_section is none;
+			
+		// tessellation parameters
+		//
+		integer path_steps = 5;
+		integer shape_steps = 5;
+		
+		// surface parameters
+		//
+		boolean smooth_length is true;
+		boolean smooth_width is true;
+				
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		
+		// optimization parameters
+		//
+		boolean optimize_shapes is false;
+		boolean optimize_path is false;
+		boolean adaptive_path_steps is false;
+		boolean contour is false;
+		boolean banking is false;
+		boolean constant_cross_section is false;
+		boolean linear_interpolation is false;
+		boolean flip_normals is false;
+		boolean quad_sides is false;
+		boolean transform_degrade is false;
+		
+		// display parameters
+		//
+		boolean skin is true;
+		boolean skin_in_shaded is false;    
+	is
+		translated_3ds_texturable_object new with
+		
+			// set texturing parameters
+			//
+			gen_mapping_coords is static gen_mapping_coords;
+		end;
+		
+		if verbose_recycling then
+			write "new 3ds loft", ;
+		end;
+					
+		with translated_3ds_loft do
+		
+			// set creation method parameters
+			//
+			its path is path;
+			its cross_section is cross_section;
+				
+			// set tessellation parameters
+			//
+			its path_steps = path_steps;
+			its shape_steps = shape_steps;
+			
+			// set surface parameters
+			//
+			its smooth_length is smooth_length;
+			its smooth_width is smooth_width;
+					
+			// set mapping parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+			its gen_mat_IDs is gen_mat_IDs;
+			its use_shape_IDs is use_shape_IDs;
+			
+			// set capping parameters
+			//
+			its cap_start is cap_start;
+			its cap_end is cap_end;
+			
+			// set optimization parameters
+			//
+			its optimize_shapes is optimize_shapes;
+			its optimize_path is optimize_path;
+			its adaptive_path_steps is adaptive_path_steps;
+			its contour is contour;
+			its banking is banking;
+			its constant_cross_section is constant_cross_section;
+			its linear_interpolation is linear_interpolation;
+			its flip_normals is flip_normals;
+			its quad_sides is quad_sides;
+			its transform_degrade is transform_degrade;
+			
+			// set display parameters
+			//
+			its skin is skin;
+			its skin_in_shaded is skin_in_shaded;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set with
+		
+		// creation method parameters
+		//
+		translated_3ds_shape type path is none;
+		translated_3ds_shape type cross_section is none;
+			
+		// tessellation parameters
+		//
+		integer path_steps = 5;
+		integer shape_steps = 5;
+		
+		// surface parameters
+		//
+		boolean smooth_length is true;
+		boolean smooth_width is true;
+				
+		// mapping parameters
+		//
+		boolean gen_mapping_coords is true;
+		boolean gen_mat_IDs is true;
+		boolean use_shape_IDs is false;
+		
+		// capping parameters
+		//
+		boolean cap_start is true;
+		boolean cap_end is true;
+		
+		// optimization parameters
+		//
+		boolean optimize_shapes is false;
+		boolean optimize_path is false;
+		boolean adaptive_path_steps is false;
+		boolean contour is false;
+		boolean banking is false;
+		boolean constant_cross_section is false;
+		boolean linear_interpolation is false;
+		boolean flip_normals is false;
+		boolean quad_sides is false;
+		boolean transform_degrade is false;
+		
+		// display parameters
+		//
+		boolean skin is true;
+		boolean skin_in_shaded is false;
+	is
+		with translated_3ds_loft do
+		
+			// set creation method parameters
+			//
+			its path is path;
+			its cross_section is cross_section;
+				
+			// set tessellation parameters
+			//
+			its path_steps = path_steps;
+			its shape_steps = shape_steps;
+			
+			// set surface parameters
+			//
+			its smooth_length is smooth_length;
+			its smooth_width is smooth_width;
+					
+			// set mapping parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+			its gen_mat_IDs is gen_mat_IDs;
+			its use_shape_IDs is use_shape_IDs;
+			
+			// set capping parameters
+			//
+			its cap_start is cap_start;
+			its cap_end is cap_end;
+			
+			// set optimization parameters
+			//
+			its optimize_shapes is optimize_shapes;
+			its optimize_path is optimize_path;
+			its adaptive_path_steps is adaptive_path_steps;
+			its contour is contour;
+			its banking is banking;
+			its constant_cross_section is constant_cross_section;
+			its linear_interpolation is linear_interpolation;
+			its flip_normals is flip_normals;
+			its quad_sides is quad_sides;
+			its transform_degrade is transform_degrade;
+			
+			// set display parameters
+			//
+			its skin is skin;
+			its skin_in_shaded is skin_in_shaded;
+			
+			// set texturing parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+		end;
+	end;    // set  
+	
+	//
+	// tessellating methods
+	//
+	
+	verb add_lofted_polylines
+		of polyline type cross_section;
+		through polyline type path;
+		to translated_3ds_editable_mesh type editable_mesh;
+	with
+		boolean circular_path is false;
+	is
+		vector_grid type vertex_grid, normal_grid;
+		integer rows = num path;
+		integer columns = num cross_section;
+		vector path_normal = get_polygon_normal of path;
+		
+		dim vertex_grid[1 .. rows, 1 .. columns];
+		dim normal_grid[1 .. rows, 1 .. columns];
+		
+		for integer row = 1 .. rows do
+			vector point = path[row], tangent;
+			trans type trans;
+			
+			// compute tangent along path
+			//
+			if circular_path then
+				tangent = path get_circular_vertex_tangent of row;
+			else
+				tangent = path get_vertex_tangent of row;
+			end;
+			
+			// use tangent to compute transformation along path
+			//      
+			trans's z_axis = normalized tangent;
+			
+			// find a vector perpendicular to the tangent
+			//
+			if (path_normal perpendicular trans's z_axis) <> <0 0 0> then
+				trans's x_axis = normalized (path_normal perpendicular trans's z_axis);
+			elseif (<-1 0 0> perpendicular trans's z_axis) <> <0 0 0> then
+				trans's x_axis = normalized (<-1 0 0> perpendicular trans's z_axis);
+			elseif (<0 -1 0> perpendicular trans's z_axis) <> <0 0 0> then
+				trans's x_axis = normalized (<0 -1 0> perpendicular trans's z_axis);
+			end;
+			
+			trans's y_axis = trans's z_axis cross trans's x_axis;
+			trans's origin = point;
+						
+			// transform cross sections to path
+			//              
+			for integer column = 1 .. columns do
+				vector normal = cross_section get_circular_vertex_tangent of column cross <0 0 1>;
+				vertex_grid[row, column] = trans transformed cross_section[column];
+				normal_grid[row, column] = trans oriented normal;
+			end;
+		end;
+		
+		editable_mesh add_element (get_grid_mesh 
+			of vertex_grid oriented to normal_grid with
+			smoothing is smooth_length or smooth_width;
+			textured is gen_mapping_coords);
+						
+		// add capping faces
+		//
+		if cap_start then
+			integer row = 1;
+			vector vertices[1 .. columns - 1] = vertex_grid[row, 1 .. columns - 1];
+			vector normal, normals[1 .. columns - 1];
+			
+			if circular_path then
+				normal = path get_circular_vertex_tangent of row;
+			else
+				normal = path get_vertex_tangent of row;
+			end;    
+			for integer counter = 1 .. columns - 1do
+				normals[counter] = normal;
+			end;
+			
+			editable_mesh add_element (get_polygon_mesh of vertices 
+				oriented to normals
+			with
+				smoothing is true;
+				one_sided is false;
+				reversed is false;
+				textured is gen_mapping_coords;
+			);
+		end;
+		if cap_end then
+			integer row = rows;
+			vector vertices[1 .. columns - 1] = vertex_grid[row, 1 .. columns - 1];
+			vector normal, normals[1 .. columns - 1];
+			if circular_path then
+				normal = path get_circular_vertex_tangent of row;
+			else
+				normal = path get_vertex_tangent of row;
+			end; 
+			for integer counter = 1 .. columns - 1 do
+				normals[counter] = normal;
+			end;
+									   
+			editable_mesh add_element (get_polygon_mesh of vertices 
+				oriented to normals
+			with   
+				smoothing is true;
+				one_sided is false;
+				reversed is true;
+				textured is gen_mapping_coords;
+			);
+		end;
+	end;    // add_lofted_polylines
+
+	verb add_lofted_splines
+		of translated_3ds_spline type cross_section;
+		through translated_3ds_spline type path;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is
+		add_lofted_polylines 
+			of (cross_section to_polyline with steps = shape_steps)
+			through (path to_polyline with steps = path_steps)
+			to editable_mesh
+		with 
+			circular_path is path is_closed;
+		end;
+	end;    // add_lofted_splines
+	
+	verb add_lofted_editable_splines
+		of translated_3ds_editable_spline type cross_section;
+		through translated_3ds_editable_spline type path;
+		to translated_3ds_editable_mesh type editable_mesh;
+	is      
+		// cross section and path iterators
+		//
+		iterator type cross_section_iterator is cross_section's spline_list get_iterator;
+		iterator type path_iterator is path's spline_list get_iterator;
+		
+		// iterate through each cross section spline
+		//          
+		while cross_section_iterator is_iterating do
+			translated_3ds_spline type cross_section_spline is 
+				translated_3ds_spline type cross_section_iterator next;
+			
+			// iterate through each path spline
+			//
+			path_iterator to_first;
+			while path_iterator is_iterating do
+				translated_3ds_spline type path_spline is
+					translated_3ds_spline type path_iterator next;
+					
+				add_lofted_splines
+					of cross_section_spline through path_spline
+					to editable_mesh;
+			end;
+		end;
+	end;    // add_lofted_editable_splines
+	
+	//
+	// collapsing methods
+	//
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_stackable type result is none;
+		if some path and some cross_section then
+			
+			// collapse arguments
+			//
+			if translated_3ds_collapsable type path then
+				translated_3ds_collapsable type collapsable is 
+					translated_3ds_collapsable type path;
+				path is translated_3ds_shape type collapsable get_collapsed;
+			end;
+			if translated_3ds_collapsable type cross_section then
+				translated_3ds_collapsable type collapsable is 
+					translated_3ds_collapsable type cross_section;
+				cross_section is translated_3ds_shape type collapsable get_collapsed;
+			end;
+			
+			// evaluate loft arguments
+			//
+			if translated_3ds_editable_spline type path and 
+				translated_3ds_editable_spline type cross_section then
+	
+				if skin then
+					translated_3ds_editable_mesh type editable_mesh is 
+						translated_3ds_editable_mesh type's get;
+				
+					// draw as polygons
+					//
+					add_lofted_editable_splines 
+						of (translated_3ds_editable_spline type cross_section)
+						through (translated_3ds_editable_spline type path)
+						to editable_mesh;
+						
+					result is editable_mesh;
+				else
+					translated_3ds_editable_spline type editable_spline is 
+						translated_3ds_editable_spline type's get;
+					
+					editable_spline append_editable_spline 
+						(translated_3ds_editable_spline type path);
+					editable_spline append_editable_spline 
+						(translated_3ds_editable_spline type cross_section);
+										
+					// draw as lines
+					//
+					result is editable_spline;
+				end;
+			else
+				result is none;
+			end;
+		else
+			result is none;
+		end;
+		
+		recycle;
+		answer result;
+	end;    // get_collapsed
+
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_loft type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_loft type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_loft;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+		// recycle loft components
+		//
+		path recycle;
+		cross_section recycle;
+			
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_loft;
+		translated_3ds_loft is none;
+	end;        // recycle  
+end;    // translated_3ds_loft
+
+//
+// procedural interface
+//
+
+shape translated_3ds_loft with
+	
+	// creation method parameters
+	//
+	translated_3ds_shape type path is none;
+	translated_3ds_shape type cross_section is none;
+		
+	// tessellation parameters
+	//
+	integer path_steps = 5;
+	integer shape_steps = 5;
+	
+	// surface parameters
+	//
+	boolean smooth_length is true;
+	boolean smooth_width is true;
+			
+	// mapping parameters
+	//
+	boolean gen_mapping_coords is true;
+	boolean gen_mat_IDs is true;
+	boolean use_shape_IDs is false;
+	
+	// capping parameters
+	//
+	boolean cap_start is true;
+	boolean cap_end is true;
+	
+	// optimization parameters
+	//
+	boolean optimize_shapes is false;
+	boolean optimize_path is false;
+	boolean adaptive_path_steps is false;
+	boolean contour is false;
+	boolean banking is false;
+	boolean constant_cross_section is false;
+	boolean linear_interpolation is false;
+	boolean flip_normals is false;
+	boolean quad_sides is false;
+	boolean transform_degrade is false;
+	
+	// display parameters
+	//
+	boolean skin is true;
+	boolean skin_in_shaded is false;
+	
+	// modifier stack
+	//
+	translated_3ds_loft type translated_3ds_loft is translated_3ds_loft type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_loft;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_loft set with
+	
+		// set creation method parameters
+		//
+		path is static path;
+		cross_section is static cross_section;
+			
+		// set tessellation parameters
+		//
+		path_steps = static path_steps;
+		shape_steps = static shape_steps;
+		
+		// set surface parameters
+		//
+		smooth_length is static smooth_length;
+		smooth_width is static smooth_width;
+				
+		// set mapping parameters
+		//
+		gen_mapping_coords is static gen_mapping_coords;
+		gen_mat_IDs is static gen_mat_IDs;
+		use_shape_IDs is static use_shape_IDs;
+		
+		// set capping parameters
+		//
+		cap_start is static cap_start;
+		cap_end is static cap_end;
+		
+		// set optimization parameters
+		//
+		optimize_shapes is static optimize_shapes;
+		optimize_path is static optimize_path;
+		adaptive_path_steps is static adaptive_path_steps;
+		contour is static contour;
+		banking is static banking;
+		constant_cross_section is static constant_cross_section;
+		linear_interpolation is static linear_interpolation;
+		flip_normals is static flip_normals;
+		quad_sides is static quad_sides;
+		transform_degrade is static transform_degrade;
+		
+		// set display parameters
+		//
+		skin is static skin;
+		skin_in_shaded is static skin_in_shaded; 
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;    // translated_3ds_loft

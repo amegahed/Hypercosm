@@ -1,0 +1,51 @@
+do material_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_teapot.ores";
+include "system/3ds_materials.ores";
+include "system/arrow_shapes.ores";
+
+
+anim material_anim
+is
+	translated_3ds_material type material with
+	
+		// color component parameters
+		//
+	    ambient_color = black;
+	    diffuse_color = orange;
+	    specular_color = white;
+	    self_illum_color = black;
+	
+		// scalar parameters
+		//        
+	    specular_level = 5;
+	    glossiness = 25;
+	    soften = .1;
+	    opacity = 1;
+	end;
+		
+	shape scene
+	is
+		translated_3ds_teapot with		
+		    radius = 25;
+		    smooth is true;
+		    body is true;
+		    handle is true;
+		    spout is true;
+		    lid is true;
+		    gen_mapping_coords is false;
+			material apply;
+		end;
+				
+		axes with
+			magnify by 25;
+		end;
+	end;	// scene
+	
+	mouse_controlled_shape scene titled "3DS Material" with
+		auto_camera is on;
+	end;
+end;	// material_anim

@@ -1,0 +1,75 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       extending_subjects.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example that shows how to         }
+{       extend a subject declaration in the OMAR language.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do extending_subjects_example;
+
+include "subjects.omar";
+
+subject ellipse
+extends
+	circle
+does
+	// constructor
+	//
+	verb new
+		at vector location = <0 0 0>;
+	with
+		scalar major_radius = 1, minor_radius = 1;
+	end;
+	
+	// query methods
+	//
+	scalar question get_area;
+has
+	// attributes
+	//
+	scalar minor_radius;
+is
+	verb new
+		at vector location = <0 0 0>;
+	with
+		scalar major_radius = 1, minor_radius = 1;
+	is
+		// call superclass constructor
+		//
+		circle new at location with
+			radius = major_radius;
+		end;
+		
+		// set ellipse attributes
+		//  
+		ellipse's minor_radius = minor_radius;              
+	end;    // new
+
+	scalar question get_area is
+		answer pi * radius * minor_radius;
+	end;    // get_area
+end;    // ellipse
+
+verb extending_subjects_example is
+
+	// object declaration - this creates an instance
+	// of the circle subject or "class"
+	//
+	ellipse type ellipse at <0 0 10> with
+		major_radius = 5;
+		minor_radius = 2.5;
+	end;
+
+	// This calls the "print" method of the circle object
+	//  
+	ellipse print;
+	
+	// This calls a circle's question method
+	//
+	write "The area of the ellipse = ", ellipse get_area, ;
+end;    // extending_subjects_example

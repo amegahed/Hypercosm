@@ -1,0 +1,171 @@
+{***************************************************************}
+{                          rocknroll.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rock_and_roll;
+
+
+include "system/3d.ores";
+include "system/alpha.omar";
+include "system/guitar.omar";
+
+
+shape rock_logo is
+    letter_r with
+        move to <-7 0 0>;
+    end;
+    letter_o with
+        move to <-2.4 0 0>;
+    end;
+    letter_c with
+        move to <2.5 0 0>;
+    end;
+    letter_k with
+        move to <7 0 0>;
+    end;
+end;    // rock_logo
+
+
+{ROCK}
+
+
+shape roll_logo is
+    letter_r with
+        move to <-7 0 0>;
+    end;
+    letter_o with
+        move to <-2.5 0 0>;
+    end;
+    letter_l with
+        move to <2.5 0 0>;
+    end;
+    letter_l with
+        move to <7 0 0>;
+    end;
+end;    // roll_logo
+
+
+{ROLL}
+
+
+shape note with
+    boolean hollow is false;
+is
+    sphere with
+        center = <-2 0 0>;
+        radius = 1;
+    end;
+    sphere with
+        center = <2 0 0>;
+        radius = 1;
+    end;
+    cylinder with
+        end1 = <-1.3 0 .5>;
+        end2 = <-1.3 0 4.3>;
+        radius = .3;
+    end;
+    cylinder with
+        end1 = <2.7 0 .5>;
+        end2 = <2.7 0 4.3>;
+        radius = .3;
+    end;
+
+    {top of note}
+    cylinder with
+        end1 = <-1.3 0 4>;
+        end2 = <2.7 0 4>;
+        radius = .3;
+    end;
+    cylinder with
+        end1 = <-1.3 0 3>;
+        end2 = <2.7 0 3>;
+        radius = .3;
+    end;
+    if hollow then
+        sphere with
+            center = <-2 0 0>;
+            radius = .8;
+        end;
+        sphere with
+            center = <2 0 0>;
+            radius = .8;
+        end;
+        cylinder with
+            end1 = <-1.3 0 .5>;
+            end2 = <-1.3 0 4.3>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <2.7 0 .5>;
+            end2 = <2.7 0 4.3>;
+            radius = .2;
+        end;
+
+        {top of note}
+        cylinder with
+            end1 = <-1.3 0 4>;
+            end2 = <2.7 0 4>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-1.3 0 3>;
+            end2 = <2.7 0 3>;
+            radius = .2;
+        end;
+    end;
+end;    // note
+
+
+{note}
+
+
+picture rock_and_roll with
+    field_of_view = 35;
+    eye = <10 -80 50>;
+    projection is orthographic;
+    roll = -3.65;
+    background = <1 .2 .2>;
+    render_mode is shaded;
+is
+    distant_light from <20 -35 60>;
+    guitar with
+        material is plastic colored violet;
+        magnify by 3.5;
+        scale by -1 along <1 0 0>;
+        rotate by -30 around <0 1 0>;
+        move to <-3 3 -3>;
+    end;
+    rock_logo with
+        material is chalk colored purple;
+        magnify by .8;
+        skew from <0 0 1> to <-.5 0 1>;
+        move to <0 0 7>;
+    end;
+    letter_n with
+        material is chalk colored light grey;
+        magnify by .8;
+        skew from <0 0 1> to <-.5 0 1>;
+    end;
+    roll_logo with
+        material is chalk colored magenta;
+        magnify by .8;
+        skew from <0 0 1> to <-.5 0 1>;
+        move to <0 0 -7>;
+    end;
+    note with
+        material is plastic colored white;
+        hollow is true;
+        skew from <0 0 1> to <.5 0 1>;
+        move to <3 -2 -4>;
+    end;
+    note with
+        material is chalk colored dark grey;
+        skew from <0 0 1> to <.5 0 1>;
+        move to <7 -1 -2>;
+    end;
+end;    // rock_and_roll

@@ -1,0 +1,76 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm      	  cubic_splines.ores			3d      }
+{ |/  \|					    	  					To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard cubic spline definitions which		}
+{       can be used to create smooth surfaces and paths.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/hermite_splines.ores";
+include "system/vpolynomials.ores";
+
+
+subject cubic_spline extends polynomials type;
+subject vcubic_spline extends vpolynomials type;
+
+
+cubic_spline type question get_piecewise_cubic_spline
+	of scalar range[];
+	at scalar domain[];
+is
+	polynomial type cubic_splines[min range .. max range - 1];
+	scalar slopes[min range .. max range];
+	
+	// find slopes
+	//
+	slopes[min slopes] = (range[min range + 1] - range[min range]) /
+		(domain[min range + 1] - domain[min range]);
+	slopes[max slopes] = (range[max range] - range[max range - 1]) / 
+		(domain[max range] - domain[max range - 1]);
+	for integer counter = min slopes + 1 .. max slopes - 1 do
+		slopes[counter] = (range[counter + 1] - range[counter - 1]) /
+			(domain[counter + 1] - domain[counter - 1]);
+	end;
+	
+    // create sequence of cubic splines
+    //
+    for integer counter = min domain .. max domain - 1 do
+        cubic_splines[counter] is get_hermite_cubic 
+        	from (range[counter]) (slopes[counter])
+        	to (range[counter + 1]) (slopes[counter + 1]);
+    end;
+
+    answer cubic_splines;
+end;	// get_piecewise_cubic_spline
+
+	
+vcubic_spline type question get_piecewise_vcubic_spline
+    through vectors type spline;
+is
+	vpolynomial type vcubic_splines[min spline .. max spline - 1];
+    vector tangents[min spline .. max spline];
+
+    // find tangent vectors
+    //
+    tangents[min spline] = (spline[min spline + 1] - spline[min spline]) / 2;
+    tangents[max spline] = (spline[max spline] - spline[max spline - 1]) / 2;
+    for integer counter = min spline + 1 .. max spline - 1 do
+        tangents[counter] = (spline[counter + 1] - spline[counter - 1]) / 2;
+    end;
+
+    // create sequence of cubic splines
+    //
+    for integer counter = min spline .. max spline - 1 do
+        vcubic_splines[counter] is get_hermite_vcubic 
+        	from spline[counter] tangents[counter] 
+        	to spline[counter + 1] tangents[counter + 1];
+    end;
+
+    answer vcubic_splines;
+end;    // get_piecewise_vcubic_spline

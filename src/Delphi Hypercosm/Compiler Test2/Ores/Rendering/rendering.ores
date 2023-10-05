@@ -1,0 +1,31 @@
+{***************************************************************}
+{                          rendering.ores                       }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains some standard rendering related utilities.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+
+
+// Any subject that implements this interface may be considered
+// to be renderable.  To render it, just call the instance shape
+// in the context of a shape or a picture.
+//
+adjective renderable
+does
+    shape instance;
+end;    // renderable
+
+
+shape render
+	renderable type renderable;
+is
+	renderable instance;
+end;	// render
+

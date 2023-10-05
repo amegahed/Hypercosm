@@ -1,0 +1,121 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             pixels.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of a class for storing             }
+{       and manipulating integer pixel coordinates.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/printing.ores";
+include "system/string_utils.ores";
+
+subject pixel
+extends
+	scribable object
+does
+	// constructor
+	//
+	verb new
+		of integer h;
+		by integer v;
+	end;
+
+	// arithmetic methods
+	//  
+	verb add
+		pixel type pixel2;
+	end;
+	verb subtract
+		pixel type pixel2;
+	end;
+		
+	// arithmetic operators
+	//  
+	pixel type question plus
+		pixel type pixel2;
+	end;
+	pixel type question minus
+		pixel type pixel2;
+	end;
+	
+	// converting method
+	//
+	string type question to_string;
+has
+	// attributes
+	//
+	public integer h, v;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of integer h;
+		by integer v;
+	is
+		with pixel do
+			its h = h;
+			its v = v;
+		end;
+	end;    // new
+	
+	//
+	// arithmetic methods
+	//
+		
+	verb add
+		pixel type pixel2;
+	is
+		with pixel do
+			its h = itself + pixel2's h;
+			its v = itself + pixel2's v;
+		end;
+	end;    // add
+	
+	verb subtract
+		pixel type pixel2;
+	is
+		with pixel do
+			its h = itself - pixel2's h;
+			its v = itself - pixel2's v;
+		end;
+	end;    // subtract
+	
+	//      
+	// arithmetic operators
+	//
+	
+	pixel type question plus
+		pixel type pixel2;
+	is
+		answer new pixel 
+			of (pixel's h + pixel2's h)
+			by (pixel's v + pixel2's v);
+	end;    // plus
+	
+	pixel type question minus
+		pixel type pixel2;
+	is
+		answer new pixel 
+			of (pixel's h - pixel2's h)
+			by (pixel's v - pixel2's v);
+	end;    // minus
+
+	//  
+	// converting method
+	//
+	
+	string type question to_string is
+		string type string;
+		string add integer_to_string of h;
+		string add " by ";
+		string add integer_to_string of v;
+		answer string;
+	end;    // to_string
+end;    // pixel

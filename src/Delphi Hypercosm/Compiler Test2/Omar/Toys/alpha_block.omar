@@ -1,0 +1,188 @@
+{***************************************************************}
+{                          alpha_block.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do alpha_block_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/alpha.omar";
+
+
+shape alpha_block
+    char ch;
+with
+    color type edge_color = white;
+    color type letter_color = red;
+is
+    shape unit_cube is
+        block with
+            vertex = <-.5 -.5 -.5>;
+            side1 = <1 0 0>;
+            side2 = <0 1 0>;
+            side3 = <0 0 1>;
+        end;
+    end;    // unit_cube
+
+
+    shape block_edges is
+        sphere with
+            center = <.45 .45 -.45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <-.45 .45 -.45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <-.45 -.45 -.45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <.45 -.45 -.45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <.45 .45 .45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <-.45 .45 .45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <-.45 -.45 .45>;
+            radius = .05;
+        end;
+        sphere with
+            center = <.45 -.45 .45>;
+            radius = .05;
+        end;
+
+        // bottom edges
+        cylinder with
+            end1 = <.45 .45 -.45>;
+            end2 = <-.45 .45 -.45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <-.45 .45 -.45>;
+            end2 = <-.45 -.45 -.45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <-.45 -.45 -.45>;
+            end2 = <.45 -.45 -.45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <.45 -.45 -.45>;
+            end2 = <.45 .45 -.45>;
+            radius = .05;
+        end;
+
+        // top edges
+        cylinder with
+            end1 = <.45 .45 .45>;
+            end2 = <-.45 .45 .45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <-.45 .45 .45>;
+            end2 = <-.45 -.45 .45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <-.45 -.45 .45>;
+            end2 = <.45 -.45 .45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <.45 -.45 .45>;
+            end2 = <.45 .45 .45>;
+            radius = .05;
+        end;
+
+        // side edges
+        cylinder with
+            end1 = <.45 .45 -.45>;
+            end2 = <.45 .45 .45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <-.45 .45 -.45>;
+            end2 = <-.45 .45 .45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <-.45 -.45 -.45>;
+            end2 = <-.45 -.45 .45>;
+            radius = .05;
+        end;
+        cylinder with
+            end1 = <.45 -.45 -.45>;
+            end2 = <.45 -.45 .45>;
+            radius = .05;
+        end;
+    end;    // block_edges
+
+
+    shape block_letter is
+        letter ch with
+            magnify by .1;
+            move to <0 -.45 0>;
+        end;
+    end;    // block_letter
+
+
+    shape block_letters is
+        block_letter;
+        block_letter with
+            rotate by 90 around <0 0 1>;
+        end;
+        block_letter with
+            rotate by -90 around <1 0 0>;
+        end;
+        block_letter with
+            rotate by -90 around <0 0 1>;
+        end;
+        block_letter with
+            rotate by 90 around <1 0 0>;
+        end;
+        block_letter with
+            rotate by 180 around <1 0 0>;
+        end;
+    end;    // block_letters
+
+
+    block_edges with
+        material is plastic colored edge_color;
+    end;
+    block_letters with
+        material is chalk colored letter_color;
+    end;
+    unit_cube with
+        magnify by .85;
+    end;
+end;    // alpha_block
+
+
+anim alpha_block_anim
+    args type args;
+with
+    eye = <1 -2 2>;
+    window_name is "Alphabet Blocks!";
+    double_buffer is on;
+    args check;
+is
+    shape thing is
+        alpha_block "A";
+    end;
+    mouse_controlled_shape thing;
+end;    // alpha_block_anim

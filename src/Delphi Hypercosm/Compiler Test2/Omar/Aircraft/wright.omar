@@ -1,0 +1,564 @@
+{***************************************************************}
+{                          wright.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do flyer_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+
+
+subject flyer
+extends
+    timed_actor
+does
+    objective shape form with
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+is
+    objective shape canard is
+        cylinder with
+            end1 = <0 6 0>;
+            end2 = <0 -6 0>;
+            radius = 2;
+            scale by .1 along <0 0 1>;
+        end;
+        sphere with
+            center = <0 6 0>;
+            radius = 2;
+            scale by .1 along <0 0 1>;
+        end;
+        sphere with
+            center = <0 -6 0>;
+            radius = 2;
+            scale by .1 along <0 0 1>;
+        end;
+        cone with
+            end1 = <0 7.414 0>;
+            end2 = <0 8.828 0>;
+            radius1 = 1.414;
+            radius2 = 0;
+            scale by .1 along <0 0 1>;
+            rotate by -15 around <0 0 1> about <0 6 0>;
+        end;
+        cone with
+            end1 = <0 -7.414 0>;
+            end2 = <0 -8.828 0>;
+            radius1 = 1.414;
+            radius2 = 0;
+            scale by .1 along <0 0 1>;
+            rotate by 15 around <0 0 1> about <0 -6 0>;
+        end;
+    end;    // canard
+
+
+    objective shape canard_assembly is
+        canard with
+            move to <0 0 1.5>;
+        end;
+        canard with
+            move to <0 0 -1.5>;
+        end;
+
+        // crossbars
+        cylinder with
+            end1 = <0 0 1.5>;
+            end2 = <0 0 -1.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <1.5 -6 -1.5>;
+            end2 = <1.5 -6 1.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <1.5 6 -1.5>;
+            end2 = <1.5 6 1.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-1.5 -6 -1.5>;
+            end2 = <-1.5 -6 1.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-1.5 6 -1.5>;
+            end2 = <-1.5 6 1.5>;
+            radius = .1;
+        end;
+    end;    // canard_assembly
+
+
+    objective shape tail is
+        cylinder with
+            end1 = <0 0 4>;
+            end2 = <0 0 -4>;
+            radius = 1.5;
+            scale by .1 along <0 1 0>;
+        end;
+        cone with
+            end1 = <0 0 4>;
+            end2 = <0 0 5>;
+            radius1 = 1.5;
+            radius2 = 0;
+            skew from <0 0 5> to <-1.5 0 5> about <0 0 4>;
+            scale by .1 along <0 1 0>;
+        end;
+        cone with
+            end1 = <0 0 -4>;
+            end2 = <0 0 -5>;
+            radius1 = 1.5;
+            radius2 = 0;
+            skew from <0 0 -5> to <-1.5 0 -5> about <0 0 -4>;
+            scale by .1 along <0 1 0>;
+        end;
+    end;    // tail
+
+
+    objective shape tail_assembly is
+        tail with
+            move to <0 2 0>;
+        end;
+        tail with
+            move to <0 -2 0>;
+        end;
+
+        // crossbars
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <0 2 0>;
+            end2 = <0 -2 0>;
+            radius = .1;
+        end;
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <-1 2 4>;
+            end2 = <-1 -2 4>;
+            radius = .1;
+        end;
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <-1 2 -4>;
+            end2 = <-1 -2 -4>;
+            radius = .1;
+        end;
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <1 2 3.5>;
+            end2 = <1 -2 3.5>;
+            radius = .1;
+        end;
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <1 2 -3.5>;
+            end2 = <1 -2 -3.5>;
+            radius = .1;
+        end;
+    end;    // tail_assembly
+
+
+    objective shape right_wing is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 20 0>;
+            radius = 3;
+            scale by .1 along <0 0 1>;
+        end;
+        cone with
+            end1 = <0 20 0>;
+            end2 = <0 22 0>;
+            radius1 = 3;
+            radius2 = 2;
+            skew from <0 22 0> to <-.5 22 0> about <0 20 0>;
+            scale by .1 along <0 0 1>;
+        end;
+    end;    // right_wing
+
+
+    objective shape brace is
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <-2.8 0 0>;
+            end2 = <-2.8 0 8>;
+            radius = .15;
+        end;
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <2.8 0 0>;
+            end2 = <2.8 0 8>;
+            radius = .15;
+        end;
+    end;    // brace
+
+
+    objective shape x_brace is
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <0 -2 0>;
+            end2 = <0 2 8>;
+            radius = .1;
+        end;
+        cylinder with
+            material is metal colored charcoal;
+            end1 = <0 2 0>;
+            end2 = <0 -2 8>;
+            radius = .1;
+        end;
+    end;    // X_brace
+
+
+    objective shape flyer_wings is
+        right_wing;
+        right_wing with
+            move to <0 0 8>;
+        end;
+        brace with
+            move to <0 20 0>;
+        end;
+        x_brace with
+            move to <-2.8 18 0>;
+        end;
+        brace with
+            move to <0 16 0>;
+        end;
+        x_brace with
+            move to <-2.8 14 0>;
+        end;
+        brace with
+            move to <0 12 0>;
+        end;
+        x_brace with
+            move to <-2.8 10 0>;
+        end;
+        brace with
+            move to <0 8 0>;
+        end;
+        x_brace with
+            move to <-2.8 6 0>;
+        end;
+        brace with
+            move to <0 4 0>;
+        end;
+    end;    // flyer_wings
+
+
+    objective shape wing_assembly is
+        flyer_wings;
+        flyer_wings with
+            scale by -1 along <0 1 0>;
+        end;
+    end;    // wing_assembly
+
+
+    objective shape skid is
+        cylinder with
+            end1 = <4 0 0>;
+            end2 = <-10 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-10 0 0>;
+            end2 = <-12 0 1>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-12 0 1>;
+            end2 = <-12 0 4>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-12 0 4>;
+            end2 = <2 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 0 0>;
+            end2 = <-4 0 10>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 0 0>;
+            end2 = <4 0 10>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <2 0 0>;
+            end2 = <2 0 2>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <2 0 2>;
+            end2 = <4 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-10 0 0>;
+            end2 = <-4 0 10>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 0 10>;
+            end2 = <4 0 10>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-12 0 1>;
+            end2 = <2 0 1>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 0 2>;
+            end2 = <2 0 2>;
+            radius = .3;
+        end;
+    end;    // skid
+
+
+    objective shape airframe is
+        skid with
+            move to <0 3 0>;
+        end;
+        skid with
+            move to <0 -3 0>;
+        end;
+
+        // crossbars
+        cylinder with
+            end1 = <2 3 0>;
+            end2 = <2 -3 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 3 0>;
+            end2 = <4 -3 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-4 3 0>;
+            end2 = <-4 -3 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-10 3 0>;
+            end2 = <-10 -3 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-12 3 1>;
+            end2 = <-12 -3 1>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <-12 3 4>;
+            end2 = <-12 -3 4>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 3 10>;
+            end2 = <4 -3 10>;
+            radius = .2;
+        end;
+
+        // tail supports
+        cylinder with
+            end1 = <4 3 0>;
+            end2 = <10 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 -3 0>;
+            end2 = <10 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 3 10>;
+            end2 = <10 0 10>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <4 -3 10>;
+            end2 = <10 0 10>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <10 0 0>;
+            end2 = <10 0 10>;
+            radius = .2;
+        end;
+    end;    // airframe
+
+
+    objective shape propeller is
+        shape prop_blade is
+            sphere with
+                center = <0 0 2.5>;
+                radius = 1;
+                umin = 0;
+                scale by .1 along <1 0 0>;
+                scale by .4 along <0 1 0>;
+                rotate by 45 around <0 0 1>;
+            end;
+            cone with
+                end1 = <0 0 2.5>;
+                end2 = <0 0 0>;
+                radius1 = .866;
+                radius2 = .2;
+                scale by .1 along <1 0 0>;
+                scale by .4 along <0 1 0>;
+                rotate by 45 around <0 0 1>;
+            end;
+        end;    // prop_blade
+
+        sphere with
+            radius = .2;
+        end;
+        prop_blade;
+        prop_blade with
+            rotate by 180 around <1 0 0>;
+        end;
+    end;    // propeller
+
+
+    objective shape prop_assembly with
+        scalar t = 0;
+    is
+        const scalar rpm = 50;
+
+        propeller with
+            material is plastic colored red;
+            rotate by (t / 60 * rpm) * 360 around <1 0 0>;
+            move to <1 6 4>;
+        end;
+
+        // shaft
+        cylinder with
+            end1 = <-1 6 4>;
+            end2 = <1 6 4>;
+            radius = .2;
+        end;
+
+        // drive gear
+        disk with
+            center = <-1 6 4>;
+            normal = <1 0 0>;
+            radius = 1;
+        end;
+
+        // support structure
+        cylinder with
+            end1 = <0 6 0>;
+            end2 = <0 6 8>;
+            radius = .2;
+        end;
+
+        // chain
+        cylinder with
+            end1 = <-1 0 1>;
+            end2 = <-1 6.5 3.5>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-1 0 1>;
+            end2 = <-1 5.5 4.5>;
+            radius = .1;
+        end;
+    end;    // prop assembly
+
+
+    objective shape powerplant with
+        scalar t = 0;
+    is
+        prop_assembly with
+            t = static t;
+        end;
+        prop_assembly with
+            t = static t;
+            scale by -1 along <0 1 0>;
+        end;
+
+        // motor
+        cylinder with
+            end1 = <-1 0 1>;
+            end2 = <-4 0 1>;
+            radius = 1;
+        end;
+        disk with
+            center = <-4 0 1>;
+            normal = <1 0 0>;
+            radius = 1;
+        end;
+    end;    // powerplant
+
+
+    objective shape form with
+        scalar t = 0;
+    is
+        color = light brown;
+        tail_assembly with
+            move to <10 0 5>;
+        end;
+        canard_assembly with
+            move to <-12 0 4>;
+        end;
+        airframe;
+        wing_assembly with
+            move to <-1 0 2>;
+        end;
+        powerplant with
+            material is aluminum;
+            t = static t;
+            move to <2 0 2>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            t = time;
+        end;
+    end;    // instance
+end;    // flyer
+
+
+picture flyer_picture with
+    field_of_view = 65;
+    eye = <-20 -40 15>;
+    lookat = <0 0 4>;
+    background = sky_blue;
+    render_mode is wireframe;
+    shading is pixel;
+
+    {
+    background = .6 .6 .7;
+    fog_factor = 30;
+    }
+is
+    distant_light from <.3 -.5 1>;
+    flyer type's form with
+        material is wood;
+        stretch by .9 along <0 1 0>;
+        move to <-2 0 0>;
+    end;
+end;    // flyer_picture
+
+
+anim flyer_anim with
+    field_of_view = 65;
+    eye = <-20 -40 15>;
+    lookat = <0 0 1>;
+    double_buffer is on;
+    background = dark brown;
+is
+    flyer type flyer;
+
+    mouse_controlled_actor flyer;
+end;    // flyer_anim

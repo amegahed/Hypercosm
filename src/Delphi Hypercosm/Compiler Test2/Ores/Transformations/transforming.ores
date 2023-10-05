@@ -1,0 +1,53 @@
+{***************************************************************}
+{                        transforming.ores                     	}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of transformation behaviors. 		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/trans.ores";
+
+
+adjective transformable
+does
+    verb transform
+        from trans type trans;
+    end;
+end;    // transformable
+
+
+adjective inverse_transformable
+does
+	verb inverse_transform
+		to trans type trans;
+	end;
+end;    // inverse_transformable
+
+
+adjective transformationable
+extends
+    transformable inverse_transformable
+does
+	// access methods
+	//
+	verb set_trans
+		to trans type trans;
+	end;
+	verb get_trans
+		trans type reference trans;
+	end;
+	
+	// transformation methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+	verb inverse_transform
+		to trans type trans;
+	end;
+end;	// transformationable

@@ -1,0 +1,55 @@
+{***************************************************************}
+{                          attack2.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do attack_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/sr71.omar";
+include "system/dragonfly.omar";
+
+
+picture attack_picture with
+        field_of_view = 30;
+    eye = <20 -16 15>;
+    lookat = <0 0 .5>;
+    background = sky_blue;
+    render_mode is shaded;
+        shading is vertex;
+        fog_factor = 1000;
+        facets = 0;
+        reflections is on;
+        shadows is on;
+is
+    distant_light from <.3 -.5 1>;
+    sr71 with
+        material is metal;
+        magnify by .07;
+        move to <-2 0 0>;
+    end;
+
+    {airplane}
+
+    dragonfly type's form with
+        color = orange;
+        rotate by 180 around <0 0 1>;
+        magnify by .8;
+        move to <0 0 3.2>;
+    end;
+
+    {dragonfly}
+
+    flat speckled light brown plane with
+        magnify by 10;
+        move to <0 0 -3>;
+        rotate by -30 around <1 0 0>;
+    end;
+end;    // attack_picture

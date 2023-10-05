@@ -1,0 +1,24 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      multidim_for_each_loop.omar       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a "for each"     }
+{       loop that can be used to automatically loop over        }
+{       the elements of a multidimensional array in the         }
+{       OMAR language.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do multidim_for_each_loop_example;
+
+verb multidim_for_each_loop_example is
+	integer table[,] = [[1 7 4] [3 6 4] [2 5 4]];
+	
+	write "Using a for each loop to loop over a multi-dimensional array:", ;
+	for each integer i in table do
+		write "i = ", i, ;
+	end;
+end;    // multidim_for_each_loop_example

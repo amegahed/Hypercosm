@@ -1,0 +1,69 @@
+{***************************************************************}
+{                   doubly_linked_list_test.omar                }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/doubly_linked_lists.ores";
+include "system/indexed_lists.ores";
+
+
+subject thing
+extends
+	printable object
+does
+    verb new with
+        integer i = 0;
+    end;    // new
+
+    verb print;
+has
+    integer i;
+is
+    verb new with
+        integer i = 0;
+    is
+        thing's i = i;
+    end;    // new
+
+
+    verb print is
+        write "i = ", i, ;
+    end;    // print
+end;    // thing
+
+
+verb test is
+    thing type thing1 with
+        i = 5;
+    end;
+    thing type thing2 with
+        i = 10;
+    end;
+    thing type thing3 with
+        i = 15;
+    end;
+    doubly_linked_list type list;
+    indexed_list type indexed_list indexing list;
+    iterator type iterator is none;
+    thing type thing is none;
+
+    list add thing1;
+    list add thing2;
+    list add thing3;
+    write "lists number of items = ", list size, ;
+    write "list element #2: ";
+    thing is thing type indexed_list get element 2;
+    thing print;
+	list print;
+
+    write "reversing list", ;
+    list reverse;
+    list print;  
+end;    // test

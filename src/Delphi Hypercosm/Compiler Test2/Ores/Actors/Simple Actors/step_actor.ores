@@ -1,0 +1,69 @@
+{***************************************************************}
+{                         step_actor.ores                       }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/acting.ores";
+
+
+abstract subject step_actor
+extends
+    printable actor
+does
+	// step method
+	//
+    verb step;
+    
+	// actable method
+	//
+    verb act;
+    
+    // renderable method
+    //
+    abstract shape instance;
+    
+    // printable method
+    //
+    verb print;
+has
+	// step actor attributes
+	//
+    public integer steps = 0;
+is
+	//
+	// step method
+	//
+	
+	
+    verb step is
+        steps = itself + 1;
+    end;    // step
+    
+    
+    //
+    // actable method
+    //
+    
+    
+    verb act is
+        step;
+    end;    // act
+    
+
+	//
+	// printable method
+	//
+	
+	    
+    verb print is
+        write "steps = ", steps, ;
+    end;    // print
+end;    // step_actor

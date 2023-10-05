@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             fps_gauge.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of an fps gauge          }
+{       user interface component to show frames second          }
+{       (animation speed).                                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do fps_gauge_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/fps_gauge.ores";
+include "system/check_keys.ores";
+
+anim fps_gauge_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is    
+	fps_gauge type fps_gauge;
+	
+	picture scene is
+		sphere;
+		fps_gauge overlay at 10;
+		default_lights;
+		default_background at 100;
+	end;    // scene
+	
+	fps_gauge set_location to <-.8 .8 0>;
+	
+	while true do
+		scene;
+		fps_gauge update;
+		check_keys;
+	end;
+end;    // fps_gauge_anim

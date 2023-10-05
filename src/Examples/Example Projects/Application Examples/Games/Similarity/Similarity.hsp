@@ -1,0 +1,79 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "similarity.hcvm";
+	WebOutputDir "Website";
+	Alignment "LEFT";
+	CommandLine;
+	Width "640";
+	Height "480";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "similarity.html";
+		}
+	}
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar "marble.omar";
+			omar_main "similarity.omar";
+			omar "sky_banner.omar";
+			omar "display_text.omar";
+			omar "sky_box.omar";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+			resource "applause.wav";
+			resource "cheering.wav";
+			resource "harpslidedown.wav";
+			resource "ting.wav";
+			resource "click.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\select.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\deselect.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\show.wav";
+			resource "..\\..\\..\\..\\..\\Sounds\\System Sounds\\hide.wav";
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "marblegreen.jpg";
+			resource "marbleyellow.jpg";
+			resource "clouds.jpg";
+			resource "marblered.jpg";
+			resource "marbleblue.jpg";
+			resource "marblepink.jpg";
+			resource "..\\..\\..\\..\\..\\Textures\\Logos\\hyper.jpg";
+		}
+	}
+}

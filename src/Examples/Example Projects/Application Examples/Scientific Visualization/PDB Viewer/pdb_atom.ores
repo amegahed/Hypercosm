@@ -1,0 +1,128 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            pdb_atom.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a utility class definition to parse files      }
+{       in the PDB (Protein Data Bank) format.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/rendering.ores";
+include "system/string_utils.ores";
+include "system/string_conversions.ores";
+include "system/linked_list.ores";
+include "system/volume_extents.ores";
+include "system/parsing.ores";
+
+subject PDB_atom
+extends
+	renderable object
+does
+	verb new
+		from string type string;
+	end;
+	verb parse
+		from string type string;
+	end;
+	
+	// renderable methods
+	//
+	shape instance;
+has
+	public string type name;
+	public vector location;
+	public color type color = white;
+	public scalar radius = 1;
+is
+	verb new
+		from string type string;
+	is
+		parse from string;
+	end;    // new
+		
+		
+	verb parse_element
+		from string type string;
+	is
+		integer line_number = 1, char_number = 13;
+		string type substring = string substring from 13 to 16;
+		string type name is substring strip [" "];
+		char first_char is name[min name];
+			  
+		if first_char is "H" then
+		
+			// hydrogen
+			//
+			color = red;
+			radius = 1.2;
+			
+		elseif first_char is "C" then
+		
+			// carbon
+			//
+			color = dark grey;
+			radius = 1.7;    
+			
+		elseif first_char is "O" then
+			
+			// oxygen
+			//
+			color = light blue;
+			radius = 1.52;
+			
+		elseif first_char is "N" then
+		
+			// nitrogen
+			//
+			color = green;
+			radius = 1.55;
+		elseif first_char is "P" then
+			
+			// phosphorus
+			//
+			color = orange;
+			radius = 1.8;
+		
+		else 
+			write "unrecognized element name is ", name, ;           
+		end;
+	end;    // parse_element
+	
+	verb parse_location
+		from string type string;
+	is
+		string type string1 is string substring from 31 to 38;
+		string type string2 is string substring from 39 to 46;
+		string type string3 is string substring from 47 to 54;
+		
+		string1 is string1 replace " " by "";
+		string2 is string2 replace " " by "";
+		string3 is string3 replace " " by "";
+		
+		location.x = string1 to_scalar;
+		location.y = string2 to_scalar;
+		location.z = string3 to_scalar; 
+	end;    // parse_location
+	
+		   
+	verb parse
+		from string type string;
+	is
+		parse_element from string;
+		parse_location from string;
+	end;    // parse
+	
+	
+	shape instance is
+		sphere with
+			move to location;
+			radius = static radius;
+			//global color = color;
+			material is plastic colored color;
+		end;
+	end;    // instance
+end;    // PDB_atom

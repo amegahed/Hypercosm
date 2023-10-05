@@ -1,0 +1,31 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             spiral.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a standard line shape          }
+{       in the form of a spiral.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+
+shape spiral with
+	scalar turns = 3;
+	integer steps = 60;
+is
+	vector vertex[1..steps];
+	
+	for integer counter = 1..steps do
+		scalar theta = (counter / steps) * 360 * turns;
+		scalar r = counter / steps;
+		scalar x = cos theta * r;
+		scalar y = sin theta * r;
+		vertex[counter] = <x y 0>;
+	end;
+	
+	line vertex;
+end;    // spiral

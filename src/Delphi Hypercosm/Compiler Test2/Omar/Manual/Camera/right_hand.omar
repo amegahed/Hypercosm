@@ -1,0 +1,68 @@
+{***************************************************************}
+{                          right_hand.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do right_hand_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/futura_l.omar";
+include "system/arrow_shapes.ores";
+
+
+shape right_axes is
+    arrow from <0 0 0> to <1 0 0> with
+        color = red;
+    end;
+    futura_l_letter "X" with
+        move to <1.1 0 0>;
+        color = red;
+    end;
+    arrow from <0 0 0> to <0 1 0> with
+        color = green;
+    end;
+    futura_l_letter "Y" with
+        move to <0 1.2 0>;
+        color = green;
+    end;
+    arrow from <0 0 0> to <0 0 1> with
+        color = blue;
+    end;
+    futura_l_letter "Z" with
+        rotate by 90 around <1 0 0>;
+        move to <.1 0 .9>;
+        color = blue;
+    end;
+    futura_l_word "GROUND" with
+        move to <.5 .6 0>;
+    end;
+    futura_l_word "PLANE" with
+        move to <.5 .4 0>;
+    end;
+    futura_l_word "UP" with
+        rotate by 90 around <1 0 0>;
+        move to <0 0 1.1>;
+    end;
+end;    // right_axes
+
+
+anim right_hand_anim with
+    eye = <2 -8 4>;
+    field_of_view = 20;
+    lookat = <0 -.5 .5>;
+is
+	shape scene is
+	    right_axes with
+	        move to <-.5 -.5 0>;
+	    end;
+    end;
+    
+    mouse_controlled_shape scene;
+end;    // right_hand_anim

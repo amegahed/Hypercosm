@@ -1,0 +1,468 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	       list_trees.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition to store hierarchical       }
+{       trees.                                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/singly_linked_queues.ores";
+include "system/indexed_lists.ores";
+
+
+adjective hierarchical
+does
+    // This method returns the parent of a particular tree node.
+    // If the node is the root, then the parent returns none.
+    //
+    hierarchical type question get_parent;
+    
+    // This method returns the collection of children.  In most
+    // implementations, the collection returned will be a list
+    // but the particular type of collection returned is  
+    // implementation specific.
+    //
+    collection type question get_children;
+end;    // hierarchical
+
+
+adjective hierarchically_indexable
+does
+    // This method is used to access a particular node in a tree
+    // using a list of integer indices.  If the list of indices
+    // is empty, then the root is returned.  Otherwise, the 
+    // children are indexed by using each sucessive integer index
+    // to index into the collection of children.  The first child
+    // always starts at 1.  An index of 0 is not permitted.
+    //
+    object type question indexed
+        by integer indices[];
+    end;
+    
+    // This method finds a list of indices of a particular element
+    // in a tree. If the element is not found, then an empty array 
+    // is returned. Array indices start at 1 and array indices of 0
+    // are not permitted.
+    //
+    integer[] question get_indices
+        of object type element;
+    end;
+end;    // hierarchically_indexable
+
+
+{***************************************************************}
+{       A sample implementation of the hierarchical interface   }
+{       using singly linked lists for the children.             }
+{***************************************************************}
+
+
+subject tree
+extends
+    hierarchical hierarchically_indexable collection
+does
+    // collection construction methods
+    //
+    verb add
+        object type element;
+    end;
+    verb remove
+        object type element;
+    end;
+    verb clear;
+    
+    // collection querying methods
+    //
+    boolean question contains
+        object type element;
+    end;
+    integer question get_size;
+    iterator type question get_iterator;
+    
+    // hierarchical methods
+    //
+    hierarchical type question get_parent;
+    collection type question get_children;
+        
+    // hierarchically indexable methods
+    //
+    object type question indexed
+        by integer indices[];
+    end;
+    integer[] question get_indices
+        of object type element;
+    end;
+has
+    public tree type parent is none; 
+    singly_linked_list type children;
+is
+	// private tree queue class
+	//
+	subject tree_queue
+	extends
+		singly_linked_queue
+	does
+		verb add
+			object type element;
+		end;
+	is
+		verb add
+			object type element;
+		is
+            // add root of tree to list
+            //
+            add_last element;
+            
+            if some element then
+            	if hierarchical type element then
+            		hierarchical type hierarchy is hierarchical type element;
+            		collection type children is hierarchy get_children;
+            	
+		            // add children of tree to list
+		            //
+		            if some children then
+		                iterator type iterator is children iterator;
+		                while iterator is_iterating do
+		                	add iterator next;
+		                end;
+		            end;
+		    	end;
+			end;
+		end;	// add
+	end;	// tree_queue
+	
+	
+    // private tree iterator class
+    //
+    subject tree_iterator
+    extends
+        iterator
+    does
+    	// tree iterator constructor
+    	//
+        verb new
+            of tree type tree;
+        end;
+        
+	    // agent data access methods
+	    //
+	    object type question get;
+	    verb set
+	        to object type item;
+	    end;
+    
+		// iterator navigation methods
+		//
+        verb to_first;
+        verb to_next;
+        
+        // iterator querying methods
+        //	
+        boolean question has_next;
+        boolean question is_iterating;
+        boolean question is_done;
+    has
+    	// tree iterator attributes
+    	//
+        tree type tree is none;
+        tree_queue type tree_queue;
+        iterator type tree_queue_iterator is none;
+    is
+		// tree iterator constructor
+		//
+		
+		            
+        verb new
+            of tree type tree;
+        is
+        	tree_queue add tree;
+            tree_queue_iterator is tree_queue iterator;
+        end;    // new
+        
+
+	    // agent data access methods
+	    //
+	    
+	    
+	    object type question get is
+            answer tree_queue_iterator get;
+	    end;	// get
+	    
+	    
+	    verb set
+	        to object type item;
+	    is
+	    	tree_queue_iterator set to item;
+	    end;	// set
+	    
+	            
+		// iterator navigation methods
+		//
+        
+        
+        verb to_first is
+            tree_queue_iterator to_first; 
+        end;    // to_first
+        
+        
+        verb to_next is
+            tree_queue_iterator to_next;  
+        end;    // to_next
+        
+
+        // iterator querying methods
+        //	
+        
+
+        boolean question has_next is
+            answer tree_queue_iterator has_next;
+        end;    // has_next
+        
+
+		boolean question is_iterating is
+			answer tree_queue_iterator is_iterating;
+		end;	// is_iterating
+		
+		                                      
+        boolean question is_done is
+            answer tree_queue_iterator is_done;
+        end;    // is_done
+    end;    // tree_iterator
+    
+    
+    // construction methods
+    //
+    
+    
+    verb add
+        object type element;
+    is
+        if tree type element then
+            (tree type element)'s parent is tree;
+        end;
+        children add element;
+    end;    // add
+    
+    
+    verb remove
+        object type element;
+    is
+        integer child_count;
+        boolean done is false;
+        
+        // first check children 
+        //
+        child_count = children size;
+        children remove element;
+        if children size <> child_count then
+            done is true;
+        end;
+        
+        // if not removed then check children's children
+        //
+        if not done then
+            iterator type iterator is children iterator;
+            
+            while iterator is_iterating and not done do
+                object type child is iterator next;
+                
+                if some child then
+                    if collection type child then
+                        collection type child_collection is collection type child;
+                        
+                        child_count = child_collection size;
+                        child_collection remove element;
+                        if child_collection size <> child_count then
+                            done is true;
+                        end;  
+                    end;
+                end;
+            end;
+        end;
+        
+        // if removed, then unlink from parent
+        //
+        if done then
+            if tree type element then
+                (tree type element)'s parent is none;
+            end;
+        end;
+    end;    // remove
+    
+    
+    verb clear is
+        children clear;
+    end;    // clear
+    
+    
+    // collection querying methods
+    //
+    
+    
+    boolean question contains
+        object type element;
+    is
+        boolean found is false;
+        
+        // first check children 
+        //
+        found is children contains element;
+        
+        // if not removed then check children's children
+        //
+        if not found then
+            iterator type iterator is children iterator;
+            
+            while iterator is_iterating and not found do
+                object type child is iterator get; 
+                
+                if some child then
+                    if collection type child then
+                        collection type child_collection is collection type child;
+                        found is child_collection contains element; 
+                    end;
+                end;
+                
+                if not found then
+                    iterator to_next;
+                end;
+            end;
+        end;
+        
+        answer found;
+    end;    // contains
+    
+    
+    integer question get_size is
+        integer number_of_nodes = 1;
+        
+        // add number of children's children
+        //
+        iterator type iterator is children iterator;
+        
+        while iterator is_iterating do
+            object type child is iterator get;
+            
+            if some child then
+                if collection type child then
+                    collection type child_collection is collection type child;
+                    number_of_nodes = itself + child_collection size;
+                else
+                    number_of_nodes = itself + 1;
+                end;
+            end;
+            
+            iterator to_next;
+        end;
+        
+        answer number_of_nodes;
+    end;    // get_size
+    
+    
+    iterator type question get_iterator is
+        answer new tree_iterator type of tree;
+    end;    // get_iterator
+    
+        
+    // hierarchical methods
+    //
+    
+    
+    tree type question get_parent is
+        answer parent;
+    end;    // get_parent
+    
+    
+    collection type question get_children is
+        answer children;
+    end;    // get_children
+        
+    
+    // hierarchically indexable methods
+    //
+    
+    
+    object type question indexed
+        by integer indices[];
+    is
+        // if no indices, then element is the root
+        //
+        if indices is none then
+            answer tree;
+        else
+        	indexed_list type indexed_list indexing children;
+        	
+            // if some indices, then element is a child or subchild
+            //
+            object type child is indexed_list get element indices[1];
+            
+            if some child then
+                if tree type child then
+                    tree type subtree is tree type child;
+                    integer subindices[] is none;
+                    
+                    // create array of remaining indices
+                    //
+                    if num indices > 1 then
+                        dim subindices[1 .. max indices - 1];
+                        subindices[1 .. max indices - 1] = indices[2 .. max indices];
+                    end;  
+                    
+                    child is subtree indexed by subindices;          
+                end;
+            end;
+            
+            answer child;
+        end;
+    end;    // indexed
+    
+    
+    integer[] question get_indices
+        of object type element;
+    is
+        integer index, indices[];
+        indexed_list type indexed_list indexing children;
+        
+        // first check children 
+        //
+        index = indexed_list find_index of element;
+        
+        if index <> 0 then
+            answer [index];
+        else
+            // check children's children
+            //
+            iterator type iterator is children iterator;
+            
+            while iterator is_iterating and indices is none do
+                object type child is iterator next;
+                
+                if some child then
+                    if tree type child then
+                        tree type subtree is tree type child;
+                        indices is subtree get_indices of element;
+                        
+                        // we have a winner
+                        //
+                        if some indices then
+                            integer indices2[1 .. max indices + 1];
+                        
+                            // add index of child to indices of child subtree
+                            //
+                            indices2[2 .. max indices + 1] = indices[1 .. max indices];
+                            indices2[1] = indexed_list find_index of child;
+                            indices is indices2;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+        
+        answer indices;
+    end;    // get_indices
+end;    // tree

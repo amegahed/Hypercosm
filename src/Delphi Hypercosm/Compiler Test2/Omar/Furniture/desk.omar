@@ -1,0 +1,296 @@
+{***************************************************************}
+{                          desk.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do desk_anim;
+
+
+include "system/3d.ores";
+include "system/next.omar";
+include "system/luxo.omar";
+include "system/click_clack.omar";
+
+
+shape table is
+
+    // legs
+    //
+    block with
+        vertex = <-1 -2 0>;
+        side1 = <.1 0 0>;
+        side2 = <0 0 1.5>;
+        side3 = <0 .1 0>;
+    end;
+    block with
+        vertex = <1 -2 0>;
+        side1 = <-.1 0 0>;
+        side2 = <0 0 1.5>;
+        side3 = <0 .1 0>;
+    end;
+    block with
+        vertex = <-1 2 0>;
+        side1 = <.1 0 0>;
+        side2 = <0 0 1.5>;
+        side3 = <0 -.1 0>;
+    end;
+    block with
+        vertex = <1 2 0>;
+        side1 = <-.1 0 0>;
+        side2 = <0 0 1.5>;
+        side3 = <0 -.1 0>;
+    end;
+
+    // top
+    //
+    block with
+        material is wood;
+        vertex = <-1.05 -2.05 1.5>;
+        side1 = <2.1 0 0>;
+        side2 = <0 4.1 0>;
+        side3 = <0 0 .1>;
+    end;
+
+    // side shields
+    //
+    block with
+        vertex = <-.9 -2 1.5>;
+        side1 = <1.8 0 0>;
+        side2 = <0 .1 0>;
+        side3 = <0 0 -1.25>;
+    end;
+    block with
+        vertex = <1 -1.9 1.5>;
+        side1 = <-.1 0 0>;
+        side2 = <0 3.8 0>;
+        side3 = <0 0 -1.25>;
+    end;
+    block with
+        vertex = <-.9 2 1.5>;
+        side1 = <1.8 0 0>;
+        side2 = <0 -.1 0>;
+        side3 = <0 0 -1.25>;
+    end;
+    block with
+        vertex = <-1 -1 1.5>;
+        side1 = <1.9 0 0>;
+        side2 = <0 -.1 0>;
+        side3 = <0 0 -1.25>;
+    end;
+    block with
+        vertex = <-1 1 1.5>;
+        side1 = <1.9 0 0>;
+        side2 = <0 .1 0>;
+        side3 = <0 0 -1.25>;
+    end;
+    block with
+        vertex = <-1 -1.1 .25>;
+        side1 = <1.9 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .05>;
+    end;
+    block with
+        vertex = <-1 1.1 .25>;
+        side1 = <1.9 0 0>;
+        side2 = <0 .8 0>;
+        side3 = <0 0 .05>;
+    end;
+end;    // table
+
+
+shape drawer is
+    block with
+        vertex = <-.95 .4 0>;
+        side1 = <1.9 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .02>;
+    end;
+    block with
+        vertex = <-.95 .4 .02>;
+        side1 = <.02 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .38>;
+    end;
+    block with
+        vertex = <.95 .4 .02>;
+        side1 = <-.02 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .38>;
+    end;
+    block with
+        vertex = <-.95 .4 .02>;
+        side1 = <1.9 0 0>;
+        side2 = <0 -.02 0>;
+        side3 = <0 0 .38>;
+    end;
+    block with
+        vertex = <-.95 -.4 .02>;
+        side1 = <1.9 0 0>;
+        side2 = <0 .02 0>;
+        side3 = <0 0 .38>;
+    end;
+    block with
+        material is metal;
+        vertex = <-.95 -.2 .185>;
+        side1 = <-.1 0 0>;
+        side2 = <0 -.03 0>;
+        side3 = <0 0 .03>;
+    end;
+    block with
+        vertex = <-.95 .2 .185>;
+        side1 = <-.1 0 0>;
+        side2 = <0 -.03 0>;
+        side3 = <0 0 .03>;
+    end;
+    block with
+        vertex = <-1.05 -.23 .185>;
+        side1 = <-.03 0 0>;
+        side2 = <0 .43 0>;
+        side3 = <0 0 .03>;
+    end;
+end;    // drawer
+
+
+shape file_drawer is
+    block with
+        vertex = <-.95 .4 0>;
+        side1 = <1.9 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .02>;
+    end;
+    block with
+        vertex = <-.95 .4 .02>;
+        side1 = <.02 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .78>;
+    end;
+    block with
+        vertex = <.95 .4 .02>;
+        side1 = <-.02 0 0>;
+        side2 = <0 -.8 0>;
+        side3 = <0 0 .78>;
+    end;
+    block with
+        vertex = <-.95 .4 .02>;
+        side1 = <1.9 0 0>;
+        side2 = <0 -.02 0>;
+        side3 = <0 0 .78>;
+    end;
+    block with
+        vertex = <-.95 -.4 .02>;
+        side1 = <1.9 0 0>;
+        side2 = <0 .02 0>;
+        side3 = <0 0 .78>;
+    end;
+    block with
+        vertex = <-.95 -.2 .385>;
+        side1 = <-.1 0 0>;
+        side2 = <0 -.03 0>;
+        side3 = <0 0 .03>;
+    end;
+    block with
+        vertex = <-.95 .2 .385>;
+        side1 = <-.1 0 0>;
+        side2 = <0 -.03 0>;
+        side3 = <0 0 .03>;
+    end;
+    block with
+        vertex = <-1.05 -.23 .385>;
+        side1 = <-.03 0 0>;
+        side2 = <0 .43 0>;
+        side3 = <0 0 .03>;
+    end;
+end;    // file_drawer
+
+
+shape desk is
+    table with
+        material is plastic colored grey;
+    end;
+    drawer with
+        material is plastic colored grey;
+        move to <0 1.5 .25>;
+    end;
+    drawer with
+        material is plastic colored grey;
+        move to <-.55 1.5 .65>;
+    end;
+    drawer with
+        material is plastic colored grey;
+        move to <0 1.5 1.05>;
+    end;
+    file_drawer with
+        material is plastic colored grey;
+        move to <0 -1.5 .25>;
+    end;
+    drawer with
+        material is plastic colored grey;
+        move to <0 -1.5 1.05>;
+    end;
+end;    // desk
+
+
+shape messy_desk is
+    shape paper is
+        parallelogram with
+            vertex = <-.5 -.5 0>;
+            side1 = <1 0 0>;
+            side2 = <0 1 0>;
+            scale by .5 along <0 1 0>;
+            scale by .8 along <1 0 0>;
+        end;
+    end;    // paper
+
+    desk;
+    paper with
+        material is chalk colored white;
+        move to <-.2 .4 1.605>;
+    end;
+    paper with
+        material is chalk colored white;
+        rotate by 30 around <0 0 1>;
+        move to <.3 -1 1.61>;
+    end;
+
+    next with
+        material is plastic colored dark grey;
+        magnify by .3;
+        rotate by -120 around <0 0 1>;
+        move to <-.4 -1.5 1.6>;
+    end;
+    luxo with
+        material is golden;
+        magnify by .04;
+        rotate by -10 around <0 0 1>;
+        move to <.7 1.2 1.6>;
+    end;
+    click_clack type's form with
+        material is golden;
+        magnify by .05;
+        move to <-.3 1.2 1.6>;
+    end;
+end;    // messy_desk
+
+
+anim desk_anim
+    args type args;
+with
+    eye = <-8 2 4>;
+    lookat = <0 0 1>;
+    field_of_view = 70;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        messy_desk;
+        plane with
+            magnify by 3;
+            render_mode is wireframe;
+        end;
+    end;
+    mouse_controlled_shape scene;
+end;    // desk_anim

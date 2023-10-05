@@ -1,0 +1,145 @@
+do cycle_timer_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/cycle_timer.ores";
+include "stopwatch.omar";
+
+subject cycle_timer_actor
+extends
+	renderable cycle_timer
+does
+	// constructor
+	//
+	verb new;
+	// renderable method
+	//  
+	shape instance;
+	// updating method
+	//  
+	verb update;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+	is
+		// call superclass constructor
+		//
+		cycle_timer new lasting 30 with
+			paused is false;
+			auto_stop is false;
+			auto_reverse is false;
+		end;
+	end;    // new
+	
+	//
+	// renderable method
+	//  
+	
+	
+	shape instance is
+		stopwatch with
+			time = cycle_timer get_time;
+			paused is cycle_timer is_paused;
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // instance
+	
+	//
+	// updating method
+	//
+	
+		
+	verb check_keys is
+		integer key;
+		
+		reset_frame_events;
+		key = get_key;
+		
+		if key = char_to_key of " " then
+			reset;
+		elseif key = char_to_key of "p" then
+			pause;
+		elseif key = char_to_key of "u" then
+			resume;
+		elseif key = char_to_key of "t" then
+			toggle; 
+		elseif key = char_to_key of "+" then
+			set_rate to rate * 1.5;
+		elseif key = char_to_key of "-" then
+			set_rate to rate / 1.5;
+		elseif key = char_to_key of "r" then
+			reverse;
+		elseif key = char_to_key of "s" then
+			start;
+		elseif key = char_to_key of "f" then
+			finish;
+		elseif key = char_to_key of "a" then
+			set_auto_stop to not cycle_timer get_auto_stop;     
+		elseif key = char_to_key of "b" then
+			set_auto_reverse to not cycle_timer get_auto_reverse;       
+		end;
+	end;    // check_keys
+	
+	
+	verb draw_instructions
+		at scalar x = -.9, y = .8; 
+	is
+		verb draw_line
+			string type line;
+		is
+			overlay_text line at <x y 0> with
+				horizontal_alignment is left;
+			end;
+			
+			// go to next line
+			//
+			y = itself - .1;
+		end;    // draw_line
+			
+		draw_line "Press 'space' to Reset";     
+		draw_line "Press 'P' to Pause";
+		draw_line "Press 'U' to Unpause";
+		draw_line "Press 'T' to Toggle";
+		draw_line "Press '+' to Speed Up";
+		draw_line "Press '-' to Slow Down";
+		draw_line "Press 'R' to Reverse";
+		draw_line "Press 'S' to Start";
+		draw_line "Press 'F' to Finish";
+			
+		if cycle_timer get_auto_stop then
+			draw_line "Press 'A' to Turn Auto Stop Off";                
+		else
+			draw_line "Press 'A' to Turn Auto Stop On"; 
+		end;    
+		if cycle_timer get_auto_reverse then
+			draw_line "Press 'B' to Turn Auto Reverse Off";             
+		else
+			draw_line "Press 'B' to Turn Auto Reverse On";  
+		end;        
+	end;    // draw_instructions
+	
+		
+	verb update is  
+		check_keys;
+		draw_instructions;
+		
+		// call superclass method
+		//
+		cycle_timer static update;
+	end;    // update
+end;    // cycle_timer_actor
+
+anim cycle_timer_anim with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+	show_animation_control is false;
+is
+	cycle_timer_actor type cycle_timer_actor;
+	
+	mouse_controlled_actor cycle_timer_actor titled "Cycle Timer";
+end;    // cycle_timer_anim

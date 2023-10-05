@@ -1,0 +1,32 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             scaling.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains general behavior definitions for volume        }
+{       sizeing of 3 dimensional objects.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective scaleable
+does
+	vector question get_size;
+end;    // scaleable
+
+adjective rescaleable
+does
+	verb set_size
+		to vector size;
+	end;
+end;    // rescaleable
+
+adjective reshapeable
+does
+	verb reshape
+		from vector low;
+		to vector high;
+	end;
+end;    // reshapeable

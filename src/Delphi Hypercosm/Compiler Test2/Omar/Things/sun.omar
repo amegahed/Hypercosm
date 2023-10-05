@@ -1,0 +1,84 @@
+{***************************************************************}
+{                          sun.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sunburst_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape sun_rays with
+    integer number = 10;
+    scalar radius1 = 3;
+    scalar radius2 = 2;
+is
+    shape large_sun_ray is
+        triangle <0 0 .5> <0 .5 0> (<radius1 0 0>);
+        triangle <0 0 .5> <0 -.5 0> (<radius1 0 0>);
+    end;    // large_sun_ray
+
+
+    shape small_sun_ray is
+        triangle <0 0 .5> <0 .5 0> (<radius2 0 0>);
+        triangle <0 0 .5> <0 -.5 0> (<radius2 0 0>);
+    end;    // small_sun_ray
+
+
+    scalar angle = 360 / number;
+
+    // large sunrays
+    //
+    for integer counter = 1..number do
+        small_sun_ray;
+        large_sun_ray with
+            rotate by (angle / 2) around <0 0 1>;
+        end;
+        rotate by angle around <0 0 1>;
+    end;
+end;    // sun_rays
+
+
+shape sunburst is
+    sphere with
+        vmin = 0;
+        vmax = 90;
+    end;
+    sun_rays;
+end;    // sunburst
+
+
+picture sunburst_picture with
+    eye = <0 -10 0>;
+    lookat = <0 0 0>;
+    render_mode is shaded;
+    background = black;
+is
+    distant_light from <1 -.5 1> with
+        brightness = .5;
+    end;
+    point_light with
+        move to <0 -2 3>;
+        brightness = 2;
+        color = yellow;
+    end;
+    sunburst with
+        material is golden;
+        rotate by 90 around <1 0 0>;
+    end;
+end;    // sunburst_picture
+
+
+anim sunburst_anim with
+    eye = <0 -10 0>;
+    lookat = <0 0 0>;
+    double_buffer is on;
+is
+    mouse_controlled_picture sunburst_picture;
+end;    // sunburst_anim

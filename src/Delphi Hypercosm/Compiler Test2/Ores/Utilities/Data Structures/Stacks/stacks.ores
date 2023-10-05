@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	  		stacks.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a general implementation independent           }
+{       stack definition.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+abstract subject stack
+does
+    // stack construction methods
+    //
+    abstract verb push
+        object type element;
+    end;
+    abstract verb pop;
+    abstract object type question popped;
+    
+    // stack querying methods
+    //
+    abstract object type question peek;
+    abstract integer question height;
+end;    // stack

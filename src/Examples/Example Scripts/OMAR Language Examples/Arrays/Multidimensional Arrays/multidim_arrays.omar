@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        multidim_arrays.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of multi-dimensiional array variables           }
+{       in the OMAR language.                                   }
+{                                                               }
+{       Note that the OMAR language has the capability of       }
+{       creating true multi-dimensional arrays similar to       }
+{       languages like C, C++, and C#.  The Java language       }
+{       has only "arrays of arrays", which are not the same     }
+{       as true multi-dimensional arrays.                       }
+{                                                               }
+{       True multi-dimensional arrays have the advantage        }
+{       that they are guaranteed to be square (all of the       }
+{       elements are filled in) and they are much more          }
+{       efficient to allocate and de-allocate.  This makes      }
+{       them preferable to "arrays of arrays" for many          }
+{       applications such as scientific programming where       }
+{       efficiency is a concern.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do multidim_arrays_example;
+
+integer a[1 .. 10];                 // One dimensional array of integers
+integer b[1 .. 10, 1 .. 20];        // Two dimensional array of integers
+integer c[,,];                      // Three dimensional dynamic array of integers
+
+verb multidim_arrays_example is
+	dim c[1 .. 5, 1 .. 8, 1 .. 2];  // Dimensioning a multidimensional array
+	a[1] = 0;                       // Dereferencing a one dimensional array
+	b[1, 1] = 0;                    // Dereferencing a two dimensional array
+	c[1, 1, 1] = 0;                 // Dereferencing a three dimensional array
+	
+	write "ok!", ;
+end;    // multidim_arrays_example

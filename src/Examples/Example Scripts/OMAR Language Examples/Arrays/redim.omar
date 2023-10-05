@@ -1,0 +1,28 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              redim.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of the redim statement in the OMAR language.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do redim_example;
+
+integer a[1..10], b[] is a;
+	
+verb redim_example 
+is
+	write "before:", ;
+	write "min, max a = ", min a, ", ", max a, ;        // a and b refer to thesame array
+	write "min, max b = ", min b, ", ", max b, ;        //
+	
+	redim a[1 .. 20];
+	
+	write "after:", ;
+	write "min, max a = ", min a, ", ", max a, ;        // a and b still refer to the same array
+	write "min, max b = ", min b, ", ", max b, ;        //  
+end;    // dim_example

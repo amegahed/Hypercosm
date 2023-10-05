@@ -1,0 +1,127 @@
+do interval_timer_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/interval_timer.ores";
+include "stopwatch.omar";
+
+subject interval_timer_actor
+extends
+	renderable interval_timer
+does
+	// constructor
+	//
+	verb new;
+	
+	// rendering method
+	//
+	shape instance;
+	
+	// updating method
+	//
+	verb update;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new is
+		// call superclass constructor
+		//
+		interval_timer new lasting 30;
+	end;    // new
+
+	//  
+	// rendering method
+	//
+	
+	
+	shape instance is
+		stopwatch with
+			time = interval_timer get_time;
+			paused is interval_timer is_paused;
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // instance
+	
+	//  
+	// updating method
+	//
+	
+	
+	verb check_keys is
+		integer key;
+		
+		reset_frame_events;
+		key = get_key;
+		
+		if key = char_to_key of " " then
+			reset;
+		elseif key = char_to_key of "p" then
+			pause;
+		elseif key = char_to_key of "u" then
+			resume;
+		elseif key = char_to_key of "t" then
+			toggle; 
+		elseif key = char_to_key of "+" then
+			set_rate to rate * 1.5;
+		elseif key = char_to_key of "-" then
+			set_rate to rate / 1.5;
+		elseif key = char_to_key of "r" then
+			reverse;    
+		elseif key = char_to_key of "s" then
+			start;
+		elseif key = char_to_key of "f" then
+			finish;         
+		end;
+	end;    // check_keys
+	
+	
+	verb draw_instructions
+		at scalar x = -.9, y = .8; 
+	is
+		verb draw_line
+			string type line;
+		is
+			overlay_text line at <x y 0> with
+				horizontal_alignment is left;
+			end;
+			
+			// go to next line
+			//
+			y = itself - .1;
+		end;    // draw_line
+		
+		draw_line "Press 'space' to Reset";
+		draw_line "Press 'P' to Pause";
+		draw_line "Press 'U' to Unpause";
+		draw_line "Press 'T' to Toggle";
+		draw_line "Press '+' to Speed Up";
+		draw_line "Press '-' to Slow Down";
+		draw_line "Press 'R' to Reverse";   
+		draw_line "Press 'S' to Start";
+		draw_line "Press 'F' to Finish";                
+	end;    // draw_instructions
+	
+		
+	verb update is
+		check_keys;
+		draw_instructions;
+		
+		// call superclass method
+		//
+		interval_timer static update;
+	end;    // update
+end;    // interval_timer_actor
+
+anim interval_timer_anim with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+	show_animation_control is false;
+is
+	interval_timer_actor type interval_timer_actor;
+	
+	mouse_controlled_actor interval_timer_actor titled "Interval Timer";
+end;    // interval_timer_anim

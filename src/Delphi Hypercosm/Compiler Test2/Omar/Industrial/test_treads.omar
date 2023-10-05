@@ -1,0 +1,76 @@
+{***************************************************************}
+{                          test_treads.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tread_anim;
+
+
+include "system/3d.ores";
+include "system/groups.ores";
+
+
+shape treads with
+    scalar offset = 0;
+    scalar length = 3;
+    scalar radius = 1;
+    scalar number = 20;
+    scalar seperation = .1;
+    scalar tread_thickness = .1;
+is
+    scalar circumference = (2 * pi * radius) + (length * 2);
+    scalar tread_size = (circumference / number) - seperation;
+
+
+    shape tread is
+        block with
+            scale by (tread_size / 2) along <1 0 0>;
+            scale by (tread_thickness / 2) along <0 0 1>;
+        end;
+    end;    // tread
+
+    loop_row of tread with
+        offset = static offset;
+        length = static length;
+        radius = static radius;
+        number = static number;
+    end;
+end;    // treads
+
+
+picture tread_picture with
+    scalar t = 0;
+
+    field_of_view = 30;
+    facets = 4;
+    render_mode is wireframe;
+is
+    distant_light from <.3 -.5 1>;
+
+    {
+        tread_line with
+                offset = t;
+        end;
+        }
+    treads with
+        offset = t;
+    end;
+end;    // tread_picture
+
+
+anim tread_anim
+    args type args;
+with
+    double_buffer is on;
+    args check;
+is
+    while true do
+        tread_picture with
+            t = (get_mouse dot <1 0 0>) * 5;
+        end;
+    end;
+end;    // tread_anim

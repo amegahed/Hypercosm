@@ -1,0 +1,44 @@
+{***************************************************************}
+{                          meter.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do meter_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/meter.ores";
+include "system/views.ores";
+
+
+picture meter_picture is
+    static mouse_state type mouse_state;
+    static meter type meter labelled "Meter" from -1 to 1;
+
+    mouse_state update;
+    meter's value = mouse_state's location dot <1 0 0>;
+    meter instance;
+end;    // meter_picture
+
+
+anim meter_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Meter Demo";
+    render_mode is wireframe;
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        meter_picture with
+            ortho_view;
+        end;
+    end;
+end;    // meter_anim

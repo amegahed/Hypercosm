@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          array_operators.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of the         }
+{       "min", "max", and "num" array operators in the          }
+{       OMAR language.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_operators_example;
+
+scalar question average
+	integer numbers[];
+is
+	integer sum = 0;
+	
+	// note the use of the "min" and "max" array operators 
+	//
+	for integer counter = min numbers .. max numbers do
+		sum = itself + numbers[counter];    
+	end;
+	
+	// note the use of the "num" array operator
+	//
+	answer sum / num numbers;
+end;    // average
+
+verb array_operators_example is
+	integer a[0 .. 2] = [10 20 30];
+	write "min a = ", min a, ;
+	write "max a = ", max a, ;
+	write "num a = ", num a, ;
+	
+	write "average = ", average [10 30 40 15 8 60], ;
+	write "average = ", average [10 30 50 15 8 60], ;
+	write "average = ", average [10 30 60], ;
+end;    //array_operators_example

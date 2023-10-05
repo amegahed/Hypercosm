@@ -1,0 +1,176 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          text_selector.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a text selector that   }
+{        can respond to mouse clicks and mouse overs.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "highlighted_text_sensor.ores";
+
+subject text_selector
+extends
+	highlighted_text_sensor
+does
+	// constructor
+	//
+	verb new
+		string type text;
+		or string type selected_text is none;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+			   
+		// text colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = yellow, highlight_background = background;
+		color type selected_color = red, selected_background = background;
+		
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	end;
+
+	// state changing methods
+	//
+	verb set_select_text
+		to string type text;
+		or string type selected_text is none;
+	end;
+	verb select;
+	verb deselect;
+	verb toggle_selected;
+	
+	// responses redefined
+	//
+	verb mouse_down_response;
+has
+	// attributes
+	//
+	public boolean selected is false;
+	public string type text, selected_text; 
+	
+	// color attributes
+	//
+	public color type text_color, background;
+	public color type selected_color, selected_background;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		string type text;
+		or string type selected_text is none;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+		
+		// text colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = yellow, highlight_background = background;
+		color type selected_color = red, selected_background = background;
+
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	is
+		highlighted_text_sensor new text at location with
+			text_size = static text_size;
+			text_spacing = static text_spacing;
+			h_alignment is static h_alignment;
+			
+			// text colors
+			//
+			text_color = static text_color;
+			background = static background;
+			highlight_color = static highlight_color;
+			highlight_background = static highlight_background;
+			
+			// callbacks
+			//
+			mouse_down_action is static mouse_down_action;
+			mouse_up_action is static mouse_up_action;
+			mouse_over_action is static mouse_over_action;
+			mouse_away_action is static mouse_away_action;
+		end;
+		
+		set_select_text to text or selected_text;
+		
+		// initialize colors
+		//
+		text_selector's text_color = text_color;
+		text_selector's background = background;
+		text_selector's selected_color = selected_color;
+		text_selector's selected_background = selected_background;
+	end;    // new
+	
+	//
+	// state changing methods
+	//
+	
+	verb set_select_text
+		to string type text;
+		or string type selected_text is none;
+	is
+		text_selector's text is text;
+		if some selected_text then
+			text_selector's selected_text is selected_text;
+		else
+			text_selector's selected_text is text;
+		end;
+	end;    // set_select_text
+	
+	verb select is
+		selected is true;
+		if not text matches selected_text then
+			highlighted_text_sensor set_text to selected_text;
+		end;
+		highlighted_text_sensor static set_color to selected_color over selected_background;
+	end;    // select
+	
+	verb deselect is
+		selected is false;
+		if not text matches selected_text then     
+			highlighted_text_sensor set_text to text;
+		end;
+		highlighted_text_sensor static set_color to text_color over background;
+	end;    // deselect
+	
+	verb toggle_selected is
+		if not selected then
+			select;
+		else
+			deselect;
+		end;
+	end;    // toggle_selected
+	
+	//
+	// responses redefined
+	//
+	
+	verb mouse_down_response is
+		toggle_selected;
+		
+		// call parent response
+		//
+		highlighted_text_sensor static mouse_down_response;
+	end;    // mouse_down_response
+end;    // text_selector

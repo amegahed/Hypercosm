@@ -1,0 +1,222 @@
+{***************************************************************}
+{                          sr71.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sr71_anim;
+
+
+include "system/3d.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+include "system/solids.ores";
+include "system/surfaces.ores";
+include "system/common_materials.ores";
+
+
+shape sr71 with
+    scalar thrust = 0;
+    integer steps = facets;
+    boolean triangulate is off;
+is
+    static shape fuselage with
+        integer steps = facets;
+        boolean triangulate is off;
+    is
+        // main fuselage
+        //
+        linear_hull
+            // cross section
+            [[0 0] [-30 5] [-10 10] [0 16] [10 10] [30 5] [0 0]]
+
+            // x displacement
+            [160 150 122 85 50 30 7 -50 -70 -80 -90]
+
+            // y mins
+            [0 -1 -10.5 -15 -16 -18 -28 -70 -25 -5 0]
+
+            // y maxes
+            [0 1 10.5 15 16 18 28 70 25 5 0]
+
+            // z mins
+            [-1 -2 -4 -4 -4 -4 -4 -2 -1 0 3]
+
+            // z maxes
+            [-1 0 6 8 8 8 8 6 5 4 3]
+        with
+            rows = static steps;
+            columns = static steps;
+            triangulate is static triangulate;
+            smoothing is on;
+            mending is on;
+                        closed is true;
+        end;
+    end;    // fuselage
+
+
+    static shape tail is
+        polygon [<0 0 0> <-12 0 20> <-35 0 20> <-42 0 4>
+            <-37 0 2> <-30 0 0>];
+    end;    // tail
+
+
+    static shape engine with
+        scalar thrust = 0;
+    is
+        cone with
+            end1 = <33 -2 -2>;
+            end2 = <12 0 0>;
+            radius1 = 0;
+            radius2 = 6;
+            material is silver;
+        end;
+        cone with
+            end1 = <15 0 0>;
+            end2 = <7 0 0>;
+            radius1 = 7;
+            radius2 = 9;
+        end;
+        cylinder with
+            end1 = <7 0 0>;
+            end2 = <-70 0 0>;
+            radius = 9;
+        end;
+        cone with
+            end1 = <-70 0 0>;
+            end2 = <-78 0 0>;
+            radius1 = 9;
+            radius2 = 7;
+        end;
+        if (thrust <> 0) then
+
+            {fuzzy factor .5 yellow} cone with
+                end1 = <-78 0 0>;
+                end2 = <(-79 - (thrust * 40)) 0 0>;
+                radius1 = 7;
+                radius2 = 0;
+                edges is silhouette;
+            end;
+            {fuzzy factor .5 red} cone with
+                end1 = <-78 0 0>;
+                end2 = <(-79 - (thrust * 15)) 0 0>;
+                radius1 = 5;
+                radius2 = 0;
+                edges is silhouette;
+            end;
+        end;
+        tail with
+            move to <-40 0 9>;
+            rotate by 20 around <1 0 0>;
+        end;
+    end;    // engine
+
+
+    static shape cockpit with
+        scalar width = .5;
+    is
+        triangle <0 0 0> <2 width 0> <2 0 1> with
+            material is plastic colored blue;
+        end;
+        triangle <0 0 0> <2 (-width) 0> <2 0 1> with
+            material is plastic colored blue;
+        end;
+        parallelogram with
+            material is plastic colored blue;
+            vertex = <2 width 0>;
+            side1 = <0 (-width) 1>;
+            side2 = <2 0 0>;
+        end;
+        parallelogram with
+            material is plastic colored blue;
+            vertex = <2 (-width) 0>;
+            side1 = <0 (width) 1>;
+            side2 = <2 0 0>;
+        end;
+        triangle <10 0 .75> <4 width 0> <4 0 1>;
+        triangle <10 0 .75> <4 (-width) 0> <4 0 1>;
+    end;    // cockpit
+
+    // color = dark grey;
+
+    cockpit with
+        magnify by 5;
+        rotate by 180 around <0 0 1>;
+        move to <115 0 3.5>;
+    end;
+    fuselage with
+        steps = static steps;
+        triangulate is static triangulate;
+        move to <-20 0 0>;
+    end;
+    engine with
+        thrust = static thrust;
+        move to <-20 35 0>;
+    end;
+    engine with
+        thrust = static thrust;
+        scale by -1 along <0 1 0>;
+        move to <-20 -35 0>;
+    end;
+end;    // sr71
+
+
+picture sr71_picture
+    args type args;
+with
+    eye = <-20 -20 20>;
+    lookat = <0 0 2>;
+    render_mode is shaded;
+    shading is pixel;
+    background = sky_blue;
+    args check;
+is
+    distant_light from <.1 -.5 1>;
+
+    sr71 with
+        steps = 4;
+        thrust = 1;
+        rotate by 180 around <0 0 1>;
+        magnify by .1;
+        move to <0 0 3>;
+        material is silver;
+    end;
+
+        plane with
+            color = light brown;
+            magnify by 10;
+        end;
+        flat dirty grey parallelogram with
+                scale by 100 along <1 0 0>;
+                scale by 5 along <0 1 0>;
+                move to <0 0 0.01>;
+        end;
+end;    // sr71_picture
+
+
+anim sr71_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <100 -300 200>;
+    window_name is "SR-71 BlackBird";
+    background = dark violet;
+    background = blend dark blue to grey;
+    args check;
+is
+    shape aircraft is
+        sr71 with
+            // material is aluminum;
+            material is metal colored lime_green;
+            {
+            material is metal textured new texture type
+                using new image type named "stucco.tga";
+            }
+        end;
+    end;    // aircraft
+
+    mouse_controlled_shape aircraft;
+end;    // sr71_anim

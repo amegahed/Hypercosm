@@ -1,0 +1,108 @@
+{***************************************************************}
+{                          gold.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do golden_balls;
+
+
+include "system/3d.ores";
+
+
+shape stuff is
+
+    // center sphere
+    {metallic orange} sphere with
+        center = <0 0 1>;
+        radius = 1;
+        material is copper;
+    end;
+
+    // surrounding spheres
+    sphere with
+        center = <-2.5 0 1>;
+        radius = 1;
+    end;
+    sphere with
+        center = <0 -2.5 1>;
+        radius = 1;
+    end;
+    sphere with
+        center = <0 2.5 1>;
+        radius = 1;
+    end;
+    sphere with
+        center = <2.5 0 1>;
+        radius = 1;
+    end;
+
+    // surrounding cylinders
+    cylinder with
+        end1 = <2.5 2.5 1>;
+        end2 = <-2.5 2.5 1>;
+        radius = .4;
+    end;
+    cylinder with
+        end1 = <-2.5 2.5 1>;
+        end2 = <-2.5 -2.5 1>;
+        radius = .4;
+    end;
+    cylinder with
+        end1 = <-2.5 -2.5 1>;
+        end2 = <2.5 -2.5 1>;
+        radius = .4;
+    end;
+    cylinder with
+        end1 = <2.5 -2.5 1>;
+        end2 = <2.5 2.5 1>;
+        radius = .4;
+    end;
+
+    // surrounding colored spheres
+    {metallic red} sphere with
+        center = <1.25 1.25 1>;
+        radius = .5;
+        material is metal colored red;
+    end;
+    {metallic green} sphere with
+        center = <-1.25 1.25 1>;
+        radius = .5;
+        material is metal colored green;
+    end;
+    {metallic aqua} sphere with
+        center = <-1.25 -1.25 1>;
+        radius = .5;
+        material is metal colored aqua;
+    end;
+    {metallic purple} sphere with
+        center = <1.25 -1.25 1>;
+        radius = .5;
+        material is metal colored aqua;
+    end;
+end;    // stuff
+
+
+picture golden_balls with
+    field_of_view = 40;
+    eye = <-5 -10 10>;
+    lookat = <0 0 .5>;
+    render_mode is shaded;
+    shading is vertex;
+    background = sky_blue;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+is
+    distant_light from <5 -10 10>;
+    {metallic gold} stuff with
+        material is metal colored gold;
+    end;
+    plane with
+        color = brown;
+        magnify by 3;
+    end;
+end;    // golden_balls

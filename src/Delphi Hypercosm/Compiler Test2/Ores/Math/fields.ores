@@ -1,0 +1,105 @@
+{***************************************************************}
+{                         fields.ores                           }
+{                    OMAR Resources (ORES)                      }
+{***************************************************************}
+{                                                               }
+{  Contains procedures useful in creating volumetric fields.    }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/native_noise.ores";
+include "system/math.ores";
+
+
+scalar question spherical_field
+    at vector location;
+is
+    scalar d = sqrt (location dot location);
+
+    answer 1 - d;
+end;    // spherical_field 
+
+
+scalar question cylindrical_field
+    at vector location;
+is
+    scalar x = location dot <1 0 0>;
+    scalar y = location dot <0 1 0>;
+    scalar r = sqrt ((x * x) + (y * y));
+
+    answer 1 - r;
+end;    // cylindrical_field 
+
+
+scalar question conic_field
+    at vector location;
+is
+    scalar x = location dot <1 0 0>;
+    scalar y = location dot <0 1 0>;
+    scalar z = location dot <0 0 1>;
+    scalar r = sqrt ((x * x) + (y * y));
+
+    answer 1 - (r / abs (z + .0001));
+end;    // conic_field
+
+
+scalar question parabolic_field
+    at vector location;
+is
+    scalar x = location dot <1 0 0>;
+    scalar y = location dot <0 1 0>;
+    scalar z = location dot <0 0 1>;
+    scalar d = sqrt ((x * x) + (y * y) + (z * z));
+
+    answer 1 - (d + z) * 2;
+end;    // parabolic_field
+
+
+scalar question noisy_field
+    at vector location;
+is
+    answer (1 - noise (location)) * .7;
+end;    // noisy_field
+
+
+scalar question cross_field
+    at vector location;
+is
+    scalar x = location dot <1 0 0>;
+    scalar y = location dot <0 1 0>;
+    scalar z = location dot <0 0 1>;
+    scalar d1 = sqrt ((y * y) + (z * z));
+    scalar d2 = sqrt ((x * x) + (z * z));
+
+    answer 1 - (d1 * d2);
+end;    // cross_field
+
+
+scalar question inverse_field
+    at vector location;
+is
+    scalar x = location dot <1 0 0>;
+    scalar y = location dot <0 1 0>;
+    scalar z = location dot <0 0 1>;
+
+    answer (.01 / (x * y * z));
+end;    // inverse_field 
+
+
+scalar question wavy_field
+    at vector location;
+is
+    scalar x = location dot <1 0 0>;
+    scalar y = location dot <0 1 0>;
+    scalar z = location dot <0 0 1>;
+
+    x = x - trunc (x);
+    y = y - trunc (y);
+    z = z - trunc (z);
+    answer 1 / (1 + sin (x * x * x * 360) ^ 2 + cos (y * y * y * 360) ^
+        2 + x ^ 3);
+end;    // wavy_field 
+

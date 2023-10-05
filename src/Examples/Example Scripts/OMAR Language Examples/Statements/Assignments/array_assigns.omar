@@ -1,0 +1,63 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           array_assigns.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of the         }
+{       assignment statement for arrays using the OMAR          }
+{       language.                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_assigns_example;
+
+include "system/string_utils.ores";
+
+integer a[];
+integer b[];
+
+string type question array_to_string 
+	of integer array[];
+is
+	string type string is "[";
+	for integer counter = min array .. max array do
+		string add integer_to_string of array[counter];
+		if counter <> max array then
+			string add " ";
+		end;
+	end;
+	string add "]";
+	
+	answer string;
+end;    // array_to_string
+
+verb array_assigns_example is
+	write "This example shows the effects of both array value", ;
+	write "assignments and also array reference assignments:", ;
+	write;
+	
+	// This example shows the difference between assigning
+	// array values and assigning array references (pointers)
+	//
+	a = [1 2];
+	b = [3 4];
+	
+	// array value assignment
+	//
+	a = b;
+	b = [0 0];
+	write "array value assignment to 'a' does not cause changes to 'b' to affect 'a':", ;
+	write "a = ", array_to_string of a, ;
+	
+	a = [1 2];
+	b = [3 4];
+	
+	// array reference assignment
+	//
+	a is b;
+	b = [0 0];
+	write "array pointer assignment to 'a' causes changes to 'b' to affect 'a':", ;
+	write "a = ", array_to_string of a, ;   
+end;    // array_assigns_example

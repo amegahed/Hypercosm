@@ -1,0 +1,240 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            trans.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of trans, a mathematical way of   }
+{       describing position and orientation in 3 dimensions.    } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/axes.ores";
+include "system/bounding_boxes.ores";
+
+static subject trans
+extends
+	axes
+does
+	// constructor
+	//
+	verb new with
+		vector x_axis = <1 0 0>;
+		vector y_axis = <0 1 0>;
+		vector z_axis = <0 0 1>;
+		vector origin = <0 0 0>;
+	end;    // new
+
+	// creation methods
+	//
+	verb init;
+	verb set_extents
+		to volume_extents type extents;
+	end;
+
+	// transforming methods
+	//
+	verb translate
+		by vector direction;
+	end;
+	verb direct
+		from axes type axes;
+	end;
+	verb transform
+		from trans type trans;
+	end;
+	verb inverse_transform
+		to trans type trans;
+	end;
+	verb invert;
+	verb compute
+		from trans type source;
+		to trans type dest;
+	end;
+
+	// querying methods
+	//
+	boolean question equals
+		trans type trans2;
+	end;
+	vector question transformed
+		vector point;
+	end;
+	
+	// bounds querying methods
+	//
+	volume_bounding type question get_bounds;
+	bounding_box type question get_bounding_box;
+
+	verb set_bounding_box
+		bounding_box type bounding_box;
+	end;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public vector origin;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		vector x_axis = <1 0 0>;
+		vector y_axis = <0 1 0>;
+		vector z_axis = <0 0 1>;
+		vector origin = <0 0 0>;
+	is
+		axes new with
+			x_axis = static x_axis;
+			y_axis = static y_axis;
+			z_axis = static z_axis;
+		end;
+		trans's origin = origin;
+	end;    // new
+
+	//
+	// creation methods
+	//
+
+	verb init is
+		origin = <0 0 0>;
+		axes init;
+	end;    // init
+	
+	verb set_extents
+		to volume_extents type extents;
+	is
+		vector size = extents get_size;
+		origin = extents get_center;
+		x_axis = size * <.5 0 0>;
+		y_axis = size * <0 .5 0>;
+		z_axis = size * <0 0 .5>;
+	end;    // set_extents
+	   
+	//
+	// transforming methods
+	//
+	
+	verb translate
+		by vector direction;
+	is
+		origin = itself + direction;
+	end;    // translate
+
+	verb direct
+		from axes type axes;
+	is
+		origin = axes oriented origin;
+		x_axis = axes oriented x_axis;
+		y_axis = axes oriented y_axis;
+		z_axis = axes oriented z_axis;
+	end;    // direct
+	
+	verb transform
+		from trans type trans;
+	is
+		origin = trans transformed origin;
+		x_axis = trans oriented x_axis;
+		y_axis = trans oriented y_axis;
+		z_axis = trans oriented z_axis;
+	end;    // transform
+
+	verb inverse_transform
+		to trans type trans;
+	is
+		trans invert;
+		origin = trans transformed origin;
+		x_axis = trans oriented x_axis;
+		y_axis = trans oriented y_axis;
+		z_axis = trans oriented z_axis;        
+	end;    // inverse_transform
+	
+	verb invert is
+		scalar d = 1 / determinant;
+		vector vx = (y_axis cross z_axis) * d;
+		vector vy = (z_axis cross x_axis) * d;
+		vector vz = (x_axis cross y_axis) * d;
+		origin = <(vx dot -origin) (vy dot -origin) (vz dot -origin)>;
+		x_axis = <(vx.x) (vy.x) (vz.x)>;
+		y_axis = <(vx.y) (vy.y) (vz.y)>;
+		z_axis = <(vx.z) (vy.z) (vz.z)>;
+	end;    // invert
+	
+	verb compute
+		from trans type source;
+		to trans type dest;
+	is
+		trans = source;
+		trans invert;
+		trans transform from dest;
+	end;    // compute
+	
+	//
+	// querying methods
+	//
+	
+	boolean question equals
+		trans type trans2;
+	is
+		answer origin = trans2's origin and 
+			x_axis = trans2's x_axis and
+			y_axis = trans2's y_axis and
+			z_axis = trans2's z_axis;
+	end;    // equals
+	
+	vector question transformed
+		vector point;
+	is
+		answer origin + oriented point;
+	end;    // transformed
+
+	//
+	// bounds querying methods
+	//
+	
+	verb set_bounding_box
+		bounding_box type bounding_box;
+	is
+		with bounding_box do
+			its vertices[1] = origin - x_axis - y_axis - z_axis;
+			its vertices[2] = origin + x_axis - y_axis - z_axis;
+			its vertices[3] = origin + x_axis + y_axis - z_axis;
+			its vertices[4] = origin - x_axis + y_axis - z_axis;
+			its vertices[5] = origin - x_axis - y_axis + z_axis;
+			its vertices[6] = origin + x_axis - y_axis + z_axis;
+			its vertices[7] = origin + x_axis + y_axis + z_axis;
+			its vertices[8] = origin - x_axis + y_axis + z_axis;
+		end;
+	end;    // set_bounding_box
+
+	volume_bounding type question get_bounds is
+		bounding_box type bounding_box;
+		set_bounding_box bounding_box;
+		answer bounding_box get_bounds;
+	end;    // get_bounds
+	
+	bounding_box type question get_bounding_box is
+		bounding_box type bounding_box;
+		set_bounding_box bounding_box;
+		answer bounding_box;
+	end;    // get_bounding_box
+	
+	//
+	// printing methods
+	//
+	
+	verb print is
+		write "origin = ", origin, ;
+		write "x_axis = ", x_axis, ;
+		write "y_axis = ", y_axis, ;
+		write "z_axis = ", z_axis, ;
+	end;    // print
+end;    // trans
+	
+const trans type unit_trans;

@@ -1,0 +1,6810 @@
+ 350
+"C:\Documents and Settings\megaheda\Desktop\Delphi Hypercosm (new)\Compiler Test2\3ds_slices.omar"
+"3d.ores"
+"native_shapes.ores"
+"common_colors.ores"
+"standard_colors.ores"
+"color.ores"
+"texture_coordinates.ores"
+"vectors.ores"
+"vector.ores"
+"math.ores"
+"native_math.ores"
+"constants.ores"
+"fractions.ores"
+"trigonometry.ores"
+"vector_grids.ores"
+"vector_grid.ores"
+"native_trans.ores"
+"trans.ores"
+"axes.ores"
+"vector_rotations.ores"
+"bounding_boxes.ores"
+"boxes.ores"
+"volume_extent_finding.ores"
+"volume_extents.ores"
+"volume_bounding.ores"
+"centering.ores"
+"scaling.ores"
+"validation.ores"
+"printing.ores"
+"strings.ores"
+"string.ores"
+"booleans.ores"
+"chars.ores"
+"icomparisons.ores"
+"string_conversions.ores"
+"comparisons.ores"
+"varrays.ores"
+"vlists.ores"
+"swapping.ores"
+"native_lights.ores"
+"native_rendering.ores"
+"native_materials.ores"
+"native_textures.ores"
+"native_images.ores"
+"native_viewing.ores"
+"native_display.ores"
+"native_windows.ores"
+"native_devices.ores"
+"native_keyboard.ores"
+"native_mouse.ores"
+"transformations.ores"
+"axes_orientations.ores"
+"materials.ores"
+"modifiers.ores"
+"string_utils.ores"
+"random.ores"
+"time.ores"
+"native_time.ores"
+"time_conversions.ores"
+"args.ores"
+"args_parser.ores"
+"mouse.ores"
+"3ds_translator.ores"
+"3ds_objects.ores"
+"3ds_box.ores"
+"3ds_textureable_object.ores"
+"3ds_object.ores"
+"3ds_modifier.ores"
+"3ds_modifier_behaviors.ores"
+"introspection.ores"
+"recycling.ores"
+"3ds_editable_mesh.ores"
+"meshes.ores"
+"mesh.ores"
+"texture_mapping.ores"
+"copying.ores"
+"rendering.ores"
+"mesh_topology.ores"
+"mesh_geometry.ores"
+"transforming.ores"
+"singly_linked_lists.ores"
+"lists.ores"
+"collections.ores"
+"iterators.ores"
+"mutable_iteration.ores"
+"iteration.ores"
+"containing.ores"
+"node_querying.ores"
+"mutable_collecting.ores"
+"collecting.ores"
+"list_iterators.ores"
+"list_iteration.ores"
+"reversing.ores"
+"discarding.ores"
+"nodes.ores"
+"mutable_containing.ores"
+"singly_linked_nodes.ores"
+"singly_linked_node_iterators.ores"
+"3ds_renderable_mesh.ores"
+"grid_meshes.ores"
+"grid_mesh_topologies.ores"
+"grid_tables.ores"
+"3ds_modifier_stacks.ores"
+"stacks.ores"
+"3ds_c_ext.ores"
+"3ds_capsule.ores"
+"3ds_sliceable_object.ores"
+"3ds_cylinder.ores"
+"polygon_meshes.ores"
+"mesh_topologies.ores"
+"polygon_utils.ores"
+"vstatistics.ores"
+"sorting.ores"
+"number_sorting.ores"
+"comparing.ores"
+"object_sorting.ores"
+"3ds_sphere.ores"
+"triangle_fan_meshes.ores"
+"statistics.ores"
+"3ds_chamfer_box.ores"
+"3ds_chamfer_cyl.ores"
+"3ds_torus.ores"
+"3ds_cone.ores"
+"3ds_gen_gon.ores"
+"3ds_l_ext.ores"
+"3ds_oil_tank.ores"
+"3ds_plane.ores"
+"3ds_prism.ores"
+"3ds_pyramid.ores"
+"3ds_spindle.ores"
+"3ds_teapot.ores"
+"3ds_shape.ores"
+"3ds_line.ores"
+"3ds_editable_spline.ores"
+"3ds_splines.ores"
+"3ds_spline.ores"
+"3ds_spline_segments.ores"
+"3ds_spline_segment.ores"
+"3ds_spline_vertex.ores"
+"smoothing.ores"
+"marks.ores"
+"spline_shapes.ores"
+"cubic_curve.ores"
+"cubic_splines.ores"
+"hermite_splines.ores"
+"polynomials.ores"
+"polynomial.ores"
+"vpolynomials.ores"
+"vpolynomial.ores"
+"segmented_spline.ores"
+"arrows.ores"
+"arc.ores"
+"bezier_curve.ores"
+"bezier_splines.ores"
+"combinatorics.ores"
+"cubic_spline_curve.ores"
+"curved_extrusion.ores"
+"shapes.ores"
+"cube.ores"
+"extrude.ores"
+"mesh_utils.ores"
+"i_beam.ores"
+"lathe.ores"
+"pie.ores"
+"point_cloud.ores"
+"polygon2d.ores"
+"prism.ores"
+"pyramid.ores"
+"rod.ores"
+"rounded_disk.ores"
+"rounded_rod.ores"
+"square.ores"
+"tube.ores"
+"tangents.ores"
+"grid_mesh.ores"
+"tri_grid_mesh.ores"
+"quad_grid_mesh.ores"
+"hose.ores"
+"3ds_spline_vertex_kinds.ores"
+"singly_linked_queues.ores"
+"queues.ores"
+"queueing.ores"
+"3ds_lathe.ores"
+"3ds_planar_mapping.ores"
+"3ds_uvw_mapping.ores"
+"3ds_ellipse.ores"
+"3ds_loft.ores"
+"3ds_bicubic_patch.ores"
+"bicubic_patch.ores"
+"bicubic_grids.ores"
+"hermite_patches.ores"
+"mesh_shapes.ores"
+"smooth_lathe.ores"
+"mobius_strip.ores"
+"vector_fields.ores"
+"3ds_tube.ores"
+"3ds_compound_objects.ores"
+"3ds_shapes.ores"
+"3ds_arc.ores"
+"3ds_circle.ores"
+"3ds_donut.ores"
+"3ds_helix.ores"
+"3ds_n_gon.ores"
+"3ds_rectangle.ores"
+"3ds_materials.ores"
+"3ds_material.ores"
+"3ds_abstract_material.ores"
+"application.ores"
+"3ds_textured_material.ores"
+"3ds_material_maps.ores"
+"3ds_animated_material.ores"
+"3ds_abstract_animated_material.ores"
+"3ds_time.ores"
+"3ds_point3_controlling.ores"
+"3ds_float_controlling.ores"
+"3ds_textured_animated_material.ores"
+"3ds_multi_material.ores"
+"3ds_texture_mapping.ores"
+"3ds_cylindrical_mapping.ores"
+"3ds_spherical_mapping.ores"
+"3ds_box_mapping.ores"
+"3ds_xyz_to_uvw_mapping.ores"
+"3ds_modifiers.ores"
+"3ds_extrude.ores"
+"3ds_lights.ores"
+"3ds_omni_light.ores"
+"3ds_direct_light.ores"
+"3ds_spot_light.ores"
+"3ds_cameras.ores"
+"3ds_free_camera.ores"
+"3ds_camera.ores"
+"camera.ores"
+"viewpoint.ores"
+"position.ores"
+"orientation.ores"
+"quaternions.ores"
+"futura_l.ores"
+"arrow_shapes.ores"
+"viewing.ores"
+"proximity.ores"
+"bounding_squares.ores"
+"squares.ores"
+"shape_querying.ores"
+"native_sensing.ores"
+"native_proximity.ores"
+"intersections.ores"
+"sensing_utils.ores"
+"activation.ores"
+"3ds_targeted_camera.ores"
+"3ds_animation.ores"
+"3ds_time_conversion.ores"
+"3ds_parameter_controllers.ores"
+"3ds_constant_parameter_controllers.ores"
+"3ds_constant_float_controller.ores"
+"3ds_constant_point3_controller.ores"
+"3ds_constant_quat_controller.ores"
+"3ds_quat_controlling.ores"
+"3ds_constant_scale_value_controller.ores"
+"3ds_scale_value_controlling.ores"
+"3ds_scale_value.ores"
+"3ds_constant_color_controller.ores"
+"3ds_linear_parameter_controllers.ores"
+"3ds_linear_float_controller.ores"
+"3ds_keys.ores"
+"3ds_key.ores"
+"3ds_interval.ores"
+"3ds_float_key.ores"
+"3ds_key_controller.ores"
+"3ds_linear_point3_controller.ores"
+"3ds_point3_key.ores"
+"3ds_linear_quat_controller.ores"
+"3ds_quat_key.ores"
+"3ds_linear_scale_value_controller.ores"
+"3ds_scale_key.ores"
+"3ds_linear_color_controller.ores"
+"3ds_bezier_parameter_controllers.ores"
+"3ds_bezier_float_controller.ores"
+"3ds_bezier_float_key.ores"
+"3ds_bezier_point3_controller.ores"
+"3ds_bezier_point3_key.ores"
+"3ds_bezier_quat_controller.ores"
+"3ds_bezier_quat_key.ores"
+"3ds_bezier_scale_value_controller.ores"
+"3ds_bezier_scale_key.ores"
+"3ds_bezier_color_controller.ores"
+"3ds_smooth_parameter_controllers.ores"
+"3ds_smooth_float_controller.ores"
+"3ds_smooth_point3_controller.ores"
+"3ds_smooth_quat_controller.ores"
+"3ds_smooth_scale_value_controller.ores"
+"3ds_smooth_color_controller.ores"
+"3ds_composite_parameter_controllers.ores"
+"3ds_xyz_controller.ores"
+"3ds_rgb_controller.ores"
+"3ds_color_controlling.ores"
+"3ds_transformation_controllers.ores"
+"3ds_constant_transformation_controllers.ores"
+"3ds_constant_position_controller.ores"
+"3ds_position_controller.ores"
+"3ds_trans_controller.ores"
+"3ds_constant_rotation_controller.ores"
+"3ds_rotation_controller.ores"
+"3ds_constant_scale_controller.ores"
+"3ds_scale_controller.ores"
+"3ds_linear_transformation_controllers.ores"
+"3ds_linear_position_controller.ores"
+"3ds_linear_rotation_controller.ores"
+"3ds_linear_scale_controller.ores"
+"3ds_bezier_transformation_controllers.ores"
+"3ds_bezier_position_controller.ores"
+"3ds_bezier_rotation_controller.ores"
+"3ds_bezier_scale_controller.ores"
+"3ds_smooth_transformation_controllers.ores"
+"3ds_smooth_position_controller.ores"
+"3ds_smooth_rotation_controller.ores"
+"3ds_smooth_scale_controller.ores"
+"3ds_composite_transformation_controllers.ores"
+"3ds_prs_controller.ores"
+"3ds_xyz_position_controller.ores"
+"3ds_xyz_rotation_controller.ores"
+"trig_constants.ores"
+"3ds_xyz_scale_controller.ores"
+"anims.ores"
+"mouse_controlled_picture.ores"
+"check_keys.ores"
+"interactions.ores"
+"trans_stacks.ores"
+"native_trans_stacks.ores"
+"mouse_controlled_shape.ores"
+"lighting.ores"
+"mouse_controlled_animated_shape.ores"
+"mouse_controlled_actor.ores"
+"actors.ores"
+"timed_actors.ores"
+"timed_actor.ores"
+"acting.ores"
+"timers.ores"
+"active.ores"
+"cyclic_actor.ores"
+"shape_actors.ores"
+"shape_actor.ores"
+"animated_shape_actor.ores"
+"cyclic_shape_actor.ores"
+"manipulatable_actors.ores"
+"touchable_actor.ores"
+"manipulation.ores"
+"devices.ores"
+"picking.ores"
+"manipulation_behaviors.ores"
+"pressable_actor.ores"
+2839
+1 0 0 "object"
+2 26 6 "dark"
+3 27 6 "color"
+4 33 6 "light"
+5 34 6 "color"
+6 19 5 "white"
+7 20 5 "black"
+8 21 5 "grey"
+9 25 5 "red"
+10 26 5 "green"
+11 27 5 "blue"
+12 31 5 "cyan"
+13 32 5 "magenta"
+14 33 5 "yellow"
+15 18 4 "orange"
+16 19 4 "raspberry"
+17 20 4 "sky_blue"
+18 21 4 "brown"
+19 22 4 "pink"
+20 23 4 "brick"
+21 25 4 "maize"
+22 26 4 "aqua"
+23 27 4 "evergreen"
+24 30 4 "lavender"
+25 35 4 "violet"
+26 40 4 "hypercosm"
+27 23 11 "sin"
+28 24 11 "angle"
+29 27 11 "cos"
+30 28 11 "angle"
+31 31 11 "tan"
+32 32 11 "angle"
+33 41 11 "asin"
+34 42 11 "s"
+35 45 11 "acos"
+36 46 11 "s"
+37 49 11 "atan"
+38 50 11 "s"
+39 59 11 "ln"
+40 60 11 "s"
+41 63 11 "exp"
+42 64 11 "s"
+43 73 11 "trunc"
+44 74 11 "s"
+45 77 11 "round"
+46 78 11 "s"
+47 87 11 "chr"
+48 88 11 "i"
+49 91 11 "ord"
+50 92 11 "ch"
+51 101 11 "real"
+52 102 11 "c"
+53 105 11 "imag"
+54 106 11 "c"
+55 37 12 "infinity"
+56 22 14 "arctan"
+57 23 14 "y"
+58 23 14 "x"
+59 26 14 "th"
+60 51 14 "normalized_positive_angle"
+61 52 14 "angle"
+62 31 10 "odd"
+63 32 10 "i"
+64 116 10 "sqr"
+65 117 10 "s"
+66 123 10 "sqrt"
+67 124 10 "s"
+68 138 10 "abs"
+69 139 10 "s"
+70 19 9 "normalized"
+71 20 9 "v"
+72 22 9 "magnitude"
+73 39 9 "vlength"
+74 40 9 "v"
+75 17 20 "rotate_vector"
+76 18 20 "direction"
+77 19 20 "angle"
+78 20 20 "axis"
+79 22 20 "x_axis"
+80 23 20 "y_axis"
+81 24 20 "z_axis"
+82 25 20 "x"
+83 26 20 "y"
+84 32 20 "rotated_vector"
+85 33 20 "direction"
+86 34 20 "angle"
+87 35 20 "axis"
+88 37 20 "x_axis"
+89 38 20 "y_axis"
+90 39 20 "z_axis"
+91 40 20 "x"
+92 41 20 "y"
+93 47 20 "rotate_point"
+94 48 20 "point"
+95 49 20 "angle"
+96 50 20 "axis"
+97 51 20 "origin"
+98 59 20 "rotated_point"
+99 60 20 "point"
+100 61 20 "angle"
+101 62 20 "axis"
+102 63 20 "origin"
+103 20 19 "axes"
+104 67 19 "x_axis"
+105 67 19 "y_axis"
+106 67 19 "z_axis"
+107 74 19 "new"
+108 0 0 "axes"
+109 75 19 "x_axis"
+110 76 19 "y_axis"
+111 77 19 "z_axis"
+112 90 19 "scale"
+113 0 0 "axes"
+114 91 19 "v"
+115 99 19 "orient"
+116 0 0 "axes"
+117 100 19 "axes"
+120 108 19 "rotate"
+121 0 0 "axes"
+122 109 19 "angle"
+123 110 19 "axis"
+124 123 19 "oriented"
+118 0 0 "axes"
+119 124 19 "direction"
+125 135 19 "init"
+126 0 0 "axes"
+127 142 19 "transpose"
+128 0 0 "axes"
+129 143 19 "vx"
+130 144 19 "vy"
+131 145 19 "vz"
+132 153 19 "invert"
+133 0 0 "axes"
+134 154 19 "d"
+137 156 19 "vx"
+138 157 19 "vy"
+139 158 19 "vz"
+140 166 19 "reverse"
+141 0 0 "axes"
+142 173 19 "normalize"
+143 0 0 "axes"
+144 185 19 "determinant"
+135 0 0 "axes"
+136 188 19 "axes2"
+145 194 19 "dimensions"
+146 0 0 "axes"
+147 199 19 "trace"
+148 0 0 "axes"
+149 209 19 "print"
+150 0 0 "axes"
+151 16 22 "box"
+152 29 22 "vertices"
+153 36 22 "new"
+154 0 0 "box"
+155 0 0 "object"
+156 37 22 "vertices"
+157 50 22 "get_vertices"
+158 0 0 "box"
+159 0 0 "object"
+160 55 22 "get_edges"
+161 0 0 "box"
+162 0 0 "object"
+163 56 22 "edges"
+164 58 22 "set_edge"
+165 0 0 "box"
+166 0 0 "object"
+167 59 22 "index"
+168 60 22 "index1"
+169 61 22 "index2"
+170 84 22 "get_faces"
+171 0 0 "box"
+172 0 0 "object"
+173 85 22 "faces"
+174 87 22 "set_face"
+175 0 0 "box"
+176 0 0 "object"
+177 88 22 "index"
+178 89 22 "index1"
+179 89 22 "index2"
+180 89 22 "index3"
+181 89 22 "index4"
+182 15 26 "centerable"
+183 17 26 "get_center"
+184 0 0 "centerable"
+185 15 27 "scaleable"
+186 17 27 "get_size"
+187 0 0 "scaleable"
+188 19 25 "volume_containing"
+189 21 25 "contains"
+190 0 0 "volume_containing"
+191 22 25 "point"
+192 27 25 "volume_bounding"
+193 31 25 "get_min"
+194 0 0 "volume_bounding"
+195 32 25 "get_max"
+196 0 0 "volume_bounding"
+197 36 25 "volume_boundable"
+198 38 25 "get_bounds"
+199 0 0 "volume_boundable"
+200 15 28 "validifyable"
+201 17 28 "is_valid"
+202 0 0 "validifyable"
+203 27 28 "invalidateable"
+204 29 28 "invalidate"
+205 0 0 "invalidateable"
+206 18 32 "on"
+207 18 32 "off"
+208 19 32 "yes"
+209 19 32 "no"
+210 33 33 "is_upper"
+211 34 33 "ch"
+212 40 33 "is_lower"
+213 41 33 "ch"
+214 61 33 "to_lower"
+215 62 33 "ch"
+216 64 33 "case_difference"
+217 74 33 "to_upper"
+218 75 33 "ch"
+219 77 33 "case_difference"
+220 87 33 "char_to_integer"
+221 88 33 "ch"
+222 98 33 "digit_to_char"
+223 99 33 "digit"
+224 27 31 "string"
+225 73 31 "add"
+226 0 0 "string"
+227 74 31 "string2"
+228 76 31 "string3"
+229 97 31 "addchar"
+230 0 0 "string"
+231 98 31 "char2"
+232 100 31 "string3"
+233 103 31 "newstring"
+234 122 31 "matches"
+235 0 0 "string"
+236 123 31 "string2"
+237 125 31 "index1"
+238 125 31 "index2"
+239 157 31 "length"
+240 0 0 "string"
+241 166 31 "is_lower"
+242 0 0 "string"
+243 171 31 "ch"
+244 180 31 "is_upper"
+245 0 0 "string"
+246 185 31 "ch"
+247 199 31 "plus"
+248 0 0 "string"
+249 200 31 "string2"
+250 202 31 "string3"
+251 203 31 "string_len"
+252 204 31 "string2_len"
+253 205 31 "total_len"
+254 217 31 "s"
+255 234 31 "left"
+256 0 0 "string"
+257 235 31 "chars"
+258 239 31 "string"
+259 250 31 "right"
+260 0 0 "string"
+261 251 31 "chars"
+262 255 31 "string"
+263 272 31 "to_lower"
+264 0 0 "string"
+265 275 31 "string2"
+266 281 31 "ch"
+267 289 31 "to_upper"
+268 0 0 "string"
+269 292 31 "string2"
+270 298 31 "ch"
+271 306 31 "to_echo_string"
+272 0 0 "string"
+273 307 31 "echo_char"
+274 311 31 "echo_string"
+275 312 31 "ch"
+276 23 29 "scribable"
+277 25 29 "to_string"
+278 0 0 "scribable"
+279 29 29 "printable"
+280 31 29 "print"
+281 0 0 "printable"
+282 40 29 "to_string"
+283 41 29 "item"
+284 44 29 "scribable"
+285 57 29 "print"
+286 58 29 "item"
+287 23 35 "integer_to_string"
+288 24 35 "number"
+289 26 35 "negative"
+290 28 35 "string"
+291 28 35 "digit"
+292 62 35 "scalar_to_string"
+293 63 35 "s"
+294 64 35 "significant_digits"
+295 67 35 "string"
+296 67 35 "integer_part"
+297 67 35 "fractional_part"
+298 73 35 "i"
+299 90 35 "c"
+300 91 35 "significant_digit"
+301 101 35 "s2"
+302 102 35 "i2"
+303 103 35 "multiplier"
+304 127 35 "string2"
+305 128 35 "spot_to_increment"
+306 130 35 "n"
+307 156 35 "string2"
+308 166 35 "vector_to_string"
+309 167 35 "v"
+310 168 35 "significant_digits"
+311 171 35 "string"
+312 14 36 "smaller"
+313 15 36 "s1"
+314 16 36 "s2"
+315 26 36 "larger"
+316 27 36 "s1"
+317 28 36 "s2"
+318 23 24 "max_extent"
+319 24 24 "min_extent"
+320 28 24 "volume_extents"
+321 81 24 "low"
+322 81 24 "high"
+323 88 24 "new"
+324 0 0 "volume_extents"
+325 0 0 "object"
+326 89 24 "low"
+327 90 24 "high"
+332 101 24 "set"
+328 0 0 "volume_extents"
+329 0 0 "object"
+330 102 24 "low"
+331 103 24 "high"
+333 112 24 "invalidate"
+334 0 0 "volume_extents"
+335 0 0 "object"
+336 123 24 "is_valid"
+337 0 0 "volume_extents"
+338 0 0 "object"
+339 133 24 "contains"
+340 0 0 "volume_extents"
+341 0 0 "object"
+342 134 24 "point"
+343 142 24 "get_min"
+344 0 0 "volume_extents"
+345 0 0 "object"
+346 147 24 "get_max"
+347 0 0 "volume_extents"
+348 0 0 "object"
+349 152 24 "get_size"
+350 0 0 "volume_extents"
+351 0 0 "object"
+352 157 24 "get_center"
+353 0 0 "volume_extents"
+354 0 0 "object"
+355 167 24 "extend"
+356 0 0 "volume_extents"
+357 0 0 "object"
+358 168 24 "point"
+359 179 24 "expand"
+360 0 0 "volume_extents"
+361 0 0 "object"
+362 180 24 "bounds"
+363 194 24 "plus"
+364 0 0 "volume_extents"
+365 0 0 "object"
+366 195 24 "bounds"
+367 197 24 "extents"
+368 208 24 "to_string"
+369 0 0 "volume_extents"
+370 0 0 "object"
+371 209 24 "string"
+372 18 23 "get_point_extents"
+373 19 23 "points"
+374 23 23 "extents"
+375 23 23 "point"
+376 20 21 "bounding_box"
+377 38 21 "new"
+378 0 0 "bounding_box"
+379 0 0 "box"
+380 0 0 "object"
+381 39 21 "vertices"
+382 50 21 "get_bounds"
+383 0 0 "bounding_box"
+384 0 0 "box"
+385 0 0 "object"
+386 20 18 "trans"
+387 79 18 "origin"
+388 85 18 "new"
+389 0 0 "trans"
+390 0 0 "axes"
+391 86 18 "x_axis"
+392 87 18 "y_axis"
+393 88 18 "z_axis"
+394 89 18 "origin"
+395 104 18 "init"
+396 0 0 "trans"
+397 0 0 "axes"
+398 110 18 "set_extents"
+399 0 0 "trans"
+400 0 0 "axes"
+401 111 18 "extents"
+402 113 18 "size"
+403 125 18 "translate"
+404 0 0 "trans"
+405 0 0 "axes"
+406 126 18 "direction"
+407 132 18 "direct"
+408 0 0 "trans"
+409 0 0 "axes"
+410 133 18 "axes"
+411 142 18 "transform"
+412 0 0 "trans"
+413 0 0 "axes"
+414 143 18 "trans"
+418 152 18 "inverse_transform"
+419 0 0 "trans"
+420 0 0 "axes"
+421 153 18 "trans"
+428 163 18 "invert"
+422 0 0 "trans"
+423 0 0 "axes"
+424 164 18 "d"
+425 166 18 "vx"
+426 167 18 "vy"
+427 168 18 "vz"
+429 177 18 "compute"
+430 0 0 "trans"
+431 0 0 "axes"
+432 178 18 "source"
+433 179 18 "dest"
+434 191 18 "equals"
+435 0 0 "trans"
+436 0 0 "axes"
+437 192 18 "trans2"
+438 201 18 "transformed"
+415 0 0 "trans"
+416 0 0 "axes"
+417 202 18 "point"
+439 213 18 "set_bounding_box"
+440 0 0 "trans"
+441 0 0 "axes"
+442 214 18 "bounding_box"
+443 229 18 "get_bounds"
+444 0 0 "trans"
+445 0 0 "axes"
+446 231 18 "bounding_box"
+447 236 18 "get_bounding_box"
+448 0 0 "trans"
+449 0 0 "axes"
+450 238 18 "bounding_box"
+451 248 18 "print"
+452 0 0 "trans"
+453 0 0 "axes"
+454 257 18 "unit_trans"
+455 24 17 "trans"
+456 25 17 "shader_trans"
+457 23 37 "varray2"
+458 40 37 "rows"
+459 0 0 "varray2"
+460 45 37 "columns"
+461 0 0 "varray2"
+462 55 37 "vectors"
+463 0 0 "varray2"
+464 56 37 "list"
+465 57 37 "counter"
+466 59 37 "v"
+467 35 15 "square_vector_grid"
+468 36 15 "rows"
+469 37 15 "columns"
+470 41 15 "vertex"
+471 42 15 "side1"
+472 43 15 "side2"
+473 47 15 "vector_grid"
+474 48 15 "row"
+475 49 15 "ty"
+476 50 15 "y_offset"
+477 52 15 "column"
+478 53 15 "tx"
+479 54 15 "x_offset"
+480 28 3 "sphere"
+481 29 3 "center"
+482 30 3 "radius"
+483 31 3 "umin"
+484 31 3 "umax"
+485 32 3 "vmin"
+486 32 3 "vmax"
+487 36 3 "cylinder"
+488 37 3 "end1"
+489 38 3 "end2"
+490 39 3 "radius"
+491 40 3 "umin"
+492 40 3 "umax"
+493 44 3 "cone"
+494 45 3 "end1"
+495 46 3 "end2"
+496 47 3 "radius1"
+497 48 3 "radius2"
+498 49 3 "umin"
+499 49 3 "umax"
+500 53 3 "paraboloid"
+501 54 3 "top"
+502 55 3 "base"
+503 56 3 "radius"
+504 57 3 "umin"
+505 57 3 "umax"
+506 61 3 "hyperboloid1"
+507 62 3 "end1"
+508 63 3 "end2"
+509 64 3 "radius1"
+510 65 3 "radius2"
+511 66 3 "umin"
+512 66 3 "umax"
+513 70 3 "hyperboloid2"
+514 71 3 "top"
+515 72 3 "base"
+516 73 3 "radius"
+517 74 3 "eccentricity"
+518 75 3 "umin"
+519 75 3 "umax"
+520 84 3 "plane"
+521 85 3 "origin"
+522 86 3 "normal"
+523 90 3 "disk"
+524 91 3 "center"
+525 92 3 "normal"
+526 93 3 "radius"
+527 94 3 "umin"
+528 94 3 "umax"
+529 98 3 "ring"
+530 99 3 "center"
+531 100 3 "normal"
+532 101 3 "inner_radius"
+533 102 3 "outer_radius"
+534 103 3 "umin"
+535 103 3 "umax"
+536 107 3 "triangle"
+537 108 3 "vertex1"
+538 109 3 "vertex2"
+539 110 3 "vertex3"
+540 114 3 "parallelogram"
+541 115 3 "vertex"
+542 116 3 "side1"
+543 117 3 "side2"
+544 121 3 "polygon"
+545 122 3 "vertices"
+546 124 3 "texcoords"
+547 133 3 "torus"
+548 134 3 "center"
+549 135 3 "normal"
+550 136 3 "inner_radius"
+551 137 3 "outer_radius"
+552 138 3 "umin"
+553 138 3 "umax"
+554 139 3 "vmin"
+555 139 3 "vmax"
+556 143 3 "block"
+557 144 3 "vertex"
+558 145 3 "side1"
+559 146 3 "side2"
+560 147 3 "side3"
+561 151 3 "shaded_triangle"
+562 152 3 "vertex1"
+563 153 3 "vertex2"
+564 154 3 "vertex3"
+565 155 3 "normal1"
+566 156 3 "normal2"
+567 157 3 "normal3"
+568 161 3 "shaded_polygon"
+569 162 3 "vertices"
+570 163 3 "normals"
+571 165 3 "texcoords"
+572 169 3 "mesh"
+573 170 3 "vertices"
+574 171 3 "edges"
+575 172 3 "faces"
+576 174 3 "normals"
+577 175 3 "texcoords"
+578 176 3 "smoothing"
+579 177 3 "mending"
+580 178 3 "closed"
+581 182 3 "blob"
+582 183 3 "centers"
+583 185 3 "radii"
+584 186 3 "strengths"
+585 187 3 "threshold"
+586 196 3 "points"
+587 197 3 "vertices"
+588 201 3 "line"
+589 202 3 "vertices"
+590 206 3 "volume"
+591 207 3 "densities"
+592 208 3 "vertices"
+593 210 3 "threshold"
+594 211 3 "capping"
+595 212 3 "smoothing"
+596 221 3 "clipping_plane"
+597 222 3 "origin"
+598 223 3 "normal"
+599 232 3 "sphere_color"
+600 233 3 "cylinder_color"
+601 234 3 "cone_color"
+602 235 3 "paraboloid_color"
+603 236 3 "hyperboloid1_color"
+604 237 3 "hyperboloid2_color"
+605 238 3 "plane_color"
+606 239 3 "disk_color"
+607 240 3 "ring_color"
+608 241 3 "triangle_color"
+609 242 3 "parallelogram_color"
+610 243 3 "polygon_color"
+611 244 3 "torus_color"
+612 245 3 "block_color"
+613 246 3 "shaded_triangle_color"
+614 247 3 "shaded_polygon_color"
+615 248 3 "mesh_color"
+616 249 3 "blob_color"
+617 250 3 "point_color"
+618 251 3 "line_color"
+619 252 3 "volume_color"
+620 21 40 "distant_light"
+621 22 40 "direction"
+622 24 40 "brightness"
+623 25 40 "color"
+624 26 40 "shadows"
+625 30 40 "point_light"
+626 31 40 "brightness"
+627 32 40 "color"
+628 33 40 "shadows"
+629 37 40 "spot_light"
+630 38 40 "direction"
+631 40 40 "brightness"
+632 41 40 "angle"
+633 42 40 "color"
+634 43 40 "shadows"
+635 24 44 "image"
+636 27 44 "new"
+637 0 0 "image"
+638 0 0 "object"
+639 28 44 "name"
+640 31 44 "get_color"
+641 0 0 "image"
+642 0 0 "object"
+643 32 44 "units"
+644 33 44 "x"
+645 33 44 "y"
+646 34 44 "units"
+647 36 44 "interpolation"
+648 41 44 "free"
+649 0 0 "image"
+650 0 0 "object"
+651 43 44 "id"
+652 23 43 "interpolation"
+653 24 43 "mipmapping"
+654 25 43 "wraparound"
+655 29 43 "texture"
+656 32 43 "new"
+657 0 0 "texture"
+658 0 0 "object"
+659 33 43 "image"
+660 35 43 "interpolation"
+661 36 43 "mipmapping"
+662 37 43 "wraparound"
+663 42 43 "free"
+664 0 0 "texture"
+665 0 0 "object"
+666 44 43 "id"
+667 25 42 "untextured_material"
+668 54 42 "diffuse"
+669 55 42 "specular"
+670 56 42 "specular_power"
+671 60 42 "ambient"
+672 61 42 "emissive"
+673 65 42 "reflected"
+674 66 42 "transmitted"
+675 70 42 "color"
+676 74 42 "new"
+677 0 0 "untextured_material"
+678 0 0 "object"
+679 75 42 "color"
+680 79 42 "diffuse"
+681 80 42 "specular"
+682 81 42 "specular_power"
+683 85 42 "ambient"
+684 86 42 "emissive"
+685 90 42 "reflected"
+686 91 42 "transmitted"
+687 115 42 "print"
+688 0 0 "untextured_material"
+689 0 0 "object"
+690 141 42 "material"
+691 176 42 "texture"
+692 180 42 "new"
+693 0 0 "material"
+694 0 0 "untextured_material"
+695 0 0 "object"
+696 181 42 "color"
+697 182 42 "texture"
+698 183 42 "image"
+699 184 42 "file_name"
+700 188 42 "diffuse"
+701 189 42 "specular"
+702 190 42 "specular_power"
+703 194 42 "ambient"
+704 195 42 "emissive"
+705 199 42 "reflected"
+706 200 42 "transmitted"
+707 204 42 "interpolation"
+708 205 42 "mipmapping"
+709 206 42 "wraparound"
+710 32 41 "color"
+711 32 41 "material"
+712 36 41 "render_mode"
+713 37 41 "shading"
+714 41 41 "edges"
+715 42 41 "edge_orientation"
+716 43 41 "outline"
+717 47 41 "shadows"
+718 48 41 "reflections"
+719 49 41 "refractions"
+720 55 41 "facets"
+721 56 41 "antialiasing"
+722 57 41 "supersampling"
+723 58 41 "ambient"
+724 59 41 "background"
+725 60 41 "fog_factor"
+726 61 41 "min_feature_size"
+727 62 41 "stereo"
+728 63 41 "left_color"
+729 64 41 "right_color"
+730 65 41 "double_buffer"
+731 72 41 "scanning"
+732 73 41 "max_reflections"
+733 74 41 "max_refractions"
+734 75 41 "min_ray_weight"
+735 23 45 "eye"
+736 24 45 "lookat"
+737 25 45 "roll"
+738 26 45 "yaw"
+739 27 45 "pitch"
+740 28 45 "coord_system"
+741 35 45 "field_of_view"
+742 36 45 "projection"
+743 64 45 "project"
+744 65 45 "v"
+745 66 45 "coords"
+746 67 45 "coords"
+747 25 47 "screen_width"
+748 26 47 "screen_height"
+749 25 46 "width"
+750 26 46 "height"
+751 27 46 "h_center"
+752 28 46 "v_center"
+753 29 46 "window_name"
+754 36 46 "aspect_ratio"
+755 37 46 "logo"
+756 38 46 "frame"
+757 39 46 "cursor"
+758 40 46 "show_pictures"
+759 41 46 "save_pictures"
+760 42 46 "file_format"
+761 43 46 "frame_number"
+762 44 46 "picture_name"
+763 18 49 "get_key"
+764 19 49 "key_down"
+765 19 49 "key"
+766 20 49 "key_to_char"
+767 20 49 "key"
+768 21 49 "char_to_key"
+769 21 49 "c"
+770 18 50 "get_mouse"
+771 19 50 "coords"
+772 20 50 "coords"
+773 24 50 "mouse_down"
+774 25 50 "number"
+775 18 51 "move"
+776 19 51 "trans"
+777 20 51 "offset"
+778 48 51 "rotate"
+779 49 51 "trans"
+780 50 51 "angle"
+781 51 51 "axis"
+782 52 51 "point"
+783 61 51 "revolve"
+784 62 51 "trans"
+785 63 51 "angle"
+786 64 51 "axis"
+787 22 54 "very"
+788 23 54 "s"
+789 21 58 "get_time"
+790 19 53 "shiny"
+791 22 53 "specularity"
+792 23 53 "shininess"
+793 110 53 "plastic"
+794 111 53 "color"
+795 112 53 "shininess"
+796 113 53 "texture"
+797 114 53 "image"
+798 115 53 "file_name"
+799 119 53 "interpolation"
+800 120 53 "mipmapping"
+801 121 53 "wraparound"
+802 14 70 "introspective"
+803 16 70 "get_self"
+804 0 0 "introspective"
+805 46 71 "recycleable"
+806 48 71 "recycle"
+807 0 0 "recycleable"
+808 55 71 "verbose_recycling"
+809 34 69 "translated_3ds_stackable"
+810 42 69 "translated_3ds_collapsable"
+811 47 69 "collapsed"
+812 0 0 "translated_3ds_collapsable"
+813 51 69 "translated_3ds_collapsable2"
+814 58 69 "collapsed"
+815 0 0 "translated_3ds_collapsable2"
+816 59 69 "argument"
+817 64 69 "translated_3ds_activatable"
+818 68 69 "activate"
+819 0 0 "translated_3ds_activatable"
+820 69 69 "deactivate"
+821 0 0 "translated_3ds_activatable"
+822 70 69 "activated"
+823 0 0 "translated_3ds_activatable"
+824 71 69 "deactivated"
+825 0 0 "translated_3ds_activatable"
+826 25 68 "translated_3ds_modifier"
+827 38 68 "get_self"
+828 0 0 "translated_3ds_modifier"
+829 0 0 "object"
+830 21 67 "translated_3ds_object"
+831 27 67 "to_string"
+832 0 0 "translated_3ds_object"
+833 0 0 "translated_3ds_modifier"
+834 0 0 "object"
+835 18 66 "translated_3ds_texturable_object"
+836 43 66 "gen_mapping_coords"
+837 50 66 "new"
+838 0 0 "translated_3ds_texturable_object"
+839 0 0 "translated_3ds_object"
+840 0 0 "translated_3ds_modifier"
+841 0 0 "object"
+842 54 66 "gen_mapping_coords"
+843 67 66 "set_texturing"
+844 0 0 "translated_3ds_texturable_object"
+845 0 0 "translated_3ds_object"
+846 0 0 "translated_3ds_modifier"
+847 0 0 "object"
+848 68 66 "gen_mapping_coords"
+849 79 66 "to_string"
+850 0 0 "translated_3ds_texturable_object"
+851 0 0 "translated_3ds_object"
+852 0 0 "translated_3ds_modifier"
+853 0 0 "object"
+854 23 75 "texture_mapping"
+855 27 75 "get_texcoord"
+856 0 0 "texture_mapping"
+857 0 0 "object"
+858 28 75 "point"
+859 29 75 "normal"
+860 58 75 "get_texcoords"
+861 0 0 "texture_mapping"
+862 0 0 "object"
+863 59 75 "points"
+864 60 75 "normals"
+865 63 75 "texcoords"
+866 66 75 "i"
+867 70 75 "i"
+868 87 75 "get_texcoord_grid"
+869 0 0 "texture_mapping"
+870 0 0 "object"
+871 88 75 "point_grid"
+872 89 75 "normal_grid"
+873 92 75 "texcoord_grid"
+874 96 75 "i"
+875 97 75 "j"
+876 102 75 "i"
+877 103 75 "j"
+878 121 75 "get_grid_texcoords"
+879 0 0 "texture_mapping"
+880 0 0 "object"
+881 122 75 "point_grid"
+882 123 75 "normal_grid"
+883 126 75 "texcoord_grid"
+884 135 75 "texturable"
+885 139 75 "apply"
+886 0 0 "texturable"
+887 140 75 "texture_mapping"
+888 152 75 "parametric_mapping"
+889 184 75 "start"
+890 184 75 "finish"
+891 184 75 "direction"
+892 191 75 "new"
+893 0 0 "parametric_mapping"
+894 0 0 "texture_mapping"
+895 0 0 "object"
+896 192 75 "start"
+897 193 75 "finish"
+898 208 75 "get_texcoord"
+899 0 0 "parametric_mapping"
+900 0 0 "texture_mapping"
+901 0 0 "object"
+902 209 75 "point"
+903 210 75 "normal"
+904 221 75 "get_texcoords"
+905 0 0 "parametric_mapping"
+906 0 0 "texture_mapping"
+907 0 0 "object"
+908 222 75 "points"
+909 223 75 "normals"
+910 226 75 "texcoords"
+911 228 75 "counter"
+912 229 75 "t"
+913 245 75 "get_texcoord_grid"
+914 0 0 "parametric_mapping"
+915 0 0 "texture_mapping"
+916 0 0 "object"
+917 246 75 "point_grid"
+918 247 75 "normal_grid"
+919 250 75 "rows"
+920 251 75 "columns"
+921 340 75 "unit_parametric_mapping"
+922 20 77 "renderable"
+923 22 77 "instance"
+924 0 0 "renderable"
+925 16 80 "transformable"
+926 18 80 "transform"
+927 0 0 "transformable"
+928 19 80 "trans"
+929 15 87 "containable"
+930 19 87 "get"
+931 0 0 "containable"
+932 14 88 "next_queryable"
+933 16 88 "has_next"
+934 0 0 "next_queryable"
+935 17 88 "get_next"
+936 0 0 "next_queryable"
+937 21 88 "prev_queryable"
+938 23 88 "has_prev"
+939 0 0 "prev_queryable"
+940 24 88 "get_prev"
+941 0 0 "prev_queryable"
+942 19 86 "iterable"
+943 25 86 "is_iterating"
+944 0 0 "iterable"
+945 26 86 "is_done"
+946 0 0 "iterable"
+947 30 86 "to_first"
+948 0 0 "iterable"
+949 31 86 "to_last"
+950 0 0 "iterable"
+951 32 86 "finish"
+952 0 0 "iterable"
+953 36 86 "to_next"
+954 0 0 "iterable"
+955 37 86 "skip"
+956 0 0 "iterable"
+957 38 86 "steps"
+958 40 86 "advance"
+959 0 0 "iterable"
+960 41 86 "element"
+961 47 86 "next"
+962 0 0 "iterable"
+963 53 86 "iterate"
+964 0 0 "iterable"
+965 54 86 "action"
+966 55 86 "element"
+967 18 85 "mutable_iterable"
+968 24 85 "set"
+969 0 0 "mutable_iterable"
+970 25 85 "item"
+971 50 84 "iterator"
+972 56 84 "get"
+973 0 0 "iterator"
+974 0 0 "object"
+975 60 84 "set"
+976 0 0 "iterator"
+977 0 0 "object"
+978 61 84 "item"
+979 66 84 "is_iterating"
+980 0 0 "iterator"
+981 0 0 "object"
+982 67 84 "is_done"
+983 0 0 "iterator"
+984 0 0 "object"
+985 71 84 "to_first"
+986 0 0 "iterator"
+987 0 0 "object"
+988 77 84 "to_next"
+989 0 0 "iterator"
+990 0 0 "object"
+991 87 84 "has_next"
+992 0 0 "iterator"
+993 0 0 "object"
+994 88 84 "get_next"
+995 0 0 "iterator"
+996 0 0 "object"
+997 106 84 "to_last"
+998 0 0 "iterator"
+999 0 0 "object"
+1000 113 84 "finish"
+1001 0 0 "iterator"
+1002 0 0 "object"
+1003 124 84 "skip"
+1004 0 0 "iterator"
+1005 0 0 "object"
+1006 125 84 "steps"
+1007 128 84 "counter"
+1008 135 84 "advance"
+1009 0 0 "iterator"
+1010 0 0 "object"
+1011 136 84 "element"
+1012 149 84 "next"
+1013 0 0 "iterator"
+1014 0 0 "object"
+1015 150 84 "element"
+1016 161 84 "iterate"
+1017 0 0 "iterator"
+1018 0 0 "object"
+1019 162 84 "action"
+1020 163 84 "element"
+1021 18 90 "collectable"
+1022 22 90 "is_empty"
+1023 0 0 "collectable"
+1024 23 90 "get_size"
+1025 0 0 "collectable"
+1026 27 90 "contains"
+1027 0 0 "collectable"
+1028 28 90 "element"
+1029 33 90 "get_iterable"
+1030 0 0 "collectable"
+1031 34 90 "iterate"
+1032 0 0 "collectable"
+1033 35 90 "action"
+1034 36 90 "element"
+1035 42 90 "to_array"
+1036 0 0 "collectable"
+1037 18 89 "mutable_collectable"
+1038 24 89 "add"
+1039 0 0 "mutable_collectable"
+1040 25 89 "element"
+1041 27 89 "remove"
+1042 0 0 "mutable_collectable"
+1043 28 89 "element"
+1044 30 89 "purge"
+1045 0 0 "mutable_collectable"
+1046 31 89 "element"
+1047 33 89 "clear"
+1048 0 0 "mutable_collectable"
+1049 38 89 "add_element"
+1050 0 0 "mutable_collectable"
+1051 39 89 "element"
+1052 20 83 "collection"
+1053 26 83 "add"
+1054 0 0 "collection"
+1055 0 0 "object"
+1056 27 83 "element"
+1057 29 83 "remove"
+1058 0 0 "collection"
+1059 0 0 "object"
+1060 30 83 "element"
+1061 35 83 "clear"
+1062 0 0 "collection"
+1063 0 0 "object"
+1064 61 83 "is_empty"
+1065 0 0 "collection"
+1066 0 0 "object"
+1067 62 83 "get_size"
+1068 0 0 "collection"
+1069 0 0 "object"
+1070 79 83 "get_iterator"
+1071 0 0 "collection"
+1072 0 0 "object"
+1073 99 83 "purge"
+1074 0 0 "collection"
+1075 0 0 "object"
+1076 100 83 "element"
+1081 113 83 "add_all"
+1082 0 0 "collection"
+1083 0 0 "object"
+1084 114 83 "collection"
+1085 116 83 "iterator"
+1086 123 83 "remove_all"
+1087 0 0 "collection"
+1088 0 0 "object"
+1089 124 83 "collection"
+1090 126 83 "iterator"
+1091 133 83 "purge_all"
+1092 0 0 "collection"
+1093 0 0 "object"
+1094 134 83 "collection"
+1095 136 83 "iterator"
+1096 149 83 "add_element"
+1097 0 0 "collection"
+1098 0 0 "object"
+1099 150 83 "element"
+1100 158 83 "add_all_elements"
+1101 0 0 "collection"
+1102 0 0 "object"
+1103 159 83 "collection"
+1104 161 83 "iterator"
+1105 173 83 "contains"
+1077 0 0 "collection"
+1078 0 0 "object"
+1079 174 83 "element"
+1080 176 83 "iterator"
+1106 187 83 "contains_all"
+1107 0 0 "collection"
+1108 0 0 "object"
+1109 188 83 "collection"
+1110 190 83 "iterator"
+1111 205 83 "get_iterable"
+1112 0 0 "collection"
+1113 0 0 "object"
+1114 210 83 "iterate"
+1115 0 0 "collection"
+1116 0 0 "object"
+1117 211 83 "action"
+1118 212 83 "element"
+1119 215 83 "iterator"
+1120 227 83 "to_array"
+1121 0 0 "collection"
+1122 0 0 "object"
+1123 228 83 "array"
+1124 229 83 "iterator"
+1125 230 83 "index"
+1126 250 83 "print"
+1127 0 0 "collection"
+1128 0 0 "object"
+1129 251 83 "iterator"
+1130 22 92 "list_iterable"
+1131 26 92 "insert_prev"
+1132 0 0 "list_iterable"
+1133 27 92 "element"
+1134 29 92 "insert_next"
+1135 0 0 "list_iterable"
+1136 30 92 "element"
+1137 32 92 "insert"
+1138 0 0 "list_iterable"
+1139 33 92 "insertion"
+1140 34 92 "element"
+1141 39 92 "removed"
+1142 0 0 "list_iterable"
+1143 20 91 "list_iterator"
+1144 26 91 "insert_prev"
+1145 0 0 "list_iterator"
+1146 0 0 "iterator"
+1147 0 0 "object"
+1148 27 91 "element"
+1149 29 91 "insert_next"
+1150 0 0 "list_iterator"
+1151 0 0 "iterator"
+1152 0 0 "object"
+1153 30 91 "element"
+1154 39 91 "removed"
+1155 0 0 "list_iterator"
+1156 0 0 "iterator"
+1157 0 0 "object"
+1158 46 91 "insert"
+1159 0 0 "list_iterator"
+1160 0 0 "iterator"
+1161 0 0 "object"
+1162 47 91 "insertion"
+1163 48 91 "element"
+1164 14 93 "reverseable"
+1165 16 93 "reverse"
+1166 0 0 "reverseable"
+1167 26 94 "discard"
+1168 27 94 "element"
+1169 34 82 "list"
+1170 72 82 "copy"
+1171 0 0 "list"
+1172 0 0 "collection"
+1173 0 0 "object"
+1174 73 82 "source"
+1175 75 82 "clone"
+1176 0 0 "list"
+1177 0 0 "collection"
+1178 0 0 "object"
+1179 82 82 "add_first"
+1180 0 0 "list"
+1181 0 0 "collection"
+1182 0 0 "object"
+1183 83 82 "element"
+1184 85 82 "iterator"
+1192 90 82 "removed_first"
+1193 0 0 "list"
+1194 0 0 "collection"
+1195 0 0 "object"
+1196 91 82 "iterator"
+1197 101 82 "get_first"
+1198 0 0 "list"
+1199 0 0 "collection"
+1200 0 0 "object"
+1201 102 82 "iterator"
+1202 107 82 "get_start"
+1185 0 0 "list"
+1186 0 0 "collection"
+1187 0 0 "object"
+1188 108 82 "iterator"
+1203 119 82 "reverse"
+1204 0 0 "list"
+1205 0 0 "collection"
+1206 0 0 "object"
+1207 120 82 "iterator"
+1208 121 82 "reversed_list"
+1209 137 82 "add"
+1210 0 0 "list"
+1211 0 0 "collection"
+1212 0 0 "object"
+1213 138 82 "element"
+1214 144 82 "remove"
+1215 0 0 "list"
+1216 0 0 "collection"
+1217 0 0 "object"
+1218 145 82 "element"
+1219 147 82 "iterator"
+1220 153 82 "purge"
+1221 0 0 "list"
+1222 0 0 "collection"
+1223 0 0 "object"
+1224 154 82 "element"
+1225 156 82 "iterator"
+1226 169 82 "get_iterator"
+1189 0 0 "list"
+1190 0 0 "collection"
+1191 0 0 "object"
+1227 18 96 "mutable_containable"
+1228 24 96 "set"
+1229 0 0 "mutable_containable"
+1230 25 96 "item"
+1231 20 95 "node"
+1232 41 95 "item"
+1233 48 95 "new"
+1234 0 0 "node"
+1235 0 0 "object"
+1236 49 95 "item"
+1237 60 95 "get"
+1238 0 0 "node"
+1239 0 0 "object"
+1240 70 95 "set"
+1241 0 0 "node"
+1242 0 0 "object"
+1243 71 95 "item"
+1244 20 97 "singly_linked_node"
+1245 47 97 "next"
+1246 51 97 "free_list"
+1247 59 97 "new"
+1248 0 0 "singly_linked_node"
+1249 0 0 "node"
+1250 0 0 "object"
+1251 60 97 "item"
+1252 61 97 "next"
+1253 73 97 "set_node"
+1254 0 0 "singly_linked_node"
+1255 0 0 "node"
+1256 0 0 "object"
+1257 74 97 "item"
+1258 75 97 "next"
+1259 89 97 "get_node"
+1260 90 97 "item"
+1261 91 97 "next"
+1262 101 97 "temp"
+1263 110 97 "recycle"
+1264 0 0 "singly_linked_node"
+1265 0 0 "node"
+1266 0 0 "object"
+1267 19 98 "singly_linked_node_iterator"
+1268 44 98 "current"
+1269 51 98 "get"
+1270 0 0 "singly_linked_node_iterator"
+1271 0 0 "list_iterator"
+1272 0 0 "iterator"
+1273 0 0 "object"
+1274 65 98 "set"
+1275 0 0 "singly_linked_node_iterator"
+1276 0 0 "list_iterator"
+1277 0 0 "iterator"
+1278 0 0 "object"
+1279 66 98 "item"
+1280 79 98 "has_next"
+1281 0 0 "singly_linked_node_iterator"
+1282 0 0 "list_iterator"
+1283 0 0 "iterator"
+1284 0 0 "object"
+1285 92 98 "get_next"
+1286 0 0 "singly_linked_node_iterator"
+1287 0 0 "list_iterator"
+1288 0 0 "iterator"
+1289 0 0 "object"
+1290 106 98 "to_next"
+1291 0 0 "singly_linked_node_iterator"
+1292 0 0 "list_iterator"
+1293 0 0 "iterator"
+1294 0 0 "object"
+1295 21 81 "singly_linked_list"
+1296 54 81 "elements"
+1297 58 81 "head"
+1298 67 81 "singly_linked_list_iterator"
+1299 103 81 "list"
+1300 108 81 "prev"
+1301 115 81 "new"
+1302 0 0 "singly_linked_list_iterator"
+1303 0 0 "singly_linked_node_iterator"
+1304 0 0 "list_iterator"
+1305 0 0 "iterator"
+1306 0 0 "object"
+1307 116 81 "list"
+1308 130 81 "is_iterating"
+1309 0 0 "singly_linked_list_iterator"
+1310 0 0 "singly_linked_node_iterator"
+1311 0 0 "list_iterator"
+1312 0 0 "iterator"
+1313 0 0 "object"
+1314 135 81 "is_done"
+1315 0 0 "singly_linked_list_iterator"
+1316 0 0 "singly_linked_node_iterator"
+1317 0 0 "list_iterator"
+1318 0 0 "iterator"
+1319 0 0 "object"
+1320 145 81 "to_first"
+1321 0 0 "singly_linked_list_iterator"
+1322 0 0 "singly_linked_node_iterator"
+1323 0 0 "list_iterator"
+1324 0 0 "iterator"
+1325 0 0 "object"
+1326 151 81 "to_next"
+1327 0 0 "singly_linked_list_iterator"
+1328 0 0 "singly_linked_node_iterator"
+1329 0 0 "list_iterator"
+1330 0 0 "iterator"
+1331 0 0 "object"
+1332 164 81 "insert_prev"
+1333 0 0 "singly_linked_list_iterator"
+1334 0 0 "singly_linked_node_iterator"
+1335 0 0 "list_iterator"
+1336 0 0 "iterator"
+1337 0 0 "object"
+1338 165 81 "item"
+1339 169 81 "node"
+1340 201 81 "insert_next"
+1341 0 0 "singly_linked_list_iterator"
+1342 0 0 "singly_linked_node_iterator"
+1343 0 0 "list_iterator"
+1344 0 0 "iterator"
+1345 0 0 "object"
+1346 202 81 "item"
+1347 206 81 "node"
+1348 242 81 "removed"
+1349 0 0 "singly_linked_list_iterator"
+1350 0 0 "singly_linked_node_iterator"
+1351 0 0 "list_iterator"
+1352 0 0 "iterator"
+1353 0 0 "object"
+1354 243 81 "element"
+1355 251 81 "node"
+1356 281 81 "removed_next"
+1357 0 0 "singly_linked_list_iterator"
+1358 0 0 "singly_linked_node_iterator"
+1359 0 0 "list_iterator"
+1360 0 0 "iterator"
+1361 0 0 "object"
+1362 282 81 "element"
+1363 290 81 "next"
+1364 325 81 "has_prev"
+1365 0 0 "singly_linked_list_iterator"
+1366 0 0 "singly_linked_node_iterator"
+1367 0 0 "list_iterator"
+1368 0 0 "iterator"
+1369 0 0 "object"
+1370 330 81 "get_prev"
+1371 0 0 "singly_linked_list_iterator"
+1372 0 0 "singly_linked_node_iterator"
+1373 0 0 "list_iterator"
+1374 0 0 "iterator"
+1375 0 0 "object"
+1376 345 81 "append_first"
+1377 0 0 "singly_linked_list"
+1378 0 0 "list"
+1379 0 0 "collection"
+1380 0 0 "object"
+1381 346 81 "element"
+1382 350 81 "node"
+1383 362 81 "detached_first"
+1384 0 0 "singly_linked_list"
+1385 0 0 "list"
+1386 0 0 "collection"
+1387 0 0 "object"
+1388 364 81 "node"
+1389 365 81 "element"
+1390 388 81 "get_first"
+1391 0 0 "singly_linked_list"
+1392 0 0 "list"
+1393 0 0 "collection"
+1394 0 0 "object"
+1395 393 81 "get_start"
+1396 0 0 "singly_linked_list"
+1397 0 0 "list"
+1398 0 0 "collection"
+1399 0 0 "object"
+1400 403 81 "is_empty"
+1401 0 0 "singly_linked_list"
+1402 0 0 "list"
+1403 0 0 "collection"
+1404 0 0 "object"
+1405 408 81 "get_size"
+1406 0 0 "singly_linked_list"
+1407 0 0 "list"
+1408 0 0 "collection"
+1409 0 0 "object"
+1410 418 81 "clear"
+1411 0 0 "singly_linked_list"
+1412 0 0 "list"
+1413 0 0 "collection"
+1414 0 0 "object"
+1415 434 81 "copy"
+1416 0 0 "singly_linked_list"
+1417 0 0 "list"
+1418 0 0 "collection"
+1419 0 0 "object"
+1420 435 81 "source"
+1421 437 81 "source_list"
+1422 444 81 "clone"
+1423 0 0 "singly_linked_list"
+1424 0 0 "list"
+1425 0 0 "collection"
+1426 0 0 "object"
+1427 446 81 "new_list"
+1428 23 79 "mesh_geometry"
+1429 74 79 "vertices"
+1430 75 79 "normals"
+1431 79 79 "texcoords"
+1432 86 79 "new"
+1433 0 0 "mesh_geometry"
+1434 0 0 "object"
+1435 87 79 "vertices"
+1436 88 79 "normals"
+1437 89 79 "texcoords"
+1438 91 79 "oriented"
+1439 92 79 "textured"
+1447 106 79 "set"
+1440 0 0 "mesh_geometry"
+1441 0 0 "object"
+1442 107 79 "vertices"
+1443 108 79 "normals"
+1444 109 79 "texcoords"
+1445 111 79 "oriented"
+1446 112 79 "textured"
+1448 140 79 "is_valid"
+1449 0 0 "mesh_geometry"
+1450 0 0 "object"
+1451 164 79 "transform"
+1452 0 0 "mesh_geometry"
+1453 0 0 "object"
+1454 165 79 "trans"
+1455 167 79 "vertex"
+1456 170 79 "normal"
+1457 181 79 "apply"
+1458 0 0 "mesh_geometry"
+1459 0 0 "object"
+1460 182 79 "texture_mapping"
+1461 193 79 "get_bounds"
+1462 0 0 "mesh_geometry"
+1463 0 0 "object"
+1464 203 79 "print"
+1465 0 0 "mesh_geometry"
+1466 0 0 "object"
+1467 222 79 "recycleable_mesh_geometry"
+1468 234 79 "free_list"
+1469 239 79 "get"
+1470 251 79 "recycle"
+1471 0 0 "recycleable_mesh_geometry"
+1472 0 0 "mesh_geometry"
+1473 0 0 "object"
+1474 19 78 "mesh_topology"
+1475 50 78 "edges"
+1476 51 78 "face_indices"
+1477 58 78 "new"
+1478 0 0 "mesh_topology"
+1479 0 0 "object"
+1480 59 78 "edges"
+1481 60 78 "face_indices"
+1482 62 78 "num_edges"
+1483 63 78 "num_face_indices"
+1490 77 78 "set"
+1484 0 0 "mesh_topology"
+1485 0 0 "object"
+1486 78 78 "edges"
+1487 79 78 "face_indices"
+1488 81 78 "num_edges"
+1489 82 78 "num_face_indices"
+1491 107 78 "is_valid"
+1492 0 0 "mesh_topology"
+1493 0 0 "object"
+1494 112 78 "get_num_faces"
+1495 0 0 "mesh_topology"
+1496 0 0 "object"
+1497 113 78 "num_faces"
+1498 117 78 "face_index"
+1499 127 78 "count_face_indices"
+1500 0 0 "mesh_topology"
+1501 0 0 "object"
+1502 128 78 "face_index"
+1503 130 78 "counter"
+1504 139 78 "get_face_indices"
+1505 0 0 "mesh_topology"
+1506 0 0 "object"
+1507 140 78 "face_index"
+1508 142 78 "face_indices"
+1509 144 78 "counter"
+1510 153 78 "get_faces_indices"
+1511 0 0 "mesh_topology"
+1512 0 0 "object"
+1513 154 78 "faces_indices"
+1514 155 78 "face_index"
+1515 157 78 "counter"
+1516 171 78 "print_edges"
+1517 0 0 "mesh_topology"
+1518 0 0 "object"
+1519 172 78 "counter"
+1520 178 78 "print_faces"
+1521 0 0 "mesh_topology"
+1522 0 0 "object"
+1523 179 78 "counter"
+1524 195 78 "print"
+1525 0 0 "mesh_topology"
+1526 0 0 "object"
+1527 215 78 "recycleable_mesh_topology"
+1528 227 78 "free_list"
+1529 232 78 "get"
+1530 244 78 "recycle"
+1531 0 0 "recycleable_mesh_topology"
+1532 0 0 "mesh_topology"
+1533 0 0 "object"
+1534 29 74 "mesh"
+1535 104 74 "topology"
+1536 105 74 "geometry"
+1537 109 74 "smoothing"
+1538 110 74 "mending"
+1539 111 74 "closed"
+1540 118 74 "new"
+1541 0 0 "mesh"
+1542 0 0 "object"
+1543 122 74 "topology"
+1544 123 74 "geometry"
+1545 127 74 "smoothing"
+1546 128 74 "mending"
+1547 129 74 "closed"
+1555 146 74 "set"
+1548 0 0 "mesh"
+1549 0 0 "object"
+1550 150 74 "topology"
+1551 151 74 "geometry"
+1552 155 74 "smoothing"
+1553 156 74 "mending"
+1554 157 74 "closed"
+1556 180 74 "is_valid"
+1557 0 0 "mesh"
+1558 0 0 "object"
+1559 194 74 "transform"
+1560 0 0 "mesh"
+1561 0 0 "object"
+1562 195 74 "trans"
+1563 206 74 "apply"
+1564 0 0 "mesh"
+1565 0 0 "object"
+1566 207 74 "texture_mapping"
+1567 218 74 "instance"
+1568 0 0 "mesh"
+1569 0 0 "object"
+1570 243 74 "get_bounds"
+1571 0 0 "mesh"
+1572 0 0 "object"
+1573 253 74 "get_vertices"
+1574 0 0 "mesh"
+1575 0 0 "object"
+1576 259 74 "get_edges"
+1577 0 0 "mesh"
+1578 0 0 "object"
+1579 261 74 "edges"
+1580 263 74 "counter"
+1581 272 74 "get_face"
+1582 0 0 "mesh"
+1583 0 0 "object"
+1584 273 74 "face_indices"
+1585 275 74 "face"
+1586 277 74 "counter"
+1587 278 74 "edge_index"
+1588 279 74 "vertex_index"
+1589 288 74 "get_faces"
+1590 0 0 "mesh"
+1591 0 0 "object"
+1592 290 74 "faces_indices"
+1593 291 74 "faces"
+1594 293 74 "counter"
+1595 306 74 "to_string"
+1596 0 0 "mesh"
+1597 0 0 "object"
+1598 316 74 "print"
+1599 0 0 "mesh"
+1600 0 0 "object"
+1601 344 74 "recycleable_mesh"
+1602 372 74 "free_list"
+1603 377 74 "new"
+1604 0 0 "recycleable_mesh"
+1605 0 0 "mesh"
+1606 0 0 "object"
+1607 381 74 "topology"
+1608 382 74 "geometry"
+1609 386 74 "smoothing"
+1610 387 74 "mending"
+1611 388 74 "closed"
+1612 407 74 "get"
+1613 419 74 "recycle"
+1614 0 0 "recycleable_mesh"
+1615 0 0 "mesh"
+1616 0 0 "object"
+1617 426 74 "recycleable_mesh_topology"
+1618 433 74 "recycleable_mesh_geometry"
+1619 18 73 "meshes"
+1620 61 73 "transform"
+1621 0 0 "meshes"
+1622 62 73 "trans"
+1623 64 73 "mesh"
+1624 75 73 "apply"
+1625 0 0 "meshes"
+1626 76 73 "texture_mapping"
+1627 78 73 "mesh"
+1628 89 73 "instance"
+1629 0 0 "meshes"
+1630 90 73 "mesh"
+1631 101 73 "get_bounds"
+1632 0 0 "meshes"
+1633 103 73 "extents"
+1634 103 73 "mesh"
+1635 115 73 "get_mesh_geometry"
+1636 0 0 "meshes"
+1637 116 73 "mesh_geometry"
+1638 120 73 "num_vertices"
+1639 121 73 "num_normals"
+1640 122 73 "num_texcoords"
+1641 123 73 "vertices"
+1642 124 73 "normals"
+1643 125 73 "texcoords"
+1644 129 73 "mesh"
+1645 156 73 "mesh"
+1646 196 73 "get_mesh_topology"
+1647 0 0 "meshes"
+1648 197 73 "mesh_topology"
+1649 199 73 "num_edges"
+1650 200 73 "num_face_indices"
+1651 201 73 "edges"
+1652 202 73 "face_indices"
+1653 203 73 "vertex_offset"
+1654 204 73 "edge_offset"
+1655 208 73 "mesh"
+1658 226 73 "mesh"
+1656 232 73 "counter"
+1657 241 73 "counter"
+1659 275 73 "to_mesh"
+1660 0 0 "meshes"
+1661 279 73 "smoothing"
+1662 280 73 "mending"
+1663 281 73 "closed"
+1664 283 73 "mesh"
+1665 305 73 "print"
+1666 0 0 "meshes"
+1667 307 73 "mesh"
+1668 20 99 "translated_3ds_renderable_mesh"
+1669 66 99 "mesh"
+1670 71 99 "next"
+1671 75 99 "free_list"
+1672 83 99 "new"
+1673 0 0 "translated_3ds_renderable_mesh"
+1674 0 0 "translated_3ds_object"
+1675 0 0 "translated_3ds_modifier"
+1676 0 0 "object"
+1677 84 99 "meshes"
+1683 98 99 "set"
+1678 0 0 "translated_3ds_renderable_mesh"
+1679 0 0 "translated_3ds_object"
+1680 0 0 "translated_3ds_modifier"
+1681 0 0 "object"
+1682 99 99 "meshes"
+1684 114 99 "transform"
+1685 0 0 "translated_3ds_renderable_mesh"
+1686 0 0 "translated_3ds_object"
+1687 0 0 "translated_3ds_modifier"
+1688 0 0 "object"
+1689 115 99 "trans"
+1690 128 99 "apply"
+1691 0 0 "translated_3ds_renderable_mesh"
+1692 0 0 "translated_3ds_object"
+1693 0 0 "translated_3ds_modifier"
+1694 0 0 "object"
+1695 129 99 "texture_mapping"
+1696 142 99 "instance"
+1697 0 0 "translated_3ds_renderable_mesh"
+1698 0 0 "translated_3ds_object"
+1699 0 0 "translated_3ds_modifier"
+1700 0 0 "object"
+1701 171 99 "to_string"
+1702 0 0 "translated_3ds_renderable_mesh"
+1703 0 0 "translated_3ds_object"
+1704 0 0 "translated_3ds_modifier"
+1705 0 0 "object"
+1706 181 99 "print"
+1707 0 0 "translated_3ds_renderable_mesh"
+1708 0 0 "translated_3ds_object"
+1709 0 0 "translated_3ds_modifier"
+1710 0 0 "object"
+1711 195 99 "get"
+1712 200 99 "next"
+1713 212 99 "recycle"
+1714 0 0 "translated_3ds_renderable_mesh"
+1715 0 0 "translated_3ds_object"
+1716 0 0 "translated_3ds_modifier"
+1717 0 0 "object"
+1718 218 99 "recycleable"
+1719 26 72 "translated_3ds_editable_mesh"
+1720 95 72 "elements"
+1721 100 72 "next"
+1722 104 72 "free_list"
+1723 108 72 "collapse_mesh_elements"
+1724 116 72 "new"
+1725 0 0 "translated_3ds_editable_mesh"
+1726 0 0 "translated_3ds_object"
+1727 0 0 "translated_3ds_modifier"
+1728 0 0 "object"
+1729 117 72 "elements"
+1741 132 72 "set"
+1742 0 0 "translated_3ds_editable_mesh"
+1743 0 0 "translated_3ds_object"
+1744 0 0 "translated_3ds_modifier"
+1745 0 0 "object"
+1746 133 72 "elements"
+1753 145 72 "clear"
+1747 0 0 "translated_3ds_editable_mesh"
+1748 0 0 "translated_3ds_object"
+1749 0 0 "translated_3ds_modifier"
+1750 0 0 "object"
+1751 148 72 "editable_mesh_element"
+1752 151 72 "recycleable"
+1754 158 72 "add_element"
+1735 0 0 "translated_3ds_editable_mesh"
+1736 0 0 "translated_3ds_object"
+1737 0 0 "translated_3ds_modifier"
+1738 0 0 "object"
+1739 159 72 "element"
+1755 167 72 "add_elements"
+1730 0 0 "translated_3ds_editable_mesh"
+1731 0 0 "translated_3ds_object"
+1732 0 0 "translated_3ds_modifier"
+1733 0 0 "object"
+1734 168 72 "elements"
+1740 170 72 "element"
+1756 176 72 "add_editable_mesh_elements"
+1757 0 0 "translated_3ds_editable_mesh"
+1758 0 0 "translated_3ds_object"
+1759 0 0 "translated_3ds_modifier"
+1760 0 0 "object"
+1761 177 72 "editable_mesh"
+1762 186 72 "add_renderable_mesh"
+1763 0 0 "translated_3ds_editable_mesh"
+1764 0 0 "translated_3ds_object"
+1765 0 0 "translated_3ds_modifier"
+1766 0 0 "object"
+1767 187 72 "renderable_mesh"
+1768 196 72 "add"
+1769 0 0 "translated_3ds_editable_mesh"
+1770 0 0 "translated_3ds_object"
+1771 0 0 "translated_3ds_modifier"
+1772 0 0 "object"
+1773 197 72 "stackable"
+1774 199 72 "modifier"
+1775 204 72 "collapsable"
+1776 231 72 "transform"
+1777 0 0 "translated_3ds_editable_mesh"
+1778 0 0 "translated_3ds_object"
+1779 0 0 "translated_3ds_modifier"
+1780 0 0 "object"
+1781 232 72 "trans"
+1782 234 72 "iterator"
+1783 237 72 "element"
+1784 248 72 "apply"
+1785 0 0 "translated_3ds_editable_mesh"
+1786 0 0 "translated_3ds_object"
+1787 0 0 "translated_3ds_modifier"
+1788 0 0 "object"
+1789 249 72 "texture_mapping"
+1790 251 72 "iterator"
+1791 254 72 "element"
+1792 260 72 "get_meshes"
+1793 0 0 "translated_3ds_editable_mesh"
+1794 0 0 "translated_3ds_object"
+1795 0 0 "translated_3ds_modifier"
+1796 0 0 "object"
+1797 264 72 "meshes"
+1798 264 72 "iterator"
+1799 265 72 "counter"
+1800 288 72 "collapsed"
+1801 0 0 "translated_3ds_editable_mesh"
+1802 0 0 "translated_3ds_object"
+1803 0 0 "translated_3ds_modifier"
+1804 0 0 "object"
+1805 290 72 "renderable_mesh"
+1810 304 72 "instance"
+1811 0 0 "translated_3ds_editable_mesh"
+1812 0 0 "translated_3ds_object"
+1813 0 0 "translated_3ds_modifier"
+1814 0 0 "object"
+1815 305 72 "iterator"
+1816 308 72 "element"
+1817 319 72 "to_string"
+1818 0 0 "translated_3ds_editable_mesh"
+1819 0 0 "translated_3ds_object"
+1820 0 0 "translated_3ds_modifier"
+1821 0 0 "object"
+1822 329 72 "print"
+1823 0 0 "translated_3ds_editable_mesh"
+1824 0 0 "translated_3ds_object"
+1825 0 0 "translated_3ds_modifier"
+1826 0 0 "object"
+1827 330 72 "iterator"
+1828 334 72 "element"
+1829 346 72 "get"
+1830 351 72 "next"
+1831 363 72 "recycle"
+1806 0 0 "translated_3ds_editable_mesh"
+1807 0 0 "translated_3ds_object"
+1808 0 0 "translated_3ds_modifier"
+1809 0 0 "object"
+1832 376 72 "to_translated_3ds_editable_mesh"
+1833 377 72 "translated_3ds_object"
+1834 379 72 "collapsable"
+1835 16 102 "grid_table"
+1836 41 102 "table"
+1837 48 102 "new"
+1838 0 0 "grid_table"
+1839 0 0 "object"
+1840 49 102 "rows"
+1841 50 102 "columns"
+1842 61 102 "enter"
+1843 0 0 "grid_table"
+1844 0 0 "object"
+1845 62 102 "item"
+1846 63 102 "rows"
+1847 64 102 "columns"
+1848 77 102 "lookup"
+1849 0 0 "grid_table"
+1850 0 0 "object"
+1851 78 102 "rows"
+1852 79 102 "columns"
+1853 334 101 "get_quad_grid_mesh_topology"
+1854 335 101 "h_vertices"
+1855 336 101 "v_vertices"
+1856 337 101 "reversed"
+1857 339 101 "cache"
+1858 340 101 "reversed_cache"
+1859 352 101 "grid_width"
+1860 353 101 "grid_height"
+1861 357 101 "h_edges"
+1862 358 101 "v_edges"
+1863 359 101 "edges"
+1864 360 101 "faces"
+1865 364 101 "mesh_topology"
+1866 368 101 "edge_counter"
+1867 369 101 "face_counter"
+1868 390 101 "v"
+1869 391 101 "h"
+1870 395 101 "left"
+1871 396 101 "right"
+1872 408 101 "h"
+1873 409 101 "v"
+1874 413 101 "lower"
+1875 414 101 "upper"
+1876 426 101 "v"
+1877 427 101 "h"
+1878 431 101 "left"
+1879 432 101 "right"
+1880 433 101 "lower"
+1881 434 101 "upper"
+1882 19 100 "find_grid_normal"
+1883 20 100 "row"
+1884 21 100 "column"
+1885 22 100 "vertex_grid"
+1886 24 100 "vertex"
+1887 25 100 "u_axis"
+1888 25 100 "v_axis"
+1889 34 100 "first_column"
+1890 55 100 "first_row"
+1891 73 100 "find_normal_grid"
+1892 74 100 "vertex_grid"
+1893 76 100 "reversed"
+1894 79 100 "normal_grid"
+1895 79 100 "rows"
+1896 80 100 "columns"
+1897 84 100 "row"
+1898 85 100 "column"
+1899 86 100 "grid_normal"
+1900 100 100 "get_grid_mesh"
+1901 101 100 "vertex_grid"
+1902 102 100 "normal_grid"
+1903 106 100 "smoothing"
+1904 107 100 "mending"
+1905 108 100 "closed"
+1906 109 100 "reversed"
+1907 113 100 "textured"
+1908 114 100 "mapping"
+1909 116 100 "mesh"
+1910 22 103 "translated_3ds_modifier_stack"
+1911 70 103 "num_items"
+1912 71 103 "items"
+1913 78 103 "new"
+1914 0 0 "translated_3ds_modifier_stack"
+1915 0 0 "object"
+1916 79 103 "size"
+1917 90 103 "push"
+1918 0 0 "translated_3ds_modifier_stack"
+1919 0 0 "object"
+1920 91 103 "item"
+1921 98 103 "pop"
+1922 0 0 "translated_3ds_modifier_stack"
+1923 0 0 "object"
+1924 99 103 "element"
+1928 103 103 "clear"
+1929 0 0 "translated_3ds_modifier_stack"
+1930 0 0 "object"
+1931 108 103 "popped"
+1925 0 0 "translated_3ds_modifier_stack"
+1926 0 0 "object"
+1927 110 103 "item"
+1932 125 103 "peek"
+1933 0 0 "translated_3ds_modifier_stack"
+1934 0 0 "object"
+1935 134 103 "height"
+1936 0 0 "translated_3ds_modifier_stack"
+1937 0 0 "object"
+1938 139 103 "is_empty"
+1939 0 0 "translated_3ds_modifier_stack"
+1940 0 0 "object"
+1941 149 103 "poke"
+1942 0 0 "translated_3ds_modifier_stack"
+1943 0 0 "object"
+1944 150 103 "element"
+1945 151 103 "level"
+1946 157 103 "peer"
+1947 0 0 "translated_3ds_modifier_stack"
+1948 0 0 "object"
+1949 158 103 "level"
+1950 168 103 "remove"
+1951 0 0 "translated_3ds_modifier_stack"
+1952 0 0 "object"
+1953 169 103 "level"
+1954 175 103 "counter"
+1955 188 103 "collapsed_modifier"
+1956 0 0 "translated_3ds_modifier_stack"
+1957 0 0 "object"
+1958 189 103 "modifier"
+1959 192 103 "active"
+1960 196 103 "activatable"
+1961 208 103 "collapsable"
+1962 220 103 "collapse_level"
+1963 0 0 "translated_3ds_modifier_stack"
+1964 0 0 "object"
+1965 221 103 "level"
+1966 223 103 "modifier"
+1967 224 103 "active"
+1968 228 103 "activatable"
+1969 243 103 "collapsable"
+1970 245 103 "argument"
+1971 273 103 "collapse"
+1972 0 0 "translated_3ds_modifier_stack"
+1973 0 0 "object"
+1974 274 103 "level"
+1975 284 103 "collapsed"
+1976 0 0 "translated_3ds_modifier_stack"
+1977 0 0 "object"
+1978 295 103 "instance"
+1979 0 0 "translated_3ds_modifier_stack"
+1980 0 0 "object"
+1981 303 103 "renderable"
+1982 308 103 "recycleable"
+1983 322 103 "modifier_stack"
+1984 18 107 "translated_3ds_sliceable_object"
+1985 50 107 "slice_on"
+1986 51 107 "slice_from"
+1987 52 107 "slice_to"
+1988 59 107 "new"
+1989 0 0 "translated_3ds_sliceable_object"
+1990 0 0 "translated_3ds_texturable_object"
+1991 0 0 "translated_3ds_object"
+1992 0 0 "translated_3ds_modifier"
+1993 0 0 "object"
+1994 63 107 "slice_on"
+1995 64 107 "slice_from"
+1996 65 107 "slice_to"
+1997 69 107 "gen_mapping_coords"
+1998 94 107 "slice"
+1999 0 0 "translated_3ds_sliceable_object"
+2000 0 0 "translated_3ds_texturable_object"
+2001 0 0 "translated_3ds_object"
+2002 0 0 "translated_3ds_modifier"
+2003 0 0 "object"
+2004 95 107 "slice_from"
+2005 96 107 "slice_to"
+2006 111 107 "to_string"
+2007 0 0 "translated_3ds_sliceable_object"
+2008 0 0 "translated_3ds_texturable_object"
+2009 0 0 "translated_3ds_object"
+2010 0 0 "translated_3ds_modifier"
+2011 0 0 "object"
+2012 38 110 "get_quad_mesh_topology"
+2013 39 110 "reversed"
+2014 41 110 "mesh_topology"
+2015 93 110 "get_triangle_fan_mesh_topology"
+2016 94 110 "sides"
+2017 96 110 "open"
+2018 97 110 "reversed"
+2019 99 110 "mesh_topology"
+2020 100 110 "vertices"
+2021 100 110 "edges"
+2022 100 110 "faces"
+2023 115 110 "edge"
+2024 116 110 "side"
+2025 140 110 "face"
+2026 141 110 "face_index"
+2027 142 110 "edge_index"
+2028 20 111 "get_polygon_normal"
+2029 21 111 "vertices"
+2030 23 111 "directions"
+2031 24 111 "normal"
+2032 28 111 "counter"
+2033 35 111 "direction"
+2034 41 111 "counter"
+2035 283 109 "get_quad_mesh"
+2036 284 109 "point1"
+2037 284 109 "point2"
+2038 284 109 "point3"
+2039 284 109 "point4"
+2040 288 109 "smoothing"
+2041 289 109 "one_sided"
+2042 290 109 "reversed"
+2043 294 109 "textured"
+2044 295 109 "mapping"
+2045 297 109 "mesh"
+2046 298 109 "vertices"
+2047 299 109 "normals"
+2048 300 109 "texcoords"
+2049 301 109 "normal"
+2050 302 109 "side1"
+2051 303 109 "side2"
+2052 321 109 "counter"
+2053 25 108 "translated_3ds_cylinder"
+2054 105 108 "radius"
+2055 106 108 "height"
+2056 110 108 "height_segments"
+2057 111 108 "cap_segments"
+2058 112 108 "sides"
+2059 113 108 "smooth"
+2060 118 108 "capping"
+2061 119 108 "slice_capping"
+2062 124 108 "next"
+2063 128 108 "free_list"
+2064 136 108 "new"
+2065 0 0 "translated_3ds_cylinder"
+2066 0 0 "translated_3ds_sliceable_object"
+2067 0 0 "translated_3ds_texturable_object"
+2068 0 0 "translated_3ds_object"
+2069 0 0 "translated_3ds_modifier"
+2070 0 0 "object"
+2071 140 108 "radius"
+2072 141 108 "height"
+2073 145 108 "height_segments"
+2074 146 108 "cap_segments"
+2075 147 108 "sides"
+2076 148 108 "smooth"
+2077 152 108 "slice_on"
+2078 153 108 "slice_from"
+2079 154 108 "slice_to"
+2080 158 108 "gen_mapping_coords"
+2081 163 108 "capping"
+2082 164 108 "slice_capping"
+2083 211 108 "set"
+2084 0 0 "translated_3ds_cylinder"
+2085 0 0 "translated_3ds_sliceable_object"
+2086 0 0 "translated_3ds_texturable_object"
+2087 0 0 "translated_3ds_object"
+2088 0 0 "translated_3ds_modifier"
+2089 0 0 "object"
+2090 215 108 "radius"
+2091 216 108 "height"
+2092 220 108 "height_segments"
+2093 221 108 "cap_segments"
+2094 222 108 "sides"
+2095 223 108 "smooth"
+2096 227 108 "slice_on"
+2097 228 108 "slice_from"
+2098 229 108 "slice_to"
+2099 233 108 "gen_mapping_coords"
+2100 238 108 "capping"
+2101 239 108 "slice_capping"
+2102 279 108 "collapsed"
+2103 0 0 "translated_3ds_cylinder"
+2104 0 0 "translated_3ds_sliceable_object"
+2105 0 0 "translated_3ds_texturable_object"
+2106 0 0 "translated_3ds_object"
+2107 0 0 "translated_3ds_modifier"
+2108 0 0 "object"
+2109 280 108 "editable_mesh"
+2110 284 108 "umin"
+2111 284 108 "umax"
+2112 284 108 "uspan"
+2113 311 108 "rows"
+2114 312 108 "columns"
+2115 317 108 "vertex_grid"
+2116 318 108 "normal_grid"
+2117 322 108 "row"
+2118 323 108 "t"
+2119 324 108 "h"
+2120 326 108 "column"
+2121 327 108 "s"
+2122 328 108 "u"
+2123 355 108 "cap1"
+2124 355 108 "cap2"
+2125 362 108 "row"
+2126 363 108 "t"
+2127 364 108 "r"
+2128 366 108 "column"
+2129 367 108 "s"
+2130 368 108 "u"
+2131 398 108 "face1"
+2132 398 108 "face2"
+2139 438 108 "get"
+2140 443 108 "next"
+2141 455 108 "recycle"
+2133 0 0 "translated_3ds_cylinder"
+2134 0 0 "translated_3ds_sliceable_object"
+2135 0 0 "translated_3ds_texturable_object"
+2136 0 0 "translated_3ds_object"
+2137 0 0 "translated_3ds_modifier"
+2138 0 0 "object"
+2142 472 108 "translated_3ds_cylinder"
+2143 476 108 "radius"
+2144 477 108 "height"
+2145 481 108 "height_segments"
+2146 482 108 "cap_segments"
+2147 483 108 "sides"
+2148 484 108 "smooth"
+2149 488 108 "slice_on"
+2150 489 108 "slice_from"
+2151 490 108 "slice_to"
+2152 494 108 "gen_mapping_coords"
+2153 499 108 "capping"
+2154 500 108 "slice_capping"
+2155 504 108 "translated_3ds_cylinder"
+2156 21 118 "get_triangle_fan_mesh"
+2157 22 118 "vertices"
+2158 23 118 "normals"
+2159 27 118 "open"
+2160 31 118 "smoothing"
+2161 32 118 "one_sided"
+2162 33 118 "reversed"
+2163 38 118 "texcoords"
+2164 38 118 "textured"
+2165 39 118 "mapping"
+2166 41 118 "mesh"
+2167 42 118 "perimeter_vertices"
+2168 43 118 "sides"
+2169 60 118 "normal"
+2170 66 118 "n"
+2171 23 117 "translated_3ds_sphere"
+2172 105 117 "radius"
+2173 106 117 "hemi"
+2174 107 117 "base_to_pivot"
+2175 111 117 "segments"
+2176 112 117 "squash"
+2177 113 117 "smooth"
+2178 118 117 "capping"
+2179 119 117 "hemi_capping"
+2180 120 117 "slice_capping"
+2181 125 117 "next"
+2182 129 117 "free_list"
+2183 137 117 "new"
+2184 0 0 "translated_3ds_sphere"
+2185 0 0 "translated_3ds_sliceable_object"
+2186 0 0 "translated_3ds_texturable_object"
+2187 0 0 "translated_3ds_object"
+2188 0 0 "translated_3ds_modifier"
+2189 0 0 "object"
+2190 141 117 "radius"
+2191 142 117 "hemi"
+2192 143 117 "base_to_pivot"
+2193 147 117 "segments"
+2194 148 117 "squash"
+2195 149 117 "smooth"
+2196 153 117 "slice_on"
+2197 154 117 "slice_from"
+2198 155 117 "slice_to"
+2199 159 117 "gen_mapping_coords"
+2200 164 117 "capping"
+2201 165 117 "hemi_capping"
+2202 166 117 "slice_capping"
+2203 214 117 "set"
+2204 0 0 "translated_3ds_sphere"
+2205 0 0 "translated_3ds_sliceable_object"
+2206 0 0 "translated_3ds_texturable_object"
+2207 0 0 "translated_3ds_object"
+2208 0 0 "translated_3ds_modifier"
+2209 0 0 "object"
+2210 218 117 "radius"
+2211 219 117 "hemi"
+2212 220 117 "base_to_pivot"
+2213 224 117 "segments"
+2214 225 117 "squash"
+2215 226 117 "smooth"
+2216 230 117 "slice_on"
+2217 231 117 "slice_from"
+2218 232 117 "slice_to"
+2219 236 117 "gen_mapping_coords"
+2220 241 117 "capping"
+2221 242 117 "hemi_capping"
+2222 243 117 "slice_capping"
+2223 284 117 "collapsed"
+2224 0 0 "translated_3ds_sphere"
+2225 0 0 "translated_3ds_sliceable_object"
+2226 0 0 "translated_3ds_texturable_object"
+2227 0 0 "translated_3ds_object"
+2228 0 0 "translated_3ds_modifier"
+2229 0 0 "object"
+2230 285 117 "editable_mesh"
+2231 289 117 "umin"
+2232 289 117 "umax"
+2233 289 117 "uspan"
+2234 290 117 "vmin"
+2235 290 117 "vmax"
+2236 290 117 "vspan"
+2237 291 117 "z"
+2238 339 117 "rows"
+2239 340 117 "columns"
+2240 345 117 "vertex_grid"
+2241 346 117 "normal_grid"
+2242 350 117 "row"
+2243 351 117 "t"
+2244 352 117 "v"
+2245 354 117 "column"
+2246 355 117 "s"
+2247 356 117 "u"
+2248 357 117 "point"
+2249 384 117 "face1"
+2250 385 117 "face2"
+2251 386 117 "hemi_vertex"
+2252 398 117 "row"
+2253 425 117 "row"
+2254 436 117 "face"
+2255 439 117 "column"
+2256 450 117 "face"
+2257 453 117 "column"
+2264 480 117 "get"
+2265 485 117 "next"
+2266 497 117 "recycle"
+2258 0 0 "translated_3ds_sphere"
+2259 0 0 "translated_3ds_sliceable_object"
+2260 0 0 "translated_3ds_texturable_object"
+2261 0 0 "translated_3ds_object"
+2262 0 0 "translated_3ds_modifier"
+2263 0 0 "object"
+2267 514 117 "translated_3ds_sphere"
+2268 518 117 "radius"
+2269 519 117 "hemi"
+2270 520 117 "base_to_pivot"
+2271 524 117 "segments"
+2272 525 117 "squash"
+2273 526 117 "smooth"
+2274 530 117 "slice_on"
+2275 531 117 "slice_from"
+2276 532 117 "slice_to"
+2277 536 117 "gen_mapping_coords"
+2278 541 117 "capping"
+2279 542 117 "hemi_capping"
+2280 543 117 "slice_capping"
+2281 547 117 "translated_3ds_sphere"
+2282 25 122 "translated_3ds_torus"
+2283 110 122 "radius"
+2284 111 122 "radius2"
+2285 112 122 "rotation"
+2286 113 122 "twist"
+2287 117 122 "segments"
+2288 118 122 "sides"
+2289 119 122 "smoothing"
+2290 124 122 "capping"
+2291 125 122 "slice_from2"
+2292 126 122 "slice_to2"
+2293 131 122 "next"
+2294 135 122 "free_list"
+2295 143 122 "new"
+2296 0 0 "translated_3ds_torus"
+2297 0 0 "translated_3ds_sliceable_object"
+2298 0 0 "translated_3ds_texturable_object"
+2299 0 0 "translated_3ds_object"
+2300 0 0 "translated_3ds_modifier"
+2301 0 0 "object"
+2302 147 122 "radius"
+2303 148 122 "radius2"
+2304 149 122 "rotation"
+2305 150 122 "twist"
+2306 154 122 "segments"
+2307 155 122 "sides"
+2308 156 122 "smoothing"
+2309 160 122 "slice_on"
+2310 161 122 "slice_from"
+2311 162 122 "slice_to"
+2312 166 122 "gen_mapping_coords"
+2313 171 122 "capping"
+2314 172 122 "slice_from2"
+2315 173 122 "slice_to2"
+2316 222 122 "set"
+2317 0 0 "translated_3ds_torus"
+2318 0 0 "translated_3ds_sliceable_object"
+2319 0 0 "translated_3ds_texturable_object"
+2320 0 0 "translated_3ds_object"
+2321 0 0 "translated_3ds_modifier"
+2322 0 0 "object"
+2323 226 122 "radius"
+2324 227 122 "radius2"
+2325 228 122 "rotation"
+2326 229 122 "twist"
+2327 233 122 "segments"
+2328 234 122 "sides"
+2329 235 122 "smoothing"
+2330 239 122 "slice_on"
+2331 240 122 "slice_from"
+2332 241 122 "slice_to"
+2333 245 122 "gen_mapping_coords"
+2334 250 122 "capping"
+2335 251 122 "slice_from2"
+2336 252 122 "slice_to2"
+2337 294 122 "collapsed"
+2338 0 0 "translated_3ds_torus"
+2339 0 0 "translated_3ds_sliceable_object"
+2340 0 0 "translated_3ds_texturable_object"
+2341 0 0 "translated_3ds_object"
+2342 0 0 "translated_3ds_modifier"
+2343 0 0 "object"
+2344 295 122 "editable_mesh"
+2345 299 122 "umin"
+2346 299 122 "umax"
+2347 299 122 "uspan"
+2348 300 122 "vmin"
+2349 300 122 "vmax"
+2350 300 122 "vspan"
+2351 347 122 "rows"
+2352 348 122 "columns"
+2353 353 122 "vertex_grid"
+2354 354 122 "normal_grid"
+2355 358 122 "row"
+2356 359 122 "t"
+2357 360 122 "v"
+2358 362 122 "column"
+2359 363 122 "s"
+2360 364 122 "u"
+2361 368 122 "point"
+2362 372 122 "center"
+2363 397 122 "face1"
+2364 398 122 "face2"
+2365 402 122 "row"
+2366 419 122 "face1"
+2367 420 122 "face2"
+2368 424 122 "row"
+2375 456 122 "get"
+2376 461 122 "next"
+2377 473 122 "recycle"
+2369 0 0 "translated_3ds_torus"
+2370 0 0 "translated_3ds_sliceable_object"
+2371 0 0 "translated_3ds_texturable_object"
+2372 0 0 "translated_3ds_object"
+2373 0 0 "translated_3ds_modifier"
+2374 0 0 "object"
+2378 490 122 "translated_3ds_torus"
+2379 494 122 "radius"
+2380 495 122 "radius2"
+2381 496 122 "rotation"
+2382 497 122 "twist"
+2383 501 122 "segments"
+2384 502 122 "sides"
+2385 503 122 "smoothing"
+2386 507 122 "slice_on"
+2387 508 122 "slice_from"
+2388 509 122 "slice_to"
+2389 513 122 "gen_mapping_coords"
+2390 518 122 "capping"
+2391 519 122 "slice_from2"
+2392 520 122 "slice_to2"
+2393 524 122 "translated_3ds_torus"
+2394 22 121 "translated_3ds_chamfer_cyl"
+2395 104 121 "radius"
+2396 105 121 "height"
+2397 106 121 "fillet"
+2398 110 121 "height_segments"
+2399 111 121 "fillet_segments"
+2400 112 121 "sides"
+2401 113 121 "cap_segments"
+2402 114 121 "smooth"
+2403 119 121 "capping"
+2404 124 121 "next"
+2405 128 121 "free_list"
+2406 136 121 "new"
+2407 0 0 "translated_3ds_chamfer_cyl"
+2408 0 0 "translated_3ds_sliceable_object"
+2409 0 0 "translated_3ds_texturable_object"
+2410 0 0 "translated_3ds_object"
+2411 0 0 "translated_3ds_modifier"
+2412 0 0 "object"
+2413 140 121 "radius"
+2414 141 121 "height"
+2415 142 121 "fillet"
+2416 146 121 "height_segments"
+2417 147 121 "fillet_segments"
+2418 148 121 "sides"
+2419 149 121 "cap_segments"
+2420 150 121 "smooth"
+2421 154 121 "slice_on"
+2422 155 121 "slice_from"
+2423 156 121 "slice_to"
+2424 160 121 "gen_mapping_coords"
+2425 165 121 "capping"
+2426 213 121 "set"
+2427 0 0 "translated_3ds_chamfer_cyl"
+2428 0 0 "translated_3ds_sliceable_object"
+2429 0 0 "translated_3ds_texturable_object"
+2430 0 0 "translated_3ds_object"
+2431 0 0 "translated_3ds_modifier"
+2432 0 0 "object"
+2433 217 121 "radius"
+2434 218 121 "height"
+2435 219 121 "fillet"
+2436 223 121 "height_segments"
+2437 224 121 "fillet_segments"
+2438 225 121 "sides"
+2439 226 121 "cap_segments"
+2440 227 121 "smooth"
+2441 231 121 "slice_on"
+2442 232 121 "slice_from"
+2443 233 121 "slice_to"
+2444 237 121 "gen_mapping_coords"
+2445 242 121 "capping"
+2446 283 121 "collapsed"
+2447 0 0 "translated_3ds_chamfer_cyl"
+2448 0 0 "translated_3ds_sliceable_object"
+2449 0 0 "translated_3ds_texturable_object"
+2450 0 0 "translated_3ds_object"
+2451 0 0 "translated_3ds_modifier"
+2452 0 0 "object"
+2453 284 121 "editable_mesh"
+2454 285 121 "part_mesh"
+2455 288 121 "part_trans"
+2456 291 121 "translated_3ds_cylinder"
+2457 292 121 "translated_3ds_torus"
+2464 433 121 "get"
+2465 438 121 "next"
+2466 450 121 "recycle"
+2458 0 0 "translated_3ds_chamfer_cyl"
+2459 0 0 "translated_3ds_sliceable_object"
+2460 0 0 "translated_3ds_texturable_object"
+2461 0 0 "translated_3ds_object"
+2462 0 0 "translated_3ds_modifier"
+2463 0 0 "object"
+2467 467 121 "translated_3ds_chamfer_cyl"
+2468 471 121 "radius"
+2469 472 121 "height"
+2470 473 121 "fillet"
+2471 477 121 "height_segments"
+2472 478 121 "fillet_segments"
+2473 479 121 "sides"
+2474 480 121 "cap_segments"
+2475 481 121 "smooth"
+2476 485 121 "slice_on"
+2477 486 121 "slice_from"
+2478 487 121 "slice_to"
+2479 491 121 "gen_mapping_coords"
+2480 496 121 "capping"
+2481 500 121 "translated_3ds_chamfer_cyl"
+2482 26 123 "translated_3ds_cone"
+2483 112 123 "radius1"
+2484 113 123 "radius2"
+2485 114 123 "height"
+2486 118 123 "height_segments"
+2487 119 123 "cap_segments"
+2488 120 123 "sides"
+2489 121 123 "smooth"
+2490 126 123 "capping"
+2491 127 123 "capping1"
+2492 128 123 "capping2"
+2493 129 123 "slice_capping"
+2494 134 123 "next"
+2495 138 123 "free_list"
+2496 146 123 "new"
+2497 0 0 "translated_3ds_cone"
+2498 0 0 "translated_3ds_sliceable_object"
+2499 0 0 "translated_3ds_texturable_object"
+2500 0 0 "translated_3ds_object"
+2501 0 0 "translated_3ds_modifier"
+2502 0 0 "object"
+2503 150 123 "radius1"
+2504 151 123 "radius2"
+2505 152 123 "height"
+2506 156 123 "height_segments"
+2507 157 123 "cap_segments"
+2508 158 123 "sides"
+2509 159 123 "smooth"
+2510 163 123 "slice_on"
+2511 164 123 "slice_from"
+2512 165 123 "slice_to"
+2513 169 123 "gen_mapping_coords"
+2514 174 123 "capping"
+2515 175 123 "capping1"
+2516 176 123 "capping2"
+2517 177 123 "slice_capping"
+2518 227 123 "set"
+2519 0 0 "translated_3ds_cone"
+2520 0 0 "translated_3ds_sliceable_object"
+2521 0 0 "translated_3ds_texturable_object"
+2522 0 0 "translated_3ds_object"
+2523 0 0 "translated_3ds_modifier"
+2524 0 0 "object"
+2525 231 123 "radius1"
+2526 232 123 "radius2"
+2527 233 123 "height"
+2528 237 123 "height_segments"
+2529 238 123 "cap_segments"
+2530 239 123 "sides"
+2531 240 123 "smooth"
+2532 244 123 "slice_on"
+2533 245 123 "slice_from"
+2534 246 123 "slice_to"
+2535 250 123 "gen_mapping_coords"
+2536 255 123 "capping"
+2537 256 123 "capping1"
+2538 257 123 "capping2"
+2539 258 123 "slice_capping"
+2540 301 123 "collapsed"
+2541 0 0 "translated_3ds_cone"
+2542 0 0 "translated_3ds_sliceable_object"
+2543 0 0 "translated_3ds_texturable_object"
+2544 0 0 "translated_3ds_object"
+2545 0 0 "translated_3ds_modifier"
+2546 0 0 "object"
+2547 302 123 "editable_mesh"
+2548 306 123 "umin"
+2549 306 123 "umax"
+2550 306 123 "uspan"
+2551 333 123 "rows"
+2552 334 123 "columns"
+2553 342 123 "vertex_grid"
+2554 343 123 "normal_grid"
+2555 344 123 "normal"
+2556 348 123 "row"
+2557 349 123 "t"
+2558 350 123 "r"
+2559 351 123 "h"
+2560 353 123 "column"
+2561 354 123 "s"
+2562 355 123 "u"
+2563 383 123 "face"
+2564 385 123 "column"
+2565 396 123 "face"
+2566 398 123 "column"
+2567 417 123 "face"
+2568 419 123 "column"
+2569 430 123 "face"
+2570 432 123 "column"
+2571 450 123 "face1"
+2572 450 123 "face2"
+2579 493 123 "get"
+2580 498 123 "next"
+2581 510 123 "recycle"
+2573 0 0 "translated_3ds_cone"
+2574 0 0 "translated_3ds_sliceable_object"
+2575 0 0 "translated_3ds_texturable_object"
+2576 0 0 "translated_3ds_object"
+2577 0 0 "translated_3ds_modifier"
+2578 0 0 "object"
+2582 527 123 "translated_3ds_cone"
+2583 531 123 "radius1"
+2584 532 123 "radius2"
+2585 533 123 "height"
+2586 537 123 "height_segments"
+2587 538 123 "cap_segments"
+2588 539 123 "sides"
+2589 540 123 "smooth"
+2590 544 123 "slice_on"
+2591 545 123 "slice_from"
+2592 546 123 "slice_to"
+2593 550 123 "gen_mapping_coords"
+2594 555 123 "capping"
+2595 556 123 "capping1"
+2596 557 123 "capping2"
+2597 558 123 "slice_capping"
+2598 562 123 "translated_3ds_cone"
+2599 23 196 "translated_3ds_tube"
+2600 103 196 "radius1"
+2601 104 196 "radius2"
+2602 105 196 "height"
+2603 109 196 "height_segments"
+2604 110 196 "cap_segments"
+2605 111 196 "sides"
+2606 112 196 "smooth"
+2607 117 196 "capping"
+2608 122 196 "next"
+2609 126 196 "free_list"
+2610 134 196 "new"
+2611 0 0 "translated_3ds_tube"
+2612 0 0 "translated_3ds_sliceable_object"
+2613 0 0 "translated_3ds_texturable_object"
+2614 0 0 "translated_3ds_object"
+2615 0 0 "translated_3ds_modifier"
+2616 0 0 "object"
+2617 138 196 "radius1"
+2618 139 196 "radius2"
+2619 140 196 "height"
+2620 144 196 "height_segments"
+2621 145 196 "cap_segments"
+2622 146 196 "sides"
+2623 147 196 "smooth"
+2624 151 196 "slice_on"
+2625 152 196 "slice_from"
+2626 153 196 "slice_to"
+2627 157 196 "gen_mapping_coords"
+2628 162 196 "capping"
+2629 209 196 "set"
+2630 0 0 "translated_3ds_tube"
+2631 0 0 "translated_3ds_sliceable_object"
+2632 0 0 "translated_3ds_texturable_object"
+2633 0 0 "translated_3ds_object"
+2634 0 0 "translated_3ds_modifier"
+2635 0 0 "object"
+2636 213 196 "radius1"
+2637 214 196 "radius2"
+2638 215 196 "height"
+2639 219 196 "height_segments"
+2640 220 196 "cap_segments"
+2641 221 196 "sides"
+2642 222 196 "smooth"
+2643 226 196 "slice_on"
+2644 227 196 "slice_from"
+2645 228 196 "slice_to"
+2646 232 196 "gen_mapping_coords"
+2647 237 196 "capping"
+2648 277 196 "collapsed"
+2649 0 0 "translated_3ds_tube"
+2650 0 0 "translated_3ds_sliceable_object"
+2651 0 0 "translated_3ds_texturable_object"
+2652 0 0 "translated_3ds_object"
+2653 0 0 "translated_3ds_modifier"
+2654 0 0 "object"
+2655 278 196 "editable_mesh"
+2656 282 196 "umin"
+2657 282 196 "umax"
+2658 282 196 "uspan"
+2659 310 196 "temp"
+2660 321 196 "rows"
+2661 322 196 "columns"
+2662 325 196 "vertex_grid1"
+2663 326 196 "vertex_grid2"
+2664 327 196 "normal_grid"
+2665 331 196 "row"
+2666 332 196 "t"
+2667 333 196 "h"
+2668 335 196 "column"
+2669 336 196 "s"
+2670 337 196 "u"
+2671 370 196 "cap1"
+2672 371 196 "cap2"
+2673 373 196 "row"
+2674 374 196 "t"
+2675 375 196 "r"
+2676 377 196 "column"
+2677 378 196 "s"
+2678 379 196 "u"
+2679 412 196 "face1"
+2680 412 196 "face2"
+2681 453 196 "get"
+2682 458 196 "next"
+2683 470 196 "recycle"
+2684 0 0 "translated_3ds_tube"
+2685 0 0 "translated_3ds_sliceable_object"
+2686 0 0 "translated_3ds_texturable_object"
+2687 0 0 "translated_3ds_object"
+2688 0 0 "translated_3ds_modifier"
+2689 0 0 "object"
+2690 487 196 "translated_3ds_tube"
+2691 491 196 "radius1"
+2692 492 196 "radius2"
+2693 493 196 "height"
+2694 497 196 "height_segments"
+2695 498 196 "cap_segments"
+2696 499 196 "sides"
+2697 500 196 "smooth"
+2698 504 196 "slice_on"
+2699 505 196 "slice_from"
+2700 506 196 "slice_to"
+2701 510 196 "gen_mapping_coords"
+2702 515 196 "capping"
+2703 519 196 "translated_3ds_tube"
+2704 19 244 "shape_hits_shape"
+2705 20 244 "thing1"
+2706 21 244 "thing2"
+2707 23 244 "point"
+2708 24 244 "normal"
+2709 28 244 "ray_hits_shape"
+2710 29 244 "location"
+2711 29 244 "direction"
+2712 30 244 "thing"
+2713 32 244 "point"
+2714 33 244 "normal"
+2715 19 245 "closest_to_point"
+2716 20 245 "point"
+2717 21 245 "thing"
+2718 25 245 "closest_to_plane"
+2719 26 245 "point"
+2720 26 245 "normal"
+2721 27 245 "thing"
+2722 18 325 "char_down"
+2723 19 325 "ch"
+2724 31 325 "check_keys"
+2725 20 326 "in_window"
+2726 21 326 "v"
+2727 23 326 "x"
+2728 24 326 "y"
+2729 32 326 "mouse_tracker"
+2730 40 326 "up"
+2731 41 326 "down"
+2732 42 326 "dragged"
+2733 43 326 "location"
+2734 44 326 "direction"
+2735 48 326 "button_number"
+2736 49 326 "previous_down"
+2737 50 326 "previous_mouse"
+2738 52 326 "new"
+2739 0 0 "mouse_tracker"
+2740 0 0 "object"
+2741 53 326 "button_number"
+2742 59 326 "update"
+2743 0 0 "mouse_tracker"
+2744 0 0 "object"
+2745 60 326 "current_mouse"
+2746 61 326 "current_down"
+2747 92 326 "camera_tracker"
+2748 103 326 "field_of_view"
+2749 104 326 "distance"
+2750 106 326 "new"
+2751 0 0 "camera_tracker"
+2752 0 0 "trans"
+2753 0 0 "axes"
+2754 119 326 "zoom"
+2755 0 0 "camera_tracker"
+2756 0 0 "trans"
+2757 0 0 "axes"
+2758 120 326 "factor"
+2759 126 326 "place"
+2760 0 0 "camera_tracker"
+2761 0 0 "trans"
+2762 0 0 "axes"
+2763 133 326 "roll"
+2764 0 0 "camera_tracker"
+2765 0 0 "trans"
+2766 0 0 "axes"
+2767 134 326 "angle"
+2768 136 326 "x"
+2769 136 326 "y"
+2770 147 326 "interaction"
+2771 164 326 "point"
+2772 165 326 "distance"
+2773 166 326 "direction"
+2774 167 326 "camera"
+2775 168 326 "trans"
+2776 172 326 "mouse"
+2777 173 326 "rotate_mouse"
+2778 174 326 "pan_mouse"
+2779 175 326 "zoom_roll_mouse"
+2780 179 326 "roll_angle"
+2781 180 326 "rolling"
+2782 185 326 "factor"
+2783 188 326 "new"
+2784 0 0 "interaction"
+2785 0 0 "object"
+2786 189 326 "point"
+2787 191 326 "rotate_button"
+2788 192 326 "pan_button"
+2789 193 326 "zoom_roll_button"
+2790 198 326 "rolling"
+2791 230 326 "update_object"
+2792 0 0 "interaction"
+2793 0 0 "object"
+2794 231 326 "x"
+2795 231 326 "y"
+2796 231 326 "angle"
+2797 232 326 "trans_point"
+2798 233 326 "right_vector2"
+2799 233 326 "line_of_sight2"
+2800 233 326 "up_vector2"
+2801 271 326 "update_camera"
+2802 0 0 "interaction"
+2803 0 0 "object"
+2804 276 326 "x"
+2805 277 326 "y"
+2806 278 326 "diagonal"
+2807 279 326 "x_factor"
+2808 280 326 "y_factor"
+2809 292 326 "x"
+2810 293 326 "y"
+2811 307 326 "x"
+2812 309 326 "y"
+2813 312 326 "angle"
+2814 330 326 "update"
+2815 0 0 "interaction"
+2816 0 0 "object"
+2817 118 328 "unit_trans_stack"
+2818 119 328 "levels"
+2819 122 328 "trans_stack"
+2820 131 328 "max_transformations"
+2821 132 328 "trans_stack"
+2822 133 328 "shader_trans_stack"
+2823 139 328 "trans_level"
+2824 16 330 "default_lights"
+2825 23 329 "mouse_controlled_shape"
+2826 24 329 "thing"
+2827 25 329 "environment"
+2828 26 329 "stationary_environment"
+2829 27 329 "point"
+2830 28 329 "action"
+2831 29 329 "title"
+2832 31 329 "frames"
+2833 35 329 "interaction"
+2834 35 329 "done"
+2835 37 329 "shape_picture"
+2836 10 1 "shapes1"
+2837 57 1 "shapes2"
+2838 106 1 "slices_anim"
+2839 111 1 "scene"
+3618
+1 29
+2 36
+3 19
+4 20
+5 21
+6 25
+7 26
+8 27
+9 31
+10 32
+11 33
+12 18
+13 19
+14 20
+15 21
+16 22
+17 23
+18 25
+19 26
+20 27
+21 30
+22 35
+23 40
+24 37
+25 25
+26 26
+27 26
+29 28
+30 29
+31 31
+32 32
+33 35
+34 37
+35 38
+36 40
+37 56
+38 57
+39 57
+42 59
+43 59
+45 62
+46 34
+47 119
+48 126
+49 141
+50 142
+51 144
+52 22
+53 22
+55 24
+56 25
+57 28
+58 42
+59 42
+61 22
+62 23
+63 23
+65 24
+66 25
+67 26
+69 26
+70 28
+72 28
+73 37
+74 38
+75 38
+77 39
+78 40
+79 41
+81 41
+82 43
+84 43
+85 51
+86 53
+87 55
+91 55
+92 63
+93 65
+94 65
+98 75
+99 76
+100 77
+101 79
+102 80
+103 81
+104 93
+105 94
+106 95
+107 102
+108 103
+112 103
+113 104
+116 104
+117 105
+120 113
+124 114
+128 115
+109 126
+132 136
+133 137
+134 138
+135 143
+136 144
+137 145
+138 147
+139 148
+140 149
+141 154
+142 154
+150 156
+151 157
+152 158
+153 160
+154 161
+155 162
+156 167
+157 168
+158 169
+159 174
+160 175
+162 175
+163 176
+165 176
+166 177
+143 188
+145 188
+146 190
+148 190
+168 195
+169 195
+171 195
+173 195
+175 200
+176 210
+177 210
+178 210
+179 211
+180 211
+181 211
+182 212
+183 212
+184 212
+185 37
+186 39
+187 40
+188 51
+189 63
+190 64
+191 67
+196 68
+201 69
+206 70
+211 71
+216 72
+221 73
+226 74
+231 75
+236 76
+241 77
+246 78
+251 80
+252 91
+253 92
+254 93
+255 94
+256 97
+263 98
+270 99
+277 100
+284 101
+291 102
+298 104
+299 18
+300 18
+301 19
+302 19
+303 36
+304 36
+306 36
+308 36
+310 43
+311 43
+313 43
+315 43
+317 64
+318 64
+320 64
+322 66
+323 67
+325 67
+326 67
+328 67
+330 69
+331 77
+332 77
+334 77
+336 79
+337 80
+339 80
+340 80
+342 80
+344 82
+345 90
+346 90
+348 90
+350 90
+352 90
+354 91
+355 91
+357 91
+359 93
+360 102
+361 102
+363 102
+365 80
+366 81
+367 84
+368 85
+369 86
+370 89
+371 91
+373 92
+375 93
+376 102
+377 104
+378 105
+379 106
+380 109
+381 111
+383 112
+384 113
+385 127
+386 128
+387 129
+388 131
+389 135
+390 136
+391 139
+392 140
+393 141
+394 142
+395 143
+396 144
+397 146
+398 147
+399 150
+400 152
+401 158
+402 159
+403 162
+404 167
+405 168
+406 171
+408 172
+409 173
+411 173
+412 176
+413 181
+414 182
+415 185
+417 186
+418 187
+420 187
+421 190
+422 203
+423 204
+424 205
+425 207
+426 208
+427 211
+428 212
+429 215
+430 216
+431 218
+432 221
+433 223
+434 224
+436 227
+437 228
+439 230
+440 237
+441 238
+442 239
+444 240
+445 242
+446 245
+447 253
+448 254
+449 255
+451 256
+452 258
+453 261
+454 275
+455 276
+456 279
+458 281
+460 282
+461 283
+463 285
+464 292
+465 293
+466 296
+468 298
+470 299
+471 300
+473 302
+474 307
+475 311
+476 312
+478 313
+479 316
+480 43
+481 44
+482 45
+483 46
+485 47
+486 60
+487 61
+489 63
+490 63
+492 26
+493 28
+495 30
+496 31
+498 33
+499 34
+500 37
+501 38
+502 38
+504 39
+505 40
+508 40
+509 43
+510 44
+511 45
+512 46
+515 48
+516 64
+517 69
+518 70
+519 71
+520 72
+524 73
+525 74
+529 78
+531 80
+532 81
+533 86
+534 87
+536 87
+539 87
+541 89
+542 91
+543 92
+547 96
+548 100
+549 103
+550 105
+551 106
+552 108
+554 115
+555 115
+556 117
+557 118
+560 118
+562 120
+563 125
+564 126
+565 126
+567 127
+568 127
+572 128
+573 129
+574 132
+575 133
+576 135
+577 136
+578 138
+579 139
+580 142
+581 142
+583 143
+584 144
+585 144
+587 146
+588 147
+589 150
+590 156
+591 156
+595 157
+596 162
+597 168
+598 171
+602 172
+605 172
+608 173
+612 174
+615 174
+618 175
+622 176
+625 176
+628 177
+632 178
+633 18
+634 19
+635 21
+636 30
+637 31
+638 33
+639 23
+640 24
+641 89
+642 90
+643 92
+644 105
+645 106
+646 107
+650 113
+651 114
+652 124
+653 136
+654 143
+655 148
+656 153
+657 158
+658 170
+659 170
+662 171
+663 171
+666 172
+667 172
+670 173
+671 173
+674 174
+675 174
+678 175
+679 175
+682 182
+683 183
+686 184
+688 184
+691 185
+693 197
+697 198
+700 199
+701 209
+702 210
+706 211
+709 211
+711 212
+715 213
+718 213
+720 214
+721 19
+722 23
+724 23
+726 24
+729 27
+730 39
+731 41
+734 51
+735 51
+737 86
+738 87
+739 88
+740 89
+741 91
+743 92
+744 93
+745 94
+746 96
+747 105
+748 107
+750 113
+751 114
+753 114
+754 115
+756 115
+757 116
+758 117
+759 128
+760 135
+761 136
+764 136
+765 137
+768 137
+769 138
+772 138
+773 139
+776 145
+777 146
+784 146
+785 147
+788 147
+789 148
+792 148
+793 149
+796 156
+808 156
+809 157
+812 157
+813 158
+816 158
+817 159
+820 159
+821 160
+797 164
+798 164
+800 166
+801 167
+802 168
+803 170
+804 171
+805 172
+806 173
+824 181
+825 183
+827 184
+830 194
+778 204
+779 205
+831 216
+832 217
+833 218
+834 219
+835 220
+836 221
+837 222
+838 223
+839 224
+840 231
+842 232
+845 232
+846 233
+848 238
+850 239
+853 239
+854 249
+855 249
+856 249
+857 250
+858 250
+859 250
+860 251
+861 251
+862 251
+863 252
+864 252
+865 252
+866 257
+868 24
+869 25
+870 41
+871 46
+872 56
+874 56
+876 57
+877 59
+880 60
+881 61
+882 64
+883 41
+884 42
+885 43
+886 47
+887 48
+888 49
+889 50
+890 52
+891 53
+892 54
+893 56
+894 60
+895 29
+896 30
+897 31
+898 31
+899 32
+900 32
+901 37
+902 38
+903 39
+904 40
+905 40
+906 45
+907 46
+908 47
+909 48
+910 49
+911 49
+912 54
+913 55
+914 56
+915 57
+916 57
+917 62
+918 63
+919 64
+920 65
+921 66
+922 66
+923 71
+924 72
+925 73
+926 74
+927 75
+928 75
+929 85
+930 86
+931 91
+932 92
+933 93
+934 94
+935 94
+936 99
+937 100
+938 101
+939 102
+940 103
+941 103
+942 115
+943 116
+944 117
+945 134
+946 135
+947 136
+948 137
+949 138
+950 138
+951 139
+952 139
+953 144
+954 145
+955 146
+956 147
+957 176
+958 177
+959 178
+960 187
+961 208
+962 210
+963 211
+964 212
+965 222
+966 223
+967 232
+968 233
+969 234
+970 235
+971 236
+972 237
+973 238
+974 239
+975 240
+976 241
+977 242
+978 243
+979 244
+980 245
+981 246
+982 247
+983 248
+984 249
+985 250
+986 251
+987 252
+988 22
+989 24
+990 25
+991 26
+992 31
+993 32
+994 33
+995 38
+996 40
+997 41
+998 42
+999 43
+1000 34
+1001 36
+1002 23
+1003 24
+1004 25
+1005 35
+1006 36
+1007 37
+1008 75
+1009 79
+1010 80
+1011 81
+1012 85
+1013 86
+1014 90
+1015 91
+1016 95
+1017 96
+1018 97
+1019 101
+1020 102
+1021 106
+1022 107
+1023 111
+1024 118
+1025 118
+1026 118
+1027 119
+1028 119
+1029 119
+1030 120
+1031 120
+1032 120
+1033 124
+1034 124
+1035 124
+1036 125
+1037 125
+1038 125
+1039 129
+1040 129
+1041 129
+1042 130
+1043 130
+1044 130
+1045 134
+1046 134
+1047 134
+1048 176
+1049 181
+1050 182
+1051 183
+1052 184
+1053 188
+1054 189
+1055 190
+1056 194
+1057 195
+1058 199
+1059 200
+1060 204
+1061 205
+1062 206
+1063 208
+1066 209
+1067 210
+1068 211
+1069 212
+1070 213
+1071 214
+1072 215
+1073 220
+1074 221
+1075 222
+1076 223
+1079 223
+1080 224
+1081 225
+1083 228
+1084 228
+1087 228
+1090 229
+1091 230
+1092 231
+1093 235
+1094 32
+1095 36
+1096 37
+1097 41
+1098 42
+1099 43
+1100 47
+1101 48
+1102 49
+1103 55
+1104 56
+1105 57
+1106 58
+1107 59
+1108 60
+1109 61
+1110 62
+1111 63
+1112 64
+1113 65
+1114 72
+1115 73
+1116 74
+1117 75
+1118 23
+1119 24
+1120 25
+1121 26
+1122 27
+1123 28
+1124 35
+1125 36
+1126 67
+1127 25
+1128 26
+1129 27
+1130 27
+1131 28
+1132 28
+1133 29
+1135 36
+1136 37
+1137 38
+1138 39
+1139 40
+1140 41
+1141 42
+1142 43
+1143 44
+1145 20
+1146 25
+1147 19
+1148 23
+1151 49
+1152 52
+1153 54
+1158 55
+1162 56
+1166 57
+1170 62
+1171 66
+1175 67
+1179 68
+1183 25
+1184 19
+1185 29
+1186 30
+1187 30
+1189 32
+1190 111
+1191 112
+1192 113
+1194 113
+1195 114
+1196 115
+1197 119
+1198 120
+1199 121
+1200 125
+1201 126
+1202 127
+1203 128
+1206 128
+1207 129
+1208 130
+1210 133
+1211 133
+1214 133
+1217 134
+1218 135
+1219 136
+1220 141
+1221 142
+1225 142
+1226 143
+1227 143
+1229 145
+1230 146
+1232 146
+1233 147
+1234 55
+1235 39
+1236 28
+1237 54
+1238 58
+1239 70
+1240 80
+1241 62
+1242 65
+1243 66
+1244 67
+1245 67
+1249 70
+1250 71
+1251 71
+1255 75
+1256 77
+1257 91
+1258 95
+1259 96
+1260 97
+1261 98
+1262 98
+1266 102
+1267 103
+1268 104
+1269 104
+1273 109
+1274 111
+1275 125
+1276 126
+1277 127
+1281 127
+1282 128
+1284 129
+1285 192
+1286 193
+1287 195
+1288 196
+1289 197
+1290 199
+1291 212
+1292 225
+1293 228
+1294 229
+1295 230
+1296 233
+1297 235
+1298 249
+1299 250
+1300 251
+1301 252
+1302 253
+1305 253
+1306 253
+1307 253
+1308 255
+1309 340
+1310 340
+1312 107
+1313 107
+1315 108
+1317 114
+1319 115
+1321 127
+1322 128
+1323 129
+1325 138
+1326 138
+1328 138
+1330 139
+1332 150
+1333 151
+1335 152
+1337 152
+1338 166
+1340 167
+1341 167
+1343 169
+1345 169
+1347 102
+1348 103
+1360 104
+1363 116
+1364 117
+1366 117
+1367 118
+1369 119
+1372 119
+1374 126
+1375 127
+1377 127
+1378 128
+1380 129
+1383 129
+1385 136
+1386 137
+1388 137
+1389 138
+1391 139
+1394 139
+1396 152
+1397 154
+1400 161
+1401 162
+1403 162
+1404 163
+1406 164
+1409 164
+1349 176
+1350 177
+1352 177
+1355 178
+1356 178
+1411 190
+1412 191
+1414 191
+1415 192
+1417 192
+1418 193
+1421 193
+1423 193
+1424 196
+1425 206
+1426 206
+1428 215
+1429 216
+1431 216
+1432 217
+1434 217
+1436 218
+1438 229
+1439 230
+1441 230
+1442 234
+1443 234
+1445 236
+1446 237
+1448 237
+1449 238
+1451 238
+1452 241
+1453 251
+1454 252
+1456 252
+1457 253
+1459 254
+1461 254
+1463 50
+1464 53
+1467 57
+1470 29
+1471 85
+1472 85
+1483 87
+1487 91
+1488 92
+1490 92
+1491 93
+1493 102
+1494 102
+1496 103
+1497 104
+1473 108
+1474 109
+1479 110
+1481 110
+1499 120
+1500 120
+1502 121
+1503 121
+1505 124
+1507 124
+1508 125
+1510 126
+1513 126
+1515 128
+1517 129
+1520 141
+1523 147
+1524 147
+1526 148
+1529 150
+1531 150
+1533 156
+1534 156
+1536 157
+1537 158
+1539 158
+1542 160
+1544 160
+1475 170
+1476 170
+1546 41
+1547 49
+1548 51
+1549 61
+1550 73
+1551 47
+1552 51
+1553 61
+1554 63
+1557 64
+1558 75
+1559 77
+1560 78
+1561 79
+1562 91
+1563 93
+1564 97
+1565 97
+1569 101
+1570 102
+1571 104
+1575 105
+1576 111
+1577 115
+1578 116
+1579 118
+1580 44
+1581 52
+1582 53
+1583 54
+1585 55
+1586 68
+1587 69
+1590 80
+1591 81
+1592 82
+1593 83
+1595 84
+1596 87
+1597 93
+1598 94
+1599 95
+1601 96
+1602 107
+1603 108
+1604 54
+1605 58
+1606 103
+1607 108
+1608 118
+1609 119
+1610 120
+1611 131
+1612 136
+1613 146
+1614 147
+1615 152
+1616 153
+1617 154
+1618 169
+1619 172
+1621 174
+1622 174
+1624 178
+1625 180
+1626 184
+1627 188
+1628 193
+1629 194
+1630 197
+1631 206
+1632 209
+1634 211
+1635 211
+1637 215
+1638 219
+1639 220
+1640 224
+1641 229
+1642 230
+1643 233
+1644 243
+1645 247
+1646 247
+1648 251
+1649 255
+1650 259
+1651 260
+1652 264
+1653 265
+1654 268
+1655 272
+1656 273
+1658 274
+1660 274
+1661 276
+1662 282
+1663 286
+1664 286
+1666 290
+1667 292
+1668 293
+1669 297
+1670 301
+1671 304
+1672 308
+1673 309
+1675 310
+1677 310
+1678 312
+1679 315
+1680 326
+1681 331
+1682 331
+1684 332
+1685 333
+1687 334
+1688 350
+1689 353
+1691 355
+1692 356
+1693 358
+1694 363
+1695 364
+1696 365
+1697 369
+1698 370
+1699 374
+1700 375
+1702 376
+1704 376
+1705 378
+1706 389
+1707 390
+1709 394
+1710 394
+1713 404
+1714 409
+1715 419
+1716 420
+1717 426
+1718 437
+1719 438
+1720 439
+1721 447
+1724 447
+1725 74
+1726 75
+1727 79
+1728 87
+1729 88
+1730 89
+1731 91
+1732 92
+1733 94
+1752 95
+1753 96
+1734 107
+1735 108
+1736 109
+1737 111
+1738 112
+1739 116
+1740 117
+1741 118
+1742 119
+1743 124
+1744 125
+1745 126
+1746 128
+1747 129
+1754 141
+1755 142
+1756 143
+1757 144
+1758 147
+1759 148
+1760 149
+1761 152
+1762 154
+1763 167
+1765 168
+1766 169
+1769 170
+1771 171
+1772 172
+1775 184
+1776 185
+1780 194
+1781 194
+1783 204
+1784 204
+1786 205
+1787 207
+1788 207
+1789 208
+1790 208
+1791 208
+1792 209
+1793 209
+1794 209
+1795 210
+1796 210
+1797 210
+1798 240
+1799 241
+1801 241
+1802 242
+1803 242
+1804 244
+1805 246
+1806 247
+1808 255
+1809 256
+1810 257
+1811 262
+1814 262
+1815 50
+1816 51
+1817 59
+1818 60
+1819 62
+1820 63
+1821 65
+1837 66
+1838 67
+1822 78
+1823 79
+1824 81
+1825 82
+1826 86
+1827 87
+1829 89
+1830 94
+1831 95
+1833 97
+1839 108
+1840 113
+1841 117
+1843 118
+1844 119
+1845 123
+1846 130
+1847 131
+1848 132
+1849 133
+1850 135
+1851 142
+1854 144
+1855 145
+1856 146
+1857 149
+1858 154
+1860 155
+1861 157
+1862 158
+1863 159
+1866 159
+1867 162
+1868 172
+1869 173
+1870 173
+1871 173
+1872 173
+1873 173
+1874 173
+1875 173
+1876 179
+1877 180
+1878 181
+1879 182
+1880 184
+1881 196
+1882 196
+1884 197
+1885 199
+1886 199
+1887 200
+1888 200
+1889 200
+1890 201
+1892 202
+1893 202
+1894 202
+1895 203
+1897 233
+1898 234
+1900 234
+1901 235
+1902 235
+1903 237
+1904 239
+1905 240
+1907 248
+1908 249
+1909 254
+1912 254
+1913 104
+1914 105
+1915 109
+1916 110
+1917 111
+1918 122
+1919 123
+1920 127
+1921 128
+1922 129
+1923 131
+1936 132
+1937 133
+1938 134
+1939 135
+1940 136
+1924 150
+1925 151
+1926 155
+1927 156
+1928 157
+1929 159
+1930 163
+1931 164
+1932 168
+1933 169
+1934 170
+1941 181
+1942 182
+1943 184
+1944 184
+1946 185
+1948 198
+1951 210
+1954 222
+1958 226
+1959 227
+1960 231
+1961 232
+1962 233
+1963 244
+1964 245
+1966 255
+1967 263
+1968 264
+1969 265
+1970 268
+1971 277
+1972 278
+1973 279
+1974 281
+1975 284
+1976 290
+1977 291
+1979 293
+1980 294
+1981 294
+1984 297
+1985 307
+1986 317
+1987 317
+1989 319
+1991 320
+1993 321
+1994 321
+1995 322
+1996 323
+1997 323
+1998 326
+2000 327
+2001 328
+2002 328
+2003 331
+2005 381
+2006 382
+2007 386
+2008 387
+2009 388
+2010 392
+2012 393
+2013 394
+2014 395
+2015 396
+2016 397
+2017 408
+2018 409
+2020 409
+2021 410
+2022 410
+2023 412
+2024 412
+2026 414
+2027 415
+2029 423
+2030 424
+2031 426
+2032 428
+2034 430
+2035 431
+2036 433
+2037 435
+2039 441
+2042 441
+2043 64
+2045 66
+2048 78
+2050 80
+2053 90
+2055 92
+2057 103
+2059 103
+2061 104
+2064 105
+2066 106
+2067 116
+2068 120
+2069 121
+2070 122
+2071 123
+2072 124
+2073 125
+2074 129
+2076 130
+2077 131
+2078 132
+2079 133
+2080 134
+2081 141
+2082 142
+2083 144
+2084 145
+2085 147
+2086 148
+2087 153
+2088 154
+2089 155
+2090 156
+2092 157
+2093 158
+2094 162
+2095 163
+2097 165
+2098 170
+2099 171
+2101 173
+2102 178
+2103 179
+2105 181
+2106 189
+2107 189
+2108 190
+2113 192
+2114 197
+2115 199
+2116 200
+2117 201
+2118 202
+2119 203
+2120 204
+2121 208
+2123 209
+2124 210
+2125 211
+2126 212
+2127 219
+2128 220
+2129 224
+2130 225
+2131 226
+2133 227
+2134 228
+2135 232
+2136 233
+2137 234
+2138 236
+2139 237
+2140 241
+2141 242
+2142 246
+2144 251
+2145 255
+2146 260
+2147 261
+2148 268
+2149 268
+2150 269
+2154 271
+2155 279
+2156 280
+2157 281
+2158 283
+2159 283
+2160 286
+2162 286
+2163 286
+2165 287
+2166 287
+2168 291
+2169 292
+2170 293
+2171 296
+2172 306
+2173 306
+2174 307
+2176 309
+2178 66
+2179 71
+2180 75
+2181 84
+2182 86
+2183 87
+2184 87
+2185 89
+2186 101
+2187 102
+2188 103
+2190 104
+2193 117
+2194 119
+2197 131
+2198 133
+2201 143
+2202 144
+2203 145
+2205 146
+2209 152
+2210 153
+2211 157
+2212 158
+2213 159
+2214 172
+2215 182
+2216 182
+2218 182
+2219 182
+2220 183
+2221 185
+2223 185
+2224 196
+2225 200
+2226 201
+2227 203
+2228 207
+2229 207
+2231 216
+2232 217
+2233 218
+2234 220
+2236 220
+2237 226
+2238 227
+2239 229
+2240 100
+2241 104
+2242 108
+2243 117
+2244 119
+2245 120
+2246 120
+2247 124
+2259 133
+2260 135
+2272 137
+2261 146
+2262 147
+2264 148
+2265 150
+2267 150
+2268 151
+2269 153
+2251 161
+2252 163
+2248 170
+2250 172
+2275 179
+2276 180
+2279 182
+2281 189
+2282 190
+2285 191
+2286 199
+2287 203
+2288 204
+2289 205
+2290 206
+2292 211
+2293 213
+2295 213
+2296 214
+2300 216
+2303 223
+2305 234
+2306 235
+2308 235
+2309 236
+2311 237
+2312 238
+2314 239
+2317 251
+2318 252
+2320 252
+2321 253
+2323 254
+2324 255
+2326 256
+2329 261
+2330 262
+2331 263
+2333 264
+2334 265
+2336 265
+2337 267
+2338 267
+2340 267
+2342 268
+2343 269
+2345 269
+2346 270
+2348 270
+2349 273
+2350 275
+2351 278
+2352 290
+2353 290
+2354 292
+2357 292
+2359 293
+2366 295
+2367 305
+2368 306
+2370 306
+2371 307
+2373 308
+2374 309
+2376 310
+2378 320
+2379 330
+2380 331
+2382 331
+2383 331
+2385 331
+2386 332
+2387 333
+2389 334
+2390 335
+2392 336
+2394 337
+2395 347
+2396 351
+2397 352
+2398 354
+2399 358
+2400 358
+2360 366
+2362 368
+2363 369
+2364 371
+2402 379
+2403 383
+2404 384
+2405 386
+2407 386
+2408 52
+2409 66
+2410 67
+2411 81
+2412 82
+2413 84
+2414 335
+2415 336
+2416 337
+2417 339
+2421 340
+2425 352
+2426 353
+2427 357
+2428 358
+2429 359
+2430 360
+2431 364
+2432 368
+2433 369
+2434 373
+2435 374
+2436 374
+2440 375
+2441 375
+2445 378
+2446 378
+2450 379
+2451 379
+2455 383
+2456 383
+2458 384
+2459 385
+2460 390
+2461 391
+2462 395
+2463 396
+2464 400
+2465 401
+2466 402
+2467 408
+2468 409
+2469 413
+2470 414
+2471 418
+2472 419
+2473 420
+2474 426
+2475 427
+2476 431
+2477 432
+2478 433
+2479 434
+2480 438
+2481 439
+2482 440
+2483 441
+2484 442
+2485 443
+2486 444
+2487 446
+2488 447
+2489 448
+2490 449
+2491 450
+2492 451
+2493 458
+2494 459
+2499 461
+2504 464
+2505 24
+2506 29
+2507 30
+2508 34
+2509 36
+2510 39
+2511 43
+2512 50
+2513 51
+2514 55
+2515 57
+2516 60
+2517 64
+2518 69
+2519 76
+2520 79
+2521 80
+2523 80
+2524 82
+2526 82
+2527 84
+2528 85
+2529 86
+2530 86
+2534 88
+2535 89
+2536 91
+2537 96
+2538 102
+2539 106
+2540 107
+2541 108
+2542 109
+2543 113
+2544 114
+2545 116
+2546 116
+2547 120
+2548 120
+2549 121
+2550 122
+2551 123
+2552 127
+2553 127
+2554 128
+2555 129
+2556 130
+2558 134
+2559 135
+2560 135
+2562 136
+2563 138
+2564 139
+2565 140
+2567 144
+2568 145
+2569 146
+2570 148
+2571 150
+2575 154
+2576 155
+2577 156
+2578 157
+2579 160
+2580 70
+2581 79
+2582 81
+2583 93
+2584 94
+2585 99
+2586 99
+2593 104
+2587 109
+2588 110
+2589 112
+2590 113
+2591 115
+2594 126
+2595 127
+2596 129
+2597 135
+2598 140
+2599 153
+2600 160
+2601 161
+2602 163
+2603 171
+2604 175
+2605 176
+2606 178
+2607 191
+2608 194
+2609 196
+2610 197
+2611 198
+2613 199
+2614 202
+2615 203
+2616 208
+2617 212
+2618 213
+2620 216
+2621 223
+2622 224
+2625 226
+2626 228
+2627 229
+2628 230
+2630 231
+2631 234
+2632 238
+2633 243
+2634 245
+2635 245
+2638 249
+2639 251
+2642 255
+2645 257
+2648 257
+2652 261
+2655 261
+2659 265
+2660 269
+2663 274
+2664 278
+2665 278
+2667 280
+2670 285
+2672 286
+2673 286
+2675 296
+2676 296
+2678 297
+2680 301
+2681 301
+2683 302
+2684 302
+2686 303
+2687 303
+2689 305
+2691 307
+2692 307
+2694 308
+2695 308
+2697 310
+2699 313
+2701 322
+2703 63
+2704 64
+2705 65
+2706 69
+2707 71
+2709 75
+2710 78
+2711 82
+2712 83
+2713 84
+2714 98
+2715 99
+2716 100
+2717 101
+2718 112
+2719 39
+2720 41
+2721 41
+2722 43
+2723 44
+2724 45
+2725 47
+2726 50
+2727 96
+2728 97
+2729 99
+2730 99
+2731 102
+2732 103
+2733 104
+2734 105
+2735 107
+2736 108
+2737 109
+2738 114
+2739 115
+2740 116
+2741 117
+2742 119
+2744 121
+2745 122
+2746 126
+2747 127
+2748 132
+2749 133
+2750 139
+2751 140
+2752 141
+2753 142
+2754 144
+2755 145
+2756 146
+2757 147
+2758 148
+2759 150
+2760 151
+2761 152
+2762 153
+2763 158
+2764 159
+2765 160
+2766 162
+2767 167
+2768 24
+2769 28
+2770 29
+2771 31
+2772 35
+2774 36
+2775 37
+2776 38
+2778 41
+2779 42
+2780 44
+2781 46
+2782 288
+2783 289
+2784 290
+2785 294
+2786 295
+2787 297
+2788 297
+2789 298
+2790 302
+2791 303
+2792 307
+2793 307
+2794 308
+2795 313
+2796 314
+2797 316
+2798 321
+2799 322
+2800 327
+2801 328
+2802 329
+2803 331
+2804 332
+2808 336
+2809 336
+2810 337
+2815 341
+2816 342
+2817 343
+2818 344
+2819 347
+2820 124
+2821 128
+2822 140
+2823 141
+2824 145
+2825 146
+2826 147
+2827 148
+2828 152
+2829 153
+2830 154
+2831 158
+2832 163
+2833 164
+2834 166
+2836 170
+2837 171
+2838 172
+2839 176
+2840 179
+2841 180
+2842 180
+2843 183
+2844 187
+2845 188
+2846 192
+2847 193
+2848 194
+2849 195
+2850 200
+2851 201
+2852 215
+2853 216
+2854 220
+2855 221
+2856 222
+2857 223
+2858 227
+2859 228
+2860 229
+2861 233
+2862 238
+2863 239
+2864 241
+2865 245
+2866 246
+2867 250
+2868 251
+2869 252
+2870 253
+2871 258
+2872 259
+2873 263
+2874 264
+2875 265
+2876 269
+2877 280
+2878 280
+2879 288
+2880 289
+2881 289
+2883 290
+2884 290
+2886 291
+2887 292
+2888 294
+2889 295
+2890 297
+2891 299
+2892 300
+2893 301
+2894 306
+2895 311
+2896 312
+2897 316
+2898 322
+2899 323
+2900 324
+2901 326
+2902 327
+2903 328
+2904 332
+2905 332
+2909 333
+2910 337
+2913 338
+2916 340
+2917 341
+2918 342
+2919 343
+2920 344
+2921 350
+2922 354
+2923 357
+2924 358
+2925 359
+2926 360
+2927 362
+2928 363
+2929 364
+2930 366
+2931 367
+2932 368
+2933 372
+2934 372
+2938 373
+2939 373
+2943 377
+2946 377
+2948 378
+2949 379
+2950 380
+2951 381
+2952 382
+2953 385
+2956 385
+2958 386
+2959 387
+2960 388
+2961 389
+2962 390
+2963 396
+2964 397
+2965 400
+2966 401
+2967 401
+2971 402
+2972 402
+2976 403
+2977 405
+2980 406
+2985 408
+2986 409
+2987 412
+2988 413
+2989 413
+2993 414
+2994 414
+2998 415
+2999 417
+3002 418
+3007 420
+3008 421
+3009 429
+3014 429
+3015 439
+3016 443
+3017 444
+3018 446
+3019 450
+3020 450
+3010 459
+3011 460
+3012 462
+3022 476
+3023 477
+3024 481
+3025 482
+3026 483
+3027 484
+3028 488
+3029 489
+3030 490
+3031 494
+3032 499
+3033 500
+3034 504
+3035 504
+3036 505
+3039 511
+3041 513
+3042 514
+3043 518
+3044 519
+3045 520
+3046 521
+3047 525
+3048 526
+3049 527
+3050 531
+3051 536
+3052 537
+3053 543
+3055 23
+3056 27
+3057 31
+3058 32
+3059 33
+3060 38
+3061 39
+3062 41
+3063 41
+3064 42
+3065 45
+3066 46
+3067 48
+3068 53
+3069 53
+3071 54
+3072 55
+3073 59
+3074 60
+3075 60
+3077 62
+3078 63
+3079 65
+3080 66
+3082 67
+3083 73
+3084 74
+3085 75
+3086 77
+3087 78
+3091 82
+3092 82
+3093 83
+3098 87
+3099 88
+3100 89
+3101 90
+3102 93
+3103 125
+3104 129
+3105 141
+3106 142
+3107 143
+3108 147
+3109 148
+3110 149
+3111 153
+3112 154
+3113 155
+3114 159
+3115 164
+3116 165
+3117 166
+3118 168
+3120 172
+3121 173
+3122 174
+3123 178
+3124 181
+3125 182
+3126 182
+3127 185
+3128 189
+3129 190
+3130 191
+3131 195
+3132 196
+3133 197
+3134 202
+3135 203
+3136 204
+3137 218
+3138 219
+3139 220
+3140 224
+3141 225
+3142 226
+3143 230
+3144 231
+3145 232
+3146 236
+3147 241
+3148 242
+3149 243
+3150 245
+3151 249
+3152 250
+3153 251
+3154 255
+3155 256
+3156 257
+3157 262
+3158 263
+3159 264
+3160 268
+3161 269
+3162 270
+3163 274
+3164 285
+3165 285
+3166 295
+3167 296
+3168 296
+3170 297
+3171 297
+3173 298
+3174 299
+3175 301
+3176 302
+3177 304
+3178 306
+3179 307
+3180 308
+3181 313
+3182 316
+3183 317
+3184 318
+3185 319
+3188 322
+3189 323
+3190 324
+3191 325
+3193 326
+3194 327
+3195 328
+3196 330
+3197 334
+3198 339
+3199 339
+3201 339
+3203 340
+3204 344
+3205 346
+3206 350
+3207 351
+3208 352
+3209 354
+3210 355
+3211 356
+3212 361
+3213 361
+3217 365
+3218 365
+3222 369
+3225 370
+3228 372
+3229 373
+3230 374
+3231 375
+3232 376
+3233 381
+3234 382
+3235 383
+3236 386
+3237 386
+3239 388
+3240 389
+3241 390
+3242 392
+3243 393
+3244 396
+3245 397
+3246 398
+3247 399
+3248 400
+3249 403
+3250 404
+3251 405
+3252 408
+3255 408
+3257 409
+3258 410
+3259 411
+3260 412
+3261 414
+3264 414
+3266 415
+3267 416
+3268 417
+3269 418
+3270 423
+3271 424
+3272 429
+3273 430
+3274 432
+3275 435
+3276 438
+3277 439
+3278 440
+3279 443
+3282 443
+3284 444
+3285 445
+3286 446
+3287 447
+3288 452
+3289 453
+3290 454
+3291 457
+3294 457
+3296 458
+3297 459
+3298 460
+3299 461
+3300 471
+3305 471
+3306 481
+3307 485
+3308 486
+3309 488
+3310 492
+3311 492
+3301 501
+3302 502
+3303 504
+3313 518
+3314 519
+3315 520
+3316 524
+3317 525
+3318 526
+3319 530
+3320 531
+3321 532
+3322 536
+3323 541
+3324 542
+3325 543
+3326 547
+3327 547
+3328 548
+3331 554
+3333 556
+3334 557
+3335 558
+3336 562
+3337 563
+3338 564
+3339 568
+3340 569
+3341 570
+3342 574
+3343 579
+3344 580
+3345 581
+3346 587
+3348 119
+3349 131
+3350 135
+3351 147
+3352 148
+3353 149
+3354 150
+3355 154
+3356 155
+3357 156
+3358 160
+3359 161
+3360 162
+3361 166
+3362 171
+3363 172
+3364 173
+3365 175
+3367 179
+3368 180
+3369 181
+3370 185
+3371 188
+3372 189
+3373 189
+3374 192
+3375 196
+3376 197
+3377 198
+3378 199
+3379 203
+3380 204
+3381 205
+3382 210
+3383 211
+3384 212
+3385 226
+3386 227
+3387 228
+3388 229
+3389 233
+3390 234
+3391 235
+3392 239
+3393 240
+3394 241
+3395 245
+3396 250
+3397 251
+3398 252
+3399 254
+3400 258
+3401 259
+3402 260
+3403 261
+3404 265
+3405 266
+3406 267
+3407 272
+3408 273
+3409 274
+3410 278
+3411 279
+3412 280
+3413 284
+3414 295
+3415 295
+3416 304
+3417 305
+3418 305
+3420 306
+3421 306
+3423 307
+3424 308
+3425 310
+3426 311
+3427 313
+3428 315
+3429 316
+3430 317
+3431 322
+3432 323
+3433 323
+3435 324
+3436 324
+3438 325
+3439 326
+3440 328
+3441 329
+3442 331
+3443 333
+3444 334
+3445 335
+3446 338
+3447 338
+3450 342
+3451 347
+3452 348
+3453 352
+3454 358
+3455 359
+3456 360
+3457 362
+3458 363
+3459 364
+3460 368
+3461 368
+3465 372
+3466 372
+3470 374
+3471 374
+3475 375
+3476 379
+3479 380
+3482 382
+3483 383
+3484 384
+3485 385
+3486 386
+3487 391
+3488 395
+3489 396
+3490 400
+3491 400
+3495 401
+3496 401
+3500 402
+3501 403
+3502 404
+3503 407
+3506 407
+3508 408
+3509 409
+3510 410
+3511 412
+3514 412
+3516 413
+3517 414
+3518 415
+3519 416
+3520 422
+3521 422
+3525 423
+3526 423
+3530 424
+3531 425
+3532 426
+3533 429
+3536 429
+3538 430
+3539 431
+3540 432
+3541 434
+3544 434
+3546 435
+3547 436
+3548 437
+3549 438
+3550 447
+3555 447
+3556 457
+3557 461
+3558 462
+3559 464
+3560 468
+3561 468
+3551 477
+3552 478
+3553 480
+3563 494
+3564 495
+3565 496
+3566 497
+3567 501
+3568 502
+3569 503
+3570 507
+3571 508
+3572 509
+3573 513
+3574 518
+3575 519
+3576 520
+3577 524
+3578 524
+3579 525
+3582 531
+3584 533
+3585 534
+3586 535
+3587 536
+3588 540
+3589 541
+3590 542
+3591 546
+3592 547
+3593 548
+3594 552
+3595 557
+3596 558
+3597 559
+3598 565
+3600 124
+3601 128
+3602 140
+3603 141
+3604 142
+3605 146
+3606 147
+3607 148
+3608 149
+3609 150
+3610 154
+3611 155
+3612 156
+3613 160
+3614 165
+3615 167
+3617 171
+3618 172
+3619 173
+3620 177
+3621 180
+3622 181
+3623 181
+3624 184
+3625 188
+3626 188
+3629 189
+3630 190
+3631 194
+3632 195
+3633 196
+3634 197
+3635 198
+3636 203
+3637 217
+3638 218
+3639 219
+3640 223
+3641 224
+3642 225
+3643 226
+3644 227
+3645 231
+3646 232
+3647 233
+3648 237
+3649 242
+3650 244
+3651 248
+3652 248
+3655 249
+3656 250
+3657 254
+3658 255
+3659 256
+3660 257
+3661 258
+3662 263
+3663 267
+3664 268
+3665 269
+3666 273
+3667 284
+3668 284
+3669 285
+3670 288
+3672 290
+3673 291
+3674 292
+3675 294
+3676 294
+3677 296
+3679 296
+3680 297
+3681 297
+3683 298
+3684 299
+3685 300
+3686 301
+3687 302
+3688 303
+3689 304
+3690 305
+3691 306
+3692 307
+3693 311
+3694 312
+3695 313
+3698 316
+3699 316
+3701 318
+3703 319
+3706 319
+3709 322
+3711 322
+3712 322
+3713 324
+3715 324
+3716 325
+3717 326
+3718 327
+3719 328
+3720 329
+3721 330
+3722 331
+3723 333
+3724 335
+3725 336
+3726 337
+3727 338
+3728 339
+3729 340
+3730 341
+3731 345
+3732 346
+3736 347
+3739 348
+3740 349
+3743 352
+3744 352
+3746 354
+3748 355
+3751 355
+3754 358
+3756 358
+3757 358
+3758 360
+3760 360
+3761 361
+3762 361
+3764 362
+3765 363
+3766 364
+3767 365
+3768 366
+3769 367
+3770 368
+3771 369
+3772 370
+3773 374
+3774 375
+3777 376
+3778 377
+3781 380
+3782 380
+3784 382
+3786 383
+3789 383
+3792 386
+3794 386
+3795 386
+3796 388
+3798 388
+3799 389
+3800 390
+3801 391
+3802 392
+3803 393
+3804 394
+3805 395
+3806 397
+3807 399
+3808 400
+3809 401
+3810 402
+3811 403
+3812 404
+3813 405
+3814 409
+3815 410
+3819 411
+3822 411
+3824 412
+3825 413
+3828 416
+3829 416
+3831 418
+3833 419
+3836 419
+3839 421
+3841 423
+3846 424
+3847 434
+3848 438
+3849 439
+3850 441
+3851 445
+3852 445
+3842 454
+3843 455
+3844 457
+3854 471
+3855 472
+3856 473
+3857 477
+3858 478
+3859 479
+3860 480
+3861 481
+3862 485
+3863 486
+3864 487
+3865 491
+3866 496
+3867 500
+3868 500
+3869 501
+3872 507
+3874 509
+3875 510
+3876 511
+3877 515
+3878 516
+3879 517
+3880 518
+3881 519
+3882 523
+3883 524
+3884 525
+3885 529
+3886 534
+3887 540
+3889 134
+3890 138
+3891 150
+3892 151
+3893 152
+3894 156
+3895 157
+3896 158
+3897 159
+3898 163
+3899 164
+3900 165
+3901 169
+3902 174
+3903 175
+3904 176
+3905 177
+3906 179
+3908 183
+3909 184
+3910 185
+3911 189
+3912 192
+3913 193
+3914 193
+3915 196
+3916 200
+3917 201
+3918 202
+3919 206
+3920 207
+3921 208
+3922 209
+3923 214
+3924 215
+3925 216
+3926 217
+3927 231
+3928 232
+3929 233
+3930 237
+3931 238
+3932 239
+3933 240
+3934 244
+3935 245
+3936 246
+3937 250
+3938 255
+3939 256
+3940 257
+3941 258
+3942 260
+3943 264
+3944 265
+3945 266
+3946 270
+3947 271
+3948 272
+3949 273
+3950 278
+3951 279
+3952 280
+3953 281
+3954 285
+3955 286
+3956 287
+3957 291
+3958 302
+3959 302
+3960 310
+3961 311
+3962 311
+3964 312
+3965 312
+3967 313
+3968 314
+3969 316
+3970 317
+3971 319
+3972 321
+3973 322
+3974 323
+3975 328
+3976 333
+3977 334
+3978 336
+3979 336
+3982 337
+3983 337
+3986 341
+3987 344
+3988 348
+3989 349
+3990 350
+3991 351
+3992 353
+3993 354
+3994 355
+3995 359
+3996 359
+4000 360
+4001 360
+4005 364
+4008 365
+4011 367
+4012 368
+4013 369
+4014 370
+4015 371
+4016 376
+4017 380
+4018 381
+4019 382
+4020 384
+4021 385
+4022 386
+4023 389
+4026 389
+4028 390
+4029 391
+4030 392
+4031 393
+4032 397
+4033 398
+4034 399
+4035 402
+4038 402
+4040 403
+4041 404
+4042 405
+4043 406
+4044 414
+4045 415
+4046 416
+4047 418
+4048 419
+4049 420
+4050 423
+4053 423
+4055 424
+4056 425
+4057 426
+4058 427
+4059 431
+4060 432
+4061 433
+4062 436
+4065 436
+4067 437
+4068 438
+4069 439
+4070 440
+4071 448
+4072 449
+4073 452
+4074 453
+4075 454
+4076 455
+4077 457
+4080 458
+4085 460
+4086 461
+4087 462
+4088 465
+4089 466
+4090 467
+4091 468
+4092 470
+4095 471
+4100 473
+4101 474
+4102 475
+4103 484
+4108 484
+4109 494
+4110 498
+4111 499
+4112 501
+4113 505
+4114 505
+4104 514
+4105 515
+4106 517
+4116 531
+4117 532
+4118 533
+4119 537
+4120 538
+4121 539
+4122 540
+4123 544
+4124 545
+4125 546
+4126 550
+4127 555
+4128 556
+4129 557
+4130 558
+4131 562
+4132 562
+4133 563
+4136 569
+4138 571
+4139 572
+4140 573
+4141 577
+4142 578
+4143 579
+4144 580
+4145 584
+4146 585
+4147 586
+4148 590
+4149 595
+4150 596
+4151 597
+4152 598
+4153 604
+4155 122
+4156 126
+4157 138
+4158 139
+4159 140
+4160 144
+4161 145
+4162 146
+4163 147
+4164 151
+4165 152
+4166 153
+4167 157
+4168 162
+4169 164
+4171 168
+4172 169
+4173 170
+4174 174
+4175 177
+4176 178
+4177 178
+4178 181
+4179 185
+4180 186
+4181 187
+4182 191
+4183 192
+4184 193
+4185 194
+4186 199
+4187 213
+4188 214
+4189 215
+4190 219
+4191 220
+4192 221
+4193 222
+4194 226
+4195 227
+4196 228
+4197 232
+4198 237
+4199 239
+4200 243
+4201 244
+4202 245
+4203 249
+4204 250
+4205 251
+4206 252
+4207 257
+4208 261
+4209 262
+4210 263
+4211 267
+4212 278
+4213 278
+4214 286
+4215 287
+4216 287
+4218 288
+4219 288
+4221 289
+4222 290
+4223 292
+4224 293
+4225 295
+4226 297
+4227 298
+4228 299
+4229 304
+4230 304
+4233 305
+4234 305
+4237 309
+4238 311
+4239 312
+4240 313
+4241 316
+4242 321
+4243 322
+4244 324
+4245 331
+4246 332
+4247 333
+4248 335
+4249 336
+4250 337
+4251 341
+4252 341
+4256 342
+4257 342
+4261 343
+4262 347
+4265 348
+4268 350
+4269 351
+4270 352
+4271 353
+4272 354
+4273 357
+4276 358
+4279 360
+4280 361
+4281 362
+4282 363
+4283 364
+4284 369
+4285 373
+4286 374
+4287 375
+4288 377
+4289 378
+4290 379
+4291 383
+4292 383
+4296 384
+4297 384
+4301 388
+4304 388
+4306 389
+4307 390
+4308 391
+4309 392
+4310 393
+4311 396
+4314 396
+4316 397
+4317 398
+4318 399
+4319 400
+4320 401
+4321 407
+4322 411
+4323 414
+4324 415
+4325 416
+4326 417
+4327 419
+4330 420
+4335 422
+4336 423
+4337 424
+4338 427
+4339 428
+4340 429
+4341 430
+4342 432
+4345 433
+4350 435
+4351 436
+4352 437
+4353 444
+4354 454
+4355 458
+4356 459
+4357 461
+4358 465
+4359 465
+4361 474
+4362 475
+4363 477
+4364 491
+4365 492
+4366 493
+4367 497
+4368 498
+4369 499
+4370 500
+4371 504
+4372 505
+4373 506
+4374 510
+4375 515
+4376 519
+4377 519
+4378 520
+4381 526
+4383 528
+4384 529
+4385 530
+4386 534
+4387 535
+4388 536
+4389 537
+4390 541
+4391 542
+4392 543
+4393 547
+4394 552
+4395 558
+4397 21
+4398 22
+4400 22
+4401 22
+4403 22
+4405 23
+4407 23
+4409 23
+4412 24
+4414 24
+4415 24
+4417 24
+4419 25
+4421 25
+4423 25
+4425 26
+4426 27
+4428 27
+4430 35
+4431 35
+4433 36
+4435 37
+4437 38
+4439 39
+4441 40
+4443 41
+4445 42
+4446 47
+4447 47
+4449 48
+4451 49
+4453 50
+4455 51
+4457 52
+4458 57
+4459 57
+4461 58
+4463 59
+4465 60
+4466 65
+4467 65
+4469 66
+4471 67
+4473 68
+4474 23
+4475 24
+4476 26
+4477 26
+4479 26
+4481 40
+4482 41
+4483 42
+4484 43
+4485 44
+4486 49
+4487 50
+4488 53
+4489 55
+4490 60
+4491 60
+4492 61
+4493 64
+4495 66
+4496 67
+4497 67
+4499 69
+4500 73
+4502 75
+4503 76
+4504 77
+4505 79
+4506 84
+4507 85
+4508 107
+4510 108
+4511 109
+4512 109
+4514 110
+4515 110
+4517 111
+4518 113
+4519 114
+4520 114
+4522 115
+4526 122
+4527 127
+4528 128
+4529 129
+4530 134
+4531 138
+4532 139
+4533 140
+4534 140
+4537 167
+4539 168
+4541 173
+4542 174
+4543 175
+4544 185
+4545 189
+4546 191
+4547 192
+4548 193
+4549 198
+4550 200
+4551 201
+4552 201
+4554 202
+4555 206
+4556 207
+4557 207
+4559 208
+4560 210
+4561 210
+4563 211
+4564 213
+4565 213
+4567 214
+4568 219
+4569 220
+4570 221
+4571 225
+4572 226
+4573 237
+4574 238
+4575 239
+4576 240
+4581 243
+4586 244
+4587 246
+4590 248
+4591 248
+4593 249
+4594 249
+4596 250
+4597 254
+4598 256
+4599 259
+4600 259
+4603 260
+4604 261
+4605 263
+4606 264
+4607 264
+4609 267
+4613 275
+4614 276
+4615 277
+4616 278
+4617 278
+4619 278
+4621 278
+4623 279
+4624 280
+4625 282
+4629 283
+4633 288
+4634 289
+4635 290
+4637 290
+4639 290
+4640 291
+4641 292
+4642 293
+4643 295
+4644 295
+4646 296
+4648 296
+4651 298
+4652 299
+4653 306
+4654 307
+4655 309
+4656 312
+4657 312
+4660 314
+4661 315
+4662 317
+4663 318
+4664 318
+4666 320
+4670 326
+4672 326
+4675 335
+4677 335
+4679 339
+4681 340
+4683 341
+4685 122
+4686 122
+4688 123
+4689 131
+4690 132
+4691 132
+4693 133
+4694 133
+4696 17
+4700 27
+4702 29
+4703 31
+4704 32
+4705 35
+4708 35
+4709 38
+4710 39
+4711 41
+4712 42
+4713 43
+4714 46
+4715 47
+4716 48
+4717 53
+4718 54
+4719 56
+4720 57
+4721 61
+4722 62
+4723 65
+4725 65
+4726 66
+4727 67
+4728 11
+4729 12
+4730 13
+4731 14
+4732 15
+4733 16
+4734 17
+4735 18
+4736 19
+4737 20
+4738 21
+4740 22
+4741 24
+4742 25
+4743 26
+4744 27
+4745 28
+4746 29
+4747 30
+4748 31
+4749 32
+4750 33
+4751 34
+4752 35
+4753 36
+4755 37
+4756 39
+4757 40
+4758 41
+4759 42
+4760 43
+4761 44
+4762 45
+4763 46
+4764 47
+4765 48
+4766 49
+4767 50
+4768 51
+4770 52
+4771 53
+4773 58
+4774 59
+4775 60
+4776 61
+4777 62
+4778 63
+4779 64
+4780 65
+4781 66
+4782 67
+4783 68
+4784 69
+4786 70
+4787 71
+4789 72
+4790 73
+4791 74
+4792 75
+4793 76
+4794 77
+4795 78
+4796 79
+4797 80
+4798 81
+4799 82
+4800 83
+4802 84
+4803 86
+4804 87
+4805 88
+4806 89
+4807 90
+4808 91
+4809 92
+4810 93
+4811 94
+4812 95
+4813 96
+4814 97
+4815 98
+4816 99
+4817 100
+4819 101
+4820 102
+4822 107
+4823 108
+4824 109
+4825 112
+4826 112
+4829 113
+4830 114
+4831 117
+4835 119
+4836 0

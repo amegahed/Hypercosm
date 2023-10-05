@@ -1,0 +1,130 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   doubly_linked_node_iterators.ores    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a standard subject for nodes that can          }
+{       be strung together into lists.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/doubly_linked_nodes.ores";
+include "system/iterators.ores";
+
+abstract subject doubly_linked_node_iterator
+extends
+	list_iterator
+does
+	// data access methods
+	//
+	final object type question get;
+
+	// data modification methods
+	//
+	final verb set
+		to object type item;
+	end;
+
+	// next querying methods
+	//
+	final boolean question has_prev;
+	final object type question get_prev;
+	final boolean question has_next;
+	final object type question get_next;
+		
+	// node iterator navigation methods
+	//
+	verb to_prev;
+	verb to_next;
+has
+	// attributes
+	//
+	doubly_linked_node type current is none;
+is
+	//
+	// data access methods
+	//
+	
+	object type question get is
+		if some current then
+			answer current get;
+		else
+			answer none;
+		end;
+	end;    // get
+	
+	//
+	// data modification methods
+	//
+	
+	verb set
+		to object type item;
+	is
+		if some current then
+			current set to item;
+		end;
+	end;    // set
+	
+	//        
+	// node iterator querying methods
+	//
+	
+	boolean question has_prev is
+		if some current then
+			if some current's prev then
+				answer some current's prev get;
+			else
+				answer false;
+			end;
+		else
+			answer false;
+		end;
+	end;    // has_prev
+
+	object type question get_prev is
+		if some current then
+			answer current's prev get;
+		else
+			answer none;
+		end;
+	end;    // get_prev
+		
+	boolean question has_next is
+		if some current then
+			if some current's next then
+				answer some current's next get;
+			else
+				answer false;
+			end;
+		else
+			answer false;
+		end;
+	end;    // has_next
+
+	object type question get_next is
+		if some current then
+			answer current's next get;
+		else
+			answer none;
+		end;
+	end;    // get_next
+	
+	//    
+	// node iterator navigation methods
+	//  
+	
+	verb to_prev is
+		if some current then
+			current is its prev;
+		end;
+	end;    // to_prev
+		  
+	verb to_next is
+		if some current then
+			current is its next;
+		end;
+	end;    // to_next
+end;    // doubly_linked_node_iterator

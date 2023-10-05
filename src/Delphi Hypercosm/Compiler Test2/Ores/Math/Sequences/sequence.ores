@@ -1,0 +1,40 @@
+{***************************************************************}
+{                           sequence.ores						}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a finite explicit scalar		}
+{		sequence.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+subject sequence
+extends
+    scalar[]
+does
+	// interpolation method
+	//
+    scalar question get_value
+        at scalar t;
+    end;
+is
+    scalar question get_value
+        at scalar t;
+    is
+        if t = 0 then
+            answer sequence[min sequence];
+        elseif t = 1 then
+            answer sequence[max sequence];
+        else
+            scalar t_index = min sequence + (num sequence - 1) * t;
+            integer min_index = trunc t_index;
+            integer max_index = trunc (t_index + 1);
+            answer interpolated_scalar 
+            	from sequence[min_index] to sequence[max_index] 
+            	by (t_index - min_index);
+        end;
+    end;    // get_value
+end;    // sequence

@@ -1,0 +1,212 @@
+{***************************************************************}
+{                          clipper.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do clipper_anim;
+
+
+include "system/3d.ores";
+include "system/interactions.ores";
+include "system/shapes.ores";
+include "system/check_keys.ores";
+include "system/toggle.omar";
+include "system/crosshair.omar";
+
+
+include "system/fish.omar";
+// include "system/jumbo.smpl";
+
+
+boolean do_clipping is false;
+boolean do_shading is false;
+vector slice_orientation = <0 0 0>;
+vector orientation = <0 0 0>;
+
+
+shape frustrum with
+    vector apex = <0 0 -1>;
+    vector edges[1..4] = [<-.6 -.8 2> <1 -.5 2> <.7 .3 2> <-1 .5 2>];
+is
+    vector vertices[1..4];
+
+    for integer counter = 1 .. 4 do
+        vertices[counter] = apex + edges[counter];
+    end;
+
+    triangle apex vertices[1] vertices[2];
+    triangle apex vertices[2] vertices[3];
+    triangle apex vertices[3] vertices[4];
+    triangle apex vertices[4] vertices[1];
+end;    // frustrum
+
+
+picture clipper_picture with
+    eye = <0 -8 4>;
+    field_of_view = 35;
+    projection is perspective;
+    ambient = white / 2;
+    if do_shading then
+        render_mode is shaded;
+    else
+        render_mode is wireframe;
+    end;
+    window_name is "Clipper!";
+    // background = dark blue;
+is
+    scalar x = orientation dot <1 0 0>;
+    scalar y = orientation dot <0 1 0>;
+    scalar x2 = slice_orientation dot <1 0 0>;
+    scalar y2 = slice_orientation dot <0 1 0>;
+
+
+    shape thing is
+        fish type's form with
+            color = orange;
+            magnify by .05;
+        end;
+        {
+        frustrum;
+        }
+    end;    // thing to be clipped
+
+
+    shape clipped_thing1 is
+        thing;
+        clipping_plane with
+            rotate by (x2 * 180) around trans's z_axis;
+            rotate by (y2 * 180) around -trans's x_axis;
+        end;
+    end;    // clipped_thing1
+
+
+    shape clipped_thing2 is
+        thing with
+            render_mode is wireframe;
+        end;
+        clipping_plane with
+            rotate by (x2 * 180) around trans's z_axis;
+            rotate by (y2 * 180) around -trans's x_axis;
+            rotate by 180 around trans's x_axis;
+        end;
+    end;    // clipped_thing2
+
+
+    distant_light from <.3 -.5 1>;
+    if do_clipping then
+        clipped_thing1 with
+            rotate by x * 180 around <0 0 1>;
+            rotate by y * 180 around <-1 0 0>;
+        end;
+        if do_shading then
+            clipped_thing2 with
+                rotate by x * 180 around <0 0 1>;
+                rotate by y * 180 around <-1 0 0>;
+            end;
+        end;
+    else
+        thing with
+            rotate by x * 180 around <0 0 1>;
+            rotate by y * 180 around <-1 0 0>;
+        end;
+    end;
+    if do_clipping then
+        parallelogram with
+            render_mode is wireframe;
+            rotate by (x2 * 180) around trans's z_axis;
+            rotate by (y2 * 180) around -trans's x_axis;
+            rotate by x * 180 around <0 0 1>;
+            rotate by y * 180 around <-1 0 0>;
+            color = red;
+        end;
+    end;
+    block with
+        render_mode is wireframe;
+        rotate by x * 180 around <0 0 1>;
+        rotate by y * 180 around <-1 0 0>;
+    end;
+    axes with
+        magnify by 1.5;
+        rotate by x * 180 around <0 0 1>;
+        rotate by y * 180 around <-1 0 0>;
+    end;
+end;    // clipper_picture
+
+
+picture instruments_picture with
+    window_name is "Instruments";
+    background = black;
+is
+    static toggle type clipping_switch labelled "clipping"
+        controls do_clipping;
+    static toggle type shading_switch labelled "shading"
+        controls do_shading;
+    static crosshair type crosshair labelled "slice orientation"
+        controls slice_orientation;
+    scalar aspect_ratio = height / width;
+
+    clipping_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .8 0>;
+    end;
+    shading_switch instance with
+        height = .5;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .5 0>;
+    end;
+    render_mode is wireframe;
+    crosshair instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+end;    // instruments_picture
+
+
+anim clipper_anim
+    args type args;
+with
+    double_buffer is on;
+    facets = 4;
+    args check;
+is
+    integer total_width = width;
+    boolean first_frame is true;
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging orientation);
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+        default_cursor is arrow;
+    end;
+
+    while true do
+        if mouse_down or first_frame or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+
+        clipper_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((
+                total_width - width) div 2);
+        end;
+
+        interaction update;
+
+        first_frame is false;
+    end;
+end;    // clipper_anim

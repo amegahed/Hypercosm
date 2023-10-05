@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             vector.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of usage of        }
+{       the vector data type in the OMAR language.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do vector_example;
+
+include "system/vector.ores";
+
+vector location = <1 2 3>;
+vector direction = <1 2 3> cross <4 5 6>;
+vector v = normalized direction;
+scalar x = v dot <0 0 1>;
+vector up = v parallel <0 0 1>; 
+vector across = v perpendicular <0 0 1>;
+		
+	
+verb vector_example is
+	write "This example declares, assigns, and prints", ;
+	write "values for a series of vector variables:", ;
+	write;
+	
+	write "location = ", location, ;
+	write "direction = ", direction, ;
+	write "v = ", v, ;
+	write "x = ", x, ;
+	write "up = ", up, ;
+	write "across = ", across, ;
+end;    // vector_example

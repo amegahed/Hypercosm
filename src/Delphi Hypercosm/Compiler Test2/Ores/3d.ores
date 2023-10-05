@@ -1,0 +1,51 @@
+{***************************************************************}
+{                            3d.ores                            }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{    This file includes the basic standard resource files       }
+{    for 3d graphics:                                           }
+{                                                               }
+{      native_shapes.ores: native shape definitions             }
+{      native_lights.ores: native light definitions             }
+{      native_rendering.ores: native rendering definitions      }
+{      native_viewing.ores: native viewing definitions          }
+{      native_display.ores: display variables & utilities       }
+{      native_devices.ores: mouse & keyboard procedures         }
+{                                                               }
+{      math.ores: standard mathematical functions & constants   }
+{      transformations.ores: standard geometric transformations }
+{      materials.ores: standard material definitions            }
+{      standard_colors.ores: standard color definitions			}
+{                                                               }
+{    Because of additional include statements found in the      }
+{    above files, "3d.ores" effectively includes many more      }
+{    useful resource files.                                     }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+
+{***************************************************************}
+{                   native resource files                       }
+{***************************************************************}
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{***************************************************************}
+include "system/native_shapes.ores";       // native shape primitives
+include "system/native_lights.ores";       // native light primitives
+include "system/native_rendering.ores";    // native rendering primitives
+include "system/native_viewing.ores";      // native viewing primitives
+include "system/native_display.ores";      // display variables & utilities
+include "system/native_devices.ores";      // mouse & keyboard procedures
+
+
+{***************************************************************}
+{                 user-defined resource files                   }
+{***************************************************************}
+include "system/math.ores";
+include "system/transformations.ores";
+include "system/materials.ores";
+include "system/standard_colors.ores";
+include "system/args.ores";

@@ -1,0 +1,77 @@
+{***************************************************************}
+{                          rotate.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do rotate_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.ores";
+include "system/snowman.omar";
+
+shape rotate_scene with
+	scalar time = 0;
+is
+	static material type material1 is glass colored white;
+	static material type material2 is glass colored red;
+	scalar angle = sin (time * 90) * 45;
+	scalar h = 3.6 * .5;
+	snowman with
+		magnify by .5;
+		material is material1;
+		edges is silhouette;
+		render_mode is shaded_line;
+	end;
+	
+	snowman with
+		magnify by .5;
+		material is material2;
+		edges is silhouette;
+		render_mode is shaded_line;
+		
+		// apply the "rotate" transformation
+		//
+		rotate by angle around <0 1 0>;
+	end;
+	
+	// annotations
+	//
+	mark at <0 0 0>;
+	arrow_arc from 90 to (90 - angle) with
+		radius = h;
+		trans's x_axis = <1 0 0>;
+		trans's y_axis = <0 0 1>;
+		trans's z_axis = <0 1 0>;
+	end;
+	arrow from <0 0 0> to <0 0 h>;
+	arrow from <0 0 0> to <0 0 h> with
+		rotate by angle around <0 1 0>;
+	end;
+	overlay_text "rotate by <scalar angle> around <vector axis> [about <vector point>];" at <0 .85 0>;
+	
+	{
+	futura_l_word "ROTATE" with
+		rotate by 90 around <1 0 0>;
+		move to <0 0 (h + .1)>;
+		rotate by 30 around <0 1 0>;
+	end;
+	}
+end;    // rotate_scene
+	
+	
+anim rotate_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	mouse_controlled_animated_shape rotate_scene;
+end;    // rotate_anim

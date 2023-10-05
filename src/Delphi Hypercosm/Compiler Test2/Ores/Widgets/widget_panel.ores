@@ -1,0 +1,503 @@
+{***************************************************************}
+{                      widget_panel.ores                        }
+{         Object-Oriented Modelling and Rendering (OMAR)        }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "scene_driver.ores";
+
+
+enum component_highlight_style is
+    {none,} over, tracking_not_over, tracking_and_over;
+
+
+adjective widget_panel_track_manager
+does
+    verb drop_track;
+end;
+
+
+// A subject that implements widget_panel_component can be "plugged into"
+// a widget_panel.  This simplifies the creation of flat (planar) input
+// widgets that have a higher performance than independent fully-contained
+// widgets.  All the components will live in a coordinate space of
+// <-1 -1 0> to <1 1 0>, and will be affected by any transformations applied
+// to the widget_panel instance shape.
+//
+adjective widget_panel_component
+does
+    // in_region should answer true if a click at the given location
+    // should be handled by this component.  For most components,
+    // in_region can simply compare the location against the bounds of
+    // the component's "hotspot" region.
+    //
+    boolean question in_region
+        at vector location;
+    end;
+    
+    // write_id is used for debugging purposes only, and should write out
+    // some kind of indentifying name for the component.
+    //
+    verb write_id;
+    
+    // instance should draw the component.
+    //
+    shape instance
+        component_highlight_style type highlight;
+    end;
+    
+    // start_track will be called when a mouse click occurs and the
+    // in_region question answered true.
+    //
+    verb start_track
+        at vector location;
+        boolean is_double_click;
+        widget_panel_track_manager type manager;
+    end;
+    
+    // continue_track will be called if the mouse button is still being
+    // held down from a click that was accepted.
+    //
+    verb continue_track
+        boolean on_plane;
+        at vector location;
+    end;
+    
+    // end_track will be called when the mouse button is released from
+    // a click that was accepted.
+    //
+    verb end_track
+        boolean on_plane;
+        at vector location;
+        boolean selected;
+    end;
+end;    // widget_panel_component
+
+
+subject widget_panel
+extends
+    widget_panel_track_manager object
+does
+    verb new
+    with
+        // drawing mode
+        boolean draw_parallelogram is true;
+        
+        // output for development aid
+        boolean write_position_over is false;
+        boolean write_position_clicked is false;
+        boolean write_component_over is false;
+        boolean write_component_clicked is false;
+        boolean write_component_selected is false;
+        
+        // automatic override of global interactivity
+        boolean auto_override_interaction is true;
+        cursor type override_cursor is arrow;
+    end;
+    
+    verb add
+        widget_panel_component type component;
+        from vector lower_left_corner;
+        to vector upper_right_corner;
+    end;
+    
+    verb remove
+        widget_panel_component type component;
+    end;
+    
+    verb reposition
+        widget_panel_component type component;
+        from vector lower_left_corner;
+        to vector upper_right_corner;
+    end;
+    
+    verb reset;
+    
+    shape instance;
+    
+    // components can call drop_track when they become disabled.
+    //
+    verb drop_track;
+has
+    public widget_panel_component type component_mouse_over is none;
+    public widget_panel_component type component_being_tracked is none;
+    public widget_panel_component type component_selected_this_frame is none;
+    public widget_panel_component type component_last_selected is none;
+    public widget_panel_component type component_clicked_this_frame is none;
+    public widget_panel_component type component_last_clicked is none;
+    
+    public scalar last_click_time = 0;
+    public scalar track_duration = 0;
+    
+    public boolean draw_parallelogram;
+    
+    public boolean write_position_over;
+    public boolean write_position_clicked;
+    public boolean write_component_over;
+    public boolean write_component_clicked;
+    public boolean write_component_selected;
+    
+    public boolean auto_override_interaction;
+    public cursor type override_cursor;
+    
+    // private attributes
+    //
+    integer index_being_tracked = 0;
+    
+    widget_panel_component type components[] is none;
+    vector centers[] is none;
+    vector scales[] is none;
+is
+    verb new
+    with
+        // drawing mode
+        boolean draw_parallelogram is true;
+        
+        // output for development aid
+        boolean write_position_over is false;
+        boolean write_position_clicked is false;
+        boolean write_component_over is false;
+        boolean write_component_clicked is false;
+        boolean write_component_selected is false;
+        
+        // automatic override of global interactivity
+        boolean auto_override_interaction is true;
+        cursor type override_cursor is arrow;
+    is
+        widget_panel's draw_parallelogram is draw_parallelogram;
+        
+        widget_panel's write_position_over is write_position_over;
+        widget_panel's write_position_clicked is write_position_clicked;
+        widget_panel's write_component_over is write_component_over;
+        widget_panel's write_component_clicked is write_component_clicked;
+        widget_panel's write_component_selected is write_component_selected;
+        
+        widget_panel's auto_override_interaction is auto_override_interaction;
+        widget_panel's override_cursor is override_cursor;
+    end;    // new
+
+
+    verb add
+        widget_panel_component type component;
+        from vector lower_left_corner;
+        to vector upper_right_corner;
+    is
+        if some component then
+            integer num_components = num components;
+            widget_panel_component type new_components[1 .. (num_components + 1)];
+            vector new_centers[1 .. (num_components + 1)];
+            vector new_scales[1 .. (num_components + 1)];
+            
+            for integer i = 1 .. num_components do
+                new_components[i + 1] is components[i];
+                new_centers[i + 1] = centers[i];
+                new_scales[i + 1] = scales[i];
+            end;
+            
+            new_components[1] is component;
+            new_centers[1] = (lower_left_corner + upper_right_corner) / 2;
+            new_scales[1] = (upper_right_corner - lower_left_corner) / 2;
+            
+            components is new_components;
+            centers is new_centers;
+            scales is new_scales;
+        end;
+    end;    // add
+    
+    
+    verb remove
+        widget_panel_component type component;
+    is
+        if some component then
+            integer num_components = num components;
+            integer num_remove = 0;
+            
+            for integer i = 1 .. num_components do
+                if components[i] is component then
+                    num_remove = itself + 1;
+                end;
+            end;
+            
+            if num_components > num_remove then
+                widget_panel_component type
+                    new_components[1 .. (num_components - num_remove)];
+                vector new_centers[1 .. (num_components - num_remove)];
+                vector new_scales[1 .. (num_components - num_remove)];
+                integer j = 1;
+                
+                for integer i = 1 .. num_components do
+                    if components[i] isn't component then
+                        new_components[j] is components[i];
+                        new_centers[j] = centers[i];
+                        new_scales[j] = scales[i];
+                        j = itself + 1;
+                    end;
+                end;
+                
+                components is new_components;
+                centers is new_centers;
+                scales is new_scales;
+            else
+                components is none;
+                centers is none;
+                scales is none;
+            end;
+            
+            if component is component_being_tracked then
+                component_being_tracked is none;
+                index_being_tracked = 0;
+            end;
+        end;
+    end;    // remove
+    
+    
+    verb reposition
+        widget_panel_component type component;
+        from vector lower_left_corner;
+        to vector upper_right_corner;
+    is
+        if (some component) and (some components) then
+            for integer i = min components .. max components do
+                if components[i] is component then
+                    centers[i] = (lower_left_corner + upper_right_corner) / 2;
+                    scales[i] = (upper_right_corner - lower_left_corner) / 2;
+                end;
+            end;
+        end;
+    end;    // reposition
+    
+    
+    verb reset
+    is
+        if some component_being_tracked then
+            component_being_tracked end_track false at <0 0 0> false;
+        end;
+        
+        component_mouse_over is none;
+        component_being_tracked is none;
+        component_selected_this_frame is none;
+        component_last_selected is none;
+        component_clicked_this_frame is none;
+        component_last_clicked is none;
+        
+        index_being_tracked = 0;
+        
+        last_click_time = 0;
+        track_duration = 0;
+        
+        components is none;
+        centers is none;
+        scales is none;
+    end;    // reset
+
+
+    widget_panel_component type question get_component
+        at vector location;
+    with
+        boolean write_position is false;
+    return
+        integer index;
+        vector local_location_return;
+    is
+        vector plane_location;
+        
+        index = 0;
+        local_location_return = <0 0 0>;
+        
+        if not (xy_plane_touched at location with
+                    return plane_location) then
+            answer none;
+        end;
+        
+        if write_position then
+            write "widget_panel mouse position:  <", plane_location, ">",;
+        end;
+        
+        if not some components then
+            answer none;
+        end;
+        
+        for integer i = min components .. max components do
+            vector local_location = (plane_location - centers[i]) /
+                scales[i];
+            
+            if components[i] in_region at local_location then
+                index = i;
+                local_location_return = local_location;
+                
+                answer components[i];
+            end;
+        end;
+        
+        answer none;
+    end;    // get_component
+
+
+    boolean question convert_to_local
+        vector location;
+        integer index;
+    return
+        vector local_location_return;
+    is
+        vector plane_location;
+        
+        local_location_return = <0 0 0>;
+        
+        if not (xy_plane_touched at location with
+                    return plane_location) then
+            answer false;
+        end;
+        
+        local_location_return = (plane_location - centers[index]) /
+            scales[index];
+        
+        answer true;
+    end;    // convert_to_local
+
+
+    shape instance is
+        vector local_location;
+        boolean should_override;
+        widget_panel_component type component is none;
+        
+        component_clicked_this_frame is none;
+        component_selected_this_frame is none;
+        
+        reset_frame_events;
+        
+        while true do
+            vector event_point;
+            click type click is (get_click of button 1 return with
+                event_point = location;);
+            
+            if click is down or click is double_click then
+                component_being_tracked is get_component at event_point with
+                    write_position is write_position_clicked;
+                    return index_being_tracked local_location;
+                
+                if some component_being_tracked then
+                    component_clicked_this_frame is component_being_tracked;
+                    component_last_clicked is component_being_tracked;
+                    last_click_time = get_seconds;
+                    
+                    component_being_tracked start_track at local_location
+                        (click is double_click)
+                        (widget_panel_track_manager type widget_panel);
+                    
+                    if write_component_clicked then
+                        write "widget_panel element clicked:  ";
+                        component_being_tracked write_id;
+                    end;
+                end;
+            elseif click is up then
+                if some component_being_tracked then
+                    boolean selected is false;
+                    
+                    component is get_component at event_point;
+                    
+                    if component is component_being_tracked then
+                        selected is true;
+                        component_selected_this_frame is component;
+                        component_last_selected is component;
+                        
+                        if write_component_selected then
+                            write "widget_panel element selected:  ";
+                            component write_id;
+                        end;
+                    end;
+                    
+                    component_being_tracked end_track
+                        (convert_to_local event_point index_being_tracked
+                            return local_location)
+                        at local_location
+                        selected;
+                end;
+                
+                component_being_tracked is none;
+                index_being_tracked = 0;
+            else
+                break;
+            end;
+        end;
+        
+        reset_frame_events;
+        
+        component_mouse_over is (get_component at (get_mouse) with
+            write_position is write_position_over;);
+        
+        if some component_being_tracked then
+            component_being_tracked continue_track
+                (convert_to_local (get_mouse) index_being_tracked
+                    return local_location)
+                at local_location;
+            
+            track_duration = get_seconds - last_click_time;
+            
+            if component_mouse_over isn't component_being_tracked then
+                component_mouse_over is none;
+            end;
+        else
+            track_duration = 0;
+        end;
+        
+        if write_component_over and (some component_mouse_over) then
+            write "widget_panel mouse over element:  ";
+            component_mouse_over write_id;
+        end;
+        
+        should_override is
+            (some component_mouse_over) or (some component_being_tracked);
+        
+        if should_override and auto_override_interaction then
+            if some current_interaction then
+                if not current_interaction is_tracking then
+                    current_interaction override;
+                    set_cursor to override_cursor;
+                end;
+            else
+                set_cursor to override_cursor;
+            end;
+        end;
+        
+        if draw_parallelogram then
+            parallelogram;
+        end;
+        
+        for integer i = min components .. max components do
+            component_highlight_style type highlight;
+            
+            if index_being_tracked = i then
+                if component_mouse_over is components[i] then
+                    highlight is tracking_and_over;
+                else
+                    highlight is tracking_not_over;
+                end;
+            else
+                if component_mouse_over is components[i] then
+                    highlight is over;
+                else
+                    highlight is none;
+                end;
+            end;
+            
+            components[i] instance highlight with
+                scaling of scales[i];
+                move to centers[i];
+            end;
+        end;
+    end;    // instance
+    
+    verb drop_track
+    is
+        if some component_being_tracked then
+            component_being_tracked end_track false at <0 0 0> false;
+        end;
+        
+        component_being_tracked is none;
+        index_being_tracked = 0;
+    end;    // drop_track
+end;    // widget_panel

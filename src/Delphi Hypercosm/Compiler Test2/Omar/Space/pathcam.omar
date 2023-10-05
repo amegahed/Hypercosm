@@ -1,0 +1,223 @@
+{***************************************************************}
+{                          pathcam.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pathcam_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/lattices.ores";
+include "system/shapes.ores";
+include "system/vector_volumes.ores";
+include "system/common_materials.ores";
+
+
+subject pathcam
+extends
+    actor
+does
+    verb new;
+    shape instance;
+    verb act;
+
+    // routines for operating the camera
+    //
+    verb raise;
+    verb lower;
+
+    // routines for operating the camera step by step
+    //
+    verb extend
+        by scalar step;
+    end;
+    verb rotate
+        by scalar angle;
+    end;
+has
+    boolean raising is false, lowering is false;
+    scalar height, angle;
+is
+    const scalar max_height = 2;
+    const scalar min_height = .25;
+
+
+    verb new is
+        height = max_height;
+        angle = 0;
+    end;    // new
+
+
+    objective shape camera_support with
+        scalar height = 1;
+        scalar width = .1;
+    is
+        line_lattice (cube_vector_volume 6 of 2 by 2) with
+            scale by width along <1 0 0>;
+            scale by width along <0 1 0>;
+            scale by (height / 2) along <0 0 1>;
+            global move to <0 0 (height / 2)>;
+
+            x_edge_color = white;
+            y_edge_color = white;
+            z_edge_color = white;
+        end;
+    end;    // camera_support
+
+
+    objective shape camera_head is
+        shape eye is
+            tube with
+                material is plastic colored dark grey;
+                end1 = <0 0 0>;
+                end2 = <0 -.1 0>;
+                outer_radius = .1;
+                inner_radius = .05;
+            end;
+            disk with
+                center = <0 -.055 0>;
+                radius = .05;
+                normal = <0 1 0>;
+            end;
+        end;    // eye
+
+
+        rounded_rod with
+            end1 = <-.5 0 0>;
+            end2 = <.5 0 0>;
+            radius = .2;
+            move to <0 0 .2>;
+        end;
+        eye with
+            material is constant_color light blue;
+            move to <-.4 -.15 .2>;
+        end;
+        eye with
+            material is constant_color light red;
+            move to <.4 -.15 .2>;
+        end;
+
+        block with
+            scale by .5 along <1 0 0>;
+            scale by .2 along <0 1 0>;
+            scale by .1 along <0 0 1>;
+            move to <0 0 .1>;
+        end;
+    end;    // camera_head
+
+
+    objective shape form with
+        scalar height = 1;
+        scalar angle = 0;
+    is
+        tube with
+            end1 = <0 0 0>;
+            end2 = <0 0 .2>;
+            inner_radius = .15;
+            outer_radius = .2;
+            color = white;
+        end;
+        camera_support with
+            height = 1;
+            scale by static height along <0 0 1>;
+        end;
+        camera_head with
+            material is aluminum;
+            magnify by .4;
+            move to <0 0 height>;
+            global rotate by angle around <0 0 1>;
+        end;
+    end;    // camera
+
+
+    shape instance is
+        form with
+            height = pathcam's height;
+            angle = pathcam's angle;
+        end;
+    end;    // instance
+
+
+    verb extend
+        by scalar step;
+    is
+        height = itself + step;
+
+        if height >= max_height then
+            height = max_height;
+            raising is false;
+        elseif height <= min_height then
+            height = min_height;
+            lowering is false;
+        end;
+    end;    //  extend
+
+
+    verb rotate
+        by scalar angle;
+    is
+        pathcam's angle = itself + angle;
+    end;    // rotate
+
+
+    verb act is
+        if raising then
+            extend by .1;
+        elseif lowering then
+            extend by -.1;
+        end;
+    end;    // act
+
+
+    verb raise is
+        raising is true;
+        lowering is false;
+    end;    // raise
+
+
+    verb lower is
+        raising is false;
+        lowering is true;
+    end;    // lower
+end;    // pathcam
+
+
+anim pathcam_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    double_buffer is on;
+    background = black;
+    args check;
+is
+    pathcam type pathcam;
+
+    shape environment is
+        plane with
+            magnify by 5;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+
+    verb check_keys is
+        if key_down char_to_key "u" then
+            pathcam raise;
+        elseif key_down char_to_key "d" then
+            pathcam lower;
+        elseif key_down char_to_key "r" then
+            pathcam rotate by 5;
+        elseif key_down char_to_key "e" then
+            pathcam rotate by -5;
+        end;
+        global check_keys;
+    end;    // check_keys
+
+    mouse_controlled_actor pathcam in environment
+        doing check_keys;
+end;    // pathcam_anim

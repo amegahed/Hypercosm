@@ -1,0 +1,45 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    3ds_xyz_position_controller.ores    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_position_controller.ores";
+include "system/3ds_xyz_controller.ores";
+
+subject translated_3ds_xyz_position_controller 
+extends
+	translated_3ds_position_controller
+does
+	// constructor
+	//
+	verb new with
+		translated_3ds_float_controllable type x_position_controller is none;
+		translated_3ds_float_controllable type y_position_controller is none;
+		translated_3ds_float_controllable type z_position_controller is none;
+	end;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		translated_3ds_float_controllable type x_position_controller is none;
+		translated_3ds_float_controllable type y_position_controller is none;
+		translated_3ds_float_controllable type z_position_controller is none;
+	is
+		translated_3ds_position_controller new controlled by
+			(new translated_3ds_xyz_controller with
+				x_controller is x_position_controller;
+				y_controller is y_position_controller;
+				z_controller is z_position_controller;
+			);
+	end;    // new
+end;    // translated_3ds_xyz_position_controller

@@ -1,0 +1,235 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     trusses.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains various forms of shape definitions	for			}
+{		truss shapes.											}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/grids.ores";
+include "system/lattices.ores";
+
+
+shape block_truss with
+    integer x_steps = 4, y_steps = 4, z_steps = 4;
+    trans type trans;
+
+    shape vertex;
+    shape x_edge
+        from vector end1;
+        to vector end2;
+    end;    // x_edge
+    shape y_edge
+        from vector end1;
+        to vector end2;
+    end;    // y_edge
+    shape z_edge
+        from vector end1;
+        to vector end2;
+    end;    // z_edge
+is
+    shape xy_truss is
+        for integer counter = 0..y_steps do
+            scalar y = (counter / y_steps) * 2 - 1;
+
+            x_edge from -trans's x_axis to trans's x_axis with
+                move to trans's y_axis * y;
+            end;
+        end;
+    end;    // xy_truss
+
+
+    shape yz_truss is
+        for integer counter = 0..z_steps do
+            scalar z = (counter / z_steps) * 2 - 1;
+
+            y_edge from -trans's y_axis to trans's y_axis with
+                move to trans's z_axis * z;
+            end;
+        end;
+    end;    // yz_truss
+
+
+    shape zx_truss is
+        for integer counter = 0..x_steps do
+            scalar x = (counter / x_steps) * 2 - 1;
+
+            z_edge from -trans's z_axis to trans's z_axis with
+                move to trans's x_axis * x;
+            end;
+        end;
+    end;    // zx_truss
+
+
+    shape xy_vertices is
+        for integer x_counter = 0..x_steps do
+            scalar x = (x_counter / x_steps) * 2 - 1;
+            vector x_offset = trans's x_axis * x;
+
+            for integer y_counter = 0..y_steps do
+                scalar y = (y_counter / y_steps) * 2 - 1;
+                vector y_offset = trans's y_axis * y;
+
+                vertex with
+                    move to x_offset + y_offset;
+                end;
+            end;
+        end;
+    end;    // xy_vertices;
+
+
+    // x edges
+    //
+    if some x_edge then
+        for integer counter = 0..z_steps do
+            scalar z = (counter / z_steps) * 2 - 1;
+
+            xy_truss with
+                move to trans's origin + (trans's z_axis * z);
+            end;
+        end;
+    end;
+
+    // y edges
+    //
+    if some y_edge then
+        for integer counter = 0..x_steps do
+            scalar x = (counter / x_steps) * 2 - 1;
+
+            yz_truss with
+                move to trans's origin + (trans's x_axis * x);
+            end;
+        end;
+    end;
+
+    // z edges
+    //
+    if some z_edge then
+        for integer counter = 0..y_steps do
+            scalar y = (counter / y_steps) * 2 - 1;
+
+            zx_truss with
+                move to trans's origin + (trans's y_axis * y);
+            end;
+        end;
+    end;
+
+    // vertex elements
+    //
+    if some vertex then
+        for integer counter = 0..z_steps do
+            scalar z = (counter / z_steps) * 2 - 1;
+
+            xy_vertices with
+                move to trans's origin + (trans's z_axis * z);
+            end;
+        end;
+    end;
+end;    // block_truss
+
+
+shape cylinder_truss with
+    scalar umin = 0, umax = 360;
+    scalar rmin = 0, rmax = 1;
+    integer x_steps = 8, y_steps = 2, z_steps = 4;
+    trans type trans;
+
+    shape vertex;
+    shape x_edge
+        from vector end1;
+        to vector end2;
+    end;    // x_edge
+    shape y_edge
+        from vector end1;
+        to vector end2;
+    end;    // y_edge
+    shape z_edge
+        from vector end1;
+        to vector end2;
+    end;    // z_edge
+is
+    // create disk grid
+    //
+    grid2d type grid is (disk_grid y_steps by x_steps with
+        umin = static umin; umax = static umax;
+        rmin = static rmin; rmax = static rmax);
+
+    shape disk_truss is
+        // create truss shape from grid
+        //
+        shape_lattice2 grid with
+            vertex does static vertex;
+            x_edge does static x_edge;
+            y_edge does static y_edge;
+        end;
+    end;    // disk_truss
+
+
+    // transform grid
+    //
+    grid direct from trans;
+
+    for integer counter = 0..z_steps do
+        scalar z = (counter / z_steps) * 2 - 1;
+
+        disk_truss with
+            scale by -1 along <1 0 0>;
+            move to trans's origin + (trans's z_axis * z);
+        end;
+    end;
+    if some z_edge then
+        for each vector point in grid do
+            z_edge from -trans's z_axis to trans's z_axis with
+                move to trans's origin - point;
+            end;
+        end;
+    end;
+end;    // cylinder_truss
+
+
+shape sphere_truss with
+    scalar umin = 0, umax = 360;
+    scalar vmin = -90, vmax = 90;
+    scalar rmin = 0, rmax = 1;
+    integer x_steps = 8, y_steps = 4, z_steps = 2;
+    trans type trans;
+
+    shape vertex;
+    shape x_edge
+        from vector end1;
+        to vector end2;
+    end;    // x_edge
+    shape y_edge
+        from vector end1;
+        to vector end2;
+    end;    // y_edge
+    shape z_edge
+        from vector end1;
+        to vector end2;
+    end;    // z_edge
+is
+    // create cylinder grid
+    //
+    grid3d type grid is (sphere_grid z_steps of y_steps by x_steps with
+        umin = static umin; umax = static umax; vmin = static vmin;
+        vmax = static vmax; rmin = static rmin; rmax = static rmax);
+
+    // transform grid
+    //
+    grid transform from trans;
+
+    // create truss shape from grid
+    //
+    shape_lattice grid with
+        vertex does static vertex;
+        x_edge does static x_edge;
+        y_edge does static y_edge;
+        z_edge does static z_edge;
+    end;
+end;    // sphere_truss

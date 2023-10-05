@@ -1,0 +1,172 @@
+{***************************************************************}
+{                     shape_touch_demo.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do shape_touch_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+// This code demonstrates how to make an object in your scene pickable using
+// block_touched and sphere_touched.
+
+
+shape barbell is
+    sphere with
+        center = <-1 0 0>;
+        radius = .5;
+    end;
+    sphere with
+        center = <1 0 0>;
+        radius = .5;
+    end;
+    cylinder with
+        end1 = <-.7 0 0>;
+        end2 = <.7 0 0>;
+        radius = .25;
+    end;
+end;    // barbell
+
+
+picture scene is
+    default_lights;
+    
+    // the block on the right
+    //
+    block with
+        // the vertex, side1, side2, and side3 parameters must match those
+        // of the block_touched call in order for the hot spot to line up
+        // exactly with the shape being picked
+        vertex = <2 -1 -1>;
+        side1 = <2 0 0>;
+        side2 = <0 2 0>;
+        side3 = <0 0 2>;
+        if block_touched with
+            vertex = <2 -1 -1>;
+            side1 = <2 0 0>;
+            side2 = <0 2 0>;
+            side3 = <0 0 2>;
+        then
+            render_mode is shaded;
+            color = green;
+        else
+            render_mode is wireframe;
+            color = red;
+        end;
+    end;
+    
+    // the block on the left
+    //
+    block with
+        // in this case we apply a single transformation to the block rather
+        // than using the vertex or side parameters
+        if block_touched with
+            move to <-3 0 0>;
+            // transformations in this area will affect both the drawn shape
+            // AND the hot spot
+        then
+            render_mode is shaded;
+            color = green;
+        else
+            render_mode is wireframe;
+            color = red;
+        end;
+    end;
+    
+    // the sphere
+    //
+    sphere with
+        center = <0 0 3>;
+        radius = 1;
+        if sphere_touched with
+            // notice these parameters are different-- here the hot spot is
+            // half the radius of the sphere being drawn
+            center = <0 0 3>;
+            radius = .5;
+        then
+            render_mode is shaded;
+            color = green;
+        else
+            render_mode is wireframe;
+            edges is silhouette;
+            color = grey;
+        end;
+    end;
+    
+    // this smaller sphere indicates where the hot spot actually is
+    //
+    sphere with
+        render_mode is wireframe;
+        color = red;
+        radius = .5;
+        center = <0 0 3>;
+    end;
+    
+    // the cylinder
+    //
+    cylinder with
+        end1 = <0 0 -4>;
+        end2 = <0 0 -2>;
+        radius = 1;
+        
+        // we can use block_touched to approximate picking of more complex
+        // objects, such as this cylinder
+        if block_touched with
+            vertex = <-1 -1 -4>;
+            // default dimensions for a block are 2x2x2--we'll stick with
+            // those because the cylinder has a height of 2 and a diameter
+            // of 2
+            
+            // the hot spot encapsulates the cylinder, with a little bit
+            // left over around the corners
+        then
+            render_mode is shaded;
+            color = green;
+        else
+            render_mode is wireframe;
+            color = red;
+        end;
+    end;
+    
+    // for this barbell shape, we can use two sphere_touched calls and one
+    // block_touched call to approximate its shape
+    //
+    barbell with
+        if sphere_touched with
+            // center & radius parameters must match those of the
+            // corresponding area on the barbell shape
+            center = <-1 0 0>;
+            radius = .5;
+        or sphere_touched with
+            center = <1 0 0>;
+            radius = .5;
+        or block_touched with
+            // this hot spot will cover the shaft between the spheres
+            vertex = <-.7 -.25 -.25>;
+            side1 = <1.4 0 0>;
+            side2 = <0 .5 0>;
+            side3 = <0 0 .5>;
+        then
+            render_mode is shaded;
+            color = green;
+        else
+            render_mode is wireframe;
+            color = red;
+        end;
+    end;
+end;    // scene
+
+
+anim shape_touch_demo_anim with
+    double_buffer is on;
+    eye = <0 -15 0>;
+is
+    mouse_controlled_picture scene;
+end;    // shape_touch_demo

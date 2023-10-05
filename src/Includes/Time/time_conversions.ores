@@ -1,0 +1,115 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       time_conversions.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{    Contains a set of functions for conversions between time   }
+{    measurements.                                              }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "native_time.ores";
+
+scalar question hours_to_seconds
+	scalar hrs;
+is
+	answer hrs * 3600;
+end;
+
+scalar question seconds_to_hours
+	scalar secs;
+is
+	answer secs / 3600;
+end;
+
+scalar question hours_to_minutes
+	scalar hrs;
+is
+	answer hrs * 60;
+end;
+
+scalar question minutes_to_hours
+	scalar mins;
+is
+	answer mins / 60;
+end;
+
+scalar question minutes_to_seconds
+	scalar mins;
+is
+	answer mins * 60;
+end;
+
+scalar question seconds_to_minutes
+	scalar secs;
+is
+	answer secs / 60;
+end;
+
+{***************************************************************}
+{        helper constants for time conversion functions         }
+{***************************************************************}
+
+const vector extract_hrs = <1 0 0>;
+const vector extract_mins = <0 1 0>;
+const vector extract_secs = <0 0 1>;
+
+scalar question time_to_hours
+	time type t;
+is
+	scalar hours;
+	hours = (t dot extract_hrs);
+	hours = itself + minutes_to_hours (t dot extract_mins);
+	hours = itself + seconds_to_hours (t dot extract_secs);
+	answer hours;
+end; // time_to_hours
+
+scalar question time_to_minutes
+	time type t;
+is
+	scalar minutes;
+	minutes = hours_to_minutes (t dot extract_hrs);
+	minutes = itself + (t dot extract_mins);
+	minutes = itself + seconds_to_minutes (t dot extract_secs);
+	answer minutes;
+end; // time_to_minutes
+
+scalar question time_to_seconds
+	time type t;
+is
+	scalar seconds;
+	
+	seconds = hours_to_seconds (t dot extract_hrs);
+	seconds = itself + minutes_to_seconds (t dot extract_mins);
+	seconds = itself + (t dot extract_secs);
+	answer seconds;
+end; // time_to_seconds
+
+time type question hours_to_time
+	scalar hrs;
+is
+	integer hours_trunc = trunc hrs;
+	scalar  hours_remain = hrs - hours_trunc;
+	
+	scalar  minutes = hours_to_minutes hours_remain;
+	integer minutes_trunc = trunc minutes;
+	scalar  minutes_remain = minutes - minutes_trunc;
+	
+	scalar  seconds = minutes_to_seconds minutes_remain;
+	answer <hours_trunc  minutes_trunc  seconds>;
+end; // hours_to_time
+
+time type question minutes_to_time
+	scalar mins;
+is
+	answer hours_to_time (minutes_to_hours mins);
+end; // minutes_to_time
+
+time type question seconds_to_time
+	scalar secs;
+is
+	answer hours_to_time (seconds_to_hours secs);
+end; // seconds_to_time

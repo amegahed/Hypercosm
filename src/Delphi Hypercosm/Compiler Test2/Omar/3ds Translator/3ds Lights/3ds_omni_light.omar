@@ -1,0 +1,53 @@
+do omni_light_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_plane.ores";
+include "system/3ds_omni_light.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim omni_light_anim with
+	ambient = black;
+is
+	shape shapes is
+		translated_3ds_sphere with
+		    radius = 25;
+		    move to <0 0 25>;
+		    color = white;
+		end;
+		translated_3ds_plane with
+			magnify by 100;
+	        length_segs = 8;
+	    	width_segs = 8;
+	    	color = white;
+		end;
+	end;	// shapes
+	
+	shape scene is
+		shapes;
+		
+		translated_3ds_omni_light at <100 0 100> with
+			color = light blue;
+			intensity = 1;
+			scale = 100;
+			visible is true;
+		end;
+		translated_3ds_omni_light at <-100 0 100> with
+			color = light yellow;
+			intensity = 1;
+			scale = 100;
+			visible is true;
+		end;
+				
+		axes with
+			magnify by 25;
+		end;
+	end;	// scene
+	
+	mouse_controlled_shape scene lit by none titled "3DS Omni Light" with
+		auto_camera is on;
+	end;
+end;	// box_anim

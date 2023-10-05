@@ -1,0 +1,171 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   iterators.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utilities which provide a few useful           }
+{       utilities for aggregating objects into collections.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+{***************************************************************}
+{						using iterators							}
+{***************************************************************}
+{       Iterators are used to walk through collections          }
+{       of objects and to access the individual elements.       }
+{		There are a number of different ways that iterators		}
+{		can be used to cycle through a collection of elements.	}
+{																}
+{		The first way to advance the iterator is by				}
+{		calling the "to_next" method to explicitly				}
+{		move the iterator to the next element.					}
+{		for example:											}
+{																}
+{		iterator type iterator is list get_iterator;			}
+{		while iterator is_iterating do							}
+{			print iterator get;									}
+{			iterator to_next;									}
+{		end;													}
+{																}
+{		You can also advance the iterator implicitly			}
+{		by calling "next" which returns the element				}
+{		currently references by the iterator and also 			}
+{		advances to the next element in the collection.			}
+{		for example:											}
+{																}
+{		iterator type iterator is list get_iterator;			}
+{		while iterator is_iterating do							}
+{			print iterator next;								}
+{		end;													}
+{***************************************************************}
+
+
+include "system/mutable_iteration.ores";
+
+
+abstract subject iterator
+extends
+    mutable_iterable object
+does
+    // data access methods
+    //
+    abstract object type question get;
+    
+    // data modification methods
+    //
+    abstract verb set
+        to object type item;
+    end;
+    
+    // iterator querying methods
+    //
+    abstract boolean question is_iterating;
+    abstract boolean question is_done;
+                 
+    // absolute iterator navigation methods
+    //
+    abstract verb to_first;
+    verb to_last;
+    verb finish;
+            
+    // relative iterator navigation method
+    //
+    abstract verb to_next;
+    verb skip
+    	integer steps;
+    end;
+    verb advance
+        to object type element;
+    end;   
+        
+    // next queryable methods
+    //
+    abstract boolean question has_next;
+    abstract object type question get_next;
+    object type question next;
+    
+    // method to automatically iterate through
+    // the elements applying the specified
+    // action to each element
+    //
+    verb iterate
+        verb action
+            on object type element;
+        end;
+    end;
+is
+	//
+    // absolute iterator navigation methods
+    // 
+    
+    
+    verb to_last is
+        while has_next do
+            to_next;
+        end;
+    end;    // to_last
+    
+
+    verb finish is
+        to_last;
+        to_next;
+    end;    // finish
+    
+
+	//        
+    // relative iterator navigation methods
+    //
+    
+       
+    verb skip
+        integer steps;
+    is
+    	if steps > 0 then
+	        for integer counter = 1 .. steps do
+	            to_next;
+	        end;
+        end;
+    end;    // skip
+    
+    
+    verb advance
+        to object type element;
+    is
+        while get isn't element and is_iterating do
+            to_next;
+        end;
+    end;    // advance
+    
+    
+	//
+    // iterator querying / navigation methods
+    //
+    
+    
+    object type question next is
+    	object type element is iterator get;
+    	iterator to_next;
+    	answer element;
+    end;	// next
+
+
+	//        
+    // iteration methods
+    //
+    
+    
+    verb iterate
+        verb action
+            on object type element;
+        end;
+    is
+        to_first;
+        while is_iterating do
+            action on next;
+        end;
+    end;
+end;    // iterator

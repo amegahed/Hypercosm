@@ -1,0 +1,37 @@
+do checklist_selector_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "strings.ores";
+include "native_text.ores";
+include "checklist Selector.ores";
+
+ 
+anim checklist_selector_test with
+    background = dark blue;
+    double_buffer is true;
+is
+    text_sensor type step_display "steps" at <-1 .8 0> with
+        h_alignment is left;
+    end;
+    checklist_selector type checklist_selector of ["This" "That" "Other Thing"] at <.95 0 0>
+        using step_display
+    with
+        h_alignment is right;
+    end;
+    
+    verb checklist_action is
+        write "selected item is ", checklist_selector selected_step, ;
+    end;    // checklist_action
+
+    picture checklist_selector_picture is
+        checklist_selector draw;
+        step_display draw;
+    end;
+    
+    checklist_selector's mouse_down_action is (new action type of checklist_action);
+    while true do
+        checklist_selector_picture;
+    end;
+end;    // checklist_selector_test

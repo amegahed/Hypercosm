@@ -1,0 +1,150 @@
+{***************************************************************}
+{                          tower.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tower_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/paths.ores";
+
+
+shape tower with
+    scalar height = 10;
+    scalar width = 2;
+    integer divisions = 8;
+    scalar tube_radius = .1;
+is
+    shape side is
+
+        vector top = <0 0 height>;
+        vector left_base = <(-width / 2) (width / 2) 0>;
+        vector right_base = <(-width / 2) (width / 2) 0>;
+
+        cylinder with
+            end1 = left_base;
+            end2 = top;
+            radius = tube_radius;
+        end;
+        cylinder with
+            end1 = right_base;
+            end2 = top;
+            radius = tube_radius;
+        end;
+
+        for integer counter = 1 .. divisions do
+            scalar t1 = (counter - 1) / divisions;
+            scalar t2 = counter / divisions;
+            scalar h1 = height * t1;
+            scalar h2 = height * t2;
+            scalar w1 = (1 - t1) * width / 2;
+            scalar w2 = (1 - t2) * width / 2;
+
+            // make cross tubes
+            //
+            cylinder with
+                end1 = <(-w1) w1 h1>;
+                end2 = <w2 w2 h2>;
+                radius = tube_radius;
+            end;
+            cylinder with
+                end1 = <w1 w1 h1>;
+                end2 = <(-w2) w2 h2>;
+                radius = tube_radius;
+            end;
+        end;
+    end;    // side
+
+
+    for integer counter = 1 .. 4 do
+        scalar angle = counter / 4 * 360;
+        side with
+            rotate by angle around <0 0 1>;
+        end;
+    end;
+end;    // tower
+
+
+subject radio_tower
+extends
+    actor
+does
+    verb new with
+        scalar height = 10;
+        scalar width = 2;
+        integer divisions = 8;
+        scalar tube_radius = .1;
+    end;
+    shape instance;
+    verb act;
+has
+    // geometry attributes
+    //
+    scalar height, width, tube_radius;
+    integer divisions;
+
+    // animation attributes
+    //
+    wave_path type wave_path is none;
+is
+    verb new with
+        scalar height = 10;
+        scalar width = 2;
+        integer divisions = 8;
+        scalar tube_radius = .1;
+    is
+        radio_tower's height = height;
+        radio_tower's width = width;
+        radio_tower's divisions = divisions;
+        radio_tower's tube_radius = tube_radius;
+
+        new wave_path at <0 0 height> with
+            steps = 10;
+            expansion_speed = .1;
+        end;
+    end;    // new
+
+
+    shape instance is
+        tower with
+            material is plastic colored lime_green polished semi shiny;
+            height = static height;
+            width = static width;
+            divisions = static divisions;
+            tube_radius = static tube_radius;
+        end;
+        wave_path instance;
+    end;    // instance
+
+
+    verb act is
+        wave_path step to <0 0 height>;
+    end;    // act
+end;    // radio_tower
+
+
+anim tower_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <10 -15 5>;
+    lookat = <0 0 5>;
+    args check;
+is
+    radio_tower type radio_tower;
+
+    shape environment is
+        plane with
+            magnify by 8;
+            render_mode is wireframe;
+        end;
+    end;
+
+    mouse_controlled_actor radio_tower in environment;
+end;    // tower_anim

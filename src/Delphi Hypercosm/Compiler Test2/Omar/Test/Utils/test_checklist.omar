@@ -1,0 +1,55 @@
+do checklist_selector_test;
+
+
+include "system/3d.ores";
+include "system/checklist_selector.ores";
+
+
+strings type checklist is [
+    "this"
+    "that"
+    "other thing"
+];
+
+
+anim checklist_selector_test with
+    background = dark blue;
+    double_buffer is true;
+is
+    static material type background_material is constant_color white poster "Background.jpg";
+    
+    text_display type step_display of "Procedure X" at <-1 .8 0> with
+        text_size = round (proportional_text_size * 1.25);
+        h_alignment is left;
+        text_color = black;
+        background = white;
+    end;
+    
+    checklist_selector type checklist_selector of checklist at <.95 0 0>
+        using step_display
+    with
+        h_alignment is right;
+        text_color = step_display's text_color;
+        background = step_display's background;
+        
+        highlight_color = red;
+        highlight_background = yellow;
+        
+        selected_color = step_display's text_color;
+        selected_background = step_display's background;
+    end;
+    
+    verb checklist_action is
+        write "selected item is ", checklist_selector selected_step, ;
+    end;    // checklist_action
+
+    picture checklist_selector_picture is
+        checklist_selector draw;
+        step_display draw;
+    end;
+    
+    checklist_selector's selection_action is (new action of checklist_action);
+    while true do
+        checklist_selector_picture;
+    end;
+end;    // checklist_selector_test

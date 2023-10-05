@@ -1,0 +1,208 @@
+{***************************************************************}
+{                          bubbles.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bubbles_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/args.ores";
+include "system/solids.ores";
+include "system/surfaces.ores";
+
+
+shape martini_glass is
+    disk with
+        radius = 2;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 .2>;
+        radius = 2;
+    end;
+    cone with
+        end1 = <0 0 .2>;
+        end2 = <0 0 .8>;
+        radius1 = 2;
+        radius2 = .2;
+    end;
+    cone with
+        end1 = <0 0 .8>;
+        end2 = <0 0 3.2>;
+        radius1 = .2;
+        radius2 = .4;
+    end;
+    cone with
+        end1 = <0 0 3.2>;
+        end2 = <0 0 5.5>;
+        radius1 = .4;
+        radius2 = 2.6;
+    end;
+    ring with
+        center = <0 0 5.5>;
+        normal = <0 0 .1>;
+        inner_radius = 2.4;
+        outer_radius = 2.6;
+    end;
+    cone with
+        end1 = <0 0 5.5>;
+        end2 = <0 0 4>;
+        radius1 = 2.4;
+        radius2 = 1;
+    end;
+    paraboloid with
+        top = <0 0 3.5>;
+        base = <0 0 4>;
+        radius = 1;
+    end;
+end;    // martini_glass
+
+
+shape bubble is
+    soap_bubble sphere with
+        magnify the shader_trans by 3;
+    end;
+end;    // bubble
+
+
+picture bubbles_picture with
+    field_of_view = 65;
+    eye = <10 -30 20>;
+    lookat = <0 0 8>;
+    render_mode is shaded;
+    background = black;
+    ambient = white * .3;
+    shading is pixel;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    width = trunc (height * .75);
+is
+    shape soap_bubble_martini_glass is
+        soap_bubble martini_glass with
+            magnify the shader_trans by 10;
+        end;
+    end;    // soap_bubble_martini_glass
+
+    shape level1 is
+        martini_glass with
+            move to <0 0 0>;
+        end;
+        martini_glass with
+            move to <5 5 0>;
+        end;
+        martini_glass with
+            move to <5 -5 0>;
+        end;
+        martini_glass with
+            move to <-5 5 0>;
+        end;
+        martini_glass with
+            move to <-5 -5 0>;
+        end;
+    end;    // level1
+
+
+    shape level2 is
+        martini_glass with
+            move to <3 3 5.5>;
+        end;
+        martini_glass with
+            move to <3 -3 5.5>;
+        end;
+        martini_glass with
+            move to <-3 3 5.5>;
+        end;
+        martini_glass with
+            move to <-3 -3 5.5>;
+        end;
+    end;    // level2
+
+
+    spot_light towards <10 30 -16> with
+        move to <-10 -30 35>;
+        angle = 70;
+        brightness = 60;
+    end;
+
+    // flat show_image in local plank plane with
+    plane with
+        color = grey;
+        magnify by 10;
+        magnify the shader_trans by 40;
+        rotate the shader_trans by 90 around <0 0 1>;
+    end;
+
+
+    level1 with
+        material is golden;
+    end;
+    level2 with
+        material is copper;
+    end;
+    martini_glass with
+        material is silver;
+        move to <0 0 11>;
+    end;
+
+
+    bubble with
+        move to <-2 -3 15>;
+    end;
+    bubble with
+        move to <3 5 10>;
+    end;
+    bubble with
+        move to <4 -7 8>;
+        magnify by .8;
+    end;
+    bubble with
+        move to <-3 -3 12>;
+        magnify by .5;
+    end;
+    bubble with
+        move to <5 -3 14>;
+        magnify by .5;
+    end;
+    bubble with
+        move to <1 1 20>;
+        magnify by .5;
+    end;
+    bubble with
+        move to <1 5 18>;
+        magnify by .4;
+    end;
+    bubble with
+        move to <-2 4 21>;
+    end;
+    bubble with
+        move to <-.5 0 6>;
+    end;
+    bubble with
+        move to <-2 -5 6>;
+    end;
+    bubble with
+        move to <0 -10 2>;
+    end;
+end;    // bubbles_picture
+
+
+anim bubbles_anim
+    args type args;
+with
+    field_of_view = 65;
+    eye = <10 -30 20>;
+    lookat = <0 0 8>;
+    width = trunc (height * .75);
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_picture bubbles_picture;
+end;    // bubbles_anim

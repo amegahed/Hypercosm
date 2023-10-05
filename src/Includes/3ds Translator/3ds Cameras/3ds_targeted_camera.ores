@@ -1,0 +1,106 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_targeted_cameras.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains targeted camera definitions that correspond    }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_camera.ores";
+include "system/transformations.ores";
+include "system/marks.ores";
+
+subject translated_3ds_targeted_camera
+extends
+	translated_3ds_camera
+does
+	// constructor
+	//
+	verb new
+	
+		// camera placement parameters
+		//
+		from vector location;
+		to vector target = <0 0 0>;
+	with    
+		// camera lens parameters
+		//
+		scalar fov = 60;
+		boolean orthographic is false;
+		
+		// camera rendering parameters
+		//
+		boolean visible is false;
+		
+		// camera tilt parameters
+		//
+		scalar roll = 0;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		// camera placement parameters
+		//
+		from vector location;
+		to vector target = <0 0 0>;
+	with    
+		// camera lens parameters
+		//
+		scalar fov = 60;
+		boolean orthographic is false;
+		
+		// camera rendering parameters
+		//
+		boolean visible is false;
+		
+		// camera tilt parameters
+		//
+		scalar roll = 0;
+	is
+		vector direction = (target - location);
+		
+		// call superclass constructor
+		//
+		translated_3ds_camera new at location towards (global normalized direction) with
+			
+			// set camera lens and focus parameters
+			//
+			fov = static fov;
+			distance = vlength of direction;
+			orthographic is static orthographic;
+			
+			// set camera rendering parameters
+			//
+			visible is static visible;
+		end;
+	end;    // new
+	
+	//
+	// rendering method
+	//
+		
+	shape instance is
+		if visible then
+			vector direction = get_direction;
+			vector target = get_lookat;
+			
+			translated_3ds_camera static instance;
+			
+			mark at target of square as drawn in three_d with
+				size = distance / 100;
+			end;
+		end;
+	end;    // instance
+end;    // translated_3ds_targeted_camera

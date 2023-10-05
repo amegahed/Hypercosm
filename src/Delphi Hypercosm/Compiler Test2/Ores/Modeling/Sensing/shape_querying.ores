@@ -1,0 +1,117 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  	 shape_querying.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains utilities for querying shapes about their     	}
+{		geometry.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/bounding_boxes.ores";
+include "system/native_trans.ores";
+include "system/native_sensing.ores";
+include "system/native_proximity.ores";
+
+
+boolean shape_querying is false;
+
+
+{***************************************************************}
+{					  shape querying methods					}
+{***************************************************************}
+
+
+vector question get_shape_center
+	of shape thing;
+is
+	trans type trans;
+	
+    shape local_thing is
+    	global shape_querying is true;
+    	
+        thing return with
+        	trans = global trans;
+        end;
+        
+        global shape_querying is false;
+    end;	// local_thing
+    
+    // we need this call to instantiate local thing to get trans
+    //
+    vector closest_point = closest_to_point <0 0 0> on local_thing;
+    
+    answer trans's origin;
+end;	// get_shape_center
+
+
+verb set_shape_trans
+	trans type reference trans;
+	of shape thing;
+is
+    shape local_thing is
+    	global shape_querying is true;
+    	
+        thing return with
+        	trans = global trans;
+        end;
+        
+        global shape_querying is false;
+    end;	// local_thing
+    
+    // we need this call to instantiate local thing to get trans
+    //
+    vector closest_point = closest_to_point <0 0 0> on local_thing;
+end;	// set_shape_trans
+
+
+verb set_shape_bounding_box
+	bounding_box type bounding_box;
+	of shape thing;
+is
+	trans type trans;
+	set_shape_trans trans of thing;
+	trans set_bounding_box bounding_box;
+end;	// set_shape_bounding_box
+
+
+{***************************************************************}
+{				    shape querying questions					}
+{***************************************************************}
+
+
+bounding_box type question get_shape_bounding_box
+    of shape thing;
+is
+	bounding_box type bounding_box;
+	set_shape_bounding_box bounding_box of thing;
+	answer bounding_box;
+end;    // get_shape_bounding_box
+
+
+volume_bounding type question get_shape_bounds
+    of shape thing;
+is
+	static bounding_box type bounding_box;
+	set_shape_bounding_box bounding_box of thing;
+    answer bounding_box get_bounds;
+end;    // get_shape_bounding_box
+
+
+vector question get_shape_bounding_size
+    of shape thing;
+    at vector reference center refers to none;
+is
+	trans type trans;
+	set_shape_trans trans of thing;
+	if not (center refers to none) then
+		center = trans's origin;
+	end;
+	answer trans dimensions;
+end;    // get_shape_bounding_size
+
+

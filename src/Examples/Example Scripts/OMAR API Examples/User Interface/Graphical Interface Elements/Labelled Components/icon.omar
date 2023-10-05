@@ -1,0 +1,54 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            icon.omar                   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of an icon user          }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do icon_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/icon.ores";
+include "system/check_keys.ores";
+
+anim icon_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	verb selection_action is
+		write "selected!", ;
+	end;
+	verb deselection_action is
+		write "deselected!", ;
+	end;
+		
+	icon type wireframe_icon labelled "Wireframe" poster "wireframe_icon.gif"
+		selecting (new action of selection_action)
+		deselecting (new action of deselection_action)
+	with
+		selected is true;
+	end;
+	
+	picture scene is
+		sphere;
+		wireframe_icon overlay at 10;
+		default_lights;
+		default_background at 100;
+		wireframe_icon update;
+	end;    // scene
+	
+	wireframe_icon set_location to <-.8 .8 0>;
+	while true do
+		scene;
+		check_keys;
+	end;
+end;    // icon_anim

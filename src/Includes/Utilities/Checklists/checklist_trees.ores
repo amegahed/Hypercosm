@@ -1,0 +1,104 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        checklist_trees.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition to store hierarchical       }
+{       checklists.                                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+include "system/trees.ores";
+
+subject checklist_tree
+extends
+	tree
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+		described as strings type description is none;
+	end;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public string type name;
+	public strings type description;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		named string type name is none;
+		described as strings type description is none;
+	is
+		checklist_tree's name is name;
+		checklist_tree's description is description;
+	end;    // new
+	
+	//    
+	// printing methods
+	//
+	
+	integer indentation_level = 0;
+	
+	verb indent is
+		for integer counter = 1 .. indentation_level do
+			write tab;
+		end;
+	end;    // indent
+	
+	verb print is
+		indent;
+		write double_quote; 
+		write name;
+		write double_quote;
+		
+		if some description then
+			write ": ";
+			
+			for each string type string in description do
+				write double_quote;
+				write string;
+				write double_quote;
+				
+				if string isn't description[max description] then
+					write ", ", ;
+					indentation_level = itself + 1;
+					indent;
+					indentation_level = itself - 1;
+				end;
+			end;
+		end;
+
+		// print sublist
+		//
+		if some children then
+			if not children is_empty then
+				iterator type iterator is children iterator;
+				
+				write " {", ;
+				indentation_level = itself + 1;
+				while iterator is_iterating do
+					checklist_tree type subtree is none;
+					subtree is checklist_tree type iterator next;
+					subtree print;
+					write;
+				end;
+				indentation_level = itself - 1;
+				indent;
+				write "}";
+			end;
+		end;
+	end;    // print
+end;    // checklist_tree

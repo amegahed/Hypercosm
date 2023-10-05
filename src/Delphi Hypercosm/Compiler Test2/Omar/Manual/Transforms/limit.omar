@@ -1,0 +1,63 @@
+{***************************************************************}
+{                          limit.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do limit_anim;
+
+
+include "system/3d.ores";
+include "system/abs_trans.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+include "system/snowman.omar";
+
+
+anim limit_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <0 0 .85>;
+    args check;
+is
+	shape scene is
+        scalar h = 3.6 * .5;
+
+        snowman with
+            magnify by .5;
+            color = white;
+            render_mode is wireframe;
+        end;
+        snowman with
+            magnify by .5;
+            color = red;
+            render_mode is wireframe;
+        return with
+            limit x_min to .5;
+        end;
+        arrow from (<0 0 (h / 2)>) to (<.5 0 (h / 2)>);
+        block with
+            move to <0 0 1>;
+            scale by .5 along <1 0 0>;
+            scale by .5 along <0 1 0>;
+            scale by (h / 2) along <0 0 1>;
+            move to <1 0 0>;
+            color = white;
+            render_mode is wireframe;
+        end;
+
+        futura_l_word "LIMIT" with
+            rotate by 90 around <1 0 0>;
+            move to <-1 0 .75>;
+        end;
+        axes;
+	end;
+	
+    mouse_controlled_shape scene titled "The Limit Transformation";
+end;    // limit_anim

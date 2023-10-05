@@ -1,0 +1,44 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	      cubic_curve.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		cubic curve.  											}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/cubic_splines.ores";
+include "system/segmented_spline.ores";
+include "system/arrows.ores";
+include "system/native_shapes.ores";
+
+
+shape cubic_curve
+    from vector v1, m1;
+    to vector v2, m2;
+with
+    integer steps = 10;
+    boolean show_tangents is false;
+is
+    vpolynomial type vpolynomial is get_hermite_vcubic from v1 m1 to v2 m2;
+    segmented_spline type segmented_spline is vpolynomial get_values in steps;
+	
+    if show_tangents then
+    	scalar length = vlength of (v2 - v1);
+    	arrow from v1 to v1 + m1 / 3 with
+    		arrow_head_width = itself * length;
+    		color = red;
+    	end;
+    	arrow from v2 to v2 + m2 / 3 with
+    		arrow_head_width = itself * length;
+    		color = green;
+    	end;
+    end;
+
+    line segmented_spline;
+end;    // cubic_curve

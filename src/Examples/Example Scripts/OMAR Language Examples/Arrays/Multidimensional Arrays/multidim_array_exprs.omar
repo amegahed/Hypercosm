@@ -1,0 +1,31 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       multidim_array_exprs.omar        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of             }
+{       array expressions to assign a series of values          }
+{       to arrays in the OMAR language.                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do multidim_array_exprs_example;
+
+// multi-dimensional array declarations
+//
+integer values[][];
+char messages[][];
+vector vertices[][];
+
+verb multidim_array_exprs_example
+is
+	// array assignments using multi-dimensional array expressions
+	//
+	values = [[1 2] [3 4 5]];
+	messages = ["this" "that" "other thing"];
+	vertices = [[<-1 -1 0> <-1 1 0> <1 1 0> <1 -1 0>] [<0 0 0>]];
+	
+	write "ok!", ;
+end;    // multidim_array_exprs_example

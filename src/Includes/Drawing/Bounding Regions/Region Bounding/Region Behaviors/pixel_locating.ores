@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         pixel_locating.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains general pixel behavior definitions.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/pixels.ores";
+
+adjective pixel_locateable
+does
+	// getting methods
+	//
+	pixel type question get_location;
+end;    // pixel_locateable
+
+adjective pixel_relocateable
+does
+	// setting methods
+	//
+	verb set_location
+		to pixel type location;
+	end;
+end;    // pixel_relocateable

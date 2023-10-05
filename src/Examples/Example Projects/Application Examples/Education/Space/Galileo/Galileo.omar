@@ -1,0 +1,1113 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             galileo.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This simulation depicts NASA's Galileo orbiter          }
+{       in orbit around the planet Jupiter.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do galileo_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/actors.ores";
+include "system/shapes.ores";
+include "system/grid_meshes.ores";
+include "system/grid_shapes.ores";
+include "system/vector_grids.ores";
+include "system/native_sound.ores";
+include "system/common_materials.ores";
+
+subject galileo
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// animation methods
+	//
+	verb step;
+	// methods for opening and closing the petals
+	//
+	verb open;
+	verb close;
+	
+	// method for launching the atmospheric probe
+	verb launch_probe;
+	verb set_gravity
+		to vector direction;
+	end;
+	// methods for operating the thrusters
+	//
+	verb set_thrust
+		to scalar thrust;
+	end;
+	verb change_thrust
+		by scalar amount = .1;
+	end;
+has
+	// attributes
+	//
+	boolean opening is false, closing is false;
+	boolean probe_launched is false;
+	
+	scalar antenna_deployment = 1;
+	vector probe_location = <0 0 0>, probe_velocity = <0 0 0>, probe_acceleration = <0 0 0>;
+	scalar max_probe_distance = 100;
+	scalar thrust = 0;
+is
+	// textures
+	//
+	texture type large_antenna_texture is (new texture using (new image named "large_antenna.png") with 
+		interpolation is on; mipmapping is on);
+	texture type small_antenna_texture is (new texture using (new image named "small_antenna.png") with
+		interpolation is on; mipmapping is on);
+	texture type radiator_texture is (new texture using (new image named "radiator.png") with
+		interpolation is on; mipmapping is on);
+	texture type mag_boom_texture is (new texture using (new image named "mag_boom.png") with
+		interpolation is on; mipmapping is on);
+	// materials
+	//  
+	material type large_antenna_material is metal colored gold textured large_antenna_texture;
+	material type small_antenna_material is metal colored gold textured small_antenna_texture;
+	material type radiator_material is metal colored gold textured radiator_texture;
+	material type mag_boom_material is metal colored white textured mag_boom_texture;
+	material type flame_material is constant_color white textured (new texture using 
+			(new image named "flame.png") with
+			wraparound is false);
+	
+	// sounds
+	//  
+	sound type rocket_sound named "noise.wav" with
+		looping is true;
+	end;
+	
+	//
+	// constructor
+	//
+	
+	
+	verb new is
+		// call superclass constructor
+		//
+		timed_actor new;
+	end;    // new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+			
+	verb set_gravity 
+		to vector direction;
+	is
+		probe_acceleration = direction;
+	end;    // set_gravity
+	
+	//
+	// rendering methods
+	//
+	
+		
+	objective shape probe is
+		scalar vmin = 30;
+		scalar vmax = 80;
+		scalar outer_radius = 1 / cos vmin;
+		scalar inner_radius = cos vmax * outer_radius;
+		scalar offset = -sin vmin * outer_radius;
+		
+		shape cover is
+			sphere with
+				vmin = static vmin;
+				vmax = static vmax;
+				radius = outer_radius;
+				move to <0 0 offset>;
+			end;
+			disk with
+				center = <0 0 (sin vmax * outer_radius)>;
+				radius = inner_radius;
+				move to <0 0 offset>;
+				material is chalk colored light grey;
+			end;
+		end;
+		
+		hyperboloid2 with
+			top = <0 0 0>;
+			base = <0 0 .5>;
+			radius = .6;
+			eccentricity = .5;
+			material is golden;
+		end;
+		cone with
+			end1 = <0 0 .5>;
+			end2 = <0 0 .95>;
+			radius1 = .6;
+			radius2 = 1;
+			material is plastic colored charcoal;
+		end;
+		cylinder with
+			end1 = <0 0 .95>;
+			end2 = <0 0 1>;
+			radius = 1;
+			material is silver;
+		end;
+		cover with
+			material is plastic colored charcoal;
+			move to <0 0 .95>;
+		end;
+	end;    // probe
+	
+	
+	objective shape low_gain_antenna is
+		disk with
+			radius = .2;
+			material is small_antenna_material;
+		end;
+	end;    // low_gain_antenna
+	
+	
+	objective shape receiver is
+		cone with
+			end1 = <0 0 0>;
+			end2 = <0 0 .5>;
+			radius1 = .1;
+			radius2 = .05;
+		end;
+		cone with
+			end1 = <0 0 .5>;
+			end2 = <0 0 .75>;
+			radius1 = .05;
+			radius2 = .125;
+		end;
+		cone with
+			end1 = <0 0 .75>;
+			end2 = <0 0 1.05>;
+			radius1 = .125;
+			radius2 = .05;
+		end;
+		cylinder with
+			end1 = <0 0 1.05>;
+			end2 = <0 0 1.15>;
+			radius = .05;
+			material is aluminum;
+		end;
+		low_gain_antenna with
+			move to <0 0 1.15>;
+		end;
+		cone with
+			end1 = <0 0 1.15>;
+			end2 = <0 0 1.2>;
+			radius1 = .05;
+			radius2 = .025;
+		end;
+		disk with
+			center = <0 0 1.2>;
+			radius = .025;
+			material is aluminum;
+		end;
+	end;    // receiver
+	
+	
+	objective shape antenna with
+		integer sections = 18;
+		scalar radius = 1;
+		scalar depth = .5;
+		scalar deployment = 1;
+	is
+		scalar height = sqrt (sqr radius + sqr depth);
+		scalar min_radius = .1;
+		
+		shape gore with
+			scalar angle = 360 / sections * 1.1;
+			integer rows = 3, columns = 3;
+		is
+			vector vertices[1 .. columns, 1 .. rows];
+			
+			for integer row = 1 .. rows do
+				scalar s = (row - 1) / (rows - 1);
+				
+				for integer column = 1 .. columns do
+					scalar t = (column - 1) / (columns - 1);
+					
+					scalar radius = (t * radius);
+					scalar theta = s * angle - (angle / 2);
+					scalar scrunch = t * t * (1 - deployment) * .75;
+					scalar sag = sqr(abs (2 * s - 1)) * t;
+					
+					scalar x = cos (theta * (1 - scrunch)) * radius;
+					scalar y = sin (theta * (1 - scrunch)) * radius;
+					scalar z = sqr t * depth + (sag * deployment * .05);
+					
+					vertices[column, row] = <x y z>;
+				end;
+			end;
+			
+			quad_grid_mesh of vertices with
+				material is large_antenna_material;
+			end;
+			
+			for integer column = 1 .. columns - 1 do
+				vector end1 = vertices[column, 1];
+				vector end2 = vertices[column + 1, 1];
+				vector direction = (end2 - end1) / 2;
+				vector center = (end2 + end1) / 2;
+	
+				block with
+					scale by .01 along <0 1 0>;
+					scale by .01 along <0 0 1>;
+					orient from <1 0 0> to direction;
+					move to center;
+					material is silver;
+				end;
+			end;
+		end;
+		
+		for integer counter = 1 .. sections do
+			gore with
+				rotate by -65 * (1 - deployment) around <0 1 0>;
+				move to <min_radius 0 0>;
+				rotate by counter / sections * 360 around <0 0 1>;
+			end;
+		end;
+		
+		receiver with
+			material is plastic colored charcoal;
+		end;
+	end;    // antenna
+	
+	
+	objective shape sun_shade is
+		integer supports = 8;
+		
+		paraboloid with
+			top = <0 0 .41>;
+			base = <0 0 .8>;
+			radius = 1;
+			material is chalk colored charcoal;
+			radius = 2;
+		end;
+		
+		// supports
+		//
+		for integer counter = 1 .. supports do
+			cylinder with
+				end1 = <.75 0 0>;
+				end2 = <1.5 0 .55>;
+				radius = .02;
+				rotate by (counter / supports) * 360 around <0 0 1>;
+				material is aluminum;
+			end;
+			cylinder with
+				end1 = <1.5 0 .55>;
+				end2 = rotated_vector end1 by (360 / supports) around <0 0 1>;
+				radius = .02;
+				rotate by (counter / supports) * 360 around <0 0 1>;
+				material is aluminum;
+			end;
+			block with
+				magnify by .025;
+				move to <1.5 0 .6>;
+				rotate by (counter / supports) * 360 around <0 0 1>;
+				material is chalk colored dark grey;
+			end;
+		end;
+	end;    // sun_shade
+	
+	
+	objective shape antenna_support is
+		cone with
+			end1 = <0 0 0>;
+			end2 = <0 0 1>;
+			radius1 = 1.5;
+			radius2 = .75;
+		end;
+	end;    // antenna_support
+	
+	
+	objective shape rtg with
+		scalar radius = .2;
+		scalar length = 1;
+		scalar fin_width = .1;
+		integer fins = 8;
+	is
+		shape cooling_fin is
+			parallelogram with
+				vertex = <(-length / 2) 0 0>;
+				side1 = <length 0 0>;
+				side2 = <0 0 fin_width>;
+			end;
+		end;
+		
+		rod with
+			end1 = <(-length / 2) 0 0>;
+			end2 = <(length / 2) 0 0>;
+			radius = static radius;
+		end;
+		
+		for integer counter = 1 .. fins do
+			cooling_fin with
+				move to <0 0 radius>;
+				rotate by (counter - 1) / (fins - 1) * 360 around <1 0 0>;
+			end;
+		end;
+	end;    // rtg
+	
+	
+	const scalar rtg_truss_radius = .15;
+	
+	
+	objective shape rtg_truss with
+		scalar length = 2;
+		scalar radius = rtg_truss_radius;
+		integer steps = 3;
+	is
+		vector point1 = <0 0 -radius>;
+		vector point2 = rotated_vector point1 by 120 around <1 0 0>;
+		vector point3 = rotated_vector point1 by 240 around <1 0 0>;
+		scalar section_length = length / steps;
+		
+		shape cross_section is
+			cylinder with
+				end1 = point1;
+				end2 = point2;
+				radius = .02;
+			end;
+			cylinder with
+				end1 = point2;
+				end2 = point3;
+				radius = .02;
+			end;
+			cylinder with
+				end1 = point3;
+				end2 = point1;
+				radius = .02;
+			end;
+		end;    // cross_section
+		
+		for integer counter = 1 .. 3 do
+			cylinder with
+				end1 = <0 0 0>;
+				end2 = <length 0 0>;
+				move to <0 0 -static radius>;
+				rotate by (counter - 1) / 3 * 360 around <1 0 0>;
+				radius = .02;
+			end;
+		end;
+		
+		for integer counter = 1 .. steps do
+			cross_section with
+				move to <((counter - 1) * section_length) 0 0>;
+			end;
+		end;
+	end;    // rtg_truss
+	
+	
+	objective shape rtg_boom with
+		scalar length = 2;
+	is
+		rtg_truss with
+			length = static length;
+		end;
+		rtg with
+			move to <(static length + (length / 2)) 0 0>;
+		end;
+	end;    // rtg_boom
+	
+	
+	objective shape rtg_connector is
+		scalar radius = 1;
+		
+		shape side_supports is
+			cylinder with
+				end1 = rotated_point <radius 0 0> by 22.5 around <0 0 1>;
+				end2 = <1.75 .25 .75>;
+				radius = .02;
+			end;
+			cylinder with
+				end1 = rotated_point <radius 0 0> by 67.5 around <0 0 1>;
+				end2 = <1.75 .25 .75>;
+				radius = .02;
+			end;
+		end;
+		
+		side_supports;
+		side_supports with
+			scale by -1 along <0 1 0>;
+		end;
+		cylinder with
+			end1 = <1.75 .25 .75>;
+			end2 = <1.75 -.25 .75>;
+			radius = .02;
+		end;
+	end;    // rtg_connector
+	
+	
+	objective shape rtg_assembly with
+		scalar angle = 0;
+	is
+		rtg_connector;
+		rtg_boom with
+			move to <1.75 0 (.75 - (rtg_truss_radius / 2))>;
+			rotate by angle around <0 1 0> about <1.75 0 .75>;
+		end;
+	end;    // rtg_assembly
+	
+	
+	objective shape rtg_assemblies with
+		scalar deployment = 1;
+	is
+		rtg_assembly with
+			move to <0 0 -.3>;
+			material is aluminum;
+			angle = (1 - deployment) * 90;
+		end;
+		rtg_assembly with
+			move to <0 0 -.3>;
+			material is aluminum;
+			rotate by 135 around <0 0 1>;
+			angle = (1 - deployment) * 90;
+		end;
+	end;    // rtg_assemblies
+	
+	
+	objective shape mag_boom_connector is
+		scalar radius = 1;
+		
+		shape side_supports is
+			cylinder with
+				end1 = rotated_point <radius 0 .3> by 22.5 around <0 0 1>;
+				end2 = <1.75 .25 .75>;
+				radius = .02;
+			end;
+			cylinder with
+				end1 = rotated_point <radius 0 -.3> by 22.5 around <0 0 1>;
+				end2 = <1.75 .25 .75>;
+				radius = .02;
+			end;
+		end;
+		
+		side_supports;
+		side_supports with
+			scale by -1 along <0 1 0>;
+		end;
+		cylinder with
+			end1 = <1.75 .25 .75>;
+			end2 = <1.75 -.25 .75>;
+			radius = .02;
+		end;
+	end;    // mag_boom_connector
+	
+	
+	objective shape mag_boom with
+		scalar length = 10;
+		scalar width = .1;
+	is
+		cylinder with
+			end1 = <0 0 0>;
+			end2 = <.5 0 0>;
+			radius = width * 1.5;
+			material is golden;
+		end;
+		prism with
+			sides = 4;
+			closed is false;
+			rotate by 90 around <0 1 0>;
+			scale by width along <0 1 0>;
+			scale by width along <0 0 1>;
+			move to <1 0 0>;
+			scale by (length / 2) along <1 0 0>;
+			material is mag_boom_material;
+		end;
+		rod with
+			end1 = <length 0 0>;
+			end2 = <(length + .5) 0 0>;
+			radius = width * 1.25;
+			material is aluminum;
+		end;
+	end;    // mag_boom
+	
+	
+	objective shape mag_boom_assembly with
+		scalar deployment = 1;
+	is
+		mag_boom_connector with
+			material is aluminum;
+		end;
+		mag_boom with
+			length = deployment * 10;
+			move to <1.75 0 .75>;
+		end;
+	end;    // mag_boom_assembly
+	
+	
+	objective shape instruments_package is
+		shape radiator is
+			parallelogram with
+				scale by .3 along <1 0 0>;
+				scale by .25 along <0 1 0>;
+				material is radiator_material;
+			end;
+			parallelogram with
+				scale by .3 along <1 0 0>;
+				scale by .25 along <0 1 0>;
+				material is constant_color black;
+				move to <0 0 -.01>;
+			end;
+		end;    // radiator
+		
+		
+		prism with
+			sides = 8;
+			scale by .3 along <0 0 1>;
+			rotate by 22.5 around <0 0 1>;
+			material is aluminum;
+		end;
+		
+		for integer i = 1 .. 4 do
+			radiator with
+				rotate by 90 around <1 0 0>;
+				move to <0 -.94 0>;
+				rotate by (i * 90) around <0 0 1>;
+			end;
+		end;
+	end;    // instruments_package
+	
+	
+	shape thruster with
+		scalar thrust = 1;
+	is
+		static shape body is
+			cylinder with
+				umin = 90;
+				umax = 270;
+				radius = 1;
+			end;
+			disk with
+				umin = 90;
+				umax = 270;
+				radius = 1;
+				move to <0 0 1>;
+			end;
+			block with
+				magnify by .25;
+				scale by 1.5 along <0 0 1>;
+				move to <0 0 .25>;
+			end;
+			paraboloid with
+				top = <0 0 0>;
+				base = <0 0 -.5>;
+				radius = .25;
+				material is golden;
+			end;
+		end;
+		
+		body;
+		
+		if thrust > 0 then
+			cone with
+				end1 = <0 0 -.5>;
+				end2 = end1 + <0 0 -10> * thrust * thrust;
+				radius1 = .25;
+				radius2 = thrust * 2;
+				material is flame_material;
+				rotate by random from 0 to 360 around <0 0 1>;
+			end;
+		end;
+	end;    // thruster
+	
+	
+	shape thruster_assembly with
+		scalar thrust = 1;
+	is
+		static shape thruster_mount is
+			pyramid with
+				sides = 4;
+				rotate by 45 around <0 0 1>;
+				move to <0 0 1>;
+				rotate by 90 around <0 1 0>;
+				material is chalk colored charcoal;
+			end;
+		end;
+		
+		thruster_mount;
+		thruster with
+			thrust = static thrust;
+			magnify by .5;
+			move to <2 0 -.25>;
+			material is plastic colored charcoal;
+		end;
+	end;    // thruster_assembly
+	
+	
+	objective shape body is
+	
+		shape side is
+			cylinder with
+				end1 = <1 1 0>;
+				end2 = <1 -1 0>;
+				radius = .4;
+				material is plastic colored charcoal;
+			end;
+			clipping_plane with
+				rotate by 90 around <1 0 0>;
+				rotate by -22.5 around <0 0 1>;
+			end;
+			clipping_plane with
+				rotate by -90 around <1 0 0>;
+				rotate by 22.5 around <0 0 1>;
+			end;
+		end;    // side
+		
+		
+		cylinder with
+			radius = .8;
+			scale by .4 along <0 0 1>;
+			material is chalk colored grey;
+		end;
+		
+		{
+		for integer counter = 1 .. 4 do
+			sphere with
+				radius = .35;
+				move to <.75 0 0>;
+				rotate by counter * 90 around <0 0 1>;
+				material is titanium;
+			end;
+		end;
+		}
+		
+		for integer counter = 1 .. 8 do
+			side with
+				rotate by counter * 45 around <0 0 1>;
+			end;
+		end;
+	end;    // body
+	
+	
+	objective shape probe_antenna is
+		cone with
+			end1 = <0 0 -.1>;
+			end2 = <0 0 .1>;
+			radius1 = .1;
+			radius2 = .05;
+		end;
+		paraboloid with
+			top = <0 0 -.1>;
+			base = <0 0 -.25>;
+			radius = .4;
+		end;
+		for integer i = 1 .. 4 do
+			line [<.25 0 -.15> <0 0 -.5>] with
+				rotate by i * 90 around <0 0 1>;
+				material is silver;
+			end;
+		end;
+		block with
+			magnify by .025;
+			move to <0 0 -.5>;
+		end;
+	end;    // probe_antenna
+	
+	
+	objective shape probe_antenna_assembly is
+		rod with
+			end1 = <0 -.1 0>;
+			end2 = <0 .1 0>;
+			radius = .1;
+		end;
+		cylinder with
+			end1 = <0 0 0>;
+			end2 = <.8 0 0>;
+			radius = .05;
+		end;
+		probe_antenna with
+			move to <.8 0 0>;
+		end;
+	end;    // probe_antenna_assembly
+	
+	
+	objective shape probe_connector is
+		cone with
+			end1 = <0 0 0>;
+			end2 = <0 0 -.2>;
+			radius1 = .8;
+			radius2 = 1;
+		end;
+		cylinder with
+			end1 = <0 0 -.2>;
+			end2 = <0 0 -.4>;
+			radius = 1;
+		end;
+		cone with
+			end1 = <0 0 -.2>;
+			end2 = <0 0 .2>;
+			radius1 = 1;
+			radius2 = 0;
+		end;
+	end;    // probe_connector
+	
+	
+	objective shape scan_platform is
+		block with
+			scale by .5 along <1 0 0>;
+			scale by .75 along <0 1 0>;
+			material is chalk colored grey;
+		end;
+		rod with
+			radius = .5;
+			move to <1 0 0>;
+			scale by 1.5 along <0 0 1>;
+			material is aluminum;
+		end;
+		rod with
+			radius = .5;
+			move to <0 1.25 0>;
+			scale by 1.25 along <0 0 1>;
+			material is aluminum;
+		end;
+	end;    // scan_platform
+	
+	
+	objective shape despun_section with
+		vector probe_location = <0 0 0>;
+		scalar deployment = 1;
+	is
+		probe_connector with
+			material is titanium;
+			move to <0 0 -1.1>;
+		end;
+		scan_platform with
+			magnify by .2;
+			move to <1.1 0 -1.5>;
+			rotate by 180 around <0 0 1>;
+		end;
+		probe with
+			material is chalk colored light grey;
+			move to <0 0 -2.5> + probe_location;
+		end;
+		probe_antenna_assembly with
+			rotate by 90 * (1 - deployment) around <0 1 0>;
+			move to <1.05 0 -1.4>;
+			material is titanium;
+			rotate by 45 around <0 0 1>;
+		end;
+	end;    // despun_section
+	
+	
+	objective shape spun_section with
+		scalar deployment = 1;
+	is
+		antenna with
+			deployment = static deployment;
+			magnify by 2.5;
+			move to <0 0 .75>;
+		end;
+		rtg_assemblies with
+			deployment = static deployment;
+		end;
+		mag_boom_assembly with
+			deployment = static deployment;
+			rotate by 270 around <0 0 1>;
+		end;
+		
+		// assembly of parts
+		//
+		sun_shade with
+			move to <0 0 .3>;
+		end;
+		antenna_support with
+			magnify by .4;
+			move to <0 0 .31>;
+			material is plastic colored charcoal;
+		end;
+		
+		instruments_package;
+		body with
+			move to <0 0 -.7>;
+		end;
+	end;    // spun_section
+	
+	
+	shape thrusters with
+		scalar thrust = 1;
+	is
+		thruster_assembly with
+			thrust = static thrust;
+			magnify by .4;
+			move to <1.25 0 -.7>;
+			rotate by 90 around <0 0 1>;
+		end;
+		thruster_assembly with
+			thrust = static thrust;
+			magnify by .4;
+			move to <1.25 0 -.7>;
+			rotate by 270 around <0 0 1>;
+		end;
+	end;    // thrusters
+	
+	
+	shape instance is
+		scalar time = timer get_time;
+		
+		spun_section with
+			deployment = antenna_deployment;
+			rotate by time * 30 around <0 0 1>;
+		end;
+		
+		thrusters with
+			thrust = galileo's thrust;
+			rotate by time * 30 around <0 0 1>;
+		end;
+	
+		despun_section with
+			deployment = antenna_deployment;
+			probe_location = static probe_location;
+		end;
+	end;    // instance
+	
+	//  
+	// methods for opening and closing the petals
+	//
+	
+	
+	verb open is
+		opening is true;
+		closing is false;
+	end;    // open
+	
+	
+	verb close is
+		opening is false;
+		closing is true;
+	end;    // close
+	
+	
+	verb step_open is
+		antenna_deployment = itself + .025;
+		if antenna_deployment >= 1 then
+			antenna_deployment = 1;
+			opening is false;
+		end;
+	end;    // step_open
+
+	verb step_closed is
+		antenna_deployment = itself - .025;
+		if antenna_deployment <= 0 then
+			antenna_deployment = 0;
+			closing is false;
+		end;
+	end;    // step_closed
+	
+	verb step is
+		if opening then
+			step_open;
+		elseif closing then
+			step_closed;
+		end;
+		
+		if probe_launched then
+			probe_location = itself + probe_velocity;
+			probe_velocity = itself + probe_acceleration;
+			
+			if vlength of probe_location > max_probe_distance then
+				probe_launched is false;
+				probe_location = <0 0 0>;
+				probe_velocity = <0 0 0>;
+			end;
+		end;
+	end;    // step
+	
+	
+	verb launch_probe is
+		probe_velocity = <0 0 -.25>;
+		probe_launched is true;
+	end;
+	
+	
+	verb set_thrust
+		to scalar thrust;
+	is
+		if thrust = 0 then
+			rocket_sound stop;
+		elseif thrust > 0 then
+			rocket_sound play;
+		end;
+		
+		rocket_sound set_volume to thrust * .1;
+		galileo's thrust = thrust;
+	end;    // set_thrust
+	
+	
+	verb change_thrust
+		by scalar amount = .1;
+	is
+		if thrust = 0 and amount > 0 then
+			rocket_sound play;
+		end;
+		
+		thrust = clamp (thrust + amount) from 0 to 1;
+		rocket_sound set_volume to thrust;
+		
+		if thrust = 0 then
+			rocket_sound stop;
+		end;
+	end;
+end;    // galileo
+
+galileo type galileo;
+
+shape jupiter is
+	{
+	sphere with
+		material is chalk poster "jupiter.jpg";
+	end;
+	}
+	quad_grid_mesh of (get_spherical_vector_grid 20 by 20) with
+		mending is on;
+		closed is true;
+		smoothing is on;
+		material is chalk poster "jupiter.jpg";
+	end;
+end;    // jupiter
+
+shape grid_cube with
+	scalar texture_scale = 3;
+is  
+	shape unit_grid is
+		mesh 
+			// vertices
+			//
+			[<-1 -1 0> <-1 1 0> <1 1 0> <1 -1 0>]
+			
+			// edges
+			//
+			[[1 2] [2 3] [3 4] [4 1]]
+			
+			// faces
+			//
+			[1 2 3 4 0]
+		with
+			texcoords = [(<-1 -1 0> * texture_scale) (<-1 1 0> * texture_scale)
+				(<1 1 0> * texture_scale) (<1 -1 0> * texture_scale)];
+		end;
+	end;
+	shape unit_grid_pair is
+		unit_grid with
+			trans's origin = <0 0 1>;
+			trans's x_axis = <1 0 0>;
+			trans's y_axis = <0 1 0>;
+			trans's z_axis = trans's x_axis cross trans's y_axis;
+		end;
+		unit_grid with
+			trans's origin = <0 0 -1>;
+			trans's x_axis = <1 0 0>;
+			trans's y_axis = <0 -1 0>;
+			trans's z_axis = trans's x_axis cross trans's y_axis;
+		end;
+	end;    // unit_grid_pair
+	
+	  
+	shape unit_grid_block is
+		// top and bottom faces
+		//
+		unit_grid_pair;
+		
+		// left and right faces
+		//
+		unit_grid_pair with
+			rotate by 90 around <0 1 0>;
+		end;
+		
+		// front and back faces
+		//
+		unit_grid_pair with
+			rotate by 90 around <1 0 0>;
+		end;
+	end;    // unit_grid_block
+	
+	unit_grid_block;    
+end;    // grid_cube
+
+shape cosmic_cube is
+	grid_cube with
+		material is constant_color white poster "stars.jpg";
+		render_mode is shaded;
+		shadows is off;
+	end;
+end;    // cosmic_cube
+
+shape galileo_in_orbit with
+	scalar time = 0;
+is
+	static boolean gravity_set is false;
+	
+	galileo instance with
+		rotate by 80 around <1 0 0>;
+		rotate by -45 around <0 0 1>;
+		
+		if not gravity_set then
+			galileo set_gravity to get_transformed_vector <0 .002 0>;
+			gravity_set is true;
+		end;
+	end;
+	
+	jupiter with
+		rotate by get_seconds around <0 0 1>;
+		magnify by 25;
+		move to <0 50 0>;
+		shadows is off;
+	end;
+	
+	cosmic_cube with
+		magnify by 80;
+	end;
+end;    // galileo_in_orbit
+
+anim galileo_anim
+	args type args;
+with
+	eye = <2 -10 3>;
+	ambient = black;
+	auto_upright is false;
+is
+	shape lighting is
+		distant_light from <.3 -1 .5> with
+			color = light blue;
+			brightness = .75;
+		end;
+		distant_light from <0 50 0> with
+			brightness = .75;
+			color = orange;
+		end;
+	end;    // lighting
+   verb update is
+		if key_down char_to_key of "o" then
+			galileo open;
+		elseif key_down char_to_key of "c" then
+			galileo close;
+		elseif key_down char_to_key of "l" then
+			galileo launch_probe;
+		elseif key_down char_to_key of "+" then
+			galileo change_thrust by .1;
+		elseif key_down char_to_key of "-" then
+			galileo change_thrust by -.1;
+		end;
+		
+		galileo update;
+	end;    // update
+	// run!
+	//    
+	mouse_controlled_animated_shape galileo_in_orbit
+		titled " The Galileo Orbiter " doing update;
+end;    // galileo_anim

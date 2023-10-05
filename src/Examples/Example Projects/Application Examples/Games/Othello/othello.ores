@@ -1,0 +1,310 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            othello.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the rules of the game of       }
+{       othello.                                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+enum othello_color is black, white;
+
+othello_color type question opposite_color
+	of othello_color type othello_color;
+is
+	when othello_color is
+		black:
+			answer white;
+		end;
+		white:
+			answer black;
+		end;
+	end;
+end;    // opposite_color
+	 
+subject othello_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in othello_color type othello_color;
+	end;
+	final boolean question valid_move
+		to integer row, column;
+		of othello_piece type othello_pieces[,];
+	end;
+	final verb move  
+		to integer row, column;
+		of othello_piece type othello_pieces[,];
+	end;
+	final verb flip;
+	objective verb get_flipped_pieces
+		othello_piece type reference othello_pieces;
+	end;                
+has
+	// attributes
+	//
+	public integer row, column;                 // piece location
+	public othello_color type othello_color;    // side piece is on
+	// link for making lists of flipped pieces
+	//    
+	public othello_piece type next is none;
+is
+	othello_piece type flipped_pieces is none;
+	integer flips = 0;
+
+	verb new 
+		at integer row, column;
+		in othello_color type othello_color;
+	is
+		othello_piece's row = row;
+		othello_piece's column = column;
+		othello_piece's othello_color is othello_color;
+	end;    // new    
+
+	objective boolean question valid_row
+		at integer row;
+		of othello_piece type othello_pieces[,];
+	is
+		answer min othello_pieces <= row <= max othello_pieces;
+	end;    // valid_row
+
+	objective boolean question valid_column
+		at integer column;
+		of othello_piece type othello_pieces[,];
+	is
+		answer min othello_pieces[] <= column <= max othello_pieces[];
+	end;    //  valid_column
+
+	objective boolean question valid_place 
+		at integer row, column;
+		of othello_piece type othello_pieces[,];
+	is
+		answer (valid_row at row of othello_pieces) and (valid_column
+			at column of othello_pieces);
+	end;    // valid_place 
+
+	objective boolean question occupied
+		at integer row, column;
+		of othello_piece type othello_pieces[,];
+	is
+		if valid_place at row column of othello_pieces then
+			answer some othello_pieces[row, column];
+		else
+			answer no;
+		end;
+	end;    // occupied
+
+	objective boolean question found_piece
+		in othello_color type othello_color;
+		at integer row, column;
+		of othello_piece type othello_pieces[,];
+	is
+		if valid_place at row column of othello_pieces then
+			othello_piece type piece is othello_pieces[row, column];
+			if some piece then
+				answer piece's othello_color is othello_color;
+			else
+				answer no;
+			end; 
+		else
+			answer no;
+		end;
+	end;    // found_piece 
+
+	boolean question valid_move
+		to integer row, column;
+		of othello_piece type othello_pieces[,];
+	is
+		if valid_place at row column of othello_pieces then
+			answer not occupied at row column of othello_pieces;
+		else
+			answer no;
+		end;
+	end;    // valid_move
+
+	// routines to flip pieces
+	//
+	verb add_flip is
+		// add to flipped list
+		//
+		othello_piece's next is flipped_pieces;
+		flipped_pieces is othello_piece;    
+		flips = itself + 1;
+	end;    // add_flip 
+
+	objective verb flip_chip
+		at integer row, column;
+		of othello_piece type othello_pieces[,];
+	is
+		othello_piece type othello_piece is othello_pieces[row, column];
+		othello_piece add_flip;
+	end;    // flip_chip
+
+	objective verb swap
+		integer reference i, j;
+	is
+		integer k = i;
+		i = j;
+		j = k;
+	end;    // swap
+	
+	objective verb flip_row
+		integer row;
+		from integer column1;
+		to integer column2;
+		of othello_piece type othello_pieces[,];
+	is
+		if column2 < column1 then
+			swap column1 column2;
+		end;
+	
+		for integer column = column1 + 1 .. column2 - 1 do
+			flip_chip at row column of othello_pieces;
+		end;
+	end;    // flip_row
+	
+	objective verb flip_column
+		integer column;
+		from integer row1;
+		to integer row2;
+		of othello_piece type othello_pieces[,];
+	is
+		if row2 < row1 then
+			swap row1 row2;
+		end;
+		for integer row = row1 + 1 .. row2 - 1 do
+			flip_chip at row column of othello_pieces;
+		end; 
+	end;    // flip_column    
+
+	objective verb flip_chips
+		from integer row1, column1;
+		to integer row2, column2;
+		of othello_piece type othello_pieces[,];
+	is
+		if row1 = row2 then
+			flip_row row1 from column1 to column2 of othello_pieces;
+		elseif column1 = column2 then
+			flip_column column1 from row1 to row2 of othello_pieces;
+		else
+			integer row, row_step;
+			// diagonal flip
+			//
+			if column2 < column1 then
+				swap row1 row2;
+				swap column1 column2;
+			end;
+			if row2 > row1 then
+				row_step = 1;
+			else 
+				row_step = -1;
+			end;
+			row = row1 + row_step;    
+			for integer column = column1 + 1 .. column2 - 1 do
+				othello_piece type othello_piece is 
+					othello_pieces[row, column];
+				othello_piece add_flip;
+				row = itself + row_step;    
+			end; 
+		end;
+	end;    // flip_chips
+
+	objective verb find_chip_flips 
+		in othello_color type othello_color; 
+		to othello_piece type othello_piece;
+		of othello_piece type othello_pieces[,];
+		towards integer row_step, column_step;
+	is
+		integer row = othello_piece's row;
+		integer column = othello_piece's column;
+		integer next_row = row + row_step;
+		integer next_column = column + column_step;
+		othello_color type opponent_color is opposite_color of 
+			othello_color;
+		// are there opponent chips to flip?
+		//
+		if found_piece in opponent_color at next_row next_column 
+			of othello_pieces
+		then
+			next_row = itself + row_step; 
+			next_column = itself + column_step; 
+			while found_piece in opponent_color at next_row 
+				next_column of othello_pieces
+			do
+				next_row = itself + row_step; 
+				next_column = itself + column_step; 
+			end;
+			// next square is either same color or unoccupied  
+			//    
+			if occupied at next_row next_column of othello_pieces 
+			then
+				flip_chips from row column to next_row 
+					next_column of othello_pieces;
+			end;    
+		end;
+	end;    // find_chip_flips
+
+	verb find_flips 
+		in othello_color type othello_color; 
+		to othello_piece type othello_piece;
+		of othello_piece type othello_pieces[,];
+	is
+		flips = 0;
+		flipped_pieces is none;
+		// find horizontal (row) flips 
+		//
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards 0 1;
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards 0 (-1);
+		// find vertical (column) flips
+		//
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards 1 0;
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards -1 0;
+		// find diagonal flips
+		//
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards 1 1;
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards 1 (-1);
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards -1 1;
+		find_chip_flips in othello_color to othello_piece
+			of othello_pieces towards -1 (-1);
+	end;    // find_flips
+
+	verb move
+		to integer row, column; 
+		of othello_piece type othello_pieces[,];
+	is
+		// update othello board
+		//
+		othello_pieces[row, column] is othello_piece;
+		// update othello piece
+		//
+		othello_piece's row = row;
+		othello_piece's column = column;
+		// find flipped othello pieces
+		//
+		find_flips in othello_color to othello_piece 
+			 of othello_pieces; 
+	end;    // move
+
+	objective verb get_flipped_pieces
+		othello_piece type reference othello_pieces;
+	is
+		othello_pieces is flipped_pieces; 
+	end;    // get_flipped_pieces    
+
+	verb flip is
+		othello_color is opposite_color of othello_color;
+	end;    // flip
+end;    // othello_piece 

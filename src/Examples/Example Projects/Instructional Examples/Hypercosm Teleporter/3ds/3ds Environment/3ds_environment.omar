@@ -1,0 +1,71 @@
+do environemnt_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/native_messages.ores";
+// 3ds environments
+//
+include "3ds_white_environment.omar";
+include "3ds_blue_environment.omar";
+include "3ds_red_environment.omar";
+
+anim environemnt_anim 
+	args type args;
+with
+	white_environment activate;
+	lookat = <0 0 -2>;
+	args check;
+is
+	// method to check messages and change current shape
+	//    
+	verb check_messages is
+		integer num_messages = get_message_number;
+		
+		if num_messages <> 0 then 
+			string type message is get_next_message;
+			
+			// convert to lowercase
+			//
+			message is message to_lower;
+			
+			// check texture mapping modes
+			//
+			if message matches "white_environment" then
+				white_environment activate;
+			elseif message matches "blue_environment" then
+				blue_environment activate;
+			elseif message matches "red_environment" then
+				red_environment activate;
+			end;                          
+		end;
+	end;    // check_messages
+	
+	verb check_keys is
+		integer key;
+		
+		reset_frame_events;
+		
+		key = get_key;
+		
+		if key = char_to_key of "1" then
+			white_environment activate;
+		elseif key = char_to_key of "2" then
+			blue_environment activate;
+		elseif key = char_to_key of "3" then
+			red_environment activate;
+		end;
+	end;    // check_keys
+	
+	// update method is called once per frame
+	//
+	verb update is
+		check_messages;
+		check_keys;
+	end;    // update
+	
+	// run!
+	//
+	mouse_controlled_tessellated_shape objects doing update with
+		auto_zoom is on;
+	end;
+end;    // environemnt_anim

@@ -1,0 +1,21 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           activation.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains definitions of activation behaviors.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective activateable
+does
+	verb activate;
+end;    // activateable
+
+adjective deactivateable
+does
+	verb deactivate;
+end;    // deactivateable

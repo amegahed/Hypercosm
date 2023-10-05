@@ -1,0 +1,40 @@
+do camera_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/3ds_cameras.ores";
+
+
+translated_3ds_targeted_camera type Camera01
+	from <100 -200 150> to <0 0 0>
+with
+	visible is true;
+	roll = 0;
+end;	// Camera01
+
+
+translated_3ds_free_camera type Camera02
+	from <200 0 0> towards <-1 0 0>
+with
+	distance = 200;
+	visible is true;
+	roll = 0;
+end;	// Camera02
+	
+	
+anim camera_anim with
+	Camera01 activate;
+is
+	shape scene is	
+		axes with
+			magnify by 25;
+		end;
+		
+		Camera01 instance;
+		Camera02 instance;
+	end;
+	
+	mouse_controlled_shape scene titled "3DS Cameras";
+end;	// camera_anim

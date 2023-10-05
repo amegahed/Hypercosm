@@ -1,0 +1,207 @@
+{***************************************************************}
+{                          densifier.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do densifying_anim;
+
+
+include "system/3d.ores";
+include "system/conveyors.ores";
+include "system/anims.ores";
+include "system/cabinet.omar";
+
+
+subject densifier
+extends
+    timed_actor
+does
+    verb new with
+        scalar table_length = 15;
+        scalar table_width = 5;
+        scalar table_height = 4;
+        scalar line_height = 2.5;
+        scalar speed = 2;
+    end;    // new
+
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    conveyor_belt type separator_belt is none;
+    conveyor_belt type densifyer_belt1 is none;
+    conveyor_belt type densifyer_belt2 is none;
+    scalar table_length;
+    scalar table_width;
+    scalar table_height;
+    scalar line_height;
+    scalar speed;
+is
+    verb init_separator_belt with
+        scalar tread_length = 2, tread_width = 0;
+        scalar tread_seperation = .1, tread_thickness = 0;
+    is
+        scalar radius;
+        
+        // make new separator conveyor belt
+        //
+        new separator_belt with
+            tread_length = static tread_length;
+            tread_width = static tread_width;
+            tread_seperation = static tread_seperation;
+            tread_thickness = static tread_thickness;
+            belt_material is chalk colored light grey;
+        end;
+
+        // initial (bottom left) feeder rolls
+        //
+        radius = .7;
+        separator_belt add_roller at <(-table_length / 2 + radius + .5) 0
+            (table_height + radius)> with
+            radius = static radius;
+        end;
+        
+        radius = .25;
+        separator_belt add_roller at <(-table_length / 2 + 3) 0
+            (line_height + table_height - radius)> with
+            radius = static radius;
+        end;
+
+        // take up rollers on right
+        //
+        radius = .25;
+        separator_belt add_roller at <(table_length / 2 - 3) 0
+            (line_height + table_height - radius)> with
+            radius = static radius;
+        end;
+        
+        radius = .7;
+        separator_belt add_roller at <(table_length / 2 - radius - .5) 0
+            (table_height + radius)> with
+            radius = static radius;
+        end;
+
+        // create belts
+        //
+        separator_belt add_belts with
+            orientation is true;
+        end;
+        separator_belt set_speed to speed;
+    end;    // init_separator_belt
+
+
+    verb init_densifyer_belt is
+        new densifyer_belt1 with
+            tread_length = 0;
+            tread_width = 0;
+            tread_seperation = 0;
+            tread_thickness = 0;
+        end;
+        new densifyer_belt2 with
+            tread_length = 0;
+            tread_width = 0;
+            tread_seperation = 0;
+            tread_thickness = 0;
+        end;
+
+        // densifying rollers
+        //
+
+        densifyer_belt1 add_roller at <0 0 (table_height + line_height / 2)> with
+            radius = line_height / 2;
+        end;
+        densifyer_belt2 add_roller at <0 0 (table_height + line_height * 1.5)> with
+            radius = line_height / 2;
+        end;
+
+        // create rollers but no belts
+        //
+        densifyer_belt1 set_speed to speed;
+        densifyer_belt2 set_speed to -speed;
+    end;    // init_densifyer_belt
+
+
+    verb new with
+        scalar table_length = 15;
+        scalar table_width = 5;
+        scalar table_height = 4;
+        scalar line_height = 2.5;
+        scalar speed = 2;
+    is
+        // initialize coater line's attributes
+        //
+        densifier's table_length = table_length;
+        densifier's table_width = table_width;
+        densifier's table_height = table_height;
+        densifier's line_height = line_height;
+        densifier's speed = speed;
+
+        // initialize conveyor belts
+        //
+        init_separator_belt;
+        init_densifyer_belt;
+    end;    // new
+
+
+    verb advance
+        by scalar time_step;
+    is
+        timed_actor static advance by time_step;
+        separator_belt advance by time_step;
+        densifyer_belt1 advance by time_step;
+        densifyer_belt2 advance by time_step;
+    end;    // advance
+
+
+    shape instance is
+        cabinet with
+            table_length = densifier's table_length;
+            table_width = densifier's table_width;
+            table_height = densifier's table_height;
+            top_width = table_width - 1.5;
+            magnify the shader_trans by 5;
+        end;
+
+        // belts
+        //
+        separator_belt instance with
+            move to <0 .5 .2>;
+        end;
+        densifyer_belt1 instance with
+            move to <0 .5 .2>;
+        end;
+        densifyer_belt2 instance with
+            move to <0 .5 .2>;
+        end;
+    end;    // instance
+end;    // densifier
+
+
+anim densifying_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-15 -20 15>;
+    lookat = <0 0 5>;
+    yaw = -2;
+    pitch = -2;
+    window_name is "The Densifier";
+    background = black;
+    args check;
+is
+    densifier type densifier;
+
+    shape environment is
+        plane with
+            magnify by 15;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_actor densifier in environment;
+end;    // densifying_anim

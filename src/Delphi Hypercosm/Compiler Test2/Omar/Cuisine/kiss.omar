@@ -1,0 +1,88 @@
+{***************************************************************}
+{                          kiss.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do kiss_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/hulls.ores";
+
+
+shape kiss is
+    shape thing with
+        integer sections = 4;
+        integer steps = facets;
+    is
+        // cross section
+        //
+        scalar x_section[0..sections, 1..2];
+
+        // initialize round cross section
+        //
+        for integer counter = 0 .. sections - 1 do
+            scalar angle = (counter / sections) * -360;
+
+            x_section[counter, 1] = sin angle;
+            x_section[counter, 2] = cos angle;
+        end;
+
+        // wraparound
+        //
+        x_section[sections, 1] = x_section[0, 1];
+        x_section[sections, 2] = x_section[0, 2];
+
+        // body is sampled at 9 discrete points
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [0 0 .2 .48 1.1 1.68 1.8]
+
+            // ymins
+            [0 -.8 -1 -.75 -.3 -.07 0]
+
+            // ymaxes
+            [0 .8 1 .75 .3 .07 0]
+
+            // zmins
+            [0 -.8 -1 -.75 -.3 -.07 0]
+
+            // zmaxes
+            [0 .8 1 .75 .3 .07 0]
+        with
+            rows = steps;
+            columns = steps;
+            triangulate is off;
+            alternate is on;
+            mending is on;
+            closed is false;
+        end;
+    end;    //
+
+    thing with
+        material is chalk colored <.25 .15 .05>;
+        rotate by -90 around <0 1 0>;
+    end;
+end;    // kiss
+
+
+anim kiss_anim
+    args type args;
+with
+    eye = <2 -5 2>;
+    lookat = <0 0 1>;
+    background = grey;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape kiss;
+end;    // kiss_anim

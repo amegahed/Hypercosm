@@ -1,0 +1,280 @@
+{***************************************************************}
+{                          church.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do church_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/hulls.ores";
+include "system/podium.omar";
+include "system/pews.omar";
+include "system/ceiling_fan.omar";
+include "system/church_window.omar";
+include "system/architect.omar";
+
+
+subject church
+extends
+    timed_actor
+does
+    shape instance;
+    verb act;
+has
+    ceiling_fan type ceiling_fan;
+is
+    objective shape structure with
+        scalar depth = 1.5;
+        scalar stage_depth = .75;
+        scalar stage_height = .1;
+    is
+        material type eligion is constant_color white textured
+            new texture type using new image type named "hyperlogo.jpg";
+        material type stained_glass is constant_color white textured
+            new texture type using new image type named "hyperlogo.jpg";
+        material type hypermaterial is constant_color white textured
+            new texture type using new image type named "hyper_small.jpg";
+
+
+        shape roof is
+            scalar cross_section[,] is [[-1 0] [-.75 .2] [0 1] [.75 .2] [1 0]];
+
+            linear_hull
+                (cross_section)
+
+                [-1 1]
+
+                [-1 -1] [1 1]
+
+                [0 0] [1 1]
+            with
+                closed is false;
+                rotate by 90 around <0 0 1>;
+                scale by static depth along <0 1 0>;
+            end;
+        end;    // roof
+
+
+        shape side_wall_piece is
+            parallelogram with
+                rotate by 90 around <1 0 0>;
+                move to <0 0 1>;
+            end;
+            church_window with
+                material is wood;
+                move to <0 -.01 .25>;
+            end;
+        end;    // side_wall_piece
+
+
+        shape side_wall with
+            integer segments = 4;
+            scalar height = 1;
+        is
+            scalar width = (depth * 2) / segments;
+
+            for integer counter = 1 .. segments do
+                scalar y = (-depth) + ((counter - .5) * width);
+
+                side_wall_piece with
+                    rotate by 90 around <0 0 1>;
+                    scale by (width / 2) along <0 1 0>;
+                    scale by (height / 2) along <0 0 1>;
+                    move to <0 y 0>;
+                end;
+            end;
+        end;    // side_wall
+
+
+        shape front_wall is
+            extrude [[-1 0] [-1 1] [-.25 2] [.25 2] [1 1] [1 0]]
+                along <0 1 0>
+            with
+                height = .25;
+                move to <0 (height / 2) 0>;
+            end;
+            parallelogram with
+                material is stained_glass;
+                rotate by 90 around <1 0 0>;
+                scale by .5 along <1 0 0>;
+                scale by .5 along <0 0 1>;
+                move to <0 -.01 1>;
+            end;
+        end;    // front_wall
+
+
+        shape rear_wall is
+            {
+            extrude [[-1 0] [-1 1] [-.25 2] [.25 2] [1 1] [1 0]
+                [.15 0] [.15 .5] [-.15 .5] [-.15 0]]
+                along <0 1 0>
+            with
+                height = .25;
+                move to <0 (-height / 2) 0>;
+            end;
+            }
+            extrude [[-1 0] [-1 1] [-.25 2] [.25 2] [1 1] [1 0]]
+                along <0 1 0>
+            with
+                height = .25;
+                move to <0 (-height / 2) 0>;
+            end;
+            door with
+                material is wood_veneer;
+                magnify by .25;
+                scale by -1 along <0 1 0>;
+                move to <0 0 .25>;
+            end;
+            parallelogram with
+                material is eligion;
+                rotate by 90 around <1 0 0>;
+                rotate by 180 around <0 0 1>;
+                scale by .6 along <1 0 0>;
+                scale by .4 along <0 0 1>;
+                move to <0 .01 1>;
+            end;
+        end;    // rear_wall
+
+
+        shape floor is
+            parallelogram with
+                scale by depth along <0 1 0>;
+            end;
+        end;    // floor
+
+
+        shape stage with
+            scalar length = 1.5;
+            scalar depth = .75;
+            scalar height = .1;
+        is
+            block with
+                scale by (length / 2) along <1 0 0>;
+                scale by (depth / 2) along <0 1 0>;
+                scale by (height / 2) along <0 0 1>;
+                move to <0 0 (height / 2)>;
+            end;
+        end;    // stage
+
+
+        // assemble pieces of church
+        //
+        roof with
+            material is stucco;
+            move to <0 0 1>;
+        end;
+        side_wall with
+            material is stone;
+            move to <-1 0 0>;
+        end;
+        side_wall with
+            material is stone;
+            scale by -1 along <1 0 0>;
+            move to <1 0 0>;
+        end;
+        front_wall with
+            material is stone;
+            move to <0 depth 0>;
+        end;
+        rear_wall with
+            material is stone;
+            move to <0 (-depth) 0>;
+        end;
+        floor with
+            material is wood;
+        end;
+        stage with
+            depth = stage_depth;
+            height = stage_height;
+            material is chalk colored dark red;
+            move to <0 (static depth - (stage_depth / 2)) 0>;
+        end;
+        podium with
+            magnify by .075;
+            move to <0 (static depth - (stage_depth * .75)) stage_height>;
+        end;
+        parallelogram with
+            material is hypermaterial;
+            rotate by 90 around <1 0 0>;
+            scale by .075 along <1 0 0>;
+            scale by .05 along <0 0 1>;
+            move to <0 (static depth - (stage_depth * .75)) stage_height>;
+            move to <0 -.076 .2>;
+        end;
+
+        // right pews
+        //
+        pews with
+            length = 3;
+            number = 10;
+            magnify by .2;
+            move to <.5 -.5 0>;
+        end;
+
+        // left pews
+        //
+        pews with
+            length = 3;
+            number = 10;
+            magnify by .2;
+            move to <-.5 -.5 0>;
+        end;
+
+        point_light with
+            move to <0 0 .75>;
+        end;
+    end;    // structure
+
+
+    shape instance is
+        structure;
+        ceiling_fan instance with
+            magnify by .25;
+            move to <0 1 2>;
+        end;
+        ceiling_fan instance with
+            magnify by .25;
+            move to <0 0 2>;
+        end;
+        ceiling_fan instance with
+            magnify by .25;
+            move to <0 -1 2>;
+        end;
+    end;    // instance
+
+
+    verb act is
+        ceiling_fan act;
+    end;    // step
+end;    // church
+
+
+anim church_anim
+    args type args;
+with
+    eye = <0 -.5 .4>;
+    lookat = <0 1 .75>;
+    field_of_view = 100;
+    double_buffer is on;
+    args check;
+is
+    church type church;
+    interaction type interaction with
+        button1_behavior is (new walk_behavior with
+            hold_to_go is true;
+            stay_on_ground_plane is true;
+            allow_gestures is true;);
+        button2_behavior is (new walk_behavior with
+            hold_to_go is true;
+            stay_on_ground_plane is false;
+            allow_gestures is true;);
+    end;
+    
+    mouse_controlled_actor church about <0 0 0> around none using interaction;
+end;    // church_anim

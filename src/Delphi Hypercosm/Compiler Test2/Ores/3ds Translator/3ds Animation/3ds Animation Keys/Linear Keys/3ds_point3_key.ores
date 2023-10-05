@@ -1,0 +1,35 @@
+{***************************************************************}
+{                      3ds_point3_key.ores           			}
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   	Contains point3 key definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_key.ores";
+
+
+subject translated_3ds_point3_key
+extends
+	translated_3ds_key
+does
+	verb new
+		of vector value;
+		at translated_3ds_time type time;
+	end;
+has
+	public vector value;
+is
+	verb new
+		of vector value;
+		at translated_3ds_time type time;
+	is
+		translated_3ds_key new at time;
+		translated_3ds_point3_key's value = value;
+	end;	// new
+end;	// translated_3ds_point3_key

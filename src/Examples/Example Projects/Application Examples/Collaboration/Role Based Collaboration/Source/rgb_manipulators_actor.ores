@@ -1,0 +1,115 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    rgb_manipulators_actor.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an actor that demonstrates           }
+{       role-based collaboration.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/key_checking.ores";
+include "system/rendering.ores";
+include "system/updating.ores";
+include "system/collaborative_manipulators.ores";
+include "system/collaboration.ores";
+include "rgb_shapes.omar";
+
+subject rgb_manipulators_actor
+extends
+	renderable updateable object
+does
+	// constructor
+	//
+	verb new
+		collaboration type red_collaboration;
+		collaboration type green_collaboration;
+		collaboration type blue_collaboration;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// updating methods
+	//
+	verb update;
+has
+	manipulator type[] manipulators is none;
+	collaborative_rotation_manipulator type red_manipulator is none;
+	collaborative_rotation_manipulator type green_manipulator is none;
+	collaborative_translation_manipulator type blue_manipulator is none;
+	scalar manipulator_handle_size;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		collaboration type red_collaboration;
+		collaboration type green_collaboration;
+		collaboration type blue_collaboration;
+	is
+		manipulator_handle_size = default_handle_size * 3;
+		
+		// Init manipulators
+		//
+		red_manipulator is
+			(new collaborative_rotation_manipulator
+				participating in red_collaboration
+				controlling big_red_block
+				around x_axis
+			with
+				handle_size = manipulator_handle_size;
+				final_rotation_snap = 1;
+			);
+	
+		green_manipulator is
+			(new collaborative_rotation_manipulator
+				participating in green_collaboration
+				controlling big_green_cone
+				around y_axis
+			with
+				handle_size = manipulator_handle_size;
+				final_rotation_snap = 1;
+			);
+		
+		blue_manipulator is
+			(new collaborative_translation_manipulator
+				participating in blue_collaboration
+				controlling big_blue_sphere
+			with
+				handle_size = manipulator_handle_size;
+			);
+		manipulators is [
+			red_manipulator
+			green_manipulator
+			blue_manipulator
+		];
+	end;    // new
+
+	//
+	// rendering methods
+	//
+	
+	shape instance is
+		for integer i = min manipulators .. max manipulators do
+			manipulators[i] instance;
+		end;
+	end;    // instance
+	
+	
+	//
+	// updating methods
+	//
+	
+	
+	verb update is
+		for integer i = min manipulators .. max manipulators do
+			manipulators[i] update;
+		end;
+	end;    // update
+end;    // rgb_manipulators_actor

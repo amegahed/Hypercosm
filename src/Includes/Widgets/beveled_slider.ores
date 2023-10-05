@@ -1,0 +1,292 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         beveled_slider.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains a subject definition for a 3D slider widget.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 1999 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "interactions.ores";
+include "picking.ores";
+include "bevels.ores";
+
+subject beveled_slider
+extends
+	mouse_state_filter object
+does
+	// constructor
+	//
+	verb new
+		controls scalar reference value refers to none;
+		from scalar min_value = 0;
+		to scalar max_value = 1;
+	with
+		vector end1 = <0 0 1>;
+		vector end2 = <0 0 -1>;
+		scalar radius = 1;
+		scalar bevel_width = .1;
+		boolean capped is true;
+		scalar knob_size = 0.2; // as a portion of the main bar
+		material type bar_material is plastic colored blue;
+		material type knob_material is plastic colored red;
+	end;
+
+	// querying methods
+	//
+	boolean question accept_click at vector location; end;
+	boolean question in_region at vector location; end;
+
+	// rendering methods
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public scalar reference value;
+	public boolean mouse_is_over is false;
+	public mouse_state type mouse_state is none;    // allocated in new
+
+	// private attributes
+	//
+	scalar min_value;
+	scalar max_value;
+	vector end1;
+	vector end2;
+	scalar radius;
+	scalar bevel_width;
+	boolean capped;
+	scalar knob_size;
+	material type bar_material is none;
+	material type knob_material is none;
+	scalar internal_value;
+	trans type local_trans;
+	vector last_click_intercept;
+	scalar last_click_value;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		controls scalar reference value refers to none;
+		from scalar min_value = 0;
+		to scalar max_value = 1;
+	with
+		vector end1 = <0 0 1>;
+		vector end2 = <0 0 -1>;
+		scalar radius = 1;
+		scalar bevel_width = .1;
+		boolean capped is true;
+		scalar knob_size = 0.2; // as a portion of the main bar
+		material type bar_material is plastic colored blue;
+		material type knob_material is plastic colored red;
+	is
+		vector x, y, z;
+
+		beveled_slider's min_value = min_value;
+		beveled_slider's max_value = max_value;
+		beveled_slider's end1 = end1;
+		beveled_slider's end2 = end2;
+		beveled_slider's radius = radius;
+		beveled_slider's bevel_width = bevel_width;
+		beveled_slider's capped is capped;
+		beveled_slider's knob_size = knob_size;
+		beveled_slider's bar_material is bar_material;
+		beveled_slider's knob_material is knob_material;
+
+		if value refers to none then
+			beveled_slider's value refers to internal_value;
+			internal_value = min_value;
+		else
+			beveled_slider's value refers to value;
+			if min_value > max_value then
+				value = clamp value from max_value to min_value;
+			else
+				value = clamp value from min_value to max_value;
+			end;
+		end;
+
+		mouse_state is (new mouse_state type with filter is beveled_slider;);
+
+		// Construct a transformation to convert our arbitrarily sized
+		// cylinder into a unit radius cylinder from <0 0 -1> to <0 0 1>.
+		// The trans's z_axis should be the cylinder's axis.  The x_axis
+		// and y_axis can be any other two orthogonal vectors having a
+		// length equal to the cylinder's radius.
+		//
+		z = (end2 - end1) / 2;
+		if z.x = 0 then
+			x = <radius 0 0>;
+		elseif z.y = 0 then
+			x = <0 radius 0>;
+		elseif z.z = 0 then
+			x = <0 0 radius>;
+		else
+			x = z perpendicular (z + <1 0 0>);
+			x = x * (radius / vlength of x);
+		end;
+
+		y = z cross x;
+		y = y * (radius / vlength of y);
+		local_trans's x_axis = x;
+		local_trans's y_axis = y;
+		local_trans's z_axis = z;
+		local_trans's origin = (end1 + end2) / 2;
+		local_trans invert;
+	end;    // new
+
+	boolean question compute_intercept
+		at vector location;
+		to vector reference intercept;
+	is
+		vector ray_location, ray_direction;
+		vector xy_location, xy_direction;
+		scalar qa, qb, qc, qd;
+		scalar sqrt_qd;
+		scalar numerator;
+		scalar t;
+		scalar knob_center;
+
+		if (value refers to none) or (knob_size >= 1) or
+				(min_value = max_value) then
+			answer no;
+		end;
+
+		get_eye_ray through location at ray_location towards ray_direction;
+		ray_location = local_trans transformed ray_location;
+		ray_direction = local_trans directed ray_direction;
+		xy_location = <ray_location.x ray_location.y 0>;
+		xy_direction = <ray_direction.x ray_direction.y 0>;
+		qa = xy_direction dot xy_direction;
+
+		if qa > 0 then
+			qb = 2.0 * (xy_direction dot xy_location);
+			qc = (xy_location dot xy_location) - 1;
+			qd = (qb * qb) - (4.0 * qa * qc);
+			if qd >= 0 then
+				sqrt_qd = sqrt qd;
+				numerator = (-qb) - sqrt_qd;
+				if numerator >= 0 then
+					// first point of intersection is in front of the eye
+					t = numerator / (2.0 * qa);
+					intercept = ray_location + (t * ray_direction);
+					knob_center = (knob_size - 1) +
+						(((value - min_value) / (max_value - min_value)) *
+						 (1 - knob_size) * 2);
+					if (abs (intercept.z - knob_center)) < knob_size then
+						answer yes;
+					end;
+				end;
+			end;
+		end;
+
+		answer no;
+	end;
+
+	boolean question accept_click
+		at vector location;
+	is
+		vector intercept;
+
+		if compute_intercept at location to intercept then
+			last_click_intercept = intercept;
+			last_click_value = value;
+			answer yes;
+		else
+			answer no;
+		end;
+	end;    // accept_click
+
+	boolean question in_region
+		at vector location;
+	is
+		vector intercept;
+
+		if mouse_state's down then
+			answer yes;
+		else
+			answer compute_intercept at location to intercept;
+		end;
+	end;    // in_region
+
+	//
+	// rendering methods
+	//
+
+	shape instance is
+		if some mouse_state then
+			mouse_state update;
+			if (mouse_state's down) or (mouse_state's released) or
+					(mouse_state's clicks <> 0) then
+				// The mouse location was updated this frame.  Compute the
+				// new value of the widget based on the intercept point of
+				// the current eye-mouse ray and the plane defined by the
+				// intercept point when the mouse was last clicked.
+				vector ray_location, ray_direction;
+				vector plane_normal;
+				scalar d;
+				scalar t;
+				scalar z_delta;
+				get_eye_ray through mouse_state's location
+					at ray_location towards ray_direction;
+				ray_location = local_trans transformed ray_location;
+				ray_direction = local_trans directed ray_direction;
+				plane_normal = last_click_intercept - ray_location;
+				plane_normal.z = 0;
+				d = plane_normal dot ray_direction;
+				if d <> 0 then
+					t = (plane_normal dot plane_normal) / d;
+					if t >= 0 then
+						z_delta = (ray_location.z + (t * ray_direction.z)) -
+							last_click_intercept.z;
+						value = last_click_value +
+							((max_value - min_value) *
+							 (z_delta / ((1 - knob_size) * 2)));
+						if min_value > max_value then
+							value = clamp value from max_value to min_value;
+						else
+							value = clamp value from min_value to max_value;
+						end;
+					end;
+				end;
+			end;
+		end;
+
+		mouse_is_over is in_region at get_mouse;
+
+		if some bar_material then
+			beveled_cylinder with
+				end1 = beveled_slider's end1;
+				end2 = beveled_slider's end2;
+				radius = beveled_slider's radius;
+				bevel_width = beveled_slider's bevel_width;
+				capped is beveled_slider's capped;
+				material is bar_material;
+			end;
+		end;
+
+		if some knob_material then
+			beveled_cylinder with
+				end1 = beveled_slider's end1;
+				end2 = (beveled_slider's end1 + ((beveled_slider's end2 - beveled_slider's end1) * knob_size));
+				radius = (beveled_slider's radius + (beveled_slider's bevel_width / 2));
+				bevel_width = beveled_slider's bevel_width;
+				capped is false;
+				material is knob_material;
+				if (not (value refers to none)) and (knob_size < 1) and (min_value <> max_value) then
+
+					// position the knob along the bar
+					//
+					move to
+						(((value - min_value) / (max_value - min_value)) *
+						 (1 - knob_size) *
+						 (beveled_slider's end2 - beveled_slider's end1));
+				end;
+			end;
+		end;
+	end;    // instance
+end;    // beveled_slider

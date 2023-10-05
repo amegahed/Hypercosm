@@ -1,0 +1,30 @@
+do lights_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// 3ds lights
+//
+include "3ds_direct_light.omar";
+include "3ds_omni_light.omar";
+include "3ds_spot_light.omar";
+
+anim lights_anim 
+	args type args;
+with
+	background_name is none;
+	background = light grey;
+	ambient = black;
+	lookat = <0 0 -10>;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new static_shape of direct_light_scene) named "3ds_direct_light";
+	multi_actor add_actor (new static_shape of omni_light_scene) named "3ds_omni_light";
+	multi_actor add_actor (new static_shape of spot_light_scene) named "3ds_spot_light";
+	
+	mouse_controlled_actor multi_actor lit by none with
+		auto_zoom is on;
+	end;
+end;    // lights_anim

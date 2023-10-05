@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           square.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       square.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_shapes.ores";
+
+shape square is
+	parallelogram;
+end;    // square

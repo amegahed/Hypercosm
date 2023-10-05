@@ -1,0 +1,58 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   iteration.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of iteration behaviors    			}
+{		for immutable ("read-only") collections.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/containing.ores";
+include "system/node_querying.ores";
+
+
+adjective iterable
+extends
+    containable next_queryable
+does
+	// iterator querying methods
+	//
+    boolean question is_iterating;
+    boolean question is_done;
+    	
+    // absolute iterator navigation methods
+    //
+    verb to_first;
+    verb to_last;
+    verb finish;
+        
+    // relative iterator navigation method
+    //
+    verb to_next;
+    verb skip
+    	integer steps;
+    end;
+    verb advance
+        to object type element;
+    end;
+        
+    // this method returns the current element and also 
+    // advances to the next available element.
+    //
+    object type question next;
+       
+    // method to automatically iterate through
+    // the elements applying the specified
+    // action to each element
+    //
+    verb iterate
+        verb action
+            on object type element;
+        end;
+    end;
+end;    // iterable

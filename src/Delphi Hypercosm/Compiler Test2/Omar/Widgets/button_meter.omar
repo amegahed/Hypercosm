@@ -1,0 +1,41 @@
+{***************************************************************}
+{                          button_meter.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do button_meter_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/button_meter.ores";
+include "system/views.ores";
+
+
+picture button_meter_picture is
+    static button_meter type button_meter labelled "Button Meter";
+
+    button_meter instance;
+end;    // button_meter_picture
+
+
+anim button_meter_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Button Meter Demo";
+    render_mode is wireframe;
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        button_meter_picture with
+            ortho_view;
+        end;
+    end;
+end;    // button_meter_anim

@@ -1,0 +1,86 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        3ds_xyz_controller.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_point3_controlling.ores";
+include "system/3ds_float_controlling.ores";
+
+subject translated_3ds_xyz_controller
+extends
+	translated_3ds_point3_controllable object
+does
+	// constructor
+	//
+	verb new with
+		translated_3ds_float_controllable type x_controller is none;
+		translated_3ds_float_controllable type y_controller is none;
+		translated_3ds_float_controllable type z_controller is none;
+	end;
+	
+	// getting method
+	//
+	vector question get_value
+		at translated_3ds_time type time;
+	end;
+has
+	// attributes
+	//
+	translated_3ds_float_controllable type x_controller is none;
+	translated_3ds_float_controllable type y_controller is none;
+	translated_3ds_float_controllable type z_controller is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+		translated_3ds_float_controllable type x_controller is none;
+		translated_3ds_float_controllable type y_controller is none;
+		translated_3ds_float_controllable type z_controller is none;
+	is
+		with translated_3ds_xyz_controller do
+			its x_controller is x_controller;
+			its y_controller is y_controller;
+			its z_controller is z_controller;
+		end;
+	end;    // new
+	
+	//
+	// getting method
+	//
+		
+	vector question get_value
+		at translated_3ds_time type time;
+	is
+		scalar x, y, z;
+		
+		if some x_controller then
+			x = x_controller get_value at time;
+		else
+			x = 0;
+		end;
+		
+		if some y_controller then
+			y = y_controller get_value at time;
+		else
+			y = 0;
+		end;
+		
+		if some z_controller then
+			z = z_controller get_value at time;
+		else
+			z = 0;
+		end;
+		
+		answer <x y z>;
+	end;    // get_value
+end;    // translated_3ds_xyz_controller

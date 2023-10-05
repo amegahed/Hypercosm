@@ -1,0 +1,94 @@
+{***************************************************************}
+{                          prims.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do prims_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+picture prims_picture with
+    eye = <0 -100 0>;
+    field_of_view = 6;
+    render_mode is shaded;
+    background = white;
+
+    // shading is pixel;
+    facets = 16;
+is
+    scalar theta = -90;
+    scalar umin = 45;
+    scalar umax = 360;
+    scalar vmin = -90;
+    scalar vmax = 90;
+
+    distant_light from <.3 -.5 1> with
+        brightness = 1.5;
+    end;
+
+    {show_image image1} sphere with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <-2.5 0 1.25>;
+        umin = static umin;
+        umax = static umax;
+        vmin = static vmin;
+        vmax = static vmax;
+    end;
+
+    {show_image image1} cylinder with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <0 0 1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+
+    {show_image image1} cone with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <2.5 0 1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+
+    {show_image image1} paraboloid with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <-2.5 0 -1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+
+    {show_image image1} hyperboloid1 with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <0 0 -1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+
+    {show_image image1} hyperboloid2 with
+        rotate by theta around <0 0 1>;
+        rotate by 20 around <1 0 0>;
+        move to <2.5 0 -1.25>;
+        umin = static umin;
+        umax = static umax;
+    end;
+end;    // prims_picture
+
+
+anim prims_anim with
+    eye = <0 -100 0>;
+    field_of_view = 6;
+    double_buffer is on;
+is
+    mouse_controlled_picture prims_picture;
+end;    // prims_anim

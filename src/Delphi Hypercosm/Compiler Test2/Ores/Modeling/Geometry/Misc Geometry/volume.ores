@@ -1,0 +1,126 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm      	     volume.ores	 			3d      }
+{ |/  \|					    	  					To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a definition for volumetric dimensions.    	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/printing.ores";
+
+
+subject volume
+extends
+	scribable object
+does
+	// constructor
+	//
+	verb new
+		of vector size;
+	end;
+
+	// attributes setting methods
+	//
+	verb set_length 
+		to scalar length;
+	end;
+	verb set_width
+		to scalar width;
+	end;
+	verb set_height
+		to scalar height;
+	end;
+		
+	// querying methods
+	//
+	scalar question get_length;
+	scalar question get_width;
+	scalar question get_height;
+    
+    // scribable methods
+    //
+    string type question to_string;
+has
+	// dimensions attributes
+	//
+	vector size;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of vector size;
+		at vector center = <0 0 0>;
+	is
+		with dimensions do
+			its size = size;
+			its center = center;
+		end;
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set_length 
+		to scalar length;
+	is
+		size.x = length;
+	end;	// set_length
+	
+	
+	verb set_width
+		to scalar width;
+	is
+		size.y = width;
+	end;	// set_width
+	
+	
+	verb set_height
+		to scalar height;
+	is
+		size.z = height;
+	end;	// set_height
+	
+	
+	//
+	// querying methods
+	//
+	
+	
+	scalar question get_length is
+		answer size.x;
+	end;	// get_length
+	
+	
+	scalar question get_width is
+		answer size.y;
+	end;	// get_width
+	
+	
+	scalar question get_height is
+		answer size.z;
+	end;	// get_height
+	
+	  
+	// 
+    // scribable methods
+    //
+    
+    
+    string type question to_string is
+    	string type string is "volume";
+    	string add " of size ";
+    	string add vector_to_string of size;
+    	answer string;
+    end;	// to_string
+end;    // volume

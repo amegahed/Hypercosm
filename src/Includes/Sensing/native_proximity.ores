@@ -1,0 +1,25 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        native_proximity.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains native utilities for sensing relative          }
+{       proximity.                                              }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+native vector question closest_to_point
+	vector point;
+	on shape thing;
+end;    // closest_to_point
+
+native vector question closest_to_plane
+	vector point, normal;
+	on shape thing;
+end;    // closest_to_plane

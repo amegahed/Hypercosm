@@ -1,0 +1,33 @@
+{***************************************************************}
+{                           lighting.ores                       }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{            Contains some basic lighting utilities.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_lights.ores";
+
+
+shape default_lights is
+	distant_light from <-1 -3 2>;
+end;	// default_lights
+
+
+shape overhead_light is
+    distant_light from <0 0 1>;
+end;    // overhead_light
+
+
+shape front_light is
+    distant_light from eye;
+end;    // front_light
+
+
+shape back_light is
+    distant_light from -eye;
+end;    // back_light

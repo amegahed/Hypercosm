@@ -1,0 +1,175 @@
+{***************************************************************}
+{                      Multiline Checklist.ores                 }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition for methods and             }
+{       structures to parse and store a checklist where         }
+{       each entry in the checklist may be multiple lines       }
+{       of text.                                                } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "strings.ores";
+include "string_utils.ores";
+include "text_file_resources.ores";
+
+
+subject multiline_step
+extends
+    strings type
+does
+    verb print;
+is
+    verb print is
+        for each string type string in multiline_step do
+            write string, ;
+        end;
+    end;    // print
+end;    // multiline_step
+
+
+type multiline_steps is multiline_step type[];
+
+
+subject multiline_checklist
+extends
+    multiline_steps type
+does
+    verb print;
+    reference verb resize
+        to integer number;
+    end;
+    reference verb parse
+        from strings type strings;
+    end;
+    reference verb input
+        from string type filename;
+    end;
+is
+    verb print is
+        integer step_number = 1;
+        for each multiline_step type multiline_step in multiline_checklist do
+            write "Step #", step_number, ": ";
+            multiline_step print;
+            write;
+            step_number = itself + 1;
+        end;
+    end;    // print
+    
+
+    reference verb resize
+        to integer number;
+    is
+        multiline_checklist type new_checklist;
+        
+        dim new_checklist[1 .. number];
+        for integer counter = min multiline_checklist .. max multiline_checklist do
+            new_checklist[counter] is multiline_checklist[counter];
+        end;
+        
+        multiline_checklist is new_checklist;
+    end;    // resize
+    
+
+    objective verb scan_through_blank_lines
+        of strings type strings;
+        at integer reference line_number;
+    is
+        integer lines = max strings;
+        while (line_number <= lines) and not some strings[line_number] do
+            line_number = itself + 1;
+        end;
+    end;    // scan_through_blank_lines
+    
+
+    objective verb scan_to_next_blank_line 
+        of strings type strings;
+        at integer reference line_number;
+    is
+        integer lines = max strings;
+        while (line_number <= lines) and some strings[line_number] do
+            line_number = itself + 1;
+        end;
+    end;    // scan_to_next_blank_line
+    
+    
+    objective integer question parse_number_of_steps
+        from strings type strings;
+    is
+        integer line_number = min strings;
+        integer steps = 0;
+        
+        while (line_number <= max strings) do
+            integer number;
+            
+            scan_through_blank_lines of strings at line_number;
+            
+            // parse checklist number
+            //
+            number = str_to_integer strings[line_number];
+            if number > steps then
+                steps = number;
+            end;
+            
+            scan_to_next_blank_line of strings at line_number;
+        end;
+        
+        answer steps;
+    end;    // parse_number_of_steps
+    
+    
+    reference verb parse
+        from strings type strings;
+    is
+        integer line_number = min strings;
+        integer steps = parse_number_of_steps from strings;
+        integer block_begin, block_end;
+
+        if steps > 0 then       
+            dim multiline_checklist[1 .. steps];
+            
+            while (line_number <= max strings) do
+                integer number;
+                
+                scan_through_blank_lines of strings at line_number;
+    
+                if (line_number <= max strings) then           
+                    // parse checklist number
+                    //
+                    number = str_to_integer strings[line_number];
+                    line_number = itself + 1;
+                    
+                    // copy strings
+                    //
+                    block_begin = line_number;
+                    scan_to_next_blank_line of strings at line_number;
+                    block_end = line_number;
+                    
+                    if block_end > block_begin then    
+                        multiline_checklist[number][1 .. block_end - block_begin] = strings[block_begin .. block_end - 1];
+                    end;
+                end;
+            end;
+        end;    // if
+    end;    // parse
+    
+    
+    reference verb input
+        from string type filename;
+    is
+        text_resource type checklist_resource named filename;  
+        
+        // wait for file to download
+        //
+        while checklist_resource download_status is downloading do
+        end;
+       
+        // parse checklist from file
+        //
+        parse from checklist_resource get_lines;      
+    end;    // input
+end;    // multiline_checklist

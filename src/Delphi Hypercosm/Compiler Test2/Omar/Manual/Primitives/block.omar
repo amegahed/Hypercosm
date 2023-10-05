@@ -1,0 +1,65 @@
+{***************************************************************}
+{                          block.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do block_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.omar";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+
+
+shape labelled_block with
+    scalar size = .75;
+is
+	shape block_primitive is
+	    block with
+	        magnify by size * .999;
+	    end;
+	end;
+	
+    scalar t = size + .1;
+    
+	outlined block_primitive with
+		material is glass colored block_color;
+	end;
+
+    mark at <(-size) (-size) (-size)>;
+    arrow from <(-size) (-size) (-size)> to <size (-size) (-size)>;
+    arrow from <(-size) (-size) (-size)> to <(-size) size (-size)>;
+    arrow from <(-size) (-size) (-size)> to <(-size) (-size) size>;
+    futura_l_word "VERTEX" with
+        move to <(-t) (-t) (-t)>;
+    end;
+    futura_l_word "SIDE1" with
+        move to <t (-t) (-t)>;
+    end;
+    futura_l_word "SIDE2" with
+        move to <(-t) t (-t)>;
+    end;
+end;    // labelled_block
+
+
+anim block_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Block Primitive";
+    args check;
+is
+	shape scene is
+	    labelled_block;
+	    axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // block_anim

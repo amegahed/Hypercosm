@@ -1,0 +1,49 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      3ds_bezier_point3_key.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains point3 key definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_point3_key.ores";
+
+subject translated_3ds_bezier_point3_key
+extends
+	translated_3ds_point3_key
+does
+	// constructor
+	//
+	verb new
+		of vector value;
+		from vector in_tangent;
+		to vector out_tangent;
+		at translated_3ds_time type time;
+	end;
+has
+	// attributes
+	//
+	public vector in_tangent, out_tangent;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		of vector value;
+		from vector in_tangent;
+		to vector out_tangent;
+		at translated_3ds_time type time;
+	is
+		translated_3ds_point3_key new of value at time;
+		with translated_3ds_bezier_point3_key do
+			its in_tangent = in_tangent;
+			its out_tangent = out_tangent;
+		end;
+	end;    // new
+end;    // translated_3ds_bezier_point3_key

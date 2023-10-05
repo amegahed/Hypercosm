@@ -1,0 +1,136 @@
+{***************************************************************}
+{                          arc_sprayer.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do arc_sprayer_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/paths.ores";
+include "system/shapes.ores";
+
+
+subject arc_sprayer
+extends
+    step_actor
+does
+    verb new with
+        scalar spray_speed = 1;
+    end;
+    objective shape gun;
+    shape instance;
+    verb act;
+    verb advance
+        to vector direction;
+    end;
+has
+    public scalar nozzle_height = 2;
+    scalar spray_speed;
+
+    pixie_path type arc_spray with
+        steps = 5;
+        sparkle is true;
+        diminishing is false;
+    end;
+is
+    verb new with
+        scalar spray_speed = 1;
+    is
+        arc_sprayer's spray_speed = spray_speed;
+    end;    // new
+
+
+    objective shape handle is
+        cone with
+            end1 = <0 0 0>; end2 = <0 0 1>;
+            radius1 = .5; radius2 = .25;
+            skew from <0 0 1> to <-.5 0 1> about end1;
+            scale by .5 along <0 1 0>;
+        end;
+        cone with
+            end1 = <-.5 0 1>; end2 = <-.5 0 1.5>;
+            radius1 = .25; radius2 = .5;
+            skew from <-.5 0 1.5> to <-1 0 1.5> about end1;
+            scale by .5 along <0 1 0>;
+        end;
+    end;    // handle
+
+
+    objective shape nozzle is
+        cone with
+            end1 = <0 0 0>; end2 = <-2 0 0>;
+            radius1 = 1; radius2 = 1.5;
+        end;
+        cylinder with
+            end1 = <-2 0 0>; end2 = <-3 0 0>;
+            radius = 1.5;
+        end;
+    end;    // nozzle
+
+
+    objective shape gun is
+
+        // body of gun
+        //
+        extrude [[.25 0] [-1 0] [-1.5 -.25] [-1.5 1] [-.25 1]
+            [0 .75]]
+        with
+            move to <-.5 0 1.5>;
+            color = grey;
+        end;
+
+        nozzle with
+            magnify by .25;
+            move to <-2 0 2>;
+            color = light grey;
+        end;
+
+        handle with color = light brown; end;
+    end;    // gun
+
+
+    shape instance is
+        gun;
+
+        arc_spray instance with
+            move to <-2 0 2>;
+        end;
+    end;    // instance
+
+
+    verb advance
+        to vector direction;
+    is
+        scalar y_wiggle = sin (steps * 60) / 10;
+        scalar z_wiggle = cos (steps * 40) / 10;
+
+        direction = itself + <spray_speed y_wiggle z_wiggle>;
+        arc_spray step to direction in relative;
+        steps = itself + 1;
+    end;    // advance
+
+
+    verb act is
+        advance to <0 0 0>;
+    end;    // act
+end;    // arc_sprayer
+
+
+anim arc_sprayer_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    lookat = <-3 0 1.5>;
+    window_name is "Arc Sprayer";
+    args check;
+is
+    arc_sprayer type arc_sprayer;
+
+    mouse_controlled_actor arc_sprayer;
+end;    // arc_sprayer_anim

@@ -1,0 +1,43 @@
+do multiline_text_selector_anim;
+
+
+include "system/3d.ores";
+include "system/multiline_text_selector.ores";
+include "system/devices.ores";
+
+
+anim multiline_text_selector_anim with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb selection_action is
+        write "selected!", ;
+    end;
+    verb deselection_action is
+        write "deselected!", ;
+    end;
+    
+    strings type unselected_text is ["press" "me"];
+    strings type selected_text is ["pressed!" "me" "gee" "thanks"];
+    
+    multiline_text_selector type multiline_text_selector 
+    	of unselected_text at <.75 0 0>
+        selecting (new action of selection_action)
+        deselecting (new action of deselection_action)
+    with
+    	selected_text is static selected_text;
+    end;
+    
+    picture scene is
+       multiline_text_selector draw;
+        
+        if key_pressed char_to_key " " then
+            write "deselecting", ;
+            multiline_text_selector toggle_selected;
+        end;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // multiline_text_selector_anim

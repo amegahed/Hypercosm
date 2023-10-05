@@ -1,0 +1,97 @@
+{***************************************************************}
+{                          smokey_train.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do smokey_train_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/bumps.ores";
+include "system/train.omar";
+
+
+shape smoke is
+
+    {
+        fuzzy red sphere with center = 0 0 0; radius = .5; end;
+        fuzzy orange sphere with center = .5 0 1; radius = 1; end;
+        fuzzy yellow sphere with center = .75 -.1 2; radius = 1.25; end;
+        fuzzy green sphere with center = 2.75 .1 2.2; radius = 1.5; end;
+        fuzzy cyan sphere with center = 4.5 .2 2; radius = 1; end;
+        fuzzy blue sphere with center = 5.5 -.4 1.5; radius = .5; end;
+        fuzzy violet sphere with center = 6.25 -.2 1; radius = .35; end;
+        fuzzy magenta sphere with center = 7.5 .3 .75; radius = .25; end;
+        }
+
+    fuzzy red sphere with
+        center = <0 0 0>;
+        radius = .75;
+    end;
+    fuzzy orange sphere with
+        center = <.5 0 1>;
+        radius = 1.25;
+    end;
+    fuzzy yellow sphere with
+        center = <.75 -.1 2>;
+        radius = 1.5;
+    end;
+    fuzzy green sphere with
+        center = <2.75 .1 2.2>;
+        radius = 1.75;
+    end;
+    fuzzy cyan sphere with
+        center = <4.5 .2 2>;
+        radius = 1.25;
+    end;
+    fuzzy blue factor .75 sphere with
+        center = <5.5 -.4 1.5>;
+        radius = .75;
+    end;
+    fuzzy violet factor .6 sphere with
+        center = <6.25 -.2 1>;
+        radius = .6;
+    end;
+    fuzzy magenta factor .4 sphere with
+        center = <7.5 .3 .75>;
+        radius = .4;
+    end;
+end;    // smoke
+
+
+shape smokey_train is
+    smoke with
+        magnify by 10;
+        move to <-30 0 70>;
+    end;
+    train type's form with material is golden; end;
+end;    // smokey_train
+
+
+picture smokey_train_picture with
+    eye = <-40 -40 40>;
+    lookat = <0 0 4>;
+    field_of_view = 20;
+    render_mode is shaded;
+    shading is face;
+    background = sky_blue;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    facets = 0;
+    fog_factor = 1000;
+is
+    distant_light from <.1 -1 1>;
+    smokey_train with
+        magnify by .1;
+    end;
+    glossy bumpy light brown plane with
+        magnify by 8;
+    end;
+end;    // smokey_train_picture

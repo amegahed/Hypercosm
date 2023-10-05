@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    static_scoping_return_params.omar   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the "static"           }
+{       scoping modifier in the OMAR language.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do static_scoping_example;
+
+include "system/native_string.ores";
+
+verb do_stuff
+return with
+	string type error;
+is
+	error is "no problem";
+end;    // do_stuff
+
+verb static_scoping_example is
+	string type error;         
+
+	// This method call uses the static scoping modifier to
+	// assign variables of the same name from two different
+	// scopes.  In this case, we use the "static" keyword to
+	// bypass the dynamic scope of the procedure call and
+	// get at the static scope of the calling context
+	//
+	do_stuff return with        
+		static error is error;          
+	end;
+	
+	write "error is ", error, ;
+end;    // static_scoping_example

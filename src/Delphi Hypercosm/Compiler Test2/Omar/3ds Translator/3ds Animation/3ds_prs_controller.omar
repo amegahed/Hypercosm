@@ -1,0 +1,129 @@
+do xyz_prs_controller_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_cone.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+
+
+shape Arrow01 is
+	translated_3ds_sphere with
+		radius = 10;
+		segs = 16;
+		move to <-30 0 0>;
+	end;
+	translated_3ds_cylinder with
+		height = 50;
+		radius = 5;
+		move to <0 0 -25>;
+		rotate by 90 around <0 1 0>;
+	end;
+	translated_3ds_cone with		
+	    radius1 = 10;
+	    radius2 = 0;
+	    height = 20;
+		rotate by 90 around <0 1 0>;
+		move to <25 0 0>;
+	end;
+end;	// Arrow
+
+
+shape Axes01 is
+	Arrow01 with
+		color = red;
+	end;
+	Arrow01 with
+		rotate by 90 around <0 0 1>;
+		color = green;
+	end;
+	Arrow01 with
+		rotate by -90 around <0 1 0>;
+		color = blue;
+	end;
+end;	// Axes01
+
+
+{
+translated_3ds_linear_position_controller type Axes01_position_controller of [
+	<0 250 0> 
+	<0 0 0>
+] at converted_3ds_ticks_array_from_frames_array of [
+	0 
+	25
+];	// Axes01_position_controller
+}
+
+
+translated_3ds_constant_position_controller type Axes01_position_controller of <0 0 25>;
+
+
+translated_3ds_linear_float_controller type Axes01_x_rotation_controller of [
+	0 
+	90
+] at converted_3ds_ticks_array_from_frames_array of  [
+	50
+	75
+];	// Axes01_x_rotation_controller
+
+
+translated_3ds_linear_float_controller type Axes01_z_rotation_controller of [
+	0 
+	90
+] at converted_3ds_ticks_array_from_frames_array of  [
+	25
+	50
+];	// Axes01_z_rotation_controller
+	
+	
+translated_3ds_xyz_rotation_controller type Axes01_rotation_controller with
+	x_rotation_controller is Axes01_x_rotation_controller;
+	z_rotation_controller is Axes01_z_rotation_controller;
+end;	// Axes01_rotation_controller
+
+
+translated_3ds_linear_scale_controller type Axes01_scale_controller of [
+	(new translated_3ds_scale_value of <1 1 1>)
+	(new translated_3ds_scale_value of <.1 .1 .1>)
+] at converted_3ds_ticks_array_from_frames_array of  [
+	75
+	100
+];	// Axes01_scale_controller
+
+	
+translated_3ds_prs_controller type Axes01_controller with
+	position_controller is Axes01_position_Controller;
+	rotation_controller is Axes01_rotation_Controller;
+	scale_controller is Axes01_scale_Controller;
+end;	// Axes01_controller
+	
+
+shape Scene with
+	scalar time = 0;
+is
+	// Axes01_controller instance;
+	Axes01 with
+		Axes01_controller apply to trans at (converted_3ds_ticks_from_seconds of time);
+	end;
+end;	// Scene
+
+
+anim xyz_prs_controller_anim with
+	eye = <0 -200 50>;
+	lookat = <0 0 0>;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_animated_shape Scene in environment 
+		titled "3DS PRS Controller"
+	with
+		duration = converted_3ds_seconds_from_frames of 100;
+	end;
+end;	// xyz_prs_controller_anim

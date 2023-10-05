@@ -1,0 +1,73 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          helical_row.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       helical row of other shapes.                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/transformations.ores";
+include "system/vectors.ores";
+include "system/math.ores";
+
+shape helical_row
+	of shape thing;
+	from scalar start_angle = 0;
+	to scalar end_angle = 360;
+with
+	scalar offset = 0;
+	scalar radius = 1;
+	scalar spacing = .5;
+	scalar start_height = -1;
+	scalar end_height = 1;
+	scalar pitch = 0;   // pitch relative to circular path
+	scalar yaw = 0;     // yaw relative to circular path
+	scalar roll = 0;    // roll relative to circular path
+is
+	scalar circumference = 2 * pi * radius;
+	scalar arc_angle = end_angle - start_angle;
+	scalar arc_length = circumference * (abs arc_angle / 360);
+	scalar step_angle = spacing * (360 / circumference) * sign arc_angle;
+	scalar angle, height, start_distance = smod offset to spacing;
+	scalar total_height = end_height - start_height;
+	scalar step_height = total_height * spacing / arc_length *
+		sign total_height;
+	integer number;
+
+	shape unit is
+		thing with
+			
+			// orient in circular path
+			//
+			rotate by pitch around <1 0 0>;
+			rotate by yaw around <0 0 1>;
+			rotate by roll around <0 1 0>;
+			move to <radius 0 0>;
+		end;
+	end;    // unit
+
+	if start_distance < 0 then
+		start_distance = itself + spacing;
+	end;
+	number = trunc ((arc_length - start_distance) / spacing + 1);
+	angle = start_angle + (start_distance / arc_length) * arc_angle;
+	height = start_height + (start_distance / arc_length) * total_height;
+	for integer counter = 1..number do
+
+		unit with
+
+			// place in circular path
+			//
+			move to <0 0 height>;
+			rotate by angle around <0 0 1>;
+		end;
+
+		angle = itself + step_angle;
+		height = itself + step_height;
+	end;
+end;    // helical_row

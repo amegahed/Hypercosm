@@ -1,0 +1,47 @@
+{***************************************************************}
+{                          point.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do point_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+
+
+anim point_anim with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <0 0 .25>;
+    render_mode is shaded;
+    shading is vertex;
+is
+	shape scene is
+	    point_light with
+	        move to <0 0 .9>;
+	    end;
+	    mark at <0 0 1>;
+	    futura_l_word "POINT LIGHT" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 0 1.1>;
+	    end;
+	    plane with
+	        material is plastic colored grey polished semi shiny;
+	        magnify by 1.25;
+	    end;
+	    sphere with
+	        material is plastic colored red polished semi shiny;
+	        center = <0 0 .25>;
+	        radius = .25;
+	    end;
+	end;
+	mouse_controlled_shape scene;
+end;    // point_pic

@@ -1,0 +1,296 @@
+{***************************************************************}
+{                          teapot.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do teapot_anim;
+
+
+include "system/3d.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+include "system/solids.ores";
+include "system/common_materials.ores";
+
+
+shape teapot with
+    boolean triangulate is false;
+    boolean alternate is true;
+    boolean patches is true;
+    integer steps = facets;
+
+    // flags
+    //    
+    boolean show_sides is true;
+    boolean show_lid is true;
+    boolean show_spout is true;
+    boolean show_handle is true;
+    
+    // materials
+    //
+    material type side_material is plastic colored light blue;
+    material type lid_material is copper;
+    material type spout_material is copper;
+    material type handle_material is copper;
+is
+    shape sides is
+        trans type path[1..6];
+        integer index = min path;
+        trans type reference trans;
+
+        // initialize path
+        //
+        trans refers to path[index];
+        magnify the trans by 0;
+        move the trans to <0 0 0>;
+        index = itself + 1;
+        
+        trans refers to path[index];
+        magnify the trans by .75;
+        move the trans to <0 0 .035>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by 1;
+        move the trans to <0 0 .3>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .75;
+        move the trans to <0 0 .95>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .65;
+        move the trans to <0 0 1>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .6;
+        move the trans to <0 0 .975>;
+        index = itself + 1;
+
+        // create curved hull from cross section and path
+        //
+        round_hull along path with
+            triangulate is static triangulate;
+            alternate is static alternate;
+            patches is static patches;
+            rows = static steps;
+            columns = static steps;
+            closed is true;
+        end;
+    end;    // sides
+
+
+    shape lid is
+        trans type path[1..5];
+        integer index = min path;
+        trans type reference trans;
+
+        // initialize path
+        //
+        trans refers to path[index];
+        magnify the trans by .6;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .5;
+        move the trans to <0 0 .075>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .075;
+        move the trans to <0 0 .2>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .175;
+        move the trans to <0 0 .35>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by 0;
+        move the trans to <0 0 .4>;
+
+        // create curved hull from cross section and path
+        //
+        round_hull along path with
+            triangulate is static triangulate;
+            alternate is static alternate;
+            patches is static patches;
+            rows = static steps;
+            columns = static steps;
+            closed is true;
+        end;
+    end;    // lid
+
+
+    shape spout is
+        trans type path[1..4];
+        integer index = min path;
+        trans type reference trans;
+
+        // initialize path
+        //
+        trans refers to path[index];
+        magnify the trans by .25;
+        rotate the trans by 90 around <0 1 0>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .15;
+        rotate the trans by 45 around <0 1 0>;
+        move the trans to <.3 0 .1>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .1;
+        rotate the trans by 30 around <0 1 0>;
+        move the trans to <.4 0 .4>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .1;
+        scale the trans by .75 along <0 1 0>;
+        move the trans to <.6 0 .5>;
+        index = itself + 1;
+
+        // create curved hull from cross section and path
+        //
+        round_hull along path with
+            triangulate is static triangulate;
+            alternate is static alternate;
+            patches is static patches;
+            rows = static steps;
+            columns = static steps;
+            closed is false;
+        end;
+    end;    // spout
+
+
+    shape handle is
+        vector cross_section[0..3];
+        trans type path[1..4];
+        integer index = min path;
+        trans type reference trans;
+
+        // initialize triangular cross section
+        //
+        cross_section[0] = <0 1 0>;
+        cross_section[1] = <0 0 -1>;
+        cross_section[2] = <0 -1 0>;
+        cross_section[3] = <0 1 0>;
+
+        // initialize path
+        //
+        trans refers to path[index];
+        magnify the trans by .1;
+        move the trans to <0 0 .4>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .1;
+        rotate the trans by 45 around <0 -1 0>;
+        move the trans to <-.6 0 .4>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .1;
+        rotate the trans by 135 around <0 -1 0>;
+        move the trans to <-.5 0 0>;
+        index = itself + 1;
+
+        trans refers to path[index];
+        magnify the trans by .1;
+        rotate the trans by 150 around <0 -1 0>;
+        move the trans to <-.2 0 -.2>;
+        index = itself + 1;
+
+        // create curved hull from cross section and path
+        //
+        curved_hull of cross_section along path with
+            triangulate is static triangulate;
+            alternate is static alternate;
+            patches is static patches;
+            rows = static steps;
+            columns = static steps;
+            closed is true;
+        end;
+    end;    // handle
+
+
+    // create teapot parts
+    //
+    if show_sides then
+        sides with
+            rotate by 45 around <0 0 1>;
+            material is side_material;
+        end;
+    end;
+    if show_lid then
+        lid with
+            rotate by 45 around <0 0 1>;
+            move to <0 0 .975>;
+            material is lid_material;
+        end;
+    end;
+    if show_spout then
+        spout with
+            move to <.85 0 .4>;
+            material is spout_material;
+        end;
+    end;
+    if show_handle then
+        handle with
+            move to <-.7 0 .5>;
+            material is handle_material;
+        end;
+    end;
+end;    // teapot
+
+
+picture teapot_picture
+    args type args;
+with
+    eye = <1 -4 2>;
+    lookat = <0 0 .5>;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    shadows is on;
+    args check;
+is
+    default_lights;
+    teapot;
+end;    // teapot_picture
+
+
+anim teapot_anim
+    args type args;
+with
+    eye = <2 -3 2.5>;
+    lookat = <0 0 .5>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        teapot with
+            show_sides is true;
+            show_lid is true;
+            show_spout is true;
+            show_handle is true;
+        end;
+        
+        parallelogram with
+            material is wood;
+            magnify by 4;
+        end;
+    end;
+
+    mouse_controlled_shape scene;
+end;    // teapot_anim

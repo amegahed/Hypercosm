@@ -1,0 +1,22 @@
+{***************************************************************}
+{                     region_reshaping.ores                    	}
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{       Contains general behavior interface definitions.		}
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/region_bounding.ores";
+
+
+interface region_reshapeable
+does
+	verb reshape
+		from pixel type low;
+		to pixel type high; 
+	end;
+end;	// region_reshapeable

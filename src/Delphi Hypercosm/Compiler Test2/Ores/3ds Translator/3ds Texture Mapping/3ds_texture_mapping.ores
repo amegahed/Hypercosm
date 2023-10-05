@@ -1,0 +1,19 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   3ds_texture_mapping.ores		    3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains texture mapping definitions that correspond  	}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_planar_mapping.ores";
+include "system/3ds_cylindrical_mapping.ores";
+include "system/3ds_spherical_mapping.ores";
+include "system/3ds_box_mapping.ores";
+include "system/3ds_xyz_to_uvw_mapping.ores";

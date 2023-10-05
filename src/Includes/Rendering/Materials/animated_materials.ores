@@ -1,0 +1,88 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       animated_materials.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{             Contains standard material definitions.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/materials.ores";
+
+subject animated_material
+does
+	// construction
+	//
+	verb new
+		using material type material;
+		and poster strings type names;
+	with
+		boolean interpolation is on;
+		boolean mipmapping is on;
+		boolean wraparound is on;
+		
+		// delay between frames
+		//
+		scalar delay = 1;
+	end;
+
+	// rendering methods
+	//
+	material type question instance;
+has
+	// attributes
+	//
+	texture type textures[];
+	material type materials[];
+	scalar delay;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		using material type material;
+		and poster strings type names;
+	with
+		boolean interpolation is on;
+		boolean mipmapping is on;
+		boolean wraparound is on;
+		
+		// delay between frames
+		//
+		scalar delay = 1;
+	is
+		animated_material's delay = delay;
+		
+		// create texture array
+		//
+		dim none textures[1 .. num names];
+		for integer counter = min textures .. max textures do
+			textures[counter] is (new texture type 
+				using (new image type named names[counter])
+			with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		end;
+		
+		// create material array       
+		dim materials[1 .. num textures];
+		for integer counter = 1 .. num materials do
+			materials[counter] = material;
+			materials[counter]'s texture is textures[counter];
+		end;
+	end;    // new
+	
+	//
+	// rendering methods
+	//
+
+	material type question instance is
+		answer materials[1 + trunc (get_seconds / delay) mod num materials];
+	end;
+end;    // animated_material

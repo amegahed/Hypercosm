@@ -1,0 +1,23 @@
+{***************************************************************}
+{                          native_time.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains native time procedures which can be used       }
+{       both to access the current time and to control          }
+{       animation speed and execution.                          }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+type time is vector;
+native time type question get_time; 
+
+

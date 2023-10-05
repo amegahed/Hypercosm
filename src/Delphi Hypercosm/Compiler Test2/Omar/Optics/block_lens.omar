@@ -1,0 +1,46 @@
+{***************************************************************}
+{                          block_lens.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ray_anim;
+
+
+include "system/3d.ores";
+include "system/optical_bench.ores";
+include "system/anims.ores";
+
+
+optical_bench type optical_bench with
+    length = 10;
+    width = 5;
+    lamp_location = <4 0 2>;
+end;    // optical_bench
+
+
+anim ray_anim
+    args type args;
+with
+    eye = <10 -15 10>;
+    field_of_view = 45;
+    double_buffer is on;
+    window_name is "Block Lens";
+    args check;
+is
+    shape lens is
+        block with
+            scale by .5 along <1 0 0>;
+            rotate by 45 around <0 1 0>;
+        end;
+    end;
+
+    optical_bench add_element lens at <0 0 2> with
+        base = <0 1 2>;
+    end;
+
+    mouse_controlled_actor optical_bench;
+end;    // ray_anim

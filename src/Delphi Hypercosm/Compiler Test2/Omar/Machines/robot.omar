@@ -1,0 +1,152 @@
+{***************************************************************}
+{                          robot.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do interactive_robot;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/text.ores";
+
+
+shape robot with
+    scalar base_rotation = 0;
+    scalar arm1_angle = 0;
+    scalar arm2_angle = 0;
+is
+    shape base is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .1>;
+            radius = 1;
+        end;
+        cone with
+            end1 = <0 0 .1>;
+            radius1 = 1;
+            end2 = <0 0 .5>;
+            radius2 = .4;
+        end;
+        sphere with
+            material is plastic colored white;
+            center = <0 0 .5>;
+            radius = .4;
+        end;
+    end;    // base
+
+
+    shape arm
+        scalar angle;
+    is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-.2 0 1>;
+            end2 = <.2 0 1>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius = .1;
+            rotate by angle around <1 0 0>;
+            move to <0 0 1>;
+        end;
+    end;    // arm
+
+    base with material is plastic colored red; end;
+    arm arm2_angle with
+        material is plastic colored blue;
+        move to <0 0 .4>;
+        rotate by arm1_angle around <1 0 0>;
+        rotate by base_rotation around <0 0 1>;
+        move to <0 0 .5>;
+    end;
+end;    // robot
+
+
+anim interactive_robot
+    args type args;
+with
+    eye = <2 -6 4>;
+    lookat = <0 0 1>;
+    double_buffer is on;
+    args check;
+is
+    integer angle1_key = char_to_key "j";
+    integer reverse_angle1_key = char_to_key "u";
+    integer angle2_key = char_to_key "k";
+    integer reverse_angle2_key = char_to_key "i";
+    integer angle3_key = char_to_key "l";
+    integer reverse_angle3_key = char_to_key "o";
+    scalar angle1 = 60;
+    scalar angle2 = 10;
+    scalar angle3 = 30;
+
+
+    verb check_robot_keys is
+        if key_down angle1_key then
+            angle1 = angle1 + 180 * get_clamped_frame_duration;
+        end;
+        if key_down reverse_angle1_key then
+            angle1 = angle1 - 180 * get_clamped_frame_duration;
+        end;
+        if key_down angle2_key then
+            angle2 = angle2 + 100 * get_clamped_frame_duration;
+            if angle2 > 90 then
+                angle2 = 90;
+            end;
+        end;
+        if key_down reverse_angle2_key then
+            angle2 = angle2 - 100 * get_clamped_frame_duration;
+            if angle2 < -90 then
+                angle2 = -90;
+            end;
+        end;
+        if key_down angle3_key then
+            angle3 = angle3 + 180 * get_clamped_frame_duration;
+            if angle3 > 120 then
+                angle3 = 120;
+            end;
+        end;
+        if key_down reverse_angle3_key then
+            angle3 = angle3 - 180 * get_clamped_frame_duration;
+            if angle3 < -120 then
+                angle3 = -120;
+            end;
+        end;
+    
+        check_keys;
+    end;    // check_robot_keys
+
+
+    picture scene is
+        default_lights;
+        
+        overlay_text "J & U: REVOLVE ARM" at <-.95 .9 0> with
+            h_align is left;
+        end;
+        overlay_text "K & I: RAISE/LOWER ARM" at <-.95 .8 0> with
+            h_align is left;
+        end;
+        overlay_text "L & O: BEND ELBOW" at <-.95 .7 0> with
+            h_align is left;
+        end;
+    
+        robot with
+            base_rotation = angle1;
+            arm1_angle = angle2;
+            arm2_angle = angle3;
+        end;
+    end;    // scene
+
+    mouse_controlled_picture scene doing check_robot_keys;
+end;    // interactive_robot

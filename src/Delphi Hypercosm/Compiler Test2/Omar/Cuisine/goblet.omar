@@ -1,0 +1,56 @@
+{***************************************************************}
+{                          goblet.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do goblet_anim;
+
+
+include "system/3d.ores";
+include "system/meshes.ores";
+include "system/check_keys.ores";
+
+
+shape goblet is
+    smooth_lathe [[0 .3] [.025 .3] [.1 .15] [.2 .05] [.5 .05]
+        [.7 .15] [.9 .25] [1 .35]];
+end;    // goblet
+
+
+picture goblet_picture with
+    scalar t = 0;
+is
+    distant_light from <.3 -.5 1>;
+    plane with
+        material is plastic colored brown;
+        magnify by 2;
+    end;
+    goblet with
+        material is silver;
+        rotate by 15 around <0 1 0>;
+        rotate by t * 10 around <0 0 1>;
+        move to <0 0 .1>;
+    end;
+end;    // goblet_picture
+
+
+anim goblet_anim with
+    eye = <1 -3 2>;
+    lookat = <0 0 .25>;
+    double_buffer is on;
+is
+    integer frames = 2;
+
+    while true do
+        goblet_picture with
+            t = frames;
+        end;
+                check_keys;
+        rotate by 1 around <0 0 1>;
+        frames = frames + 1;
+    end;
+end;    // goblet_anim

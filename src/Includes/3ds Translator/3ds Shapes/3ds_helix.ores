@@ -1,0 +1,389 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            3ds_helix.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains helix definitions that correspond to           }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_shape.ores";
+include "system/3ds_editable_spline.ores";
+include "system/3ds_modifier_stacks.ores";
+
+subject translated_3ds_helix
+extends
+	translated_3ds_collapsable translated_3ds_shape
+does
+	// constructor
+	//
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar radius1 = 1;
+		scalar radius2 = 0;
+		scalar height = 1;
+		scalar turns = 2;
+		scalar bias = 0;
+		turn_orientation type orientation is counter_clockwise;
+			
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+	  
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	end;
+	
+	// setting method
+	//
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius1 = 1;
+		scalar radius2 = 0;
+		scalar height = 1;
+		scalar turns = 2;
+		scalar bias = 0;
+		turn_orientation type orientation is counter_clockwise;
+			
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+	  
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	end;
+		
+	// collapsing method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_helix type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	scalar radius1 = 1;
+	scalar radius2 = 0;
+	scalar height = 1;
+	scalar turns = 2;
+	scalar bias = 0;
+	turn_orientation type orientation is counter_clockwise;
+	
+private 
+	// recycling attributes
+	//
+	translated_3ds_helix type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_helix type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new with
+		// geometry parameters
+		//
+		scalar radius1 = 1;
+		scalar radius2 = 0;
+		scalar height = 1;
+		scalar turns = 2;
+		scalar bias = 0;
+		turn_orientation type orientation is counter_clockwise;
+		
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+		
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	is
+		translated_3ds_shape new with
+		
+			// set shape parameters
+			//
+			steps = static steps;
+			optimize is static optimize;
+			adaptive is static adaptive;
+			renderable is static renderable;
+			thickness = static thickness;
+			
+			// set texturing parameters
+			// 
+			gen_mapping_coords is static gen_mapping_coords;        
+		end;
+		
+		if verbose_recycling then
+			write "new 3ds helix", ;
+		end;
+					
+		with translated_3ds_helix do
+		
+			// set geometry attributes
+			//
+			its radius1 = radius1;
+			its radius2 = radius2;
+			its height = height;
+			its turns = turns;
+			its bias = bias;
+			its orientation is orientation;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius1 = 1;
+		scalar radius2 = 0;
+		scalar height = 1;
+		scalar turns = 2;
+		scalar bias = 0;
+		turn_orientation type orientation is counter_clockwise;
+			
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+	  
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	is
+		with translated_3ds_helix do
+		
+			// set geometry attributes
+			//
+			its radius1 = radius1;
+			its radius2 = radius2;
+			its height = height;
+			its turns = turns;
+			its bias = bias;
+			its orientation is orientation;
+			
+			// set shape parameters
+			//
+			its steps = steps;
+			its optimize is optimize;
+			its adaptive is adaptive;
+			its renderable is renderable;
+			its thickness = thickness;
+			
+			// set texturing parameters
+			// 
+			its gen_mapping_coords is gen_mapping_coords;   
+		end;    
+	end;    // set
+	
+	//      
+	// collapsing method
+	//
+	
+	translated_3ds_stackable type question get_collapsed is
+		integer num_segments = trunc (turns * 4);
+		translated_3ds_spline_vertices type vertices;
+		translated_3ds_spline_segments type segments;
+		translated_3ds_spline type spline is none;
+		translated_3ds_splines type splines is none;
+		translated_3ds_editable_spline type editable_spline is none;
+	   
+		// geometric variables
+		//
+		scalar angle = (360 * abs turns) / num_segments;
+		scalar a = (sin angle) * (sqrt (4 + 3 * sqr tan (angle / 2)) - 1);
+		scalar segment_height = height / num_segments;
+		scalar turn_angle = 360 * turns;
+	
+		if orientation is clockwise then
+			turn_angle = -turn_angle;
+		end;
+				
+		// create vertices
+		//
+		dim none vertices[1 .. num_segments + 1];
+		for integer counter = 1 .. num vertices do
+			scalar t = (counter - 1) / (num vertices - 1);
+			scalar u = t * turn_angle;
+			scalar radius = radius1 + (radius2 - radius1) * t;
+			scalar x = cos u * radius;
+			scalar y = sin u * radius;
+			scalar z = height * t;
+			vector point = <x y z>;
+			vector tangent;
+			
+			if orientation is clockwise then
+				tangent = <y -x segment_height> * <a a 1>;
+			else
+				tangent = <-y x segment_height> * <a a 1>;
+			end;
+			
+			vertices[counter] is translated_3ds_bezier_vertex 
+				at point from (-tangent / 3) to (tangent / 3);
+		end;
+		
+		// create segments
+		//
+		dim none segments[1 .. num_segments];
+		for integer counter = 1 .. num_segments do
+			segments[counter] is translated_3ds_spline_segment type's get;
+			segments[counter] set curve from vertices[counter] to vertices[counter + 1];
+		end;
+		
+		// create spline
+		//
+		spline is translated_3ds_spline type's get;
+		spline append_vertices vertices;
+		spline append_segments segments;
+		
+		// create splines
+		//
+		splines is [spline];
+		
+		// create editable spline
+		//
+		editable_spline is translated_3ds_editable_spline type's get;
+		editable_spline set to splines with
+		
+			// set shape parameters
+			//
+			steps = static steps;
+			optimize is static optimize;
+			adaptive is static adaptive;
+			renderable is static renderable;
+			thickness = static thickness;
+			
+			// set texturing parameters
+			// 
+			gen_mapping_coords is static gen_mapping_coords;
+		end;   
+		
+		recycle;
+		answer editable_spline;
+	end;    // get_collapsed
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_helix type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_helix type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_helix;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+		
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_helix;
+		
+		translated_3ds_helix is none;
+	end;        // recycle  
+end;    // translated_3ds_helix
+
+//
+// procedural interface
+//
+
+shape translated_3ds_helix with
+	
+	// geometry parameters
+	//
+	scalar radius1 = 1;
+	scalar radius2 = 0;
+	scalar height = 1;
+	scalar turns = 2;
+	scalar bias = 0;
+	turn_orientation type orientation is counter_clockwise;
+	
+	// shape parameters
+	//
+	integer steps = 4;
+	boolean optimize is false;
+	boolean adaptive is false;
+	boolean renderable is false;
+	scalar thickness = 1; 
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+	
+	// modifier stack
+	//
+	translated_3ds_helix type translated_3ds_helix is translated_3ds_helix type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_helix;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_helix set with
+	
+		// geometry parameters
+		//
+		radius1 = static radius1;
+		radius2 = static radius2;
+		height = static height;
+		turns = static turns;
+		bias = static bias;
+		orientation is static orientation;
+		
+		// set shape parameters
+		//
+		steps = static steps;
+		optimize is static optimize;
+		adaptive is static adaptive;
+		renderable is static renderable;
+		thickness = static thickness;
+		
+		// set texturing parameters
+		// 
+		gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;    // translated_3ds_helix

@@ -1,0 +1,34 @@
+do sprite_sensor_anim;
+
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/sprite_sensor.ores";
+
+
+anim sprite_sensor_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+    
+	sprite_sensor type wireframe_sprite_sensor at <-.8 .8 0> poster "wireframe_icon.gif" with
+		mouse_down_action is (new action of static mouse_down_action);
+	end;
+	
+	picture scene is
+		wireframe_sprite_sensor overlay at 10;
+		sphere;
+		default_background at 100;		
+		default_lights;
+	end;	// scene
+
+	while true do
+		scene;
+	end;
+end;	// sprite_sensor_anim

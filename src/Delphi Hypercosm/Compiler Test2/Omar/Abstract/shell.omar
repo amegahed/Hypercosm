@@ -1,0 +1,172 @@
+{***************************************************************}
+{                          shell.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do shell_anim;
+//do shell_picture2;
+
+
+include "system/3d.ores";
+include "system/check_keys.ores";
+include "system/grid_meshes.ores";
+include "system/time.ores";
+
+
+shape shell with
+    scalar revolutions = 2;
+    integer steps = 20;
+    integer steps2 = 10;
+    scalar height = 1.5;
+    scalar minor_radius = .25;
+    scalar major_radius = .25;
+    boolean smoothing is true;
+    boolean mending is false;
+is
+    vector vertex[1..steps, 1..steps2];
+    static vector lookup_table[];
+
+    static verb init_lookup_table
+        to integer steps;
+    is
+        static integer prev_steps = 0;
+
+        if steps <> prev_steps then
+            if prev_steps <> 0 then
+                lookup_table is none;
+            end;
+
+            // allocate lookup table
+            //
+            dim lookup_table[1..steps];
+            prev_steps = steps;
+
+            // initialize lookup table
+            //
+            for integer counter = 1..steps do
+                scalar angle = (counter - 1) / (steps - 1)
+                    * 360;
+                lookup_table[counter] = <(cos angle)
+                    (sin angle) 0>;
+            end;
+        end;
+    end;    // init_lookup_table
+
+    // initialize array of circle points
+    //
+    init_lookup_table to steps2;
+
+    // assign points on surface of revolution
+    //
+    for integer counter1 = 1..steps do
+        scalar t = counter1 / steps;
+        scalar angle = revolutions * 360 * t;
+        scalar z = (log of (t + 1) - log of 1) /
+            (log of 2 - log of 1);
+        scalar factor = (1 - t) * minor_radius;
+        trans type trans;
+
+        rotate the trans by 90 around <1 0 0>;
+        magnify the trans by factor;
+        move the trans to <(major_radius * (1 - t)) 0 0>;
+        rotate the trans by angle around <0 0 1>;
+        move the trans to <0 0 height> * z;
+
+        for integer counter2 = 1..steps2 do
+            vector point = lookup_table[counter2];
+            vertex[counter1, counter2] = trans transformed point;
+        end;
+    end;
+
+    // create mesh
+    tri_grid_mesh of vertex with
+        smoothing is static smoothing;
+        mending is static mending;
+    end;
+end;    // shell
+
+
+picture shell_picture2 with
+    eye = <0 -4 2.5>;
+    lookat = <0 0 1>;
+    shadows is on;
+    reflections is on;
+    background = black;
+    fog_factor = 100;
+    ambient = black;
+    facets = 0;
+is
+    {
+        distant_light from <.3 .5 1>;
+        distant_light from <-10 -10 10>;
+    }
+
+    spot_light towards <10 15 -10> with
+        move to <-10 -15 12>;
+        angle = 30;
+        brightness = 30;
+    end;
+
+    shell with
+        material is metal colored light purple;
+        steps = 10;
+        revolutions = -1;
+        magnify by 1.5;
+        move to <1 0 0>;
+    end;
+    shell with
+        material is metal colored light green;
+        steps = 100;
+        revolutions = 6;
+        magnify by 1.5;
+    end;
+    shell with
+        material is metal colored light blue;
+        steps = 10;
+        revolutions = 1;
+        magnify by 1.5;
+        move to <-1 0 0>;
+    end;
+
+// flat show_rgb in local plane with
+    plane with
+        material is chalk colored brown;
+        magnify the shader_trans by 2;
+    end;
+end;    // shell_picture2
+
+
+picture shell_picture with
+    scalar t = 0;
+
+    lookat = <0 0 .75>;
+    background = dark purple;
+    roll = -30;
+is
+    distant_light from <.3 -.5 1>;
+    shell with
+        color = light raspberry;
+        revolutions = cos t * 4;
+    end;
+end;    // shell_picture
+
+
+anim shell_anim with
+    double_buffer is on;
+is
+    while true do
+    	scalar t = get_seconds * 100;
+    	
+        eye = <(2 * cos t) (2 * sin t) 2>; 
+    
+        shell_picture with
+            t = static t;
+        end;
+
+        check_keys;
+    end;
+end;    // shell_anim

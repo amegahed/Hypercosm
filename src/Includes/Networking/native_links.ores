@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          native_links.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains native linking utilities.                      }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "strings.ores";
+
+// ***set_url***
+// Sets a browser's current url. The "target" string
+// determines which frame the url is set in, using
+// Netscape standards:
+// "_current" or "_self": The current frame's url is reset.
+// "_blank" or "_new": The url is opened in a new frame.
+// A target of none defaults to "_self".
+// If no browser is open, set_url opens a new browser frame.
+//
+native verb set_url
+	to string type url;
+with
+	string type target is "_self";
+end;
+
+// ***set_status***
+// Sets the status line at the bottom of a web browser
+//
+native verb set_status to string type status; end;

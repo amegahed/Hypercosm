@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  mutable_collecting.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of collection behavior for		}
+{		mutable ("read-write") collections.						}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/collecting.ores";
+
+
+adjective mutable_collectable
+extends
+	collectable
+does
+    // collection construction methods
+    //
+    verb add
+        object type element;
+    end;
+    verb remove
+        object type element;
+    end;
+    verb purge
+    	object type element;
+    end;
+    verb clear;
+    
+    // methods for adding only existing elements
+    // (elements which are not <none>)
+    //
+    verb add_element
+    	object type element;
+    end;
+end;    // mutable_collectable

@@ -1,0 +1,88 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     short_circuit_evaulation.omar      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples that demonstrate the        }
+{       use of short circuit expression evaulation in the       }
+{       OMAR language.                                          }
+{                                                               }
+{       Short circuit evaluation in OMAR works in the same      }
+{       way as it does in languages such as C, C++, and         }
+{       Pascal.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do short_circuit_evaluation_example;
+	
+include "system/math.ores";
+
+// variables used for example
+//
+struct thing has
+	thing type next is none;
+end;
+scalar a = 1, b = -1;
+thing type thing is none;
+
+verb short_circuit_evaluation_example 
+is
+	// This is a short circuit "or" expression.  As soon as the
+	// first term (a > 0) evaluates to true, the or expression
+	// is known to be true and the left side does not need to be
+	// evaluated.  Without short circuit evaluation, evaluating 
+	// the left side of this expression would cause an error 
+	// because sqrt(b) can not be taken when b < 0.
+	//
+	if a > 0 or sqrt(b) > 0 then
+		// do something
+		//
+	end;
+	
+	// This is a short circuit "and" expression.  As soon as the
+	// first term (b > 0) evaluates to false, the and expression
+	// is known to be false and the left side does not need to be
+	// evaluated.  Without short circuit evaluation, evaluating
+	// the left side of this expression would cause an error
+	// because sqrt(b) can not be taken when b < 0.
+	//
+	if b > 0 and sqrt(b) > 0 then
+		// do something
+		//
+	end;
+	
+	// To force evaluation of all terms in the "or" expression
+	// and therefore bypass the short circuit evaluation, you
+	// could use the following syntax:
+	// 
+	{
+	if a > 0 or if sqrt(b) > 0 then
+		// do something
+		//
+	end;
+	}
+	
+	// To force evaluation of all terms in the "and" expression
+	// and therefore bypass the short circuit evaluation, you
+	// could use the following syntax:
+	// 
+	{
+	if b > 0 and if sqrt(b) > 0 then
+		// do something
+		//
+	end;
+	}
+		
+	// Here's another short circuit "and" expression. Without
+	// short circuit evaluation, the second part of the
+	// expression would cause an error because thing's next can
+	// not be found when thing is none
+	//
+	if thing isn't none and thing's next isn't none then
+		thing is its next;
+	end;
+	
+	write "ok!", ;
+end;    // short_circuit_evaluation_example

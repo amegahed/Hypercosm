@@ -1,0 +1,40 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm               dim.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the use of the         }
+{       dim statement to allocate or "dimension" arrays         }
+{       in the OMAR language.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do dim_example;
+
+struct part has
+	char name[];                    // Dynamic array as a field of a struct
+	integer inventory_number;
+	scalar price;
+end;    // part
+
+integer i[], j[];                   // Dynamic array declarations
+part type parts[], inventory[];
+
+verb dim_example is
+	// simple array dimensioning
+	//
+	dim i[1 .. 10];
+	dim j[0 .. 5];
+	dim parts[1 .. 100];                // Create array[1..100] and then creates 100 parts
+	
+	// dimensioning arrays of structs or objects
+	//
+	dim none inventory[1 .. 1000];      // Create array[1..1000] of nil references to parts
+	for integer counter = 1 .. 500 do   // Create first 500 out of 1000 parts leaving the last
+		new inventory[counter];         // 500 references in the array to be nil
+	end;
+	
+	write "ok!", ;
+end;    // dim_example

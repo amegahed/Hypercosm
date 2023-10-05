@@ -1,0 +1,161 @@
+{***************************************************************}
+{                         fog_demo.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do fog_test_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/beveled_slider.ores";
+include "system/view_alignments.ores";
+include "system/text.ores";
+include "system/common_materials.ores";
+
+
+// This demonstration lets you see how fog affects a scene. In this animation
+// there are five moving, viewable objects at varying distances, and a slider
+// to allow the user to control the fog.
+
+
+scalar fog_amount = 100;
+
+// slider declaration
+//
+beveled_slider type fog_control controls fog_amount from 0 to 100 with
+    end1 = <-.8 0 0>;
+    end2 = <.8 0 0>;
+    radius = .06;
+    bevel_width = .05;
+    bar_material is chalk colored grey;
+end;
+
+
+// viewable shape
+//
+shape bystander
+with
+    scalar time = 0;
+is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 2>;
+        radius1 = 0;
+        radius2 = 1;
+        stretch by (1 + .5 * sin (time * 300)) along <0 0 1>;
+        material is plastic colored green;
+    end;
+    sphere with 
+        center = <0 0 3>;
+        radius = 1;
+        stretch by (1 + .5 * sin (time * 300)) along <0 0 1>;
+        material is chalk colored flesh;
+    end;
+    torus with
+        center = <0 0 2>;
+        inner_radius = 2;
+        outer_radius = 2.5;
+        normal = <0 .3 .5>;
+        rotate by (time * 300) around <0 0 1>;
+        material is plastic colored red;
+    end;
+end;
+
+
+picture scene is
+    // lighting
+    //
+    default_lights;
+    
+    // slider
+    //
+    fog_control instance with
+        move to <-.4 2.5 4.05>;
+    end;
+    
+    // slider label
+    //
+    overlay_text "fog_factor" at <-.3 -.6 0> with   
+        size = 30;
+        font_family is "arial";
+    end;
+    overlay_text (scalar_to_string of fog_amount) at <-.3 -.8 0> with 
+        size = 30;
+        font_family is "arial";
+    end;
+    
+    // viewable objects & distance labels
+    //
+    bystander with
+        time = get_seconds;
+        move to <4 10 0>;
+    end;
+    overlay_text "10 units away" at <.95 -.4 0> with
+        size = 40;
+        h_align is right;
+        font_family is "arial";
+    end;
+    
+    bystander with
+        time = get_seconds;
+        move to <0 25 0>;
+    end;
+    overlay_text "25 units away" at <0 -.1 0> with
+        size = 35;
+        font_family is "arial";
+    end;
+    
+    bystander with
+        time = get_seconds;
+        move to <-10 50 0>;
+    end;
+    overlay_text "50 units away" at <-.4 .2 0> with
+        size = 30;
+        font_family is "arial";
+    end;
+    
+    bystander with
+        time = get_seconds;
+        move to <20 100 0>;
+    end;
+    overlay_text "100 units away" at <.4 .4 0> with
+        size = 25;
+        font_family is "arial";
+    end;
+    
+    bystander with
+        time = get_seconds;
+        move to <-70 200 0>;
+    end;
+    overlay_text "200 units away" at <-.95 .4 0> with
+        size = 20;
+        h_align is left;
+        font_family is "arial";
+    end;
+    
+    // ground:
+    //
+    plane with
+        magnify by 200;
+        move to <0 150 0>;
+        material is turf;
+    end;
+end;    // scene
+
+
+anim fog_test_anim with
+    background = dark sky_blue;
+    eye = <0 0 5>;
+    lookat = <0 50 0>;
+    double_buffer is on;
+is    
+    while true do
+        fog_factor = fog_amount;
+        scene;
+    end;
+end;    // fog_test_anim

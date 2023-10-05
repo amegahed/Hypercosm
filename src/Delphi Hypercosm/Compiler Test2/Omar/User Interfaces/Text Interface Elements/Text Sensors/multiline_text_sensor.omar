@@ -1,0 +1,38 @@
+do multiline_text_sensor_anim;
+
+
+include "system/3d.ores";
+include "system/multiline_text_sensor.ores";
+
+
+strings type text is ["press" "me" "please"];
+
+
+anim multiline_text_sensor_anim with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+        
+    multiline_text_sensor type multiline_text_sensor of text at <.75 0 0> with
+    	font_color set to white over dark green;
+		font is (new screen_font sized 24 styled bold with
+			new effects with
+		   		shadowed is true;
+		   		background_shadowed is true;
+		   		background_indented is false;
+		   	end;
+		);
+        mouse_down_action is (new action of static mouse_down_action);
+    end;
+    
+    picture scene is
+        multiline_text_sensor draw;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // multiline_text_sensor_anim

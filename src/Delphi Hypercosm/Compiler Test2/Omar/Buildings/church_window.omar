@@ -1,0 +1,126 @@
+{***************************************************************}
+{                          church_window.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do church_window_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape vertical_cross with
+    scalar height = 1.5;
+    scalar cross_height = 1;
+    scalar width = 1;
+    scalar thickness = .1;
+is
+    scalar h1 = 0;
+    scalar h2 = cross_height - (thickness / 2);
+    scalar h3 = cross_height + (thickness / 2);
+    scalar h4 = height;
+
+    scalar w1 = (-width / 2);
+    scalar w2 = (-thickness / 2);
+    scalar w3 = (thickness / 2);
+    scalar w4 = (width / 2);
+
+    extrude2
+        [[w3 h1] [w3 h2] [w4 h2] [w4 h3] [w3 h3] [w3 h4]
+        [w2 h4] [w2 h3] [w1 h3] [w1 h2] [w2 h2] [w2 h1]] along <0 1 0>
+    with
+        height = static thickness;
+    end;
+end;    // vertical_cross
+
+
+shape church_window with
+    scalar height = 1.5;
+    scalar width = 1;
+    scalar thickness = .1;
+is
+    scalar h = height - (width / 2);
+
+    color = light brown;
+
+    tube with
+        umax = 180;
+        outer_radius = (width / 2);
+        inner_radius = (width / 2) - thickness;
+        end1 = <0 (-thickness / 2) h>;
+        end2 = <0 (thickness / 2) h>;
+    end;
+    block with
+        scale by (thickness / 2) along <1 0 0>;
+        scale by (thickness / 2) along <0 1 0>;
+        scale by (h / 2) along <0 0 1>;
+        move to <((-width / 2) + (thickness / 2)) 0 (h / 2)>;
+    end;
+    block with
+        scale by (thickness / 2) along <1 0 0>;
+        scale by (thickness / 2) along <0 1 0>;
+        scale by (h / 2) along <0 0 1>;
+        move to <((width / 2) - (thickness / 2)) 0 (h / 2)>;
+    end;
+    block with
+        scale by (width / 2) along <1 0 0>;
+        scale by (thickness / 2) along <0 1 0>;
+        scale by (thickness / 2) along <0 0 1>;
+        move to <0 0 (thickness / 2)>;
+    end;
+
+    // window material
+    //
+    disk with
+        material is constant_color black;
+        umax = 180;
+        normal = <0 -1 0>;
+        radius = (width / 2) - thickness;
+        move to <0 0 h>;
+    end;
+    parallelogram with
+        material is constant_color black;
+        rotate by 90 around <1 0 0>;
+        move to <0 0 1>;
+        scale by (width / 2 - thickness) along <1 0 0>;
+        scale by ((h - thickness) / 2) along <0 0 1>;
+    end;
+
+    vertical_cross with
+        height = static height - thickness * 2;
+        cross_height = 1 - thickness * 1.5;
+        width = static width - thickness * 2;
+        thickness = static thickness;
+        move to <0 0 thickness>;
+    end;
+end;    // church_window
+
+
+anim church_window_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        church_window with
+            material is wood;
+        end;
+    end;
+
+    shape environment is
+        plane with
+            magnify by 2;
+            render_mode is wireframe;
+        end;
+    end;
+
+    mouse_controlled_shape scene in environment;
+end;    // church_window_anim

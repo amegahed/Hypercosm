@@ -1,0 +1,48 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        bounding_boxes.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of non axis aligned box           }
+{       shaped bounding regions.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/boxes.ores";
+include "system/volume_extent_finding.ores";
+	
+subject bounding_box
+extends
+	volume_boundable box
+does
+	// constructor
+	//
+	verb new
+		of vector vertices[1 .. 8] is none;
+	end;
+	
+	// bounding methods
+	//
+	volume_bounding type question get_bounds;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of vector vertices[1 .. 8] is none;
+	is
+		box new of vertices;
+	end;    // new
+	
+	//  
+	// bounding methods
+	//
+	
+	volume_bounding type question get_bounds is
+		answer get_point_extents of vertices;
+	end;    // get_bounds
+end;    // bounding_box

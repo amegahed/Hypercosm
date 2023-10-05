@@ -1,0 +1,43 @@
+do rgb_shapes;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape big_red_block
+is
+	block with
+		magnify by 5;
+		material is plastic colored red;
+		move to <0 10 10>;
+	end;
+end; // big_red_block
+
+shape big_green_cone
+is
+	cone with
+		magnify by 5;
+		material is plastic colored green;
+		move to <-10 -5 0>;
+	end;
+end;	// big_green_cone
+
+shape big_blue_sphere
+is
+	sphere with
+		magnify by 5;
+		material is plastic colored blue;
+		move to <10 0 5>;
+	end;
+end;	// big_blue_sphere
+
+anim rgb_shapes is
+	shape scene is
+		big_red_block;
+		big_green_cone;
+		big_blue_sphere;
+	end;
+	
+	mouse_controlled_shape scene with
+		auto_camera is on;
+	end;
+end;	// rgb_shapes

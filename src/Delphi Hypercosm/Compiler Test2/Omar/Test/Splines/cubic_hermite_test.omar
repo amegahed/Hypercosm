@@ -1,0 +1,39 @@
+do cubic_hermite_test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/hermite_splines.ores";
+
+
+polynomial type polynomial is hermite_cubic
+	from 0 5 to 0 -5;
+
+
+shape polynomial_curve is
+	integer vertices = 100;
+	vector spline[1 .. vertices];
+	
+	for integer counter = 1 .. vertices do
+		scalar t = (counter - 1) / (vertices - 1);
+		spline[counter].x = (t * 2 - 1);
+		spline[counter].y = 0;
+		spline[counter].z = polynomial value at t;
+	end;
+	
+	line spline;
+end;	// polynomial_curve
+
+
+shape scene is
+	polynomial_curve;
+	plane;
+end;	// scene
+
+
+anim cubic_hermite_test with
+	eye = <0 -4 4>;
+	lookat = <0 0 0>;
+is
+	mouse_controlled_shape scene;
+end;	// cubic_hermite_test

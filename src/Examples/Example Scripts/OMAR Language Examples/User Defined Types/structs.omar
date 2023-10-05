@@ -1,0 +1,31 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             structs.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of structured types in the OMAR language.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do struct_example;
+
+struct pixel has
+	integer h = 0, v = 0;
+end;    // pixel
+
+struct button has
+	char label[] is "untitled";
+	pixel type center, size;
+end;    // button
+
+button type button1, button2;
+
+verb struct_example is
+	button1's center's h = 500;
+	
+	write "button1's label is ", button1's label, ;
+	write "button1's center = ", button1's center's h, ", ", button1's center's v, ;
+end;    // struct_example

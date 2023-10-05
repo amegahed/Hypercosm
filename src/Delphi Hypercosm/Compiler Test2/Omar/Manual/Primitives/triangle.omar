@@ -1,0 +1,65 @@
+{***************************************************************}
+{                          triangle.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do triangle_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/arrow_shapes.ores";
+
+
+shape labelled_triangle is
+	shape triangle_primitive is
+	    triangle <-.75 -.75 0> <-.5 1 0> <1 -1.25 0> with
+	        move to <0 0 -.01>;
+	    end;
+    end;
+    
+    outlined triangle_primitive with
+    	material is glass colored triangle_color;
+    end;
+
+    // vertices
+    //
+    mark at <-.75 -.75 0>;
+    mark at <-.5 1 0>;
+    mark at <1 -1.25 0>;
+
+    // vertex labels
+    //
+    futura_l_word "VERTEX1" with
+        move to <-.75 -1 0>;
+    end;
+    futura_l_word "VERTEX2" with
+        move to <-.5 1.25 0>;
+    end;
+    futura_l_word "VERTEX3" with
+        move to <1 -1.5 0>;
+    end;
+end;    // labelled_triangle
+
+
+anim triangle_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Triangle Primitive";
+    args check;
+is
+	shape scene is
+		labelled_triangle;
+		axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // triangle_anim

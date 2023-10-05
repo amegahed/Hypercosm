@@ -1,0 +1,35 @@
+do vectors2_test;
+
+
+include "vectors2.ores";
+
+
+verb vectors2_test is
+	vector2 type v1 = <.5 0>;
+	vector2 type v2 = <0 1>;
+	vector v3 = <.5 0 0>;
+	vector v4 = <0 1 0>;
+	
+	write "v1 = ", v1, ;
+	write "v2 = ", v2, ;
+	write "v3 = ", v3, ;
+	write "v4 = ", v4, ;
+	
+	// addition test
+	//
+	write "addition test:", ;
+	write "v1 + v2 = ", v1 + v2, ;
+	write "v3 + v4 = ", v3 + v4, ;
+	
+	// subtraction test
+	//
+	write "subtraction test:", ;
+	write "v1 + v2 = ", v1 - v2, ;
+	write "v3 + v4 = ", v3 - v4, ;
+
+	// multiplication test
+	//
+	write "multiplication test:", ;
+	write "v1 * v2 = ", v1 * v2, ;
+	write "v3 * v4 = ", v3 * v4, ;
+end;	// vectors2_test

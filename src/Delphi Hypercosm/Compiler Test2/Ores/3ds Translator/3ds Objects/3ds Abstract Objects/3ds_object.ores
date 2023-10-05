@@ -1,0 +1,64 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   3ds_object.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains object definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_modifier.ores";
+include "system/3ds_modifier_stacks.ores";
+
+
+// these modifiers form the base of the object
+// modifier stack.
+//
+
+
+abstract subject translated_3ds_object
+extends
+	translated_3ds_modifier
+does
+	// scribable method
+	//
+	string type question to_string;
+is
+	//
+	// scribable method
+	//
+	
+	
+	string type question to_string is
+		answer "translated 3ds object";
+	end;	// to_string
+end;	// translated_3ds_object
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_object
+	of translated_3ds_object type translated_3ds_object;
+with
+    // modifier stack
+    //
+	modifier_stack push translated_3ds_stackable type translated_3ds_object;
+is
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_object
+
+
+
+
+
+

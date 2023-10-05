@@ -1,0 +1,38 @@
+do multiline_text_display_anim;
+
+
+include "system/3d.ores";
+include "system/multiline_text_display.ores";
+
+
+strings type text is ["press" "me" "please"];
+
+
+anim multiline_text_display_anim with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+        
+    multiline_text_display type multiline_text_display of text
+    	at <1 0 0> aligned to middle_right
+    with
+    	font_color set to white over dark green;
+    	font is (new screen_font sized 24 styled bold with
+    		new effects with
+	   			shadowed is true;
+	   			background_shadowed is true;
+	   		end;
+   		);
+    end;
+    
+    picture scene is
+        multiline_text_display draw;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // multiline_text_display_anim

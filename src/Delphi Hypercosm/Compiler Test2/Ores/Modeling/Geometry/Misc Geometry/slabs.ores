@@ -1,0 +1,69 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm      	  	  slab.ores	 				3d      }
+{ |/  \|					    	  					To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a definition for axis aligned centered        }
+{        volumes.                                     			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/printing.ores";
+
+
+subject slab
+extends
+	scribable object
+does
+	// constructor
+	//
+	verb new
+		of vector size;
+		at vector center = <0 0 0>;
+	end;
+    
+    // scribable methods
+    //
+    string type question to_string;
+has
+	// slab attributes
+	//
+	vector size;
+	vector center;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of vector size;
+		at vector center = <0 0 0>;
+	is
+		// set attributes
+		//
+		with slab do
+			its size = size;
+			its center = center;
+		end;
+	end;	// new
+	
+   
+	// 
+    // scribable methods
+    //
+    
+    
+    string type question to_string is
+    	string type string is "slab";
+    	string add " of size ";
+    	string add vector_to_string of size;
+    	string add " centered on ";
+    	string add vector_to_string of center;
+    	answer string;
+    end;	// to_string
+end;    // slab

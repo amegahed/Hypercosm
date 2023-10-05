@@ -1,0 +1,153 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       whitespace_parsing.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a selection of text parsing utilities          }
+{       for parsing whitespace.                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/char_parsing.ores";
+
+verb scan_through_whitespace
+	// text position
+	//
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch is get_next_char at column char_number on line line_number of text;     
+	while whitespace ch do
+		skip_char at column char_number on line line_number of text;
+		ch is get_next_char at column char_number on line line_number of text;
+	end;
+end;    // scan_through_whitespace
+
+verb scan_through_text
+	// text position
+	//
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch is get_next_char at column char_number on line line_number of text;     
+	while not whitespace ch do
+		skip_char at column char_number on line line_number of text;
+		ch is get_next_char at column char_number on line line_number of text;
+	end;
+end;    // scan_through_text
+
+verb scan_to_next_blank_line
+	// text position
+	//
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	integer lines = max text;
+	
+	while (line_number <= lines) and some text[line_number] do
+		line_number = itself + 1;
+	end;
+	
+	if (line_number <= lines) then
+		char_number = min text[line_number];
+	end;
+end;    // scan_to_next_blank_line
+
+verb scan_through_line_comments
+	// text position
+	//  
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	boolean done is false;
+	
+	while not done do
+		string type delimeter is text[line_number] left 2;
+		if delimeter matches "//" then
+		
+			// go to next line
+			//
+			line_number = itself + 1;
+			char_number = min text[line_number];
+		else
+			done is true;
+		end;
+	end;
+end;    // scan_through_line_comments
+
+integer question get_whitespace_length
+	// text position
+	//
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch;
+	integer counter = 0;
+		
+	parse_char ch at column char_number on line line_number of text; 
+	while whitespace ch and ch isn't null do
+		counter = itself + 1;
+		parse_char ch at column char_number on line line_number of text;
+	end;
+	
+	answer counter;
+end;    // get_whitespace_length
+
+integer question get_text_length
+	// text position
+	//
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch;
+	integer counter = 0;
+	
+	parse_char ch at column char_number on line line_number of text; 
+	while not whitespace ch and ch isn't null do
+		counter = itself + 1;
+		parse_char ch at column char_number on line line_number of text;
+	end;
+	
+	answer counter;
+end;    // get_text_length
+
+boolean question some_text
+	// text position
+	//
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	scan_through_whitespace at column char_number on line line_number of text;
+	answer (get_text_length at column char_number on line line_number of text) <> 0;
+end;    // some_text

@@ -1,0 +1,111 @@
+{***************************************************************}
+{                          sword.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sword_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/candles.omar";
+
+
+shape sword is
+    shape handle is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 -4>;
+            radius = .4;
+            scale by .4 along <0 1 0>;
+        end;
+        sphere with
+            center = <0 0 -4>;
+            radius = .3;
+            scale by 3 along <1 0 0>;
+        end;
+    end;    // handle
+
+
+    shape arc is
+        extrude [[-1 0] [0 4] [1 6] [3 9] [5 11] [7 12] [7 9]
+            [5 8] [3 5] [1.8 3] [1 0]];
+    end;    // arc
+
+
+    shape blade_guard is
+        arc;
+        arc with
+            scale by -1 along <1 0 0>;
+            scale by -1 along <0 1 0>;
+        end;
+    end;    // blade_guard
+
+
+    shape pyramid is
+        triangle <1 -1 0> <1 1 0> <0 0 1>;
+        triangle <1 1 0> <-1 1 0> <0 0 1>;
+        triangle <-1 1 0> <-1 -1 0> <0 0 1>;
+        triangle <-1 -1 0> <1 -1 0> <0 0 1>;
+    end;    // pyramid
+
+    metallic white pyramid with
+        scale by 20 along <0 0 1>;
+        rotate by 45 around <0 0 1>;
+        scale by .1 along <0 1 0>;  // thickness of blade
+        scale by .5 along <1 0 0>;  // width of blade
+    end;
+    flat dark grey disk with
+        radius = 1.5;
+        scale by .3 along <0 1 0>;
+    end;
+    flat dark grey handle;
+end;    // sword
+
+
+picture sword_picture with
+    eye = <0 -30 20>;
+    lookat = <0 0 4>;
+    field_of_view = 60;
+    render_mode is shaded;
+    shading is vertex;
+is
+    distant_light from <.3 -.5 1>;
+    flat brown plane with
+        magnify by 10;
+    end;
+    metallic gold candle with
+        magnify by .1;
+        move to <-8 10 0>;
+    end;
+    metallic gold candle with
+        magnify by .1;
+        move to <8 10 0>;
+    end;
+    sword with
+        rotate by -90 around <1 0 0>;
+        rotate by 45 around <0 0 1>;
+        move to <10 0 .5>;
+    end;
+    sword with
+        rotate by -90 around <1 0 0>;
+        rotate by -45 around <0 0 1>;
+        rotate by 1.6 around <0 1 0>;
+        move to <-10 0 .5>;
+    end;
+end;    // sword_picture
+
+
+anim sword_anim with
+    eye = <0 -30 20>;
+    lookat = <0 0 4>;
+    field_of_view = 60;
+    double_buffer is on;
+is
+    mouse_controlled_picture sword_picture;
+end;    // sword_anim

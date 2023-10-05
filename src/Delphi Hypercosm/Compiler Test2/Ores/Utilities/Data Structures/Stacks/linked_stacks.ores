@@ -1,0 +1,89 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	  	  linked_stacks.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an implementation of a list based stack.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/stacks.ores";
+include "system/singly_linked_lists.ores";
+
+
+subject linked_stack
+extends
+    printable stack
+does
+    // stack construction methods
+    //
+    verb push
+        object type element;
+    end;
+    verb pop;
+    object type question popped;
+    
+    // stack querying methods
+    //
+    object type question peek;
+    integer question height;
+    
+    // printable methods
+    //
+    verb print;
+has
+	// linked stack attributes
+	//
+    singly_linked_list type list;
+is
+	//
+    // stack construction methods
+    //
+    
+    
+    verb push
+        object type element;
+    is
+        list append_first element;
+    end;    // push
+    
+    
+    verb pop is
+        discard list detached_first;
+    end;    // pop
+    
+    
+    object type question popped is
+        answer list detached_first;
+    end;    // popped
+    
+
+	//    
+    // stack querying methods
+    //
+    
+    
+    object type question peek is
+        answer list get_first;
+    end;    // peek
+    
+        
+    integer question height is
+        answer list get_size;
+    end;    // height
+    
+
+	//    
+    // printable methods
+    //
+    
+    
+    verb print is
+        list print;
+    end;    // print
+end;    // linked_stack
+

@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           text_utils.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains various overlay text related utilities.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_text.ores";
+include "regions.ores";
+
+scalar characters_across = 50;
+
+integer question proportional_text_size
+is
+	answer trunc (width / characters_across);
+end;    // proportional_text_size
+
+integer default_text_size = proportional_text_size;
+
+region type question text_region
+	of string type string;
+	at vector location = <0 0 0>;
+	size integer text_size;
+	h_aligned h_alignment type h_alignment is left;
+is
+	integer characters = num string;
+	scalar character_length = text_size / width;
+	scalar character_height = text_size / height * .75;
+	scalar string_length = character_length * characters;
+	vector v1, v2;
+	
+	if some string then
+		when h_alignment is
+			center:
+				v1 = location + <(-string_length / 2) (-character_height) 0>;
+				v2 = location + <(string_length / 2) (character_height) 0>;
+			end;
+			
+			left:
+				v1 = location + <0 (-character_height) 0>;
+				v2 = location + <string_length (character_height) 0>;
+			end;
+			
+			right:
+				v1 = location + <(-string_length) (-character_height) 0>;
+				v2 = location + <0 (character_height) 0>;
+			end;
+		end;
+	
+		answer new region type from v1 to v2;
+	else
+		answer none;
+	end;
+end;    // text_region

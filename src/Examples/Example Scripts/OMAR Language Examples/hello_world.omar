@@ -1,0 +1,17 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            hello_world.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains the canonical "hello world"          }
+{       program using the OMAR language.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do hello_world;
+
+verb hello_world is
+	write "Hello World!", ;
+end;    // hello_world

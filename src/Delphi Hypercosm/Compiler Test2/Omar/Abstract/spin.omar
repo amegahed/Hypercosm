@@ -1,0 +1,68 @@
+{***************************************************************}
+{                          spin.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do spinning_things;
+
+
+include "system/3d.ores";
+include "system/time.ores";
+
+
+picture thing_picture with
+    scalar t = 0;
+is
+    distant_light from <.3 -5 1>;
+    if (t < 0) then
+        t = -t;
+    end;
+    torus with
+        inner_radius = t;
+    end;
+
+    {hyperboloid1 with radius1 = t; end;}
+
+    disk;
+    sphere;
+    sphere_color = <t .5 t>;
+    cone with
+        radius1 = (sin t + 2);
+        radius2 = t;
+    end;
+    ring_color = <t (1 - t) .5>;
+    ring with
+        inner_radius = t;
+    end;
+    ring with
+        normal = <(sin t) (cos t) t>;
+        inner_radius = 1 - t;
+    end;
+end;    // thing_picture
+
+
+anim spinning_things with
+    render_mode is wireframe;
+    double_buffer is on;
+is
+    timer type timer with
+        ticks_per_second = 30;
+    end;
+    
+    scalar x, y, z;
+
+    while true do
+        x = (cos timer position) * 6;
+        y = (sin timer position) * 6;
+        z = 3;
+        eye = <x y z>;
+
+        thing_picture with
+            t = sin (timer position);
+        end;
+    end;
+end;    // spinning_things

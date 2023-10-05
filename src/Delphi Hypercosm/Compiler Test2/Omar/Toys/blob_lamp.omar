@@ -1,0 +1,373 @@
+{***************************************************************}
+{                          blob_lamp.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do blob_lamp_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/common_materials.ores";
+
+
+subject blob_lamp
+extends
+    timed_actor
+does
+    verb new with
+        integer max_globules = 10;
+        material type lamp_material is golden;
+        material type up_material is plastic colored red;
+        material type touched_material is plastic colored orange;
+        material type down_material is plastic colored blue;
+        boolean random_colors is false;
+    end;    // new
+
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    struct globule has
+        vector location;
+        scalar size;
+        scalar speed;
+        scalar wobble;
+        boolean going_up;
+        scalar wobble_rate;
+        scalar collision_height;
+        boolean collided;
+        material type material is none;
+        globule type next is none;
+    end;    // globule
+
+
+    integer globule_number = 0;
+    scalar globule_countdown = 0;
+    integer max_globules;
+    globule type globule_list is none;
+    boolean random_colors;
+
+    // materials
+    //
+    material type lamp_material is none, up_material is none, 
+        touched_material is none, down_material is none;
+is
+    const scalar min_globule_size = .05;
+    const scalar max_globule_size = .15;
+    const scalar min_globule_speed = .1;
+    const scalar max_globule_speed = .5;
+    const scalar min_globule_height = 1;
+    const scalar max_globule_height = 2.5;
+    const scalar min_wobble_rate = .5;  // min wobbles / sec
+    const scalar max_wobble_rate = 2;   // max wobbles / sec
+    const integer max_globule_spacing = 1;  // secs between globules
+    const scalar min_lamp_radius = .15;
+    const scalar max_lamp_height = 2.7;
+    const scalar max_lamp_radius = .4;
+    const scalar min_lamp_height = 1;
+    const scalar lamp_height = max_lamp_height - min_lamp_height;
+    const scalar radius_difference = max_lamp_radius - min_lamp_radius;
+    const material type glassy_material is glass poster "transparent60.png";
+    globule type globule_free_list is none;
+
+
+    globule type question new_globule is
+        globule type globule is none;
+
+        if some globule_free_list then
+            globule is globule_free_list;
+            globule_free_list is globule's next;
+        else
+            new globule;
+        end;
+
+        answer globule;
+    end;    // new_globule
+
+
+    objective verb free_globule
+        globule type reference globule;
+    is
+        globule's next is globule_free_list;
+        globule_free_list is globule;
+        globule is none;
+    end;    // free_globule
+
+
+    verb new with
+        integer max_globules = 10;
+        material type lamp_material is golden;
+        material type up_material is plastic colored red;
+        material type touched_material is plastic colored orange;
+        material type down_material is plastic colored blue;
+        boolean random_colors is false;
+    is
+        blob_lamp's max_globules = max_globules;
+        blob_lamp's lamp_material is lamp_material;
+        blob_lamp's up_material is up_material;
+        blob_lamp's touched_material is touched_material;
+        blob_lamp's down_material is down_material;
+        blob_lamp's random_colors is random_colors;
+    end;    // new
+
+
+    objective scalar question wall_radius
+        at scalar height;
+    is
+        scalar factor = (height - min_lamp_height) / lamp_height;
+        answer min_lamp_radius + (radius_difference * (1 - factor));
+    end;    // wall_radius
+
+
+    objective scalar question wall_height
+        at scalar radius;
+    is
+        scalar factor = (radius - min_lamp_radius) /
+            radius_difference;
+        answer min_lamp_height + (lamp_height * (1 - factor));
+    end;    // wall_height
+
+
+    verb add_globule is
+        globule type globule is none;
+
+        // initialize new globule
+        //
+        scalar angle = random 0 to 360;
+        scalar x, y, radius, max_globule_radius;
+
+        globule is new_globule;
+        globule's going_up is true;
+        globule's wobble = 0;
+        globule's size = random min_globule_size to
+            max_globule_size;
+        globule's speed = random min_globule_speed to
+            max_globule_speed;
+        globule's wobble_rate = random min_wobble_rate to
+            max_wobble_rate;
+        radius = random 0 to (.4 - globule's size);
+        x = cos angle * radius;
+        y = sin angle * radius;
+        globule's location = <x y min_globule_height>;
+
+        if random_colors then
+            globule's material is plastic colored vrandom black to white;
+        else
+            globule's material is up_material;
+        end;
+
+        // compute height at which globule will
+        // collide with walls
+        //
+        max_globule_radius = radius + globule's size;
+        globule's collision_height = wall_height at
+            max_globule_radius;
+        globule's collided is false;
+
+        // add to list of globules
+        //
+        globule's next is blob_lamp's globule_list;
+        blob_lamp's globule_list is globule;
+        globule_number = itself + 1;
+    end;    // add_globule
+
+
+    verb move_globules 
+        by scalar time_step;
+    is
+        scalar globule_height, globule_radius;
+        vector direction;
+
+        for each globule type globule and its next in globule_list do
+            if globule's going_up then
+                globule's speed = itself - .0025;
+                globule's location = itself + <0 0
+                    (globule's speed * time_step)>;
+                globule_height = globule's location dot
+                    <0 0 1>;
+
+                // collision with side of lamp
+                //
+                if globule_height > globule's
+                    collision_height
+                then
+                    globule_radius = (wall_radius at
+                        globule_height) - globule
+                        's size;
+                    direction = normalized (globule's
+                        location * <1 1 0>);
+                    globule's location = (direction *
+                        globule_radius) + (
+                        <0 0 globule_height>);
+                    globule's collided is true;
+
+                    if not random_colors then
+                        globule's material is touched_material;
+                    end;
+                end;
+
+                // globule has reached top of lamp
+                //
+                if globule_height > max_globule_height
+                then
+                    globule's going_up is false;
+                    if not random_colors then
+                        globule's material is down_material;
+                    end;
+                end;
+            else
+                globule's location = itself - <0 0
+                    (globule's speed * time_step)>;
+            end;
+            globule's wobble = itself + globule's
+                wobble_rate * time_step;
+        end;
+    end;    // move_globules
+
+
+    verb delete_globules is
+        globule type globule is globule_list;
+        globule type previous_globule is none;
+        scalar height;
+        globule type temp is none;
+
+        while some globule do
+            height = globule's location dot <0 0 1>;
+            if (height < min_globule_height) then
+                temp is globule;
+                globule is temp's next;
+                if some previous_globule then
+                    previous_globule's next is globule;
+                else
+                    globule_list is globule;
+                end;
+                free_globule temp;
+                globule_number = itself - 1;
+            end;
+            previous_globule is globule;
+            if some globule then
+                globule is its next;
+            end;
+        end;
+    end;    // delete globules
+
+
+    verb advance
+        by scalar time_step;
+    is
+
+        // delete (reabsorb) any finished globules
+        //
+        move_globules by time_step;
+        delete_globules;
+
+        // every 10 steps, check to see if
+        // more globs must be made
+        if globule_countdown <= 0 then
+            if globule_number < max_globules then
+                add_globule;
+            end;
+            globule_countdown = trunc random 0 to
+                max_globule_spacing;
+        else
+            globule_countdown = itself - time_step;
+        end;
+    end;    // step
+
+
+    shape blob is
+        for each globule type globule and its next in globule_list do
+            scalar squish = 1 + sin (globule's wobble * 360) * .45;
+
+            sphere with
+                material is globule's material;
+                radius = globule's size;
+                scale by squish along <0 0 1>;
+                move to globule's location;
+            end;
+        end;
+        disk with
+            material is up_material;
+            center = <0 0 1>;
+            radius = .4;
+            normal = <0 0 -1>;
+        end;
+    end;    // blob
+
+
+    objective shape lamp_body is
+
+        // base of blob lamp
+        //
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 .8>;
+            radius1 = .5;
+            radius2 = .2;
+        end;
+        cone with
+            end1 = <0 0 .8>;
+            end2 = (<0 0 min_lamp_height>);
+            radius1 = .2;
+            radius2 = max_lamp_radius;
+        end;
+
+        // glass blob enclosure
+        //
+        cone with
+            material is glassy_material;
+            end1 = <0 0 min_lamp_height>;
+            end2 = <0 0 max_lamp_height>;
+            radius1 = max_lamp_radius;
+            radius2 = min_lamp_radius;
+        end;
+
+        // top cap of blob lamp
+        //
+        cone with
+            end1 = <0 0 max_lamp_height>;
+            end2 = <0 0 (max_lamp_height + .3)>;
+            radius1 = min_lamp_radius;
+            radius2 = .1;
+        end;
+        disk with
+            center = <0 0 (max_lamp_height + .3)>;
+            normal = <0 0 -1>;
+            radius = .1;
+        end;
+    end;    // lamp_body
+
+
+    shape instance is
+        lamp_body with
+            material is lamp_material;
+        end;
+        blob with
+            color = blob_color;
+        end;
+    end;    // instance
+end;    // blob_lamp
+
+
+anim blob_lamp_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <0 -4 2>;
+    lookat = <0 0 1.4>;
+    roll = -50;
+    facets = 6;
+    args check;
+is
+    blob_lamp type blob_lamp;
+
+    mouse_controlled_actor blob_lamp;
+end;    // blob_lamp_anim

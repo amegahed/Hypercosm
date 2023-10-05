@@ -1,0 +1,82 @@
+{***************************************************************}
+{                          closest.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do closest_anim;
+
+
+include "system/native_sensing.ores";
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/check_keys.ores";
+include "system/fish.omar";
+
+
+picture closest_picture
+    of shape thing;
+is
+    scalar x = get_mouse dot <1 0 0>;
+    scalar y = get_mouse dot <0 1 0>;
+    vector point = <0 0 5>, point2;
+
+
+    static shape stuff is
+        fish type's form with
+            magnify by .1;
+        end;
+    end;    // stuff
+
+
+    shape rotated_stuff is
+        stuff with
+            rotate by y * 360 around <1 0 0>;
+            rotate by x * 360 around <0 1 0>;
+        end;
+    end;    // stuff
+
+    {
+    axes with
+        magnify by 5;
+    end;
+    }
+    sphere with
+        color = white;
+        radius = .1;
+        move to point;
+    end;
+
+        default_lights;
+    rotated_stuff;
+
+    // point2 = closest_to_plane point (0 0 1) on rotated_stuff;
+    point2 = closest_to_point point on rotated_stuff;
+    arrow from point to point2;
+end;    // closest_picture
+
+
+anim closest_anim
+    args type args;
+with
+    eye = <5 -10 10>;
+    lookat = <0 0 2>;
+    background = grey;
+    double_buffer is on;
+    args check;
+is
+    shape thing is
+        write "making thing", ;
+
+        block;
+    end;    // thing
+
+    while true do
+        closest_picture of thing;
+        check_keys;
+    end;
+end;    // closest_anim

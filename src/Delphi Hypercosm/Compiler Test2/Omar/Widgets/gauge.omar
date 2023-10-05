@@ -1,0 +1,44 @@
+{***************************************************************}
+{                          gauge.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do gauge_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/gauge.ores";
+include "system/views.ores";
+
+
+picture gauge_picture is
+    static gauge type gauge labelled "Gauge" from -1 to 1;
+    static mouse_state type mouse_state;
+
+    mouse_state update;
+    gauge's value = mouse_state's location dot <1 0 0>;
+    gauge instance;
+end;    // gauge_picture
+
+
+anim gauge_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Gauge Demo";
+    facets = 20;
+    width = 320;
+    height = 320;
+    args check;
+is
+    while true do
+        gauge_picture with
+            ortho_view;
+        end;
+    end;
+end;    // gauge_anim

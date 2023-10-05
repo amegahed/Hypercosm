@@ -1,0 +1,21 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		  grid_shapes.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains various forms of shape definitions	for			}
+{		rectangular grid shapes.								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/rectangular_grid.ores";
+include "system/square_grid.ores";
+include "system/quad_grid.ores";
+include "system/grid_block.ores";
+include "system/height_field.ores";
+include "system/height_function.ores";
+

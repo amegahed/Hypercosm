@@ -1,0 +1,44 @@
+{***************************************************************}
+{                          digital.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do digital_readout_anim;
+
+
+include "system/3d.ores";
+include "system/mouse_button_trackers.ores";
+include "system/digital.ores";
+include "system/views.ores";
+
+
+picture digital_readout_picture is
+    static digital_gauge type digital_gauge labelled "Digital Readout" with
+        show_leading_zeros is false;
+        width = 2;
+        height = 2;
+    end;
+    static mouse_state type mouse_state;
+
+    mouse_state update;
+    digital_gauge's value = mouse_state's location dot <1 0 0>;
+    digital_gauge instance with material is constant_color light blue; end;
+end;    // digital_readout_picture
+
+
+anim digital_readout_anim with
+    double_buffer is on;
+    window_name is "Digital Readout Demo";
+    width = 320;
+    height = 320;
+is
+    while true do
+        digital_readout_picture with
+            ortho_view;
+        end;
+    end;
+end;    // digital_readout_anim

@@ -1,0 +1,35 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            question.omar               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of questions in the OMAR language.              }
+{                                                               }
+{       In the OMAR language, "questions" are the same as       }
+{       "functions" in other languages such as Pascal           }
+{       or non-void "functions" in languages such as C,         }
+{       C++, and Java.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do question_example;
+
+integer n1, n2;
+
+// declaration of question named "average"
+//
+scalar question average is  
+	answer (n1 + n2) / 2;
+end;    // average
+
+verb question_example is
+	n1 = 10;
+	n2 = 30;
+	write "average = ", average, ;      // call to question "average"
+	n1 = 15;
+	n2 = 7;
+	write "average = ", average, ;      // call to question "average"
+end;    // question_example

@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        trans_manipulator.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/manipulator.ores";
+
+abstract subject trans_manipulator
+extends
+	manipulator
+does
+	// constructor
+	//
+	verb new
+		transforming trans type reference trans refers to none;
+	end;
+	verb set
+		to trans type trans;
+	end;
+	verb reset;
+has
+	// attributes
+	//
+	trans type reference relative_trans refers to none;
+private
+	trans type actual_trans = unit_trans;  
+is
+	//
+	// constructor
+	//
+
+	verb new
+		transforming trans type reference trans refers to none;
+	is
+		if trans refers to none then
+			relative_trans refers to actual_trans;
+		else
+			relative_trans refers to trans;
+		end;
+	end;    // new
+	
+	verb set 
+		to trans type trans;
+	is
+		relative_trans = trans;
+	end;    // set
+	
+	verb reset is
+		relative_trans = unit_trans;
+	end;    // reset
+end;    // trans_manipulator

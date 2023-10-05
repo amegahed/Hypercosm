@@ -1,0 +1,82 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            actions.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a base class for building reponses            }
+{        since closures do not exist in OMAR.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/activation.ores";
+
+subject actions
+extends
+	activateable object
+does
+	// constructor
+	//
+	verb new
+		of activateable type first_action;
+		followed by activateable type next_action;
+	end;
+
+	// setting methods
+	//    
+	verb set
+		to activateable type first_action;
+		followed by activateable type next_action;
+	end;
+
+	// activating methods
+	//    
+	verb activate;
+has
+	// attributes
+	//
+	activateable type first_action, next_action;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of activateable type first_action;
+		followed by activateable type next_action;
+	is
+		// set action attributes
+		//
+		with actions do
+			its first_action is first_action;
+			its next_action is next_action;
+		end;
+	end;    // new
+		
+	//
+	// setting methods
+	//
+	  
+	verb set
+		to activateable type first_action;
+		followed by activateable type next_action;
+	is
+		// set action attributes
+		//
+		with actions do
+			its first_action is first_action;
+			its next_action is next_action;
+		end;
+	end;    // set
+	
+	//
+	// activating methods
+	//
+		   
+	verb activate is
+		first_action activate;
+		next_action activate;
+	end;    // activate
+end;    // actions

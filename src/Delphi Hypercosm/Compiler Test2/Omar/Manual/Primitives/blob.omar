@@ -1,0 +1,44 @@
+{***************************************************************}
+{                          blob.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do blob_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim blob_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    facets = 20;
+    window_name is "The Blob Primitive";
+    args check;
+is
+	shape blob_primitive is
+        blob [<-.5 0 0> <.5 0 0>] with
+            radii = [.8 .8];
+            strengths = [1 1];
+            threshold = .7;
+            magnify by 1.75;
+        end;
+	end;
+	
+	shape scene is
+		outlined blob_primitive with
+            material is glass colored blob_color;
+		end;
+    	axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // blob_anim

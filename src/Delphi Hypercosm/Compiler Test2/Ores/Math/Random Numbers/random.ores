@@ -1,0 +1,165 @@
+{***************************************************************}
+{                          random.ores                          }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{   Contains procedures for generating pseudo-random values.    }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/math.ores";
+include "system/time.ores";
+
+
+//
+// This pseudo-random number generator is based on the Minimal Standard
+// as proposed by Park and Miller, using the multiplier they suggest in
+// the text and which has been subsequently analysed and verified:
+//      Stephen K. Park and Keith W. Miller
+//      "Random number generators:  Good ones are hard to find"
+//      Communications of the ACM, October 1988
+//
+// The algorithm is a simple multiplicative linear congruential generator
+// of the form
+//      seed(i) = multiplier * seed(i - 1) mod modulus
+// with a multiplier of 69621 and a modulus of (2^31 - 1).  It has a full
+// period and excellent spectral analysis results in dimensions 2 through
+// 8, and is probably one of the best MLCGs that can be implemented using
+// 32 bit signed arithmetic.
+//
+// 2/3/2000: This algorithm replaces the former algorithm of
+//        seed = (25173 * seed + 13849) mod 32767
+//    which is a flawed implementation of a poor algorithm.
+// 3/30/2000: The seed was changed to not correlate highly with the time
+//    of the day.
+//
+
+
+const integer park_miller_prng_modulus = 2147483647;
+
+
+// This is an internal procedure which is shared between the scalar and
+// integer functions random and irandom.  It is not necessary to call
+// this procedure from outside this file.
+//
+integer question advance_park_miller_prng
+    integer init_seed;
+is
+    // This implementation is equivalent to:
+    //  seed = (seed * 69621) mod 2147483647
+    // but will not produce overflow in 32 bit signed integers.
+
+    const integer a = 69621;    // multiplier
+    const integer q = 30845;    // modulus div a
+    const integer r = 23902;    // modulus mod a
+
+    integer lo, hi, test;
+
+    hi = init_seed div q;
+    lo = init_seed mod q;
+    test = a * lo - r * hi;
+    if (test > 0) then
+        answer test;
+    else
+        answer test + park_miller_prng_modulus;
+    end;
+end;
+
+
+// The seed can be initialized to any number from 1 to (2^31 - 2).
+// We use the seconds since midnight, scaled to roughly the range of
+// values allowed for the seed, and then we advance the generator
+// three times.  This results in the first number returned by random and
+// irandom to be well distributed at any time of the day.
+//
+integer seed =
+    advance_park_miller_prng
+    advance_park_miller_prng
+    advance_park_miller_prng
+    ((round (get_seconds_since_midnight * 21475)) + 1);
+
+
+scalar question random
+    scalar rnd_min;
+    to scalar rnd_max;
+is
+    seed = advance_park_miller_prng seed;
+
+    answer rnd_min +
+        ((seed / park_miller_prng_modulus) * (rnd_max - rnd_min));
+end;    // random
+
+
+integer question irandom
+    integer rnd_min;
+    to integer rnd_max;
+is
+    integer i;
+
+    seed = advance_park_miller_prng seed;
+
+    i = rnd_min + trunc
+        ((seed / park_miller_prng_modulus) * (rnd_max - rnd_min + 1));
+
+    answer iclamp i from rnd_min to rnd_max;
+end;    // irandom
+
+
+vector question vrandom
+    vector rnd_min;
+    to vector rnd_max;
+is
+    scalar x = random rnd_min.x to rnd_max.x;
+    scalar y = random rnd_min.y to rnd_max.y;
+    scalar z = random rnd_min.z to rnd_max.z;
+
+    answer <x y z>;
+end;    // vrandom
+
+
+scalar[] question randomize
+    integer number;
+    from scalar rnd_min;
+    to scalar rnd_max;
+is
+    scalar array[1 .. number];
+
+    for each scalar s in array do
+        s = random rnd_min to rnd_max;
+    end;
+
+    answer array;
+end;    // randomize
+
+
+integer[] question irandomize
+    integer number;
+    from integer rnd_min;
+    to integer rnd_max;
+is
+    integer array[1 .. number];
+
+    for each integer i in array do
+        i = irandom rnd_min to rnd_max;
+    end;
+
+    answer array;
+end;    // irandomize
+
+
+vector[] question vrandomize
+    integer number;
+    from vector rnd_min;
+    to vector rnd_max;
+is
+    vector array[1 .. number];
+
+    for each vector v in array do
+        v = vrandom rnd_min to rnd_max;
+    end;
+
+    answer array;
+end;    // vrandomize

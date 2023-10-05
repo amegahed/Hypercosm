@@ -1,0 +1,152 @@
+do scoreboard_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/digital_readout.ores";
+include "arena.omar";
+
+const texture type rent_t using (new image named "rent.gif") with
+	mipmapping is off;
+end;
+const material type rent_m is constant_color white textured rent_t;
+
+shape scores with
+	integer us = 0;
+	integer them = 0;
+	vector player_color = red;
+	vector opponent_color = green;
+is    
+	static scalar halfwidth = arena_width/6.5;
+	
+	digital_readout type player_score shows us with
+		digits = 2;
+		decimal_places = 0;
+		show_leading_zeros is true;
+	end;
+	digital_readout type opponent_score shows them with
+		digits = 2;
+		decimal_places = 0;
+		show_leading_zeros is true;
+	end;
+	scale by 2 along <1 0 0>;
+	scale by 1.8 along <0 1 0>;
+	rotate by 100 around <1 0 0>;
+	// scores
+	player_score instance with
+		material is constant_color player_color;
+		move to <(-halfwidth/1.5) (-halfwidth - .8) 2>;
+	end;
+	opponent_score instance with
+		material is constant_color opponent_color;
+		move to <(halfwidth/1.5) (-halfwidth - .8) 2>;
+	end;
+end;    // scores
+
+shape scoreboard with
+	integer us = 0;
+	integer them = 0;
+	vector player_color = red;
+	vector opponent_color = green;
+	scalar rope_height = 10;
+is
+	static scalar halfwidth = arena_width / 6.5;
+	vector side[] = [<(-halfwidth) 0 0> <(halfwidth) 0 0> <(halfwidth + 1) -1 4> <(-halfwidth - 1) -1 4>];
+	
+	material is plastic colored wall_color;
+	
+	parallelogram with
+		vertex = <(-halfwidth - 1) (-halfwidth - 1) 4>;
+		side1  = <(halfwidth*2 + 2) 0 0>;
+		side2  = <0 (halfwidth*2 + 2) 0>;
+	end;
+	parallelogram with
+		vertex = <(-halfwidth) (-halfwidth) (4 + halfwidth/2)>;
+		side1  = <(halfwidth*2) 0 0>;
+		side2  = <0 (halfwidth*2) 0>;
+	end;
+	
+	scores with
+		us = static us;
+		them = static them;
+		player_color = static player_color;
+		opponent_color = static opponent_color;
+	end;
+	
+	for integer i = 1..4 do 
+		if i = 4 then
+			// ad on scoreboard
+			parallelogram with
+				scale by 2.8 along <1 0 0>;
+				scale by 1.2 along <0 1 0>;
+				rotate by 100 around <1 0 0>;
+				move to <0 (-halfwidth - .9) 2>;
+				material is hypercosm_m;
+				rotate by 90 * i around <0 0 1>;
+			end;
+			
+			// black scoreboard background
+			parallelogram with
+				material is chalk colored black;
+				scale by (halfwidth*.95) along <1 0 0>;
+				scale by 1.5 along <0 1 0>;
+				rotate by 100 around <1 0 0>;
+				move to <0 (-halfwidth - .7) 2>;
+				rotate by 90 * i around <0 0 1>;
+			end; 
+		end;
+		
+		if i mod 2 = 1 then
+			// Hypercosm on scoreboard sides
+			parallelogram with
+				scale by 4.2 along <1 0 0>;
+				scale by 1.8 along <0 1 0>;
+				rotate by 105 around <1 0 0>;
+				move to <0 (-halfwidth - .7) 2>;
+				material is hypercosm_m;
+				rotate by 90 * i around <0 0 1>;
+			end;
+		end;
+		// ads above scoreboard 
+		parallelogram with
+			vertex = <(-halfwidth) (-halfwidth) 4>;
+			side1 = <(halfwidth) 0 0>;
+			side2 = <0 0 (halfwidth/2)>;
+			rotate by 90 * i around <0 0 1>;
+			material is rent_m;
+		end;
+		parallelogram with
+			vertex = <0 (-halfwidth) 4>;
+			side1 = <(halfwidth) 0 0>;
+			side2 = <0 0 (halfwidth/2)>;
+			material is hyperlogo_m;
+			rotate by 90 * i around <0 0 1>;
+		end;
+		line [<0 0 4> <0 0 (halfwidth/2 + 4)>] with
+			move to <0 (-halfwidth - .2) 0>;
+			color = black;
+			rotate by 90 * i around <0 0 1>;
+		end;
+		polygon side with
+			move to <0 (-halfwidth) 0>;
+			rotate by 90 * i around <0 0 1>;
+			line [<(-halfwidth) 0 0> <(-halfwidth) 0 rope_height>] with
+				color = black;
+			end;
+		end;
+	end;
+end;    // scoreboard
+
+anim scoreboard_anim
+	args type args;
+with
+	eye = <10 -30 20>;
+	args check;
+is
+	shape scene is
+		scoreboard;
+	end;    // scene
+	
+	mouse_controlled_shape scene titled "Air Hockey Scoreboard" with
+		auto_camera is on;
+	end;
+end;    // scoreboard_anim

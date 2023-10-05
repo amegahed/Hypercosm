@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          manipulator.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/actors.ores";
+
+abstract subject manipulator
+extends
+	pressable_actor
+does  
+	// selection methods
+	//
+	verb deselect;
+	abstract verb reset;
+
+	// touch querying methods
+	//
+	abstract boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;
+	abstract boolean question is_handle_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;    
+has
+	// attributes
+	//    
+	public boolean touched is false;
+	public boolean pressed is false;
+is
+	verb deselect is
+		touched is false;
+		pressed is false;
+	end;    // deselect
+end;    // manipulator

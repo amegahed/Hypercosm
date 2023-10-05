@@ -1,0 +1,32 @@
+do sprite_anim;
+
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/check_keys.ores";
+include "system/sprite.ores";
+
+
+anim sprite_anim 
+	args type args;
+with
+	field_of_view = 10;
+	double_buffer is on;
+	args check;
+is
+	sprite type wireframe_sprite at <-.8 .8 0> poster "wireframe_icon.gif";
+	
+	picture scene is
+		wireframe_sprite overlay at 10;
+
+		sphere;		
+		default_background at 100;
+		default_lights;
+	end;	// scene
+
+	while true do
+		scene;
+		check_keys;
+	end;
+end;	// sprite_anim

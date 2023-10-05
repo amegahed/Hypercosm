@@ -1,0 +1,78 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		 number_sorting.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a few utilities for sorting arrays of 			}
+{		numbers.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/comparing.ores";
+
+
+{***************************************************************}
+{						   insertion sort						}
+{***************************************************************}
+{		These simple sort functions use the insertion sort 		}
+{		algorithm to sort a set of scalars.  The insertion 		}
+{		sort algorithm works well for most typical small sets.  }
+{		For sorting much larger sets, you may want to use		}
+{		a more efficient sort algorithm.						}
+{***************************************************************}
+
+
+verb sort_integers
+    integer set[];
+with
+    enum order is ascending, descending;
+    order type order is ascending;
+is
+    integer x;
+    integer j;
+
+    for integer xindex = (1 + min set) .. max set do
+        x = set[xindex];
+        j = xindex - 1;
+        
+        while j >= min set and
+            ((order is ascending and set[j] > x) or
+            (order is descending and set[j] < x))
+        do
+            set[j + 1] = set[j];
+            j = j - 1;
+        end;
+        
+        set[j + 1] = x;
+    end;
+end;    // sort_integers
+
+
+verb sort_scalars
+    scalar set[];
+with
+    enum order is ascending, descending;
+    order type order is ascending;
+is
+    scalar x;
+    integer j;
+
+    for integer xindex = (1 + min set) .. max set do
+        x = set[xindex];
+        j = xindex - 1;
+        
+        while j >= min set and
+            ((order is ascending and set[j] > x) or
+            (order is descending and set[j] < x))
+        do
+            set[j + 1] = set[j];
+            j = j - 1;
+        end;
+        
+        set[j + 1] = x;
+    end;
+end;    // sort_scalars

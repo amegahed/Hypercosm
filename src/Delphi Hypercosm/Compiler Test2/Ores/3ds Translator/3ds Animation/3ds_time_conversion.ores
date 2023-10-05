@@ -1,0 +1,204 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	   3ds_time_conversion.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains time conversion methods and definitions        }
+{		that correspond to entities from Discreet's 3D          }
+{       Studio Max software.		                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+{***************************************************************}
+{		3ds time is stored internally as an integer number		}
+{		of ticks.   Each second of an animation is divided		}
+{		into 4800 ticks.  This value is chosen in part 			}
+{		because it is evenly divisible by the standard			}
+{		frame per second settings in common use (see below)		}
+{***************************************************************}
+
+
+include "system/3ds_time.ores";
+include "system/native_math.ores";
+
+
+//
+// conversion constants
+//
+
+
+const integer NTSC_frames_per_second = 30;
+const integer PAL_frames_per_second = 25;
+const integer film_frames_per_second = 24;
+const integer ticks_per_second = 4800;
+
+
+//
+// current frame rate
+//
+
+
+integer translated_3ds_frames_per_second = NTSC_frames_per_second;
+
+
+//
+// conversion methods to ticks from frames and seconds
+//
+
+
+translated_3ds_ticks type question converted_3ds_frames_to_ticks
+	of translated_3ds_frames type frames;
+is
+	answer trunc (frames * ticks_per_second / translated_3ds_frames_per_second);
+end;	// converted_3ds_frames_to_ticks
+
+
+translated_3ds_ticks type question converted_3ds_ticks_from_frames
+	of translated_3ds_frames type frames;
+is
+	answer trunc (frames * ticks_per_second / translated_3ds_frames_per_second);
+end;	// converted_3ds_ticks_from_frames
+
+
+translated_3ds_ticks type question converted_3ds_seconds_to_ticks
+	of translated_3ds_seconds type seconds;
+is
+	answer trunc (seconds * ticks_per_second);
+end;	// converted_3ds_seconds_to_ticks
+
+
+translated_3ds_ticks type question converted_3ds_ticks_from_seconds
+	of translated_3ds_seconds type seconds;
+is
+	answer trunc (seconds * ticks_per_second);
+end;	// converted_3ds_ticks_from_seconds
+
+
+//
+// conversion method to frames from ticks and seconds
+//
+
+
+translated_3ds_frames type question converted_3ds_ticks_to_frames
+    of translated_3ds_ticks type ticks;
+is
+	answer trunc (ticks div translated_3ds_frames_per_second);
+end;	// converted_3ds_ticks_to_frames
+
+
+translated_3ds_frames type question converted_3ds_frames_from_ticks
+    of translated_3ds_ticks type ticks;
+is
+	answer trunc (ticks div translated_3ds_frames_per_second);
+end;	// converted_3ds_frames_from_ticks
+
+
+translated_3ds_frames type question converted_3ds_seconds_to_frames
+	of translated_3ds_seconds type seconds;
+is
+	answer trunc (seconds * translated_3ds_frames_per_second);
+end;	// converted_3ds_seconds_to_frames
+
+
+translated_3ds_frames type question converted_3ds_frames_from_seconds
+	of translated_3ds_seconds type seconds;
+is
+	answer trunc (seconds * translated_3ds_frames_per_second);
+end;	// converted_3ds_frames_from_seconds
+
+
+//
+// conversion method to seconds from ticks and frames
+//
+
+
+translated_3ds_seconds type question converted_3ds_ticks_to_seconds
+    of translated_3ds_ticks type ticks;
+is
+	answer ticks / ticks_per_second;
+end;	// converted_3ds_ticks_to_seconds
+
+
+translated_3ds_seconds type question converted_3ds_seconds_from_ticks
+    of translated_3ds_ticks type ticks;
+is
+	answer ticks / ticks_per_second;
+end;	// converted_3ds_seconds_from_ticks
+
+
+translated_3ds_seconds type question converted_3ds_frames_to_seconds
+    of translated_3ds_frames type frames;
+is
+    answer frames / translated_3ds_frames_per_second;
+end;    // convert_3ds_frames_to_seconds
+
+
+translated_3ds_seconds type question converted_3ds_seconds_from_frames
+    of translated_3ds_frames type frames;
+is
+    answer frames / translated_3ds_frames_per_second;
+end;    // convert_3ds_seconds_from_frames
+
+
+//
+// conversion method to arrays of ticks from arrays of frames and seconds
+//
+
+
+translated_3ds_ticks type[] question converted_3ds_frames_array_to_ticks_array
+    of translated_3ds_frames type frames[];
+is
+    translated_3ds_ticks type ticks[min frames .. max frames];
+    for integer counter = min frames .. max frames do
+        ticks[counter] = converted_3ds_ticks_from_frames of frames[counter];
+    end;
+    answer ticks;
+end;    // converted_3ds_frames_array_to_ticks_array
+
+
+translated_3ds_ticks type[] question converted_3ds_ticks_array_from_frames_array
+    of translated_3ds_frames type frames[];
+is
+    translated_3ds_ticks type ticks[min frames .. max frames];
+    for integer counter = min frames .. max frames do
+        ticks[counter] = converted_3ds_ticks_from_frames of frames[counter];
+    end;
+    answer ticks;
+end;    // converted_3ds_ticks_array_from_frames_array
+
+
+translated_3ds_ticks type[] question converted_3ds_seconds_array_to_ticks_array
+    of translated_3ds_seconds type seconds[];
+is
+    translated_3ds_ticks type ticks[min seconds .. max seconds];
+    for integer counter = min seconds .. max seconds do
+        ticks[counter] = converted_3ds_ticks_from_seconds of seconds[counter];
+    end;
+    answer ticks;
+end;    // converted_3ds_seconds_array_to_ticks_array
+
+
+translated_3ds_ticks type[] question converted_3ds_ticks_array_from_seconds_array
+    of translated_3ds_seconds type seconds[];
+is
+    translated_3ds_ticks type ticks[min seconds .. max seconds];
+    for integer counter = min seconds .. max seconds do
+        ticks[counter] = converted_3ds_ticks_from_seconds of seconds[counter];
+    end;
+    answer ticks;
+end;    // converted_3ds_ticks_array_from_seconds_array
+
+
+
+
+
+
+
+
+
+
+

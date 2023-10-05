@@ -1,0 +1,103 @@
+{***************************************************************}
+{                          color_picker.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do color_anim;
+
+
+include "system/3d.ores";
+include "system/figures.ores";
+include "system/views.ores";
+include "system/button_meter.omar";
+
+
+scalar red_value = 1;
+scalar green_value = 1;
+scalar blue_value = 1;
+
+
+shape pattern with
+    integer steps = 20;
+is
+    for integer counter = 1..steps do
+        scalar angle = counter / steps * 360;
+
+        line2d [[(.5 * cos angle) (.5 * sin angle)]
+                [(.9 * cos angle) (.9 * sin angle)]]
+        with
+            color = hsv_to_rgb <angle 1 1>;
+        end;
+    end;
+end;    // pattern
+
+
+picture color_picture with
+    render_mode is wireframe;
+    background = <red_value green_value blue_value>;
+    ortho_view;
+is
+    pattern;
+end;    // color_picture
+
+
+picture instruments_picture with
+    background = black;
+is
+    static button_meter type red_meter labelled "Red"
+        controls red_value;
+    static button_meter type green_meter labelled "Green"
+        controls green_value;
+    static button_meter type blue_meter labelled "Blue"
+        controls blue_value;
+
+    scalar aspect_ratio = height / width;
+
+    red_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .65 0>;
+    end;
+    green_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+    blue_meter instance with
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.65 0>;
+    end;
+end;    // instruments_picture
+
+
+anim color_anim with
+    double_buffer is on;
+    facets = 4;
+    render_mode is wireframe;
+is
+    integer total_width = width;
+    boolean first_frame is true;
+
+    while true do
+        if first_frame or mouse_down or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+        color_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((total_width -
+                width) div 2);
+        end;
+        first_frame is false;
+    end;
+end;    // color_anim

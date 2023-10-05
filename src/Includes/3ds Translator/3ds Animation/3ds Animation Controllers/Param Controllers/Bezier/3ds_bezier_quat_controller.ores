@@ -1,0 +1,109 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     3ds_bezier_quat_controller.ores    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_keys.ores";
+include "system/3ds_bezier_quat_key.ores";
+include "system/3ds_key_controller.ores";
+include "system/3ds_quat_controlling.ores";
+
+subject translated_3ds_bezier_quat_controller 
+extends
+	translated_3ds_quat_controllable translated_3ds_key_controller
+does
+	// constructor
+	//
+	verb new
+		of quat type values[];
+		from quat type in_tangents[];
+		to quat type out_tangents[];
+		at translated_3ds_time type times[];
+	end;
+	
+	// getting method
+	//
+	quat type question get_value
+		at translated_3ds_time type t;
+	end;
+is
+	//
+	// objective querying methods
+	//
+
+	objective translated_3ds_keys type question bezier_quat_keys
+		of quat type values[];
+		from quat type in_tangents[];
+		to quat type out_tangents[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_keys type keys;
+		
+		// create array of keys
+		//
+		if some values then
+			integer key_number = num values;
+			dim none keys[1 .. key_number];
+			for integer counter = 1 .. key_number do
+				keys[counter] is new translated_3ds_bezier_quat_key
+					of values[counter] from in_tangents[counter] to out_tangents[counter]
+					at times[counter];
+			end;
+		end;
+		
+		answer keys;
+	end;    // bezier_quat_keys
+	
+	//
+	// constructor
+	//
+		
+	verb new
+		of quat type values[];
+		from quat type in_tangents[];
+		to quat type out_tangents[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_key_controller new using bezier_quat_keys 
+			of values from in_tangents to out_tangents at times;
+	end;    // new
+	
+	//
+	// getting method
+	//
+	
+	quat type question get_value
+		at translated_3ds_time type time;
+	is
+		translated_3ds_bezier_quat_key type prev_key is
+			translated_3ds_bezier_quat_key type (keys get_prev at time);
+		translated_3ds_bezier_quat_key type next_key is
+			translated_3ds_bezier_quat_key type (keys get_next at time);
+		
+		if some prev_key and some next_key then
+			vpolynomial type vpolynomial is get_hermite_vcubic
+				from (prev_key's value's v) (prev_key's out_tangent's v)
+				to (next_key's value's v) (next_key's in_tangent's v);
+			polynomial type polynomial is get_hermite_cubic
+				from (prev_key's value's s) (prev_key's out_tangent's s)
+				to (next_key's value's s) (next_key's in_tangent's s);
+			scalar duration = next_key's time - prev_key's time;
+			scalar t = (time - prev_key's time) / duration;
+			answer new quat of (polynomial get_value at t) by (vpolynomial get_value at t);
+		elseif some next_key then
+			answer next_key's value;
+		elseif some prev_key then
+			answer prev_key's value;
+		else
+			answer unit_quat;
+		end;
+	end;    // get_value
+end;    // translated_3ds_bezier_quat_controller

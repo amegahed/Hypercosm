@@ -1,0 +1,200 @@
+{***************************************************************}
+{                          bounce.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bounce_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/check_keys.ores";
+include "system/dodecahed.omar";
+
+
+subject bouncing_actor
+extends
+    timed_actor
+does
+    verb new
+        of actable type actor;
+    with
+        scalar height = 10;     // maximum height
+        scalar gravity = 1;     // gravity constant
+        scalar elasticity = 1;      // elastic constant
+    end;    // new
+
+    shape instance;
+    verb advance
+        by scalar time_step;
+    end;
+has
+    public scalar height;
+
+    // dynamics
+    //
+    scalar upward_velocity = 0;
+    scalar gravity, elasticity;
+
+    // bouncing thing
+    //
+    actable type actor is none;
+is
+    verb new
+        of actable type actor;
+    with
+        scalar height = 10;     // maximum height
+        scalar gravity = 1;     // gravity constant
+        scalar elasticity = 1;      // elastic constant
+    is
+        bouncing_actor's height = height;
+        bouncing_actor's gravity = gravity;
+        bouncing_actor's elasticity = elasticity;
+
+        // initialize bouncing thing
+        //
+        bouncing_actor's actor is actor;
+    end;    // new
+
+
+    objective shape trampoline with
+        scalar stretch = 0;
+    is
+        cylinder with
+            material is chalk colored light brown;
+            end1 = <2.5 2.5 3>;
+            end2 = <3 3 0>;
+            radius = .1;
+        end;
+        cylinder with
+            material is chalk colored light brown;
+            end1 = <-2.5 2.5 3>;
+            end2 = <-3 3 0>;
+            radius = .1;
+        end;
+        cylinder with
+            material is chalk colored light brown;
+            end1 = <2.5 -2.5 3>;
+            end2 = <3 -3 0>;
+            radius = .1;
+        end;
+        cylinder with
+            material is chalk colored light brown;
+            end1 = <-2.5 -2.5 3>;
+            end2 = <-3 -3 0>;
+            radius = .1;
+        end;
+        paraboloid with
+            base = <0 0 3>;
+            top = <0 0 (2.99 + stretch)>;
+            radius = 4;
+        end;
+    end;    // trampoline
+
+
+    shape instance is
+        actor instance with
+            move to <0 0 height>;
+        end;
+
+        trampoline with
+            material is chalk colored red;
+            if (height < 4) then
+                stretch = (height - 4);
+            end;
+        end;
+    end;    // instance
+
+
+    verb advance
+        by scalar time_step;
+    is
+        // elastic bounce
+        //
+        if (height > 4) then
+            upward_velocity = itself - gravity * time_step;
+        else
+            scalar stretch = (height - 4);
+
+            upward_velocity = itself - elasticity *
+                stretch * time_step;
+        end;
+        height = itself + upward_velocity;
+        actor act;
+    end;    // step
+end;    // bouncing_actor
+
+
+picture bounce_picture
+    of bouncing_actor type bouncing_actor;
+with
+    lookat = <0 0 1>;
+    field_of_view = 100;
+is
+    distant_light from <.3 .5 1>;
+    bouncing_actor instance;
+    disk with
+        color = aqua;
+        radius = 15;
+        normal = <0 0 -1>;
+    end;
+end;    // bounce_picture
+
+
+anim bounce_anim
+    args type args;
+with
+    double_buffer is true;
+    args check;
+is
+    static shape ball is
+        dodecahedron with
+            material is metal;
+            show_edges is false;
+            show_vertices is false;
+            unit_radius is true;
+        end;
+    end;    // ball
+
+
+    spinning_shape type spinning_ball in form of ball with
+        rpm = 10;
+        axis = <0 1 1>;
+    end;
+    bouncing_actor type bouncing_actor of actable type spinning_ball;
+
+
+    enum view is outside_view, bounce_view;
+    view type view is bounce_view;
+    scalar angle = 0;
+
+    while true do
+        time type start_time = get_time;
+        scalar time_step;
+
+        bounce_picture of bouncing_actor with
+            roll = cos angle * 20;
+            when view is
+                outside_view:
+                    eye = <(sin angle * 25) (cos angle
+                        * 25) (10 + 5)>;
+                    lookat = <0 0 2>;
+                end;
+                bounce_view:
+                    eye = <(sin angle * 5) (cos angle
+                        * 5) ((bouncing_actor's
+                        height + 3) * 1.1 + 5)>;
+                end;
+            end;
+        end;
+
+        check_keys;
+        time_step = elapsed_time from start_time to get_time;
+        bouncing_actor advance by time_step;
+        angle = itself + time_step * 10;
+    end;
+end;    // bounce_anim

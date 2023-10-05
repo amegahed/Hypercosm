@@ -1,0 +1,66 @@
+do intersection_test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/apple.omar";
+include "system/hand.omar";
+include "system/hand_avatar.omar";
+
+
+shape apple_shape is
+    write "making apple", ;
+    
+    apple with
+        magnify by 2;
+    end;
+end;    // apple_shape
+
+
+shape hand_shape is
+    hand with
+        magnify by .5;
+    end;
+end;    // hand_shape
+
+
+interaction type interaction is none;
+hand_avatar type hand_avatar is none;
+
+
+anim intersection_test 
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    ambient = white * .5;
+    args check;
+is
+	shape scene with
+		scalar time = 0;
+	is
+	    vector hand_location = <0 0 3> + <15 0 0> * sin (time * 100);
+	     
+	    shape moving_hand is
+	        hand_avatar instance with
+	            magnify by .5;
+	        end;
+	    end;
+	
+	    interaction's camera's trans's origin = hand_location;   
+	    hand_avatar sense apple_shape;
+	        
+	    apple_shape with
+	        if hand_avatar inside then
+	            render_mode is wireframe;
+	        end;
+	    end;
+	    
+	    moving_hand;
+	end;    // scene
+
+    new interaction;
+    interaction's camera's trans = unit_trans;
+    new hand_avatar using interaction;
+    mouse_controlled_animated_shape scene titled "Intersection Test";
+end;    // hand_sensor_test_anim

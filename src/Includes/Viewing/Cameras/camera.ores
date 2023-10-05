@@ -1,0 +1,176 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             camera.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard camera control definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/viewpoint.ores";
+include "system/viewing.ores";
+include "system/activation.ores";
+
+abstract subject camera
+extends
+	activateable viewpoint
+does
+	// constructor
+	//
+	verb new
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens and focus parameters
+		//
+		scalar field_of_view = 60;
+		scalar distance = 1;
+		
+		// camera tilt parameters
+		//
+		scalar pitch = 0;
+		scalar yaw = 0;
+		scalar roll = 0;
+	end;
+	
+	// querying methods
+	//
+	vector question get_lookat;
+	
+	// rendering methods
+	//
+	abstract shape instance;
+
+	// place camera at current location
+	//
+	verb place;
+		
+	// activating methods
+	//
+	verb activate;
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	public scalar field_of_view;
+	public scalar distance;
+	
+	// camera tilt attributes
+	//
+	public scalar pitch;
+	public scalar yaw;
+	public scalar roll;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens and focus parameters
+		//
+		scalar field_of_view = 60;
+		scalar distance = 1;
+		
+		// camera tilt parameters
+		//
+		scalar pitch = 0;
+		scalar yaw = 0;
+		scalar roll = 0;
+	is
+		// call superclass constructor
+		//
+		viewpoint new at location towards direction oriented by up_vector;
+		
+		// set camera attributes
+		//
+		with camera do  
+			
+			// set camera lens and focus attributes
+			//
+			its field_of_view = field_of_view;
+			its distance = distance;
+			
+			// set camera tilt parameters
+			//
+			its pitch = pitch;
+			its yaw = yaw;
+			its roll = roll;
+		end;
+	end;    // new
+	
+	//
+	// querying methods
+	//
+	
+	vector question get_lookat is
+		answer location + get_direction * distance;
+	end;    // get_lookat
+	
+	//
+	// place camera at current location
+	//
+	
+	verb place is
+		vector direction = global lookat - global eye;
+	
+		// set camera attributes to current viewing settings
+		//
+		camera's location = global eye;
+		camera set_orientation_vectors towards direction oriented by <0 0 1>;
+		
+		// set camera lens and focus attributes
+		//
+		camera's field_of_view = global field_of_view;
+		camera's distance = vlength of direction;
+		
+		// set camera tilt attributes
+		//
+		camera's pitch = global pitch;
+		camera's yaw = global yaw;
+		camera's roll = global roll;
+	end;    // place
+		
+	//
+	// activating methods
+	//
+	
+	verb activate is
+		trans type trans;
+		
+		// apply camera transformation attributes
+		//
+		get_trans trans;
+		set_view_from_trans trans;
+		
+		// apply camera lens and focus attributes
+		//
+		global field_of_view = field_of_view;
+		global lookat = get_lookat;
+				
+		// apply camera tilt attributes
+		//
+		global pitch = pitch;
+		global yaw = yaw;
+		global roll = roll;
+	end;    // activate
+				
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		write "camera at ", get_location, " towards ", get_direction, 
+			" oriented by ", get_up_vector, " with fov = ", field_of_view, ;
+	end;    // print
+end;    // camera

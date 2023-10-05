@@ -1,0 +1,55 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		     prism.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of an		}
+{		prism.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_shapes.ores";
+include "system/math.ores";
+
+
+shape prism with
+    integer sides = 3;
+    boolean closed is true;
+is
+	vector vertices[1..sides];
+	
+	for integer counter = 1 .. sides do
+		scalar theta = counter / sides * 360;
+        scalar x = cos theta;
+        scalar y = sin theta;
+        vertices[counter] = <x y 0>;
+	end;
+	
+    for integer counter = 1..sides do
+        scalar theta = counter / sides * 360;
+        scalar x1 = cos theta;
+        scalar y1 = sin theta;
+        scalar theta2 = (counter + 1) / sides * 360;
+        scalar x2 = cos theta2;
+        scalar y2 = sin theta2;
+
+        parallelogram with
+            vertex = vertices[counter] + <0 0 -1>;
+            side1 = vertices[(counter mod sides) + 1] - vertices[counter];
+            side2 = <0 0 2>;
+        end;
+    end;
+    
+    if closed then
+	    polygon vertices with
+	    	move to <0 0 -1>;
+	    end;
+	    polygon vertices with
+	    	move to <0 0 1>;
+	    end;
+    end;
+end;    // prism

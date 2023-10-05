@@ -1,0 +1,24 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          modifiers.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard procedures for modifying         }
+{       values.                                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+scalar question semi
+	scalar s;
+is
+	answer s / 1.5;
+end;    // semi
+
+scalar question very
+	scalar s;
+is
+	answer s * 1.5;
+end;    // very

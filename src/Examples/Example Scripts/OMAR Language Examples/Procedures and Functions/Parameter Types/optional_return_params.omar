@@ -1,0 +1,52 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      optional_return_params.omar       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of optional return parameters in the OMAR       }
+{       language.                                               }
+{                                                               }
+{       Optional parameters are useful whenever you have        }
+{       a method that has values to return that the caller      }
+{       may or may not be interested in.                        }
+{                                                               }
+{       There is no direct analogy for these types of           }
+{       parameters in languages such as C, C++, and Pascal.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do optional_return_params_example;
+
+verb average 
+	integer n1, n2;
+return
+	// mandatory return parameter
+	//
+	scalar average;
+with
+	// optional return parameter
+	//
+	integer sum = 0;
+is
+	sum = n1 + n2; 
+	average = sum / 2;
+end;    // average
+
+verb optional_return_params_example is
+	scalar m;
+	integer s;
+	
+	// Return only the average
+	//
+	average 10 30 return m;
+	write "average = ", m, ;
+	// Return both the average and the sum
+	//
+	average 10 30 return m with 
+		s = sum;
+	end;
+	write "average, sum = ", m, ", ", s, ;
+end;    // optional_return_params_example

@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         native_bitwise.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native bitwise functions.                  }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+//
+// bitwise logic functions
+//
+
+native integer question bit_and
+	integer i1;
+	integer i2;
+end;
+native integer question bit_or
+	integer i1;
+	integer i2;
+end;
+native integer question bit_not
+	integer i;
+end;
+native integer question bit_xor
+	integer i1;
+	integer i2;
+end;
+
+//
+// bitwise shift functions
+//
+
+// shift right
+//
+native integer question bit_shr
+	integer i;
+	by integer bits;
+end;
+
+// shift left
+//
+native integer question bit_shl
+	integer i;
+	by integer bits;
+end;
+
+// unsigned shift right
+//
+native integer question bit_ushr
+	integer i;
+	by integer bits;
+end;

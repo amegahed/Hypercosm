@@ -1,0 +1,112 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          color_scheme.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a color descriptor.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/color.ores";
+
+static subject color_scheme
+does
+	// constructor
+	//
+	verb new
+		of color type foreground = black;
+		over color type background = white;
+	end;
+	
+	// setting methods
+	//
+	verb set
+		to color type foreground;
+		over color type background;
+	end;
+	verb set_foreground
+		to color type foreground;
+	end;
+	verb set_background
+		to color type background;
+	end;
+	
+	// querying methods
+	//
+	color type question get_foreground;
+	color type question get_background;
+	
+	// copying methods
+	//
+	verb copy 
+		from color_scheme type source;
+	end;
+has
+	// attributes
+	//
+	public color type foreground;
+	public color type background;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of color type foreground = black;
+		over color type background = white;
+	is
+		set to foreground over background;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+
+	verb set_foreground
+		to color type foreground;
+	is
+		color_scheme's foreground = foreground;
+	end;    // set_foreground
+	
+	verb set_background
+		to color type background;
+	is
+		color_scheme's background = background;
+	end;    // set_background
+
+	verb set
+		to color type foreground;
+		over color type background;
+	is
+		with color_scheme do
+			its foreground = foreground;
+			its background = background;
+		end;    
+	end;    // set
+	
+	//  
+	// querying methods
+	//
+	
+	color type question get_foreground is
+		answer foreground;
+	end;    // get_foreground
+	
+	color type question get_background is
+		answer background;
+	end;    // get_background
+	
+	//  
+	// copying methods
+	//
+	
+	verb copy 
+		from color_scheme type source;
+	is
+		foreground = source's foreground;
+		background = source's background;
+	end;    // copy
+end;    // color_scheme

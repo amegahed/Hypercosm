@@ -1,0 +1,20 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 3ds_generic_parameter_controlling.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_float_controlling.ores";
+include "system/3ds_on_off_controlling.ores";
+include "system/3ds_point3_controlling.ores";
+include "system/3ds_quat_controlling.ores";
+include "system/3ds_scale_value_controlling.ores";
+include "system/3ds_color_controlling.ores";

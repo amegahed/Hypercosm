@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         multiline_step.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition for methods and             }
+{       structures to parse and store a checklist where         }
+{       each entry in the checklist may be multiple lines       }
+{       of text.                                                } 
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+include "system/string_utils.ores";
+
+subject multiline_step
+extends
+	strings type
+does
+	// printing method
+	//
+	verb print;
+is
+	//
+	// printing method
+	//
+	
+	verb print is
+		for each string type string in multiline_step do
+			write string, ;
+		end;
+	end;    // print
+end;    // multiline_step

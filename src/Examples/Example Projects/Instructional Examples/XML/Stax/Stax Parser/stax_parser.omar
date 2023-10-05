@@ -1,0 +1,56 @@
+do parse_xml;
+
+include "system/printing.ores";
+include "system/string_utils.ores";
+include "system/xml_resource.ores";
+include "system/native_xml_reader.ores";
+
+verb parse_xml is
+	xml_resource type xml_resource named "scene.xml";
+	string type xml is xml_resource get_xml;
+	xml_reader type xml_reader of xml;
+	while true do
+		xml_reader_constant type event is xml_reader get_type;
+		
+		when event is
+			start_document:
+				write "--- START ---",;
+			end;
+			
+			start_element:
+				string type name is xml_reader get_name;
+				integer num_attributes = xml_reader get_attribute_count;
+				
+				indent;
+				write "<", name;
+				if num_attributes > 0 then
+					for integer counter = 1 .. num_attributes do
+						write " ", xml_reader get_attribute_name of counter;
+						write "=", get_double_quotated xml_reader get_attribute_value of counter;
+					end;
+				end;
+				write ">", ;
+				
+				indentation = itself + 1;
+			end;
+			
+			end_element:
+				string type name is xml_reader get_name;
+	
+				indentation = itself - 1;				
+				indent;
+				write "</", name, ">", ;
+			end;
+			
+			end_document:
+				write "--- END ---",;
+				xml_reader close;
+				break;
+			end;
+		end;
+		
+		// go to next token
+		//
+		xml_reader skip;
+	end;
+end;	// parse_xml

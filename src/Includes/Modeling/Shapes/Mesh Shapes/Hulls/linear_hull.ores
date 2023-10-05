@@ -1,0 +1,133 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          linear_hull.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a hull which is lies           }
+{       along a linear path.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/cross_section.ores";
+include "system/cubic_splines.ores";
+include "system/bicubic_patch_mesh.ores";
+include "system/comparisons.ores";
+
+shape linear_hull
+	cross_section type cross_section;
+	scalar x[];
+	scalar y_min[], y_max[];
+	scalar z_min[], z_max[];
+with
+	// tessellation parameters
+	//
+	boolean triangulate is false;
+	boolean alternate is true;
+	boolean patches is true;
+	integer rows = 8, columns = 8;
+	
+	// rendering parameters
+	//
+	boolean smoothing is true;
+	boolean mending is true;
+	boolean closed is true;
+		
+	// texturing parameters
+	//
+	boolean textured is true;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	vector vertices[min x..max x, min cross_section..max cross_section];
+
+	// cross section min, max, size, and center
+	//
+	scalar section_min[1..2], section_max[1..2];
+	scalar section_size[1..2], section_center[1..2];
+
+	// find cross section min and max
+	//
+	section_min[1] = smallest of cross_section[.., 1];
+	section_max[1] = largest of cross_section[.., 1];
+	section_min[2] = smallest of cross_section[.., 2];
+	section_max[2] = largest of cross_section[.., 2];
+
+	// compute center of cross section
+	//
+	section_center[1] = (section_min[1] + section_max[1]) / 2;
+	section_center[2] = (section_min[2] + section_max[2]) / 2;
+	section_size[1] = (section_max[1] - section_min[1]);
+	section_size[2] = (section_max[2] - section_min[2]);
+
+	// normalize cross section
+	//
+	for integer counter = min cross_section..max cross_section do
+		if section_size[1] <> 0 then
+			cross_section[counter, 1] = (itself - section_min[1]) / section_size[1];
+		end;
+		if section_size[2] <> 0 then
+			cross_section[counter, 2] = (itself - section_min[2]) / section_size[2];
+		end;
+	end;
+
+	// create grid of points
+	//
+	for integer counter1 = min x..max x do
+		for integer counter2 = min cross_section..max cross_section do
+			scalar y = y_min[counter1] + cross_section[counter2, 1]
+				* (y_max[counter1] - y_min[counter1]);
+			scalar z = z_min[counter1] + cross_section[counter2, 2]
+				* (z_max[counter1] - z_min[counter1]);
+			vertices[counter1, counter2] = <x[counter1] y z>;
+		end;
+	end;
+
+	if patches and rows <> 1 and columns <> 1 then
+
+		// create mesh from grid of bicubic patches
+		//
+		bicubic_patch_mesh of vertices with
+		
+			// tessellation parameters
+			//
+			rows = static rows;
+			columns = static columns;
+			triangulate is static triangulate;
+			alternate is static alternate;
+			
+			// rendering parameters
+			//
+			smoothing is static smoothing;
+			closed is static closed;
+			outline is subtle;
+			
+			// texturing parameters
+			//
+			textured is static textured;
+			mapping is static mapping;
+		end;
+	else
+		// create mesh from grid of vertices
+		//
+		grid_mesh of vertices with
+		
+			// tessellation parameters
+			//
+			triangulate is static triangulate;
+			alternate is static alternate;
+			
+			// rendering parameters
+			//          
+			smoothing is static smoothing;
+			mending is static mending;
+			closed is static closed;
+
+			// texturing parameters
+			//
+			textured is static textured;
+			mapping is static mapping;
+		end;
+	end;
+end;    // linear_hull

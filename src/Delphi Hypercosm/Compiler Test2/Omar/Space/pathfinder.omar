@@ -1,0 +1,369 @@
+{***************************************************************}
+{                          pathfinder.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pathfinder_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/pathcam.omar";
+
+
+subject pathfinder
+extends
+    actor
+does
+    shape instance;
+    verb act;
+
+    // routines for opening and closing the petals
+    //
+    verb open;
+    verb close;
+
+    // routines for operating the camera
+    //
+    verb extend_camera
+        by scalar step;
+    end;
+    verb rotate_camera
+        by scalar angle;
+    end;
+has
+    boolean opening is false, closing is false;
+    scalar opening_step = 5, closing_step = 5;
+    scalar petal_angle = 0;
+    pathcam type pathcam;
+is
+    material type solar_material is (plastic textured (new texture type using
+        new image type named "satellite.jpg") with color = blue);
+    material type lander_material is (metal textured (new texture type using
+        new image type named "panels.jpg") polished semi shiny
+        with color = light grey);
+
+    // size and shape of lander 'petals'
+    //
+    scalar major_side = 1;
+    scalar minor_side = .5;
+    scalar side = major_side + minor_side * sqrt(3);
+    scalar d = side / 2 / sqrt(3);
+    scalar r = sqrt(sqr d + sqr (major_side / 2));
+    scalar major_angle = atan (major_side / 2 / d) * 2;
+    scalar minor_angle = 120 - major_angle;
+    vector petal_vertices[1..6];
+    scalar hinge_radius = .05;
+
+
+    objective shape base with
+        scalar thickness = .075;
+    is
+        scalar vertices2[1..6, 1..2];
+
+        for integer counter = 1 .. 6 do
+            vertices2[counter, 1] = petal_vertices[counter]
+                dot <1 0 0>;
+            vertices2[counter, 2] = petal_vertices[counter]
+                dot <0 1 0>;
+        end;
+
+        extrude vertices2 along <0 0 1> with
+            height = thickness;
+            move to <0 0 (thickness / 2)>;
+            color = grey;
+        end;
+    end;    // base
+
+
+    objective shape solar_panel is
+        polygon petal_vertices with
+            material is solar_material;
+            magnify by .9;
+        end;
+    end;    // solar_panel
+
+
+    objective shape petal is
+        base;
+        solar_panel with
+            move to <0 0 .077>;
+        end;
+    end;    // petal
+
+
+    objective shape hinge is
+        tube with
+            end1 = <0 -.1 0>;
+            end2 = <0 .1 0>;
+            inner_radius = hinge_radius / 2;
+            outer_radius = hinge_radius;
+            color = white;
+        end;
+    end;    // hinge
+
+
+    objective shape hinges is
+        hinge with
+            move to <0 -.4 0>;
+        end;
+        hinge with
+            move to <0 .4 0>;
+        end;
+        tube with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            outer_radius = hinge_radius / 2;
+            material is silver;
+        end;
+    end;    // hinges
+
+
+    objective shape hinged_petal is
+        hinges with
+            material is aluminum;
+        end;
+        petal with
+            rotate by 180 around <0 0 1>;
+            move to <(d + hinge_radius / 2) 0 (-hinge_radius)>;
+        end;
+    end;    // hinged_petal
+
+
+    objective shape tilted_petal with
+        scalar angle = 30;
+    is
+        hinged_petal with
+            rotate by angle around <0 -1 0>;
+            move to <0 0 hinge_radius>;
+        end;
+    end;    // tilted_petal
+
+
+    objective shape body is
+        vector vertices[] = [
+
+            // bottom vertices
+            <-.5 -.75 0> <.5 -.75 0> <.5 .75 0> <-.5 .75 0>
+
+            // middle vertices
+            <-.5 -.75 .5> <.5 -.75 .5> <.5 .75 .5> <-.5 .75 .5>
+
+            // top vertices
+            <-.25 -.5 1> <.25 -.5 1> <.25 .5 1> <-.25 .5 1>
+
+            // side bottom vertices
+            <-1 -.5 0> <-1 .5 0>
+
+            // side middle vertices
+            <-1 -.5 .5> <-1 .5 .5>
+        ];
+
+        integer edges[,] = [
+
+            // bottom horizontal edges
+            [1 2] [2 3] [3 4] [4 1]
+
+            // middle horizontal edges
+            [5 6] [6 7] [7 8] [8 5]
+
+            // top horizontal edges
+            [9 10] [10 11] [11 12] [12 9]
+
+            // bottom vertical edges
+            [1 5] [2 6] [3 7] [4 8]
+
+            // middle vertical edges
+            [5 9] [6 10] [7 11] [8 12]
+
+            // side bottom horizontal edges
+            [1 13] [13 14] [14 4]
+
+            // side top horizontal edges
+            [5 15] [15 16] [16 8]
+
+            // side vertical edges
+            [13 15] [14 16]
+        ];
+
+        integer sides[][] = [
+
+            // bottom faces
+            [1 2 6 5] [2 3 7 6] [3 4 8 7] {[4 1 5 8]}
+
+            // middle faces
+            [5 6 10 9] [6 7 11 10] [7 8 12 11] [8 5 9 12]
+
+            // top face
+            [9 10 11 12]
+
+            // side bottom faces
+            [1 13 15 5] [13 14 16 15] [14 4 8 16]
+
+            // side top face
+            [5 15 16 8]
+        ];
+
+                mesh vertices edges (mesh_faces from sides and edges) with
+                        shading is face;
+                end;
+    end;    // body
+
+
+    shape instance is
+        shape connector is
+            block with
+                scale by hinge_radius along <1 0 0>;
+                scale by .25 along <0 1 0>;
+                scale by hinge_radius along <0 0 1>;
+                color = dark grey;
+            end;
+        end;    // connector
+
+        base with
+            material is lander_material;
+        end;
+        body with
+            material is lander_material;
+            magnify by .5;
+        end;
+        pathcam instance with
+            magnify by .5;
+            move to <0 -.125 .5>;
+        end;
+        for integer counter = 1 .. 3 do
+            tilted_petal with
+                material is lander_material;
+                angle = pathfinder's petal_angle;
+                move to <(d + hinge_radius)0 0>;
+                rotate by counter * 120 around <0 0 1>;
+            end;
+            connector with
+                move to <d 0 (hinge_radius - .01)>;
+                rotate by counter * 120 around <0 0 1>;
+            end;
+        end;
+    end;    // instance
+
+
+    verb step_open is
+        petal_angle = itself - opening_step;
+        if petal_angle <= 0 then
+            petal_angle = 0;
+            opening is false;
+        end;
+    end;    // step_open
+
+
+    verb step_closed is
+        petal_angle = itself + closing_step;
+        if petal_angle >= 109.5 then
+            petal_angle = 109.5;
+            closing is false;
+        end;
+    end;    // step_closed
+
+
+    verb act is
+        if opening then
+            step_open;
+        elseif closing then
+            step_closed;
+        end;
+        pathcam act;
+    end;    // act
+
+
+    verb open is
+        pathcam raise;
+        opening is true;
+        closing is false;
+    end;    // open
+
+
+    verb close is
+        pathcam lower;
+        opening is false;
+        closing is true;
+    end;    // close
+
+
+    verb extend_camera
+        by scalar step;
+    is
+        // can only operate camera when petals are open
+        //
+        if petal_angle = 0 then
+            pathcam extend by step;
+        end;
+    end;    // lower_camera
+
+
+    verb rotate_camera
+        by scalar angle;
+    is
+        pathcam rotate by angle;
+    end;    // rotate_camera
+
+
+    // initialize petal vertices
+    //
+    scalar angle = -major_angle / 2;
+    for integer counter = 1 .. 3 do
+        integer index = (counter - 1) * 2 + 1;
+        petal_vertices[index] = <(cos angle) (sin angle) 0> * r;
+        angle = itself + major_angle;
+        petal_vertices[index + 1] = <(cos angle) (sin angle) 0> * r;
+        angle = itself + minor_angle;
+    end;
+end;    // pathfinder
+
+
+
+anim pathfinder_anim
+    args type args;
+with
+    eye = <3 -2 3>;
+    double_buffer is on;
+    background = light red;
+    args check;
+is
+    pathfinder type pathfinder;
+    material type mars_material is (constant_color light red textured
+        (new texture type using new image type named "rustrock.jpg")
+        with color = light red);
+
+    shape environment is
+        plane with
+            material is mars_material;
+            magnify by 8;
+            // render_mode is wireframe;
+        end;
+    end;    // environment
+
+
+    verb check_keys is
+        if key_down char_to_key "o" then
+            pathfinder open;
+        elseif key_down char_to_key "c" then
+            pathfinder close;
+        elseif key_down char_to_key "u" then
+            pathfinder extend_camera by .1;
+        elseif key_down char_to_key "d" then
+            pathfinder extend_camera by -.1;
+        elseif key_down char_to_key "r" then
+            pathfinder rotate_camera by 15;
+        elseif key_down char_to_key "e" then
+            pathfinder rotate_camera by -15;
+        end;
+        global check_keys;
+    end;    // check_keys
+
+    mouse_controlled_actor pathfinder in environment
+        doing check_keys;
+end;    // pathfinder_anim

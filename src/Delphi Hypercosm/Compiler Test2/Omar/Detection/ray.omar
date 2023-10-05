@@ -1,0 +1,69 @@
+{***************************************************************}
+{                          ray.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ray_anim;
+
+
+include "system/native_sensing.ores";
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/fish.omar";
+
+
+picture ray_picture
+    of shape thing;
+is
+    vector location = eye;
+    vector direction = project get_mouse;
+    vector point, normal;
+
+    default_lights;
+    axes;
+
+    if ray_hits_shape location direction thing
+        return at point towards normal
+    then
+        thing with
+            color = red;
+        end;
+        arrow from <1 0 0> to point, from point to
+            (point + normal / 2)
+        with
+            color = green;
+        end;
+    else
+        thing with
+            color = white;
+        end;
+    end;
+end;    // ray_picture
+
+
+anim ray_anim
+    args type args;
+with
+    eye = <2 -3 1>;
+    background = grey;
+    double_buffer is on;
+    args check;
+is
+    shape thing is
+        fish type's form with
+            magnify by .05;
+            rotate by 90 around <0 0 1>;
+            move to <-1 0 0>;
+        end;
+    end;    // thing
+
+    while true do
+        ray_picture of thing;
+        check_keys;
+    end;
+end;    // ray_anim

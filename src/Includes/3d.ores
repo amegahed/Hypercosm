@@ -1,0 +1,36 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             3d.ores                    3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{    This file includes the top level standard resource         }
+{    files for 3d graphics.                                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+{***************************************************************}
+{                    native resource files                      }
+{***************************************************************}
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{***************************************************************}
+
+include "system/native_shapes.ores";       // native shape primitives
+include "system/native_lights.ores";       // native light primitives
+include "system/native_rendering.ores";    // native rendering primitives
+include "system/native_viewing.ores";      // native viewing primitives
+include "system/native_display.ores";      // display variables & utilities
+include "system/native_devices.ores";      // mouse & keyboard procedures
+
+{***************************************************************}
+{                  user-defined resource files                  }
+{***************************************************************}
+
+include "system/math.ores";
+include "system/transformations.ores";
+include "system/materials.ores";
+include "system/standard_colors.ores";
+include "system/args.ores";

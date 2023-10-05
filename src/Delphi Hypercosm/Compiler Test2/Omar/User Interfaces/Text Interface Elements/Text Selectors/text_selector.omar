@@ -1,0 +1,63 @@
+do text_selector_anim;
+
+
+include "system/3d.ores";
+include "system/text_selector.ores";
+include "system/devices.ores";
+include "system/background.ores";
+
+
+anim text_selector_anim with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb selection_action is
+        write "selected!", ;
+    end;
+    verb deselection_action is
+        write "deselected!", ;
+    end;
+    
+    text_selector type text_selector of "press"
+    	at <1 0 0> aligned to middle_right
+        selecting (new action of selection_action)
+        deselecting (new action of deselection_action)
+    with
+    	selected_text is "pressed!";
+    	
+    	// set font and color
+    	//
+    	font_color set to white over uncolored;
+    	font is (new screen_font sized 24 with
+    		new effects with
+    			shadowed is true;
+    		end;
+    	);
+   		
+   		// set selected font and color
+   		//
+   		selected_color set to light orange over light blue;
+   		selected_font is (font derived styled italic with
+			new effects with
+   				shadowed is false;
+   				background_shadowed is true;
+   				background_indented is false;
+   			end;
+   		);	
+    end;
+    
+    picture scene is
+       text_selector draw;
+        
+        if key_pressed char_to_key " " then
+            write "deselecting", ;
+            text_selector toggle_selected;
+        end;
+        
+        default_background at 10;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // text_selector_anim

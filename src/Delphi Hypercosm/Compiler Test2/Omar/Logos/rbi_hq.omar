@@ -1,0 +1,444 @@
+{***************************************************************}
+{                          rbi_hq.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rbi_under_construction;
+//do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/trusses.ores";
+include "system/shapes.ores";
+include "system/shaders.ores";
+include "system/solids.ores";
+include "system/ash_tree.omar";
+include "system/crane.omar";
+
+
+shape rbi_letters is
+    shape letter_r is
+        block with
+            scale by 1.5 along <0 0 1>;
+            scale by .5 along <1 0 0>;
+            move to <-1 0 0>;
+        end;
+        tube with
+            inner_radius = .5;
+            umin = 270;
+            umax = 90;
+            rotate by 90 around <1 0 0>;
+            scale by 2 along <1 0 0>;
+            move to <-.5 0 .5>;
+        end;
+    end;    // letter_R
+
+
+    shape letter_b is
+        block with
+            scale by 1.5 along <0 0 1>;
+            scale by .5 along <1 0 0>;
+            move to <-1 0 0>;
+        end;
+        tube with
+            inner_radius = .5;
+            umin = 270;
+            umax = 90;
+            rotate by 90 around <1 0 0>;
+            scale by .85 along <0 0 1>;
+            scale by 1.5 along <1 0 0>;
+            move to <-.5 0 .65>;
+        end;
+
+        {
+                tube with
+                        inner_radius = .5;
+                        umin = 270; umax = 90;
+                        rotate by 90 around 1 0 0;
+                        scale by .85 along 0 0 1;
+                        scale by 2 along 1 0 0;
+                        move to -.5 0 -.65;
+                end;
+                }
+    end;    // letter_B
+
+
+    shape letter_i is
+        block with
+            scale by 1.5 along <0 0 1>;
+            scale by .5 along <1 0 0>;
+            move to <0 0 0>;
+        end;
+    end;    // letter_I
+
+    letter_r with
+        move to <-3 0 0>;
+    end;
+    letter_b with
+        move to <.5 0 0>;
+    end;
+    // letter_I with move to 3 0 0; end;
+end;    // rbi_letters
+
+
+shape rbi_truss is
+    shape vertex is
+        flat dirty grey block with
+            magnify by .025;
+        end;
+    end;    // vertex
+
+
+    shape outside_vertex is
+        flat white block with
+            magnify by .04;
+        end;
+    end;    // outside_vertex
+
+
+    shape edge
+        from vector end1;
+        to vector end2;
+    is
+        i_beam from end1 to end2 with
+            width = .02;
+            height = .02;
+        end;
+    end;    // edge
+
+
+    shape outside_edge
+        from vector end1;
+        to vector end2;
+    is
+        {
+                flat grey I_beam from end1 to end2 with
+                        width = .03;
+                        height = .03;
+                end;
+                }
+        metallic white block with
+            scale by .03 along <1 0 0>;
+            scale by .03 along <0 1 0>;
+            orient from <0 0 1> to (end2 - end1) / 2;
+            move to (end2 + end1) / 2;
+        end;
+    end;    // outside_edge
+
+
+    shape edge2
+        from vector end1;
+        to vector end2;
+    is
+        i_beam from end1 to end2 with
+            width = .02;
+            height = .02;
+            rotate by 90 around (end2 - end1) about (end2 +
+                end1) / 2;
+        end;
+    end;    // edge2
+
+
+    shape outside_edge2
+        from vector end1;
+        to vector end2;
+    is
+        {
+                flat grey I_beam from end1 to end2 with
+                        width = .03;
+                        height = .03;
+                        rotate by 90 around (end2 - end1)
+                                about (end2 + end1) / 2;
+                end;
+                }
+        metallic white block with
+            scale by .03 along <1 0 0>;
+            scale by .03 along <0 1 0>;
+            orient from <0 0 1> to (end2 - end1) / 2;
+            move to (end2 + end1) / 2;
+        end;
+    end;    // outside_edge2
+
+
+    shape block1_truss is
+        block_truss with
+            x_steps = 3;
+            y_steps = 3;
+            z_steps = 12;
+            vertex does static vertex;
+            x_edge does static edge;
+            y_edge does static edge;
+            z_edge does static edge;
+            scale the trans by 1.5 along <0 0 1>;
+            scale the trans by .5 along <1 0 0>;
+        end;
+        block_truss with
+            x_steps = 1;
+            y_steps = 1;
+            z_steps = 2;
+            vertex does static outside_vertex;
+            x_edge does static outside_edge;
+            y_edge does static outside_edge;
+            z_edge does static outside_edge;
+            scale the trans by 1.5 along <0 0 1>;
+            scale the trans by .5 along <1 0 0>;
+        end;
+    end;    // block1_truss
+
+
+    shape letter_r_truss is
+        block1_truss with
+            move to <-1 0 0>;
+        end;
+        cylinder_truss with
+            rmin = .5;
+            umin = 270;
+            umax = 90;
+            x_steps = 2;
+            y_steps = 12;
+            z_steps = 3;
+            vertex does static vertex;
+            x_edge does static edge2;
+            y_edge does static edge2;
+            z_edge does static edge2;
+            rotate the trans by 90 around <1 0 0>;
+            scale the trans by 2 along <1 0 0>;
+            move the trans to <-.5 0 .5>;
+        end;
+        cylinder_truss with
+            rmin = .5;
+            umin = 270;
+            umax = 90;
+            x_steps = 1;
+            y_steps = 12;
+            z_steps = 1;
+            y_edge does static outside_edge2;
+            rotate the trans by 90 around <1 0 0>;
+            scale the trans by 2 along <1 0 0>;
+            move the trans to <-.5 0 .5>;
+        end;
+        block_truss with
+            x_steps = 3;
+            y_steps = 3;
+            z_steps = 6;
+            vertex does static vertex;
+            x_edge does static edge;
+            y_edge does static edge;
+            z_edge does static edge;
+            scale the trans by .5 along <1 0 0>;
+            scale the trans by .75 along <0 0 1>;
+            move the trans to <1 0 -.75>;
+            skew the trans from <1.5 0 -.5> to <.5 0 -.5>
+                about <1.5 0 -1.5>;
+        end;
+        block_truss with
+            x_steps = 1;
+            y_steps = 1;
+            z_steps = 1;
+            x_edge does static outside_edge;
+            y_edge does static outside_edge;
+            z_edge does static outside_edge;
+            scale the trans by .5 along <1 0 0>;
+            scale the trans by .75 along <0 0 1>;
+            move the trans to <1 0 -.75>;
+            skew the trans from <1.5 0 -.5> to <.5 0 -.5>
+                about <1.5 0 -1.5>;
+        end;
+    end;    // letter_r_truss
+
+
+    shape letter_b_truss is
+        block1_truss with
+            move to <-1 0 0>;
+        end;
+        cylinder_truss with
+            rmin = .5;
+            umin = 270;
+            umax = 90;
+            x_steps = 2;
+            y_steps = 12;
+            z_steps = 3;
+            vertex does static vertex;
+            x_edge does static edge2;
+            y_edge does static edge2;
+            z_edge does static edge2;
+            rotate the trans by 90 around <1 0 0>;
+            scale the trans by .85 along <0 0 1>;
+            scale the trans by 1.5 along <1 0 0>;
+            move the trans to <-.5 0 .65>;
+        end;
+        cylinder_truss with
+            rmin = .5;
+            umin = 270;
+            umax = 90;
+            x_steps = 1;
+            y_steps = 12;
+            z_steps = 1;
+            y_edge does static outside_edge2;
+            rotate the trans by 90 around <1 0 0>;
+            scale the trans by .85 along <0 0 1>;
+            scale the trans by 1.5 along <1 0 0>;
+            move the trans to <-.5 0 .65>;
+        end;
+        cylinder_truss with
+            rmin = .5;
+            umin = 270;
+            umax = 90;
+            x_steps = 2;
+            y_steps = 12;
+            z_steps = 3;
+            vertex does static vertex;
+            x_edge does static edge2;
+            y_edge does static edge2;
+            z_edge does static edge2;
+            rotate the trans by 90 around <1 0 0>;
+            scale the trans by .85 along <0 0 1>;
+            scale the trans by 2 along <1 0 0>;
+            move the trans to <-.5 0 -.65>;
+        end;
+        cylinder_truss with
+            rmin = .5;
+            umin = 270;
+            umax = 90;
+            x_steps = 1;
+            y_steps = 12;
+            z_steps = 1;
+            y_edge does static outside_edge2;
+            rotate the trans by 90 around <1 0 0>;
+            scale the trans by .85 along <0 0 1>;
+            scale the trans by 2 along <1 0 0>;
+            move the trans to <-.5 0 -.65>;
+        end;
+    end;    // letter_b_truss
+
+
+    shape letter_i_truss is
+        block1_truss;
+    end;    // letter_i_truss
+
+
+    letter_r_truss with
+        move to <-3 0 0>;
+    end;
+    letter_b_truss with
+        move to <.5 0 0>;
+    end;
+    letter_i_truss with
+        move to <3 0 0>;
+    end;
+end;    // rbi_truss
+
+
+anim test with
+    double_buffer is on;
+    render_mode is wireframe;
+    eye = <4 -12 8>;
+is
+    mouse_controlled_shape rbi_truss;
+end;    // test
+
+
+picture rbi_under_construction with
+    eye = <-6 -6 .125>;
+    lookat = <-1.4 0 1.75>;
+    field_of_view = 75;
+
+    // closeup view
+    //
+    {
+    lookat = -3 0 1.75;
+    field_of_view = 30;
+    }
+
+    // ortho view
+    //
+    {
+    eye = 0 0 50; lookat = 0 0 0;
+    projection is orthographic;
+    field_of_view = 20;
+    }
+
+//  render_mode is wireframe;
+
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+    fog_factor = 500;
+    background = dark red;
+
+is
+    distant_light from <.5 -1 .75> with
+        color = orange;
+        brightness = 1;
+    end;
+
+    // cloud layer
+    //
+    {
+        sunset plane with
+                magnify by 500;
+                move to 0 0 5;
+
+                magnify the shader_trans by 20;
+        end;
+        }
+
+    rbi_truss with
+        material is chalk colored rust;
+        move to <0 0 1.503>;
+        shading is face;
+    end;
+    transparent light grey rbi_letters with
+        move to <0 0 1.503>;
+        shading is face;
+    end;
+    {
+    crane with
+        rotate by 160 around <0 0 1>;
+        move to <3 -1.75 0>;
+    end;
+    }
+
+    // foundation
+    //
+    flat dirty light grey block with
+        scale by 4.6 along <1 0 0>;
+        scale by 1.5 along <0 1 0>;
+        scale by .03 along <0 0 1>;
+    end;
+    flat dirty light brown parallelogram with
+        scale by 5 along <1 0 0>;
+        scale by 3 along <0 1 0>;
+        move to <0 0 .001>;
+        magnify the shader_trans by .01;
+    end;
+
+    // flat dirty brown plane with
+    flat marble evergreen plane with
+        magnify by 500;
+    end;
+
+    {
+        flat marble evergreen ash_tree with
+                magnify by .5;
+                rotate by 60 around 0 0 1;
+                move to 4.25 -1.5 0;
+        end;
+        flat marble evergreen ash_tree with
+                magnify by .65;
+                scale by 1.5 along 0 0 1;
+                move to 4 -1 0;
+        end;
+        flat marble evergreen ash_tree with
+                magnify by .75;
+                scale by 1.5 along 0 0 1;
+                move to -4.75 1.5 0;
+        end;
+        }
+end;    // rbi_under_construction

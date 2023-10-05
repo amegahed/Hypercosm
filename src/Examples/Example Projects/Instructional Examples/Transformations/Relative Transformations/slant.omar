@@ -1,0 +1,81 @@
+{***************************************************************}
+{                          slant.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do slant_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.ores";
+include "system/snowman.omar";
+
+shape slant_scene with
+	scalar time = 0;
+is
+	static material type material1 is glass colored white;
+	static material type material2 is glass colored red;
+	scalar h = 3.6 * .5;
+	scalar angle = 30 * cos (time * 90);
+	snowman with
+		magnify by .5;
+		material is material1;
+		edges is silhouette;
+		render_mode is shaded_line;
+	end;
+	
+	snowman with
+		magnify by .5;
+		material is material2;
+		edges is silhouette;
+		render_mode is shaded_line;
+		
+		// apply the "slant" transformation
+		//
+		slant by angle with
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+		end;
+	end;
+	
+	// annotations
+	//
+	mark at <0 0 0>;
+	arrow from <0 0 0> to <0 0 h>;
+	arrow from <0 0 0> to <0 0 h> with
+		slant by angle with
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+		end;
+	end;
+	arrow_arc to -angle with
+		radius = h;
+		rotate by 90 around <1 0 0>;
+		rotate by -90 around <0 1 0>;
+	end;
+	overlay_text "slant by <scalar angle> [about <vector point>];" at <0 .85 0>;
+	
+	{
+	futura_l_word "SLANT" with
+		rotate by 90 around <1 0 0>;
+		// move to -.85 0 1;
+		move to <1.5 0 (h / 2)>;
+	end;
+	}
+end;    // slant_scene
+	
+anim slant_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	mouse_controlled_animated_shape slant_scene;
+end;    // slant_anim

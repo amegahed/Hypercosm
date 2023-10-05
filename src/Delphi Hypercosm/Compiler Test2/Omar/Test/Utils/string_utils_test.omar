@@ -1,0 +1,35 @@
+{***************************************************************}
+{                         string_utils_test.omar                }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/string_utils.ores";
+
+
+verb test is
+    string type string;
+
+    // integer conversion test
+    //
+    string is "69";
+    write "string '", string, "' = ", string_to_integer of string, ;
+
+    // scalar conversion test
+    //
+    string is "9.8";
+    write "string '", string, "' = ", string_to_scalar of string, ;
+
+    // fraction conversion test
+    //
+    string is ".75";
+    write "string '", string, "' = ", string_to_scalar of string, ;
+    string is "0.75";
+    write "string '", string, "' = ", string_to_scalar of string, ;
+end;    // test

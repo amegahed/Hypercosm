@@ -1,0 +1,40 @@
+do popup_dock_anim;
+
+
+include "system/3d.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/popup_dock.ores";
+include "system/icon_group.ores";
+
+
+anim popup_dock_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	icon_group type rotate_icon poster "rotate_icon.gif" titled "Rotate";
+	icon_group type zoom_icon poster "zoom_icon.gif" titled "Zoom" linked to rotate_icon;
+	icon_group type pan_icon poster "pan_icon.gif" titled "Pan" linked to zoom_icon;
+	icon type help_icon poster "help_icon.gif" titled "Help";	
+	icon_group type smooth_icon poster "smooth_icon.gif" titled "Smooth";
+	icon_group type flat_icon poster "flat_icon.gif" titled "Flat" linked to smooth_icon;
+	icon_group type outline_icon poster "outline_icon.gif" titled "Outline" linked to flat_icon;
+	icon_group type wireframe_icon poster "wireframe_icon.gif" titled "Lines" linked to outline_icon;
+
+	icon type icons[] is [rotate_icon zoom_icon pan_icon 
+		smooth_icon flat_icon outline_icon wireframe_icon help_icon];
+	popup_dock type dock containing icons;
+	
+	picture scene is
+		sphere;
+		dock overlay at 10;
+		default_lights;
+		default_background at 100;
+	end;	// scene
+
+	while true do
+		scene;
+	end;
+end;	// popup_dock_anim

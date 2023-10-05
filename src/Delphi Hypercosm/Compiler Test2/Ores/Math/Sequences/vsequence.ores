@@ -1,0 +1,40 @@
+{***************************************************************}
+{                           vsequence.ores						}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a finite explicit vector		}
+{		sequence.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+subject vsequence
+extends
+    vector[]
+does
+	// interpolation method
+	//
+    vector question get_value
+        at scalar t;
+    end;
+is
+    vector question get_value
+        at scalar t;
+    is
+        if t = 0 then
+            answer vsequence[min vsequence];
+        elseif t = 1 then
+            answer vsequence[max vsequence];
+        else
+            scalar t_index = min vsequence + (num vsequence - 1) * t;
+            integer min_index = trunc t_index;
+            integer max_index = trunc (t_index + 1);
+            answer interpolated_vector 
+            	from vsequence[min_index] to vsequence[max_index]
+            	by (t_index - min_index);
+        end;
+    end;    // get_value
+end;    // vsequence

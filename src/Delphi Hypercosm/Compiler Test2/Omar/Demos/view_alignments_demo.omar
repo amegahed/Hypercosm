@@ -1,0 +1,115 @@
+{***************************************************************}
+{                    view_alignments_demo.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/view_alignments.ores";
+include "system/arrows.ores";
+include "system/native_text.ores";
+include "system/arrow_shapes.ores";
+
+
+shape scenery is
+    sphere with
+        magnify by 100;
+        color = dark red;
+    end;
+    
+    block with
+        magnify by 2;
+        move to <0 0 1>;
+    end;
+end;    // scenery
+
+
+shape mouse_directed_shape with
+    integer tmp = frame_number;
+is
+    vector ray_location, ray_direction;
+    
+    get_eye_ray through <0 -1.1 0> at ray_location towards ray_direction
+    with
+        normalize_world_direction is true;
+    end;
+    
+    // The cylinder will stay at a fixed location in the window, and
+    // will point towards the mouse cursor.
+    //
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 -1>;
+        rotate by 90 around <1 0 0>;
+        magnify by 0.5;
+        scale by 6 along <0 1 0>;
+        align_with_view_ray at get_mouse;
+        move to (ray_location + (ray_direction * 5));
+    end;
+end;    // mouse_directed_shape
+
+
+shape view_aligned_shape with
+    integer tmp = frame_number;
+is
+    // The torus will always face the eye.
+    //
+    torus with
+        rotate by 90 around <1 0 0>;
+        align_with_view_plane;
+        move to <0 0 5>;
+    end;
+end;    // view_aligned_shape
+
+
+shape mouse_following_shape with
+    integer tmp = frame_number;
+is
+    // The axes and wireframe block will always follow the mouse.  The 
+    // axes are aligned with the view plane, so its y_axis will be visible
+    // when the mouse is off to the side.  The block is aligned with
+    // the view ray, so it will appear the same at all locations.
+    //
+    axes with
+        magnify by 0.5;
+        place_on_view_plane at get_mouse distance 10;
+    end;
+    
+    block with
+        render_mode is wireframe;
+        magnify by 0.5;
+        rotate by (get_seconds * 30) around <0 1 0>;
+        place_on_view_ray at get_mouse distance 10;
+    end;
+end;    // mouse_following_shape
+
+
+picture scene is
+    default_lights;
+    
+    scenery;
+    
+    mouse_directed_shape;
+    
+    view_aligned_shape;
+    
+    mouse_following_shape;
+    
+    overlay_text "X" at (get_mouse) with
+        size = 100;
+    end;
+end;    // scene
+
+
+anim test is
+    mouse_controlled_picture scene;
+end;    // test
+

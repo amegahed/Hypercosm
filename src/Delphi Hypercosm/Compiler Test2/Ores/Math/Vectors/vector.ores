@@ -1,0 +1,207 @@
+{***************************************************************}
+{                           vector.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{		Contains standard three dimensional vector functions.   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+
+	
+enum vector_axis is x, y, z;
+
+
+vector question normalized
+    vector v;
+is
+	scalar magnitude = sqrt (v dot v);
+
+	if magnitude = 0 then
+		answer <0 0 0>;
+	end;
+
+    answer v / magnitude;
+end;    // normalized
+
+
+verb normalize
+    vector reference v;
+is
+    v = normalized v;
+end;    // normalize
+
+
+scalar question vlength
+    of vector v;
+is
+    answer sqrt (v dot v);
+end;    // vlength
+
+
+vector question vorient
+    vector v1;
+    towards vector v2;
+is
+    if v1 dot v2 < 0 then
+        answer -v1;
+    else
+        answer v1;
+    end;
+end;    // vorient 
+
+
+vector question vreflect
+    vector v;
+    across vector normal;
+is
+    vector p = v parallel normal;
+    answer (v - p * 2);
+end;    // vreflect
+
+
+vector question vclamp
+    vector v;
+    from vector low;
+    to vector high;
+is
+    answer <(clamp v.x from low.x to high.x)
+            (clamp v.y from low.y to high.y)
+            (clamp v.z from low.z to high.z)>;
+end;    // vclamp
+
+
+vector question vsnap
+    vector v;
+    to vector range;
+is
+    answer <(snap v.x to range.x)
+            (snap v.y to range.y)
+            (snap v.z to range.z)>;
+end;    // vsnap
+
+
+vector question vmod
+    vector v;
+    to vector range;
+is
+    answer <(smod v.x to range.x)
+            (smod v.y to range.y)
+            (smod v.z to range.z)>;
+end;    // vmod
+
+
+scalar question vangle
+    from vector v1;
+    to vector v2;
+is
+    answer acos ((v1 dot v2) / ((vlength of v1) * (vlength of v2)));
+end;    // vangle
+
+
+scalar question vangle2
+    from vector v1;
+    to vector v2;
+    around vector axis;
+is
+    scalar angle;
+    
+    v1 = normalized v1;
+    v2 = normalized v2;
+    axis = normalized axis;
+    v1 = v1 perpendicular axis;
+    v2 = v2 perpendicular axis;
+
+	// compute angle from 0 to 360 degrees
+	// 
+    if v1 dot v2 > 0 then
+    
+        // angle < 90 degrees
+        //
+        scalar a = vlength of (v2 perpendicular v1);
+        scalar b = vlength of (v2 parallel v1);
+        
+        angle = arctan a b;
+        if (v1 cross v2) dot axis < 0 then
+            angle = -angle;
+        end;
+    else
+        // angle greater than 90 degrees
+        //
+        scalar a = vlength of (v2 perpendicular -v1);
+        scalar b = vlength of (v2 parallel -v1);
+        
+        angle = arctan a b; 
+        if (v1 cross v2) dot axis < 0 then
+            angle = -angle;
+        end;
+        angle = 180 - angle;       
+    end;
+    
+    if angle < 0 then
+    	angle = itself + 360;
+    end;
+    
+    answer angle;
+end;    // vangle2
+
+
+scalar question signed_vangle
+    from vector v1;
+    to vector v2;
+    around vector axis;
+is
+	// compute angle from 0 to 360
+	//
+	scalar angle = vangle2 from v1 to v2 around axis;
+	
+	// map 180 to 360 to -180 to 0
+	//
+	if angle > 180 then
+		angle = -(360 - angle);
+	end;
+	
+	answer angle;
+end;    // signed_vangle
+
+
+vector_axis type question principal_axis 
+	of vector v;
+is
+	scalar x = abs v.x;
+	scalar y = abs v.y;
+	scalar z = abs v.z;
+	
+	if x > y then
+		// y not greatest
+		//
+		if x > z then
+			answer x;
+		else
+			answer z;
+		end;
+	else
+		// x not greatest
+		//
+		if y > z then
+			answer y;
+		else
+			answer z;
+		end;
+	end;
+end;	// principal_axis
+
+
+vector question axis_vector
+	of vector_axis type vector_axis;
+is
+	when vector_axis is
+		x: answer <1 0 0>; end;
+		y: answer <0 1 0>; end;
+		z: answer <0 0 1>; end;
+	end;
+end;	// axis_vector

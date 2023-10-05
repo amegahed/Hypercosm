@@ -1,0 +1,111 @@
+{***************************************************************}
+{                       spline_demo.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do spline_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/native_text.ores";
+include "system/shapes.ores";
+include "system/spline_shapes.ores";
+include "system/arrow_shapes.ores";
+
+
+// This applet demonstrates the "steps" property of a spline by drawing a spline
+// shape as its interpolation steps dynamically change.
+
+
+integer num_steps = 3;  // current number of spline interpolation steps
+
+
+// the spline points (creating an arbitrary "squiggly"):
+//
+vector spline_points[] = [<3 5 5> <-5 0 4> <2 5 1> <-5 3 -4> <-3 -5 -3> <5 -2 -5>
+                         <-5 -1 0> <4 -5 4> <4 -3 5> <0 0 1> <5 5 -3>];
+
+
+picture scene
+is
+    integer key_pressed = 0;
+    string type s;
+    
+    rotate by get_seconds * 90 around <0 0 1>;
+    
+    // draw the spline points as circles
+    //
+    for integer i = 1..num spline_points do
+        sphere with
+            radius = .5;
+            material is constant_color red;
+            render_mode is wireframe;
+            edges is silhouette;
+            center = spline_points[i];
+        end;
+    end;
+    
+    // draw the spline itself
+    //
+    cubic_spline_curve from spline_points with
+        steps = num_steps;
+        material is constant_color white;
+    end;
+        
+    axes with
+        magnify by 5;
+    end;
+    
+    // label
+    //
+    s is integer_to_string of num_steps;
+    s add " step";
+    if num_steps > 1 then
+        s add "s";
+    end;
+    overlay_text s at <0 .9 0> with
+        size = 24;
+        font_family is "arial";
+    end;
+    
+    // instructions
+    //
+    overlay_text "+/= INCREASE STEPS" at <-.95 -.95 0> with
+        h_align is left;
+    end;
+    overlay_text "- DECREASE STEPS" at <.95 -.95 0> with
+        h_align is right;
+    end;
+    
+    // get user input
+    // press plus/equals to increase interpolation,
+    // press minus to decrease interpolation
+    //
+    reset_frame_events;
+    key_pressed = get_key;
+    while key_pressed > 0 do
+        if key_to_char key_pressed is "-" then
+            if num_steps > 1 then
+                num_steps = itself - 1;
+            end;
+        elseif key_to_char key_pressed is "=" then
+            if num_steps < 20 then
+                num_steps = itself + 1;
+            end;
+        end;
+        key_pressed = get_key;
+    end;
+end;    // scene
+
+
+anim spline_demo_anim with
+    double_buffer is on;
+    eye = <0 -24 4>;
+is  
+    mouse_controlled_picture scene;
+end;    // spline_demo_anim

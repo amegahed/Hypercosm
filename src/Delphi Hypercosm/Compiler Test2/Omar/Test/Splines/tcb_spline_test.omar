@@ -1,0 +1,40 @@
+{***************************************************************}
+{                        tcb_spline_test.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tcb_spline_test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/tcb_splines.ores";
+include "system/arrow_shapes.ores";
+
+
+anim tcb_spline_test
+    args type args;
+with
+    args check;
+is
+	shape shape1 is
+		cubic_spline type cubic_spline is tcb_spline
+			through [<0 1 0> <-.5 .5 -1> <0 0 1> <.5 -.5 -1> <1 0 0>]
+			using [<0 0 0> <0 0 0> <1 0 0> <0 0 0> <0 0 0>];
+			
+		line cubic_spline values in 100;
+	end;	// shape1
+	
+    shape scene is
+		shape1;
+        axes;
+    end;    // scene
+
+    mouse_controlled_shape scene with
+    	auto_camera is on;
+    end;
+end;    // tcb_spline_test

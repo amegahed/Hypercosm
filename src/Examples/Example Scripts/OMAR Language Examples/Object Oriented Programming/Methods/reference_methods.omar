@@ -1,0 +1,74 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         reference_method.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of a subject with "reference methods" in        }
+{       the OMAR language.                                      }
+{                                                               }
+{       Reference methods are methods that can make             }
+{       changes to the particular instance reference            }
+{       that is used to call them.                              }
+{                                                               }
+{       There is no direct analogy for these language           }
+{       features in languages such as C, C++, and Pascal.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do reference_method_example;
+
+subject thing
+does
+	// reference methods
+	//
+	reference verb nuke;
+	reference verb swap
+		to thing type reference thing2;
+	end;
+has
+	// attributes
+	//
+	public integer i;
+is
+	// implementation
+	//
+	
+	reference verb nuke is
+		thing is none;
+	end;    // nuke
+	
+	reference verb swap
+		to thing type reference thing2;
+	is
+		thing type temp is thing;
+		thing is thing2; 
+		thing2 is temp;
+	end;    // swap
+end;    // thing
+
+verb reference_method_example is
+	thing type thing, thing1, thing2;
+		
+	// use reference method nuke object
+	//
+	thing nuke;
+	
+	// thing should be none after above method call
+	//
+	if thing is none then
+		write "thing is none", ;
+	else
+		write "thing is not none", ;
+	end;
+	
+	// use reference method to swap references
+	//
+	thing1's i = 10;
+	thing2's i = 20;
+	write "thing1, thing2 = ", thing1's i, ", ", thing2's i, ;
+	thing1 swap to thing2;
+	write "thing1, thing2 = ", thing1's i, ", ", thing2's i, ;
+end;    // reference_method_example

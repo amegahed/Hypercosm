@@ -1,0 +1,16 @@
+.label {
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 11px;
+}
+.tab-selected {    
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 11px;
+	color: #FFFFFF; 
+	white-space: nowrap;
+}
+.tab-unselected {
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 11px;
+	color: #000000;
+	white-space: nowrap;
+}

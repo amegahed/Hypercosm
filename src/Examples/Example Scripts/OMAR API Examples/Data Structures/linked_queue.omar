@@ -1,0 +1,98 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          linked_queue.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       stack utilities.                                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/linked_queue.ores";
+
+subject thing
+extends
+	printable printing object
+does
+	// constructor
+	//
+	verb new with
+		integer i = 0;
+	end;    // new
+
+	// converting method
+	//
+	string type question to_string;
+
+	// printing method
+	//
+	verb print;
+has
+	// attributes
+	//
+	integer i;
+is
+	//
+	// constructor
+	//
+
+	verb new with
+		integer i = 0;
+	is
+		thing's i = i;
+	end;    // new
+
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		answer integer_to_string of i;
+	end;    // to_string
+
+	//
+	// printing method
+	//
+
+	verb print is
+		write "i = ", to_string, ;
+	end;    // print
+end;    // thing
+
+verb example is
+	thing type thing1 with
+		i = 5;
+	end;
+	thing type thing2 with
+		i = 10;
+	end;
+	thing type thing3 with
+		i = 15;
+	end;
+	linked_queue type queue;
+	queue add thing1;
+	queue add thing2;
+	queue add thing3;
+	
+	write "queue number of items = ", queue get_size, ;
+	write;
+	
+	write "queue:", ;
+	queue print;
+	write;
+	
+	write "dequeueing item:", ;
+	print queue get_first;
+	queue dequeue;
+	write;
+	write "queue:", ;
+	queue print;
+	write;
+	write "after clearing, queue:", ;
+	queue clear;
+	queue print;
+end;    // example

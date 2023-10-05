@@ -1,0 +1,41 @@
+do test;
+
+
+adjective printable
+does
+	verb print;
+end;	// printable
+	
+	
+subject thing
+does
+	verb new
+		of integer value = 0;
+	end;
+	verb print;
+has
+	integer value;
+is
+	verb new
+		of integer value = 0;
+	is
+		thing's value = value;
+	end;
+	
+	verb print is
+		write "thing with value = ", value, ;
+	end;
+end;	// thing
+
+
+verb test is
+	thing type thing;
+
+	if printable type thing then
+		write "found printable thing: ";
+		thing print;
+	else
+		write "found non printable thing: ";
+		write "?", ;
+    end;	
+end;	// test

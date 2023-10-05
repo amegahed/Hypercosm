@@ -1,0 +1,25 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       random_access_stacks.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a general implementation independent           }
+{       stack definition.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective stack_random_accessable
+does
+	// random access stack methods
+	//
+	verb poke
+		object type element;
+		to integer level;
+	end;
+	object type question peer
+		at integer level;
+	end;
+end;    // stack_random_accessable

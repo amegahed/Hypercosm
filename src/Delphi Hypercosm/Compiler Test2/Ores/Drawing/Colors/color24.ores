@@ -1,0 +1,89 @@
+{***************************************************************}
+{                          color24.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a standard color triplet definition.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/color.ores";
+include "system/printing.ores";
+include "system/string_utils.ores";
+
+
+static subject color24
+extends
+	printable scribable object
+does
+	// constructor
+	//
+	verb new
+		of short r = 0, g = 0, b = 0;
+	end;
+	
+	// conversion methods
+	//
+	color type question to_color;
+	
+	// printable methods
+	//
+	verb print;
+	string type question to_string;
+has
+	// attributes
+	//
+	public short r;
+	public short g;
+	public short b;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of short r = 0, g = 0, b = 0;
+	is
+		with color24 do
+			its r = r;
+			its g = g;
+			its b = b;
+		end;
+	end;	// new
+	
+
+	//
+	// conversion methods
+	//
+	
+		
+	color type question to_color is
+		answer <(r / 255) (g / 255) (b / 255)>;
+	end;	// to_color
+	
+
+	//	
+	// printable methods
+	//
+	
+	
+	verb print is
+		write to_string;
+	end;	// print
+	
+	
+	string type question to_string is
+		string type string;
+		
+		string add integer_to_string of r;
+		string add " ";
+		string add integer_to_string of g;
+		string add " ";
+		string add integer_to_string of b;
+		answer string;
+	end;	// to_string
+end;	// color24

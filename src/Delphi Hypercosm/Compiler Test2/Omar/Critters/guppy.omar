@@ -1,0 +1,353 @@
+{***************************************************************}
+{                          guppy.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do guppy_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/shapes.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+include "system/paths.ores";
+
+
+subject guppy
+extends
+    timed_actor
+does
+    verb new with
+        scalar max_tail_deflection = 20;
+        scalar max_fin_deflection = 30;
+        integer blink_time = 200;
+    end;    // new
+
+    objective shape form with
+        scalar tail_deflection = 0;
+        scalar fin_deflection = 0;
+        color type fin_color = red;
+        boolean blink is false;
+    end;    // form
+
+    shape instance;
+has
+    public scalar tail_wags_per_sec = 1 / 4;
+    public scalar fin_wags_per_sec = 1;
+
+    scalar max_tail_deflection;
+    scalar max_fin_deflection;
+    integer blink_time;
+    integer next_blink = 0;
+is
+    verb new with
+        scalar max_tail_deflection = 20;
+        scalar max_fin_deflection = 30;
+        integer blink_time = 200;
+    is
+        guppy's max_tail_deflection = max_tail_deflection;
+        guppy's max_fin_deflection = max_fin_deflection;
+        guppy's blink_time = blink_time;
+        guppy's next_blink = trunc random 0 to blink_time;
+    end;    // new
+
+
+    objective shape body with
+        integer sections = 4;
+        integer steps = facets;
+    is
+        // cross section
+        //
+        scalar x_section[0..sections, 1..2];
+
+        // initialize round cross section
+        //
+        for integer counter = 0 .. sections - 1 do
+            scalar angle = (counter / sections) * -360;
+
+            x_section[counter, 1] = sin angle;
+            x_section[counter, 2] = cos angle;
+        end;
+        x_section[sections, 1] = x_section[0, 1];
+        x_section[sections, 2] = x_section[0, 2];
+
+        // body is sampled at 9 discrete points
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [-18 -20 -17 -14 -10 -6 0 8 15]
+
+            // ymins
+            [0 -1.5 -2 -3 -5 -6 -6 -4 -2]
+
+            // ymaxes
+            [0 1.5 2 3 5 6 6 4 2]
+
+            // zmins
+            [1 -2 -3 -5 -7 -8 -8 -6 -2]
+
+            // zmaxes
+            [1 2 3 4.5 8 11 13 8 2]
+        with
+            rows = steps; columns = steps;
+            triangulate is off;
+            alternate is on;
+            mending is on;
+        end;
+    end;    // body
+
+
+    objective shape open_eye is
+        sphere with
+            radius = 1.8;
+            scale by .5 along <0 1 0>;
+            color = light light blue;
+        end;
+        sphere with
+            material is plastic colored charcoal;
+            radius = 1.5;
+            scale by .75 along <0 1 0>;
+        end;
+    end;    // open_eye
+
+
+    objective shape open_eyes is
+        open_eye with
+            rotate by 30 around <0 0 1>;
+            rotate by 45 around <0 1 0>;
+            rotate by 20 around <0 0 1>;
+            move to <-12 2.75 4.5>;
+        end;
+        open_eye with
+            rotate by -30 around <0 0 1>;
+            rotate by 45 around <0 1 0>;
+            rotate by -20 around <0 0 1>;
+            move to <-12 -2.75 4.5>;
+        end;
+    end;    // open_eyes
+
+
+    objective shape closed_eyes is
+        sphere with
+            radius = 1.5;
+            rotate by 45 around <0 1 0>;
+            scale by .1 along <0 0 1>;
+            move to <-12 2.75 4.5>;
+            color = light blue;
+        end;
+        sphere with
+            radius = 1.5;
+            rotate by 45 around <0 1 0>;
+            scale by .1 along <0 0 1>;
+            move to <-12 -2.75 4.5>;
+            color = light blue;
+        end;
+    end;    // closed_eyes
+
+
+    objective shape tail with
+        scalar angle = 0;
+        color type tail_color = red;
+    is
+
+        // end of tail
+        //
+        cone with
+            end1 = <0 0 0>;
+            end2 = <10 0 0>;
+            radius1 = 2;
+            radius2 = 0;
+        end;
+        sphere with
+            radius = 2;
+        end;
+
+        // upper tail
+        //
+        polygon2d [[0 2] [10 10] [20 15] [15 10] [10 0]] with
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+            color = tail_color;
+            rotate by angle around <-10 0 2> about <10 0 0>;
+        end;
+
+        // lower tail
+        //
+        polygon2d [[0 -2] [5 -4] [7 -6] [15 -10] [10 -5]
+            [10 0]]
+        with
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+            color = tail_color;
+            rotate by -angle around <-10 0 -2> about
+                <10 0 0>;
+        end;
+    end;    // tail
+
+
+    objective shape guppy_fin is
+        polygon2d [[0 0] [0 2] [6 6] [4 -2]] with
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+        end;
+    end;    // guppy_fin
+
+
+    objective shape fin is
+        polygon2d [[0 0] [3 -5] [10 -10] [8 -4] [7 0]] with
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+        end;
+    end;    // fin
+
+
+    objective shape form with
+        scalar tail_deflection = 0;
+        scalar fin_deflection = 0;
+        color type fin_color = red;
+        boolean blink is false;
+    is
+        color = orange;
+        body;
+        if blink then
+            closed_eyes;
+        else
+            open_eyes;
+        end;
+
+        // top fin
+        //
+        polygon2d [[0 0] [6 3] [14 2] [10 1] [8 -5]] with
+            rotate by tail_deflection around <8 0 -5>;
+            move to <0 0 13>;
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+            color = fin_color;
+        end;
+        tail with
+            angle = tail_deflection;
+            tail_color = fin_color;
+            rotate by tail_deflection around <0 0 1>;
+            move to <15 0 0>;
+        end;
+
+        // guppy fins
+        //
+        guppy_fin with
+            rotate by 15 around <1 0 0>;
+            rotate by (fin_deflection - 45) around trans's z_axis;
+            move to <-10 -4 -4>;
+            color = fin_color;
+        end;
+        guppy_fin with
+            rotate by -15 around <1 0 0>;
+            rotate by (45 - fin_deflection) around trans's z_axis;
+            move to <-10 4 -4>;
+            color = fin_color;
+        end;
+
+        // shark type fins
+        //
+        {
+                fin with
+                        rotate by (fin_deflection - 45) around 1 0 0;
+                        move to -10 -4 -4;
+                        color = fin_color;
+                end;
+                fin with
+                        rotate by (45 - fin_deflection) around 1 0 0;
+                        move to -10 4 -4;
+                        color = fin_color;
+                end;
+                }
+    end;    // form
+
+
+    shape instance is
+        form with
+            tail_deflection = sin (time * 360 *
+                tail_wags_per_sec) * max_tail_deflection;
+            fin_deflection = sin (time * 360 *
+                fin_wags_per_sec) * max_fin_deflection;
+            blink is (next_blink = 0);
+        end;
+        if next_blink = 0 then
+            next_blink = trunc random 0 to blink_time;
+        else
+            next_blink = next_blink - 1;
+        end;
+    end;    // instance
+end;    // guppy
+
+
+subject bubbling_guppy
+extends
+    guppy
+does
+    verb new with
+        scalar max_tail_deflection = 20;
+        scalar max_fin_deflection = 30;
+        integer blink_time = 200;
+    end;    // new
+
+    verb act;
+    shape instance;
+has
+    bubble_path type bubbles with
+        expansion_speed = .1;
+        spacing = 4;
+        steps = 6;
+    end;
+    public vector velocity = <0 0 0>;
+is
+    verb new with
+        scalar max_tail_deflection = 20;
+        scalar max_fin_deflection = 30;
+        integer blink_time = 200;
+    is
+        // call superclass constructor
+        //
+        guppy new with
+            max_tail_deflection = static max_tail_deflection;
+            max_fin_deflection = static max_fin_deflection;
+            blink_time = static blink_time;
+        end;
+    end;    // new
+
+
+    verb act is
+        update;
+        bubbles step to (<0 0 -1> + velocity) in relative;
+    end;    // act
+
+
+    shape instance is
+        guppy static instance;
+        bubbles instance with
+            render_mode is wireframe;
+            move to <-21 0 0>;
+        end;
+    end;    // instance
+end;    // bubbling_guppy
+
+
+anim guppy_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-50 -30 10>;
+    background = dark blue;
+    args check;
+is
+    bubbling_guppy type guppy;
+
+    mouse_controlled_actor guppy;
+end;    // guppy_anim

@@ -1,0 +1,111 @@
+HCNestedKeyFileReader "1";
+ProjectFileVersion "2";
+Applet
+{
+	OutputFile "simple_picking.hcvm";
+	WebOutputDir "Website";
+	Alignment;
+	CommandLine;
+	Width "800";
+	Height "600";
+	ScaleWidth "100";
+	ScaleHeight "100";
+	TextColor "0";
+	BackColor "16777215";
+	BackImage;
+}
+SearchPaths
+{
+}
+filelist
+{
+	folder "OMAR Source Code"
+	{
+		includes ".omar;.ores;.oma;.omr;.ore;.ors";
+		filelist
+		{
+			omar_main "simple_picking.omar";
+		}
+	}
+	folder "HTML"
+	{
+		includes ".html;.htm;.php;.php3;.asp;.shtml";
+		filelist
+		{
+			html "simple_picking.html";
+		}
+	}
+	folder "Other"
+	{
+		includesgeneric "1";
+		filelist
+		{
+		}
+	}
+	folder "Textures"
+	{
+		includes ".jpg;.jpeg;.gif;.png;.tga";
+		filelist
+		{
+			resource "scales.jpg";
+			resource "..\\..\\..\\..\\..\\Textures\\Interface\\Animation\\go_icon.gif";
+			resource "..\\..\\..\\..\\..\\Textures\\Interface\\Animation\\stop_icon.gif";
+			resource "..\\..\\..\\..\\..\\Textures\\Interface\\Animation\\animation_icon.gif";
+			resource "..\\..\\..\\..\\..\\Textures\\Interface\\Collaboration\\collaboration_icon.gif";
+			resource "Website\\wood.jpg";
+			resource "Website\\transparent80.png";
+			resource "Website\\about_icon.gif";
+			resource "Website\\dock_texture.png";
+			resource "Website\\hide_icon.gif";
+			resource "Website\\camera_icon.gif";
+			resource "Website\\back_arrow_icon.gif";
+			resource "Website\\dial_labels.gif";
+			resource "Website\\dial_icon.gif";
+			resource "Website\\rotate_icon.gif";
+			resource "Website\\zoom_icon.gif";
+			resource "Website\\pan_icon.gif";
+			resource "Website\\object_icon.gif";
+			resource "Website\\scene_icon.gif";
+			resource "Website\\two_button_icon.gif";
+			resource "Website\\mouse_icon.gif";
+			resource "Website\\one_button_icon.gif";
+			resource "Website\\spin_icon.gif";
+			resource "Website\\graphics_icon.gif";
+			resource "Website\\upright_icon.gif";
+			resource "Website\\x_ray_icon.gif";
+			resource "Website\\outline_icon.gif";
+			resource "Website\\cartoon_icon.gif";
+			resource "Website\\smooth_icon.gif";
+			resource "Website\\flat_icon.gif";
+			resource "Website\\monochrome_icon.gif";
+			resource "Website\\hidden_line_icon.gif";
+			resource "Website\\wireframe_icon.gif";
+			resource "Website\\edges_icon.gif";
+			resource "Website\\pointplot_icon.gif";
+			resource "Website\\render_modes_icon.gif";
+			resource "Website\\detail_icon.gif";
+			resource "Website\\lighting_icon.gif";
+			resource "Website\\shadow_icon.gif";
+			resource "Website\\red_dial_icon.gif";
+			resource "Website\\green_dial_icon.gif";
+			resource "Website\\color_wheel_icon.gif";
+			resource "Website\\blue_dial_icon.gif";
+			resource "Website\\gauge_icon.gif";
+			resource "Website\\dial_arrow.gif";
+			resource "Website\\help_icon.gif";
+			resource "Website\\Panels.jpg";
+			resource "Website\\background.jpg";
+		}
+	}
+	folder "Sounds"
+	{
+		includes ".wav;.mp3;.wave";
+		filelist
+		{
+			resource "Website\\show.wav";
+			resource "Website\\hide.wav";
+			resource "Website\\select.wav";
+			resource "Website\\deselect.wav";
+		}
+	}
+}

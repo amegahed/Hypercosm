@@ -1,0 +1,58 @@
+{***************************************************************}
+{                          slider.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+do slider_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/slider.ores";
+include "system/views.ores";
+
+
+picture slider_picture is
+    static slider type slider;
+
+    slider instance;
+    
+    if some current_interaction then
+        if not current_interaction is_tracking then
+            if slider's mouse_is_over then
+                set_cursor to crosshair;
+                current_interaction override;
+            end;
+        end;
+    else
+        if slider's mouse_is_over then
+            set_cursor to crosshair;
+        else
+            set_cursor to arrow;
+        end;
+    end;
+end;    // slider_picture
+
+
+anim slider_anim
+    args type args;
+with
+    double_buffer is on;
+    window_name is "Slider Demo";
+    width = 320;
+    height = 320;
+    args check;
+is
+    // mouse_controlled_picture slider_picture;
+    while true do
+        slider_picture with
+            ortho_view;
+        end;
+    end;
+end;    // slider_anim 
+
+

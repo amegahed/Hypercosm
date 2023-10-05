@@ -1,0 +1,213 @@
+{***************************************************************}
+{                          cannon.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cannon_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/check_keys.ores";
+
+
+shape cannon with
+    scalar elevation = 0;
+    scalar power = 0;
+is
+    static shape barrel_body is
+        lathe [[12 1] [12 1.5] [4 3] [-4 3] [-16 2] [-18 3]
+            [-20 3] [-20 2]];
+    end;    // barrel_body
+
+
+    static shape plunger is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 8>;
+            radius = 1;
+        end;
+        disk with
+            center = <0 0 8>;
+            radius = 2;
+        end;
+        disk with
+            center = <0 0 10>;
+            radius = 2;
+        end;
+        cylinder with
+            end1 = <0 0 8>;
+            end2 = <0 0 10>;
+            radius = 2;
+        end;
+    end;    // plunger
+
+
+    static shape barrel with
+        scalar power = 1;
+    is
+        barrel_body;
+
+        // move plunger relative to barrel
+        //
+        plunger with
+            color = white;
+            move to <0 0 (4 + power * 8)>;
+        end;
+    end;    // barrel
+
+
+    static shape wheel with
+        integer spokes = 5;
+    is
+        // rim of wheel
+        //
+        color = light grey;
+        cylinder with
+            end1 = <0 0 -.1>;
+            end2 = <0 0 .1>;
+            radius = 1;
+        end;
+        ring with
+            inner_radius = .9;
+            outer_radius = 1;
+            center = <0 0 .1>;
+        end;
+        ring with
+            inner_radius = .9;
+            outer_radius = 1;
+            center = <0 0 -.1>;
+        end;
+        cylinder with
+            end1 = <0 0 -.1>;
+            end2 = <0 0 .1>;
+            radius = .9;
+        end;
+
+        // hubcap
+        //
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 .2>;
+            radius1 = .2;
+            radius2 = .1;
+        end;
+
+        // spokes
+        //
+        for integer counter = 1..spokes do
+            scalar angle = counter / spokes * 360;
+
+            block with
+                color = brown;
+                magnify by .08;
+                scale by 5 along <1 0 0>;
+                move to <.5 0 0>;
+                rotate by angle around <0 0 1>;
+            end;
+        end;
+    end;    // wheel
+
+
+    static shape axel is
+        wheel with
+            rotate by 90 around <1 0 0>;
+            move to <0 -1 1>;
+            magnify by 8;
+        end;
+        wheel with
+            rotate by -90 around <1 0 0>;
+            move to <0 1 1>;
+            magnify by 8;
+        end;
+        cylinder with
+            end1 = <0 -1 1>;
+            end2 = <0 1 1>;
+            radius = .1;
+            magnify by 8;
+        end;
+    end;    // axel
+
+
+    static shape base is
+        block with
+            move to <0 0 1>;
+            scale by 8 along <1 0 0>;
+            skew from <-8 0 0> to <-8 0 4> about <8 0 0>;
+            magnify by 1.5;
+            move to <0 -4 0>;
+        end;
+        block with
+            move to <0 0 1>;
+            scale by 8 along <1 0 0>;
+            skew from <-8 0 0> to <-8 0 4> about <8 0 0>;
+            magnify by 1.5;
+            move to <0 4 0>;
+        end;
+    end;    // base
+
+    if power < 0 then
+        power = 0;
+    end;
+    if power > 1 then
+        power = 1;
+    end;
+    barrel with
+        color = lime_green;
+        power = static power;
+        rotate by elevation around <0 1 0>;
+        move to <0 0 12>;
+    end;
+    axel with
+        color = brown;
+    end;
+    base with
+        color = brown;
+        move to <8 0 0>;
+    end;
+end;    // cannon
+
+
+picture cannon_picture with
+    scalar x = get_mouse dot <1 0 0>;
+    scalar y = get_mouse dot <0 1 0>;
+
+    eye = <20 -60 20>;
+    lookat = <0 0 10>;
+is
+    x = (sin (x * 180) + 1) / 2;
+    y = (sin (y * 180) + 1) / 2;
+    y = 1 - y;
+
+    default_lights;
+
+    cannon with
+        elevation = (90 + y * 60);
+        power = 1 - abs x;
+
+        // rotate by x * 180 around 0 0 1;
+    end;
+    plane with
+        magnify by 30;
+        render_mode is wireframe;
+    end;
+end;    // cannon_picture
+
+
+anim cannon_anim
+    args type args;
+with
+    double_buffer is on;
+    facets = 4;
+    args check;
+is
+    while true do
+        cannon_picture;
+        check_keys;
+    end;
+end;    // cannon_anim

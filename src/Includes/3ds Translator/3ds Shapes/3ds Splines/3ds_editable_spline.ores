@@ -1,0 +1,373 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_editable_spline.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains editable spline definitions that correspond    }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_shape.ores";
+include "system/3ds_splines.ores";
+include "system/singly_linked_queues.ores";
+	
+	
+subject translated_3ds_editable_spline
+extends
+	transformable renderable volume_boundable printable translated_3ds_shape
+does
+	// constructor
+	//
+	verb new
+		of translated_3ds_splines type splines is none;
+	with
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1; 
+		boolean gen_mapping_coords is false;
+	end;
+	
+	// setting method
+	//
+	verb set
+		to translated_3ds_splines type splines;
+	with
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1; 
+		boolean gen_mapping_coords is false;
+	end;
+	
+	// constructing methods
+	//
+	verb append_spline
+		translated_3ds_spline type spline;
+		to list_end type list_end is tail;
+	end;
+	verb append_splines
+		translated_3ds_splines type splines;
+		to list_end type list_end is tail;
+	end;
+	verb append_editable_spline
+		translated_3ds_editable_spline type editable_spline;
+		to list_end type list_end is tail;
+	end;
+	verb orient;
+		
+	// querying methods
+	//
+	integer question get_num_splines;
+	integer question get_num_spline_segments;
+	polylines type question to_polylines;
+	
+	// bounding methods
+	//
+	volume_bounding type question get_bounds;
+	
+	// transforming methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// printing methods
+	//
+	verb print;
+	
+	// recycling methods
+	//
+	objective translated_3ds_editable_spline type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	public singly_linked_queue type spline_list;
+private 
+	// recycling attributes
+	//
+	translated_3ds_editable_spline type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_editable_spline type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new
+		of translated_3ds_splines type splines is none;
+	with
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1; 
+		boolean gen_mapping_coords is false;
+	is
+		translated_3ds_shape new with
+		
+			// set shape parameters
+			//
+			steps = static steps;
+			optimize is static optimize;
+			adaptive is static adaptive;
+			renderable is static renderable;
+			thickness = static thickness; 
+			gen_mapping_coords is static gen_mapping_coords;
+		end;
+		
+		if verbose_recycling then
+			write "new 3ds editable spline", ;
+		end;
+					
+		append_splines splines;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set
+		to translated_3ds_splines type splines;
+	with
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1; 
+		boolean gen_mapping_coords is false;
+	is   
+		// recycle splines
+		//
+		while not spline_list is_empty do
+			translated_3ds_spline type spline is
+				translated_3ds_spline type spline_list removed_first;
+			spline recycle; 
+		end;
+		
+		// add new splines
+		//
+		append_splines splines; 
+		
+		with translated_3ds_shape do
+	
+			// set interpolation attributes
+			//
+			its steps = steps;
+			its optimize is optimize;
+			its adaptive is adaptive;
+			
+			// set rendering attributes
+			//
+			its renderable is renderable;
+			its thickness = thickness;
+			
+			// set texturing parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords; 
+		end;   
+	end;    // set
+	
+	//
+	// constructing methods
+	//
+	
+	verb append_spline
+		translated_3ds_spline type spline;
+		to list_end type list_end is tail;
+	is
+		spline_list append spline to list_end;
+	end;    // append_spline
+	
+	
+	verb append_splines
+		translated_3ds_spline type splines[];
+		to list_end type list_end is tail;
+	is
+		for each translated_3ds_spline type spline in splines do
+			spline_list append spline to list_end;
+		end;
+	end;    // append_spline
+	
+	verb append_editable_spline
+		translated_3ds_editable_spline type editable_spline;
+		to list_end type list_end is tail;
+	is
+		iterator type iterator is editable_spline's spline_list get_iterator;
+		while iterator is_iterating do
+			append_spline (translated_3ds_spline type iterator next) to list_end;
+		end;
+	end;    // append_editable_spline
+	
+	verb orient is
+		if not spline_list is_empty then
+			iterator type iterator is spline_list get_iterator;
+			translated_3ds_spline type spline is (translated_3ds_spline type iterator next);
+			
+			// orient perimeter spline
+			//
+			spline set_orientation to counter_clockwise;
+				 
+			// orient holes
+			//      
+			while iterator is_iterating do
+				spline is (translated_3ds_spline type iterator next);
+				spline set_orientation to clockwise;
+			end;
+		end;
+	end;    // orient
+  
+	//      
+	// querying methods
+	//
+ 
+	integer question get_num_splines is
+		answer spline_list get_size;
+	end;    // get_num_splines
+	
+	integer question get_num_spline_segments is
+		integer num_spline_segments = 0;
+		
+		iterator type iterator is spline_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline type spline is translated_3ds_spline type iterator next;
+			num_spline_segments = itself + spline num_segments;
+		end;
+		
+		answer num_spline_segments;
+	end;    // get_num_spline_segments
+	
+	polylines type question to_polylines 
+	is
+		iterator type iterator is spline_list get_iterator;
+		polylines type polylines;
+		integer index = 1;
+		dim polylines[1 .. spline_list get_size];
+		while iterator is_iterating do 
+			translated_3ds_spline type spline is (translated_3ds_spline type iterator next);
+			polylines[index] is (spline to_polyline with steps = static steps);
+			index = itself + 1;
+		end;
+		
+		answer polylines;
+	end;    // to_polylines
+	
+	//
+	// bounding methods
+	//
+	   
+	volume_bounding type question get_bounds is
+		volume_extents type extents;
+		iterator type iterator is spline_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline type spline is (translated_3ds_spline type iterator next);
+			extents expand to spline get_bounds; 
+		end;
+		answer extents; 
+	end;    // get_bounds
+	 
+	//                       
+	// transforming methods
+	//
+	
+	verb transform
+		from trans type trans;
+	is
+		iterator type iterator is spline_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline type spline is 
+				translated_3ds_spline type iterator next;
+			spline transform from trans;
+		end;
+	end;    // transform
+	
+	//      
+	// rendering methods
+	//
+	
+	shape instance is
+		iterator type iterator is spline_list get_iterator;
+		while iterator is_iterating do
+			translated_3ds_spline type spline is 
+				translated_3ds_spline type iterator next;
+			spline instance with
+				steps = static steps;
+			end;
+		end;
+	end;    // instance
+	
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		iterator type iterator is spline_list get_iterator;
+		write "editable mesh:", ;
+		while iterator is_iterating do
+			translated_3ds_spline type spline is 
+				translated_3ds_spline type iterator next;
+			spline print;
+		end;
+		write;
+	end;    // print
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_editable_spline type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_editable_spline type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_editable_spline;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+		// recycle splines
+		//
+		while not spline_list is_empty do
+			translated_3ds_spline type spline is
+				translated_3ds_spline type spline_list removed_first;
+			spline recycle; 
+		end;
+			
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_editable_spline;
+		
+		translated_3ds_editable_spline is none;
+	end;        // recycle
+end;    // translated_3ds_editable_spline
+
+type translated_3ds_editable_splines is translated_3ds_editable_spline type[];

@@ -1,0 +1,130 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           free_camera.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard camera control definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/camera.ores";
+
+subject free_camera
+extends
+	camera
+does
+	// constructor
+	//
+	verb new
+		at vector location = <0 0 0>;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens and focus parameters
+		//
+		scalar field_of_view = 60;
+		scalar distance = 1;
+		
+		// tilt parameters
+		//
+		scalar pitch = 0;
+		scalar yaw = 0;
+		scalar roll = 0;
+	end;
+	
+	// querying methods
+	//
+	objective free_camera type question get_current;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at vector location = <0 0 0>;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	with
+		// camera lens and focus parameters
+		//
+		scalar field_of_view = 60;
+		scalar distance = 1;
+		
+		// tilt parameters
+		//
+		scalar pitch = 0;
+		scalar yaw = 0;
+		scalar roll = 0;
+	is
+		// call superclass constructor
+		//
+		camera new at location towards direction oriented by up_vector with
+		
+			// set camera lens and focus parameters
+			//  
+			field_of_view = static field_of_view;
+			distance = static distance;
+			
+			// set tilt parameters
+			//
+			pitch = static pitch;
+			yaw = static yaw;
+			roll = static roll; 
+		end;
+	end;    // new
+	
+	//
+	// querying methods
+	//
+	
+	objective free_camera type question get_current is
+	
+		// create camera using current global viewing attributes
+		//
+		answer (new free_camera at global eye
+			towards (global lookat - global eye)
+			oriented by <0 0 1>
+		with
+			field_of_view = global field_of_view;
+			distance = vlength of (global lookat - global eye);
+		);
+	end;    // get_current
+	
+	//
+	// rendering methods
+	//
+	
+	shape instance is
+		vector lookat = get_lookat;
+		
+		viewpoint static instance;
+		cone with
+			end1 = location;
+			end2 = lookat;
+			radius1 = 0;
+			radius2 = tan (field_of_view / 2) * distance;
+			render_mode is wireframe;
+			color = white;
+		end;
+	end;    // instance
+			
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		write "free camera at ", get_location, " towards ", get_direction, 
+			" oriented by ", get_up_vector, " with fov = ", field_of_view, ;
+	end;    // print
+end;    // free_camera

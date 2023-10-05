@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        triangular_arrays.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of triangular arrays (of arrays) in the         }
+{       OMAR language.                                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do triangular_arrays_example;
+
+integer i[][];
+
+verb write_array_of_arrays
+	integer i[][];
+is
+	for integer row = min i .. max i do
+		for integer column = min i[row] .. max i[row] do
+			write i[row][column], " ";
+		end;
+		write;
+	end;
+end;    // write_array_of_arrays
+
+verb triangular_arrays_example is
+	
+	// initialize triangular array of arrays
+	//
+	integer index = 1;
+	
+	dim i[1 .. 10];
+	for integer row = min i .. max i do
+		dim i[row][1..row];
+		for integer column = 1 .. row do
+			i[row][column] = index;
+			index = itself + 1;
+		end;
+	end;
+	
+	// print out values of triangular array of arrays
+	//
+	write_array_of_arrays i;
+end;    // triangular_arrays_example

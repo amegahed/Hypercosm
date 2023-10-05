@@ -1,0 +1,50 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          gauge_display.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a gauge display       }
+{       user interface component.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do gauge_display_anim;
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/gauge_display.ores";
+include "system/check_keys.ores";
+
+anim gauge_display_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	verb selection_action is
+		write "selected!", ;
+	end;
+	verb deselection_action is
+		write "deselected!", ;
+	end;
+		
+	gauge_display type gauge_display labelled "Seconds";
+	
+	picture scene is
+		sphere;
+		gauge_display overlay at 10;
+		default_lights;
+		default_background at 100;
+		gauge_display set_value to ((get_seconds / 5) - trunc (get_seconds / 5));
+	end;    // scene
+	
+	gauge_display set_location to <-.8 .8 0>;
+	while true do
+		scene;
+		gauge_display update;
+		check_keys;
+	end;
+end;    // gauge_display_anim

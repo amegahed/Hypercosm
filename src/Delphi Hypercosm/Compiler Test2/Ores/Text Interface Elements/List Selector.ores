@@ -1,0 +1,391 @@
+{***************************************************************}
+{                        List Selector.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a list selector that   }
+{        can respond to mouse clicks and mouse overs.           }
+{        A list selector group is like a group of radio         }
+{        buttons where only one of the group may be selected    }
+{        at a given time.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "Text Selector Group.ores";
+
+
+subject list_selector
+extends
+    drawable object
+does
+    // constructor
+    //
+    verb new
+        using string type items[];
+        at vector location = <0 0 0>;
+    with
+        integer text_size = proportional_text_size;
+        integer text_spacing = 0;
+        h_alignment type h_alignment is left;
+        
+        // default colors
+        color type text_color = white, background = black;
+        color type highlight_color = red, highlight_background = background;
+        color type selected_color = highlight_color, selected_background = background;
+        
+        // callbacks
+        //
+        actionable type mouse_down_action is none;
+        actionable type mouse_up_action is none;
+        actionable type mouse_over_action is none;
+        actionable type mouse_away_action is none;
+    end;
+    
+    // query methods
+    //
+    string type question selected_item;
+    integer question selected_index;
+    
+    // state changing methods
+    //
+    verb set_selected_item
+        to string type item;
+    end;
+    verb set_selected_index
+        to integer index;
+    end;
+    
+    // display method
+    //
+    verb draw;
+has
+    text_selector_group type text_selector_group is none;
+    
+    // callbacks
+    //
+    public actionable type mouse_down_action is none;
+    public actionable type mouse_up_action is none;
+    public actionable type mouse_over_action is none;
+    public actionable type mouse_away_action is none;   
+is
+    abstract subject mouse_action
+    extends
+        actionable object
+    does
+        abstract verb activate;
+    has
+        list_selector type list_selector is none;
+        integer index;
+    end;    // mouse_action
+    
+    
+    subject mouse_down_action
+    extends
+        mouse_action
+    does
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        end;
+        verb activate;
+    is
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        is
+            mouse_action's list_selector is list_selector;
+            mouse_action's index = index;
+        end;    // new
+        
+           
+        verb activate is
+            list_selector set_selected_index to index;
+            
+            if some list_selector's mouse_down_action then
+                list_selector's mouse_down_action activate;
+            end;
+        end;    // activate
+    end;    // mouse_down_action
+    
+
+    subject mouse_up_action
+    extends
+        mouse_action
+    does
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        end;
+        verb activate;
+    is
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        is
+            mouse_action's list_selector is list_selector;
+            mouse_action's index = index;
+        end;    // new
+        
+           
+        verb activate is
+            if some list_selector's mouse_up_action then
+                list_selector's mouse_up_action activate;
+            end;
+        end;    // activate
+    end;    // mouse_up_action
+    
+      
+    subject mouse_over_action
+    extends
+        mouse_action
+    does
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        end;
+        verb activate;
+    is
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        is
+            mouse_action's list_selector is list_selector;
+            mouse_action's index = index;
+        end;    // new
+        
+           
+        verb activate is
+            if some list_selector's mouse_over_action then
+                list_selector set_selected_index to index;
+                list_selector's mouse_over_action activate;
+            end;
+        end;    // activate
+    end;    // mouse_over_action
+
+
+    subject mouse_away_action
+    extends
+        mouse_action
+    does
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        end;
+        verb activate;
+    is
+        verb new
+            to list_selector type list_selector;
+            on integer index;
+        is
+            mouse_action's list_selector is list_selector;
+            mouse_action's index = index;
+        end;    // new
+        
+           
+        verb activate is
+            if some list_selector's mouse_away_action then
+                list_selector's mouse_away_action activate;
+            end;
+        end;    // activate
+    end;    // mouse_away_action
+
+
+    //
+    // constructor
+    //
+    
+    verb new
+        using string type items[];
+        at vector location = <0 0 0>;
+    with
+        integer text_size = proportional_text_size;
+        integer text_spacing = 0;
+        h_alignment type h_alignment is left;
+        
+        // default colors
+        color type text_color = white, background = black;
+        color type highlight_color = red, highlight_background = background;
+        color type selected_color = highlight_color, selected_background = background;
+        
+        // callbacks
+        //
+        actionable type mouse_down_action is none;
+        actionable type mouse_up_action is none;
+        actionable type mouse_over_action is none;
+        actionable type mouse_away_action is none;
+    is
+        text_selector_group type new_item is none;
+        
+        // initialize callbacks
+        //
+        list_selector's mouse_down_action is mouse_down_action;
+        list_selector's mouse_up_action is mouse_up_action;
+        list_selector's mouse_over_action is mouse_over_action;
+        list_selector's mouse_away_action is mouse_away_action;
+        
+        // initialize text selector group
+        //
+        for integer counter = min items .. max items do
+            scalar x = location.x;
+            scalar y = location.y - (counter - 1) * ((text_size + text_spacing) * 1.99 / height);
+            
+            new_item is (new text_selector_group type items[counter] at <x y 0> linked to text_selector_group with
+                text_size = static text_size;
+                text_spacing = static text_spacing;
+                h_alignment is static h_alignment;
+                       
+                // initialize colors
+                //
+                text_color = static text_color;
+                background = static background;
+                highlight_color = static highlight_color;
+                highlight_background = static highlight_background;
+                selected_color = static selected_color;
+                selected_background = static selected_background;
+                
+                // initialize callbacks
+                //
+                mouse_down_action is new mouse_down_action type to list_selector on counter;
+                mouse_up_action is new mouse_up_action type to list_selector on counter;
+                mouse_over_action is new mouse_over_action type to list_selector on counter;
+                mouse_away_action is new mouse_away_action type to list_selector on counter;
+            );
+            
+            if text_selector_group is none then
+                text_selector_group is new_item;
+            end;
+        end;
+    end;    // new
+    
+    //
+    // query methods
+    //
+    string type question selected_item is
+        boolean found is false;
+        text_selector_group type follow is text_selector_group;
+        
+        if some text_selector_group then
+            boolean done is false;
+            
+            while not (done or found) do
+                if follow's selected then
+                    found is true;
+                else
+                    follow is its next;
+                    if follow is text_selector_group then
+                        done is true;
+                    end;
+                end;
+            end;
+        end;
+        
+        if found then
+            answer follow's text;
+        else
+            answer none;
+        end;
+    end;    // selected_item
+    
+    
+    integer question selected_index is
+        boolean found is false;
+        integer index = 0;
+        
+        if some text_selector_group then
+            text_selector_group type follow is text_selector_group;
+            boolean done is false;
+            index = 1;
+            
+            while not (done or found) do
+                if follow's selected then
+                    found is true;
+                else
+                    follow is its next;
+                    index = itself + 1;
+                    if follow is text_selector_group then
+                        done is true;
+                    end;
+                end;
+            end;
+        end;
+        
+        answer index;
+    end;    // selected_index
+    
+    
+    //
+    // state changing methods
+    //
+    
+        
+    verb set_selected_item
+        to string type item;
+    is
+        if some text_selector_group then
+            text_selector_group type follow is text_selector_group;
+            boolean done is false;
+            
+            while not done do
+                if follow's text matches item then
+                    follow select;
+                else
+                    follow deselect;
+                end;
+                
+                follow is its next;
+                if follow is text_selector_group then
+                    done is true;
+                end;
+            end;
+        end;
+    end;    // set_selected_item
+    
+    
+    verb set_selected_index
+        to integer index;
+    is
+        if some text_selector_group then
+            text_selector_group type follow is text_selector_group;
+            boolean done is false;
+            integer counter = 1;
+            
+            while not done do
+                if counter = index then
+                    follow select;
+                else
+                    follow deselect;
+                end;
+                
+                follow is its next;
+                counter = itself + 1;
+                if follow is text_selector_group then
+                    done is true;
+                end;
+            end;
+        end;
+    end;    // set_selected_item
+    
+             
+    //
+    // display method
+    //
+
+    
+    verb draw is
+        if some text_selector_group then
+            text_selector_group type follow is text_selector_group;
+            boolean done is false;
+            
+            while not done do
+                follow draw;
+                follow is its next;
+                if follow is text_selector_group then
+                    done is true;
+                end;
+            end;
+        end;
+    end;    // draw
+end;    // list_selector

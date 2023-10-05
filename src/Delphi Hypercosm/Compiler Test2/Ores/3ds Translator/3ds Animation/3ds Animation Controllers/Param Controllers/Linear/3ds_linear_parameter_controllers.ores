@@ -1,0 +1,19 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  3ds_linear_parameter_controllers.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_linear_float_controller.ores";
+include "system/3ds_linear_point3_controller.ores";
+include "system/3ds_linear_quat_controller.ores";
+include "system/3ds_linear_scale_value_controller.ores";
+include "system/3ds_linear_color_controller.ores";

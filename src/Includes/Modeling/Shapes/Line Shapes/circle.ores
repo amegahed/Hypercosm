@@ -1,0 +1,30 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             circle.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a standard line shape          }
+{       in the form of a circle.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+
+shape circle with
+	integer sides = 24;
+	scalar radius = 1;
+is
+	vector vertex[0..sides];
+
+	for integer counter = 0..sides do
+		scalar theta = (counter / sides) * 360;
+		scalar x = cos theta * radius;
+		scalar y = sin theta * radius;
+		vertex[counter] = <x y 0>;
+	end;
+	
+	line vertex;
+end;    // circle

@@ -1,0 +1,19 @@
+{***************************************************************}
+{                         manipulators.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/translation_manipulator.ores";
+include "system/rotation_manipulator.ores";
+include "system/orientation_manipulator.ores";
+include "system/transformation_manipulator.ores";
+
+

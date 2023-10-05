@@ -1,0 +1,47 @@
+{***************************************************************}
+{                          noise.ores                           }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{              Contains the native noise procedures.            }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+//
+// scalar noise functions
+//
+
+
+native scalar question noise1
+    scalar x;
+end;    // noise1
+native scalar question noise2
+    scalar x, y;
+end;    // noise2
+native scalar question noise
+    vector v;
+end;    // noise
+
+
+//
+// vector noise functions
+//
+
+
+native vector question vnoise1
+    scalar x;
+end;    // vnoise1
+native vector question vnoise2
+    scalar x, y;
+end;    // vnoise2
+native vector question vnoise
+    vector v;
+end;    // vnoise

@@ -1,0 +1,144 @@
+{***************************************************************}
+{                    text_file_resources.ores                   }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{   Contains the text_resource subject, which is a utility for  }
+{   downloading external text files into an applet, and parsing }
+{   them into an array of strings - one string per line.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "native_data_resources.ores";
+
+
+subject text_resource
+extends
+    data_resource
+does
+    verb new
+        named string type name;
+    with
+        string type fingerprints[] is none;
+        boolean bad_fingerprint_is_fatal is true;
+    end;
+
+    // get the lines from the text file.  The return value is an array
+    // of strings - one element per line.  Each string is the text of
+    // that line without the newline or carriage return characters.  If
+    // the line was blank, the string in that element will be none.  If
+    // the file is not downloaded or the file is empty, get_lines will
+    // return none.
+    //
+    strings type question get_lines;
+has
+    boolean parsed is false;
+    strings type lines is none;
+is
+    verb new
+        named string type name;
+    with
+        string type fingerprints[] is none;
+        boolean bad_fingerprint_is_fatal is true;
+    is
+        data_resource new named name with
+            fingerprints is static fingerprints;
+            bad_fingerprint_is_fatal is static bad_fingerprint_is_fatal;
+        end;
+    end;
+
+    strings type question get_lines
+    is
+        if not parsed then
+            download_status type s is download_status;
+            if (s is ready) or (s is ready_bad_fingerprint) then
+                integer len;
+                data_unpacker type unpacker;
+                
+                extract_data to unpacker;
+                len = unpacker length;
+                
+                if len > 0 then
+                    string type rawtext is unpacker unpack_chars length len;
+                    
+                    if some rawtext then
+                        integer start, n;
+                        boolean after_cr is false;
+                        
+                        // count the lines
+                        n = 0;
+                        after_cr is false;
+                        for integer i = min rawtext .. max rawtext do
+                            when rawtext[i] is
+                                "\n":
+                                    if after_cr then
+                                        after_cr is false;
+                                    else
+                                        n = itself + 1;
+                                    end;
+                                end;
+                                "\r":
+                                    n = itself + 1;
+                                    after_cr is true;
+                                end;
+                            else
+                                after_cr is false;
+                                
+                                if i = max rawtext then
+                                    n = itself + 1;
+                                end;
+                            end;
+                        end;
+                        
+                        dim lines[1 .. n];
+                        
+                        // copy the lines
+                        n = 1;
+                        start = min rawtext;
+                        after_cr is false;
+                        for integer i = min rawtext .. max rawtext do
+                            when rawtext[i] is
+                                "\n":
+                                    if after_cr then
+                                        after_cr is false;
+                                    else
+                                        if start < i then
+                                            lines[n] = rawtext[start..(i - 1)];
+                                        end;
+                                        n = itself + 1;
+                                    end;
+                                    
+                                    start = i + 1;
+                                end;
+                                "\r":
+                                    if start < i then
+                                        lines[n] = rawtext[start..(i - 1)];
+                                    end;
+                                    start = i + 1;
+                                    n = itself + 1;
+                                    after_cr is true;
+                                end;
+                            else
+                                after_cr is false;
+                                
+                                if i = max rawtext then
+                                    if start <= i then
+                                        lines[n] = rawtext[start..i];
+                                    end;
+                                    n = itself + 1;
+                                end;
+                            end;
+                        end;
+                    end;
+                end;
+                
+                parsed is true;
+            end;
+        end;
+        
+        answer lines;
+    end;
+end;

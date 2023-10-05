@@ -1,0 +1,61 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           vstatistics.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard statistical functions for        }
+{       vector sets.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/math.ores";
+include "system/sorting.ores";
+
+vector question vsum
+	of vector set[];
+is
+	vector sum = <0 0 0>;
+	
+	for each vector v in set do
+		sum = itself + v;
+	end;
+	
+	answer sum;
+end;    // vsum
+
+vector question vmean
+	of vector set[];
+is
+	answer (vsum of set) / num set;
+end;    // vmean
+
+vector question vvariance
+	of vector set[];
+is
+	vector set_mean = vmean of set;
+	vector sum_of_squares = <0 0 0>;
+	
+	for each vector v in set do
+		sum_of_squares = itself +
+						 <(sqr (v.x - set_mean.x))
+						  (sqr (v.y - set_mean.y))
+						  (sqr (v.z - set_mean.z))>;
+	end;
+	
+	answer sum_of_squares / (num set - 1);
+end;    // vvariance
+
+//
+// standard deviation for a vector set:
+//
+
+vector question vstd_dev
+	of vector set[];
+is
+	vector variance = vvariance of set;
+	
+	answer <(sqrt variance.x) (sqrt variance.y) (sqrt variance.z)>;
+end;    // vstd_dev

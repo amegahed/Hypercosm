@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             arrays.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of array variables in the OMAR language.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_example;
+
+integer n = 3;
+integer numbers[1 .. n];                    // array declaration
+
+scalar question average
+is
+	integer sum = 0;
+	
+	for integer counter = 1 .. n do
+		sum = itself + numbers[counter];    // array dereference
+	end;
+	answer sum / n;
+end;    // average
+
+verb array_example is
+	numbers[1] = 10;                        // array assignments
+	numbers[2] = 30;
+	numbers[3] = 40;
+	
+	for integer counter = min numbers .. max numbers do
+		write "numbers[", counter, "] = ", numbers[counter], ;
+	end;
+	
+	write "average = ", average, ;
+end;    // array_example

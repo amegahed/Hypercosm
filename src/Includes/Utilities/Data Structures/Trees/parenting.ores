@@ -1,0 +1,55 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          parenting.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of parenting behaviors.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/hierarchical.ores";
+
+adjective parented
+does
+	verb add_parent
+		hierarchical type parent;
+	end;
+	
+	// This method returns the parent of a particular tree node.
+	// If the node is the root, then the parent is orphaned and
+	// get_parent returns none.
+	//
+	boolean question has_parents;
+	integer question num_parents;
+	collection type question get_parents;
+	
+	// These methods returns ancestors multiple levels removed.
+	// A parent is one level removed, a grandparent is two levels
+	// removed.  A great grandparent is three levels removed and so 
+	// on up the tree.
+	//
+	boolean question has_ancestors;
+	integer question num_ancestors;
+	collection type question get_ancestors
+		removed integer levels;
+	end;
+end;    // parented
+
+{***************************************************************}
+{           hierarchical interfaces for specific cases          }
+{***************************************************************}
+
+adjective single_child_bearing
+does
+	boolean question has_child;
+	object type question get_child;
+end;    // single_childed_bearing
+
+adjective single_parented
+does
+	boolean question has_parent;
+	object type question get_parent;
+end;    // single_parented

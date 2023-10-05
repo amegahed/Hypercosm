@@ -1,0 +1,92 @@
+{***************************************************************}
+{                        istatistics.ores                   	}
+{                      OMAR Resources (ORES)                    }
+{***************************************************************}
+{                                                               }
+{       Contains some standard statistical functions for       	}
+{		integer sets.											}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+include "system/sorting.ores";
+
+
+//
+// functions for integer sets 
+//
+
+
+integer question isum
+    of integer set[];
+is
+    integer sum = 0;
+    
+    for each integer i in set do
+        sum = itself + i;
+    end;
+    
+    answer sum;
+end;    // isum
+        
+
+integer question iproduct
+    of integer set[];
+is
+    integer product = 1;
+    
+    for each integer i in set do
+        product = itself * i;
+    end;
+    
+    answer product;
+end;    // iproduct
+
+
+scalar question imean
+    of integer set[];
+is
+    answer (isum of set) / num set;
+end;    // imean
+
+
+scalar question imedian
+    of integer set[];
+is
+    integer temp_set[] = set;   // Makes a temporary copy for sorting
+    
+    sort_integers temp_set;
+    
+    if num set mod 2 = 0 then
+        answer (temp_set[min set + num set div 2] +
+                temp_set[min set + num set div 2 - 1]) / 2;
+    else
+        answer temp_set[min set + num set div 2];
+    end;
+end;    // imedian
+
+
+scalar question ivariance
+    of integer set[];
+is
+    scalar set_mean = imean of set;
+    scalar sum_of_squares = 0;
+    
+    for each integer i in set do
+        sum_of_squares = itself + sqr (i - set_mean);
+    end;
+    
+    answer sum_of_squares / (num set - 1);
+end;    // ivariance
+
+
+// standard deviation for an integer set:
+//
+scalar question istd_dev
+    of integer set[];
+is
+    answer sqrt (ivariance of set);
+end;    // istd_dev

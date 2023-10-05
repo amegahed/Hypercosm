@@ -1,0 +1,43 @@
+do translated_3ds_donut_anim;
+
+include "system/3d.ores";
+include "system/3ds_donut.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+shape translated_3ds_donut_scene with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+	time = 1;
+	
+	translated_3ds_donut with
+	    radius1 = 10;
+	    radius2 = 25 + sin(time * 90) * 10;
+	    steps = round (8 * tessellation);
+	    
+	    renderable is true;
+	    thickness = 1;
+	    sides = 6;
+	end;
+end;    // translated_3ds_donut_scene
+	
+	
+anim translated_3ds_donut_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_donut_scene
+		within new static_shape of environment
+	    titled "3DS Donut"
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_donut_anim

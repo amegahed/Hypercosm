@@ -1,0 +1,156 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   3ds_standard_animated_material.ores  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains material definitions that correspond to        }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_standard_material.ores";
+include "system/3ds_animated_material.ores";
+include "system/3ds_point3_controlling.ores";
+include "system/3ds_float_controlling.ores";
+
+subject translated_3ds_standard_animated_material
+extends
+	translated_3ds_animated_material
+does
+	// constructor
+	//
+	verb new with
+		// color controller parameters
+		//
+		translated_3ds_point3_controllable type ambient_color_controller is none;
+		translated_3ds_point3_controllable type diffuse_color_controller is none;
+		translated_3ds_point3_controllable type specular_color_controller is none;
+		translated_3ds_point3_controllable type self_illum_color_controller is none;
+	
+		// scalar controller parameters
+		//        
+		translated_3ds_float_controllable type specular_level_controller is none;
+		translated_3ds_float_controllable type glossiness_controller is none;
+		translated_3ds_float_controllable type soften_controller is none;
+		translated_3ds_float_controllable type opacity_controller is none;
+	end;
+	
+	// getting method
+	//
+	verb eval
+		translated_3ds_standard_material type material;
+		at translated_3ds_time type time;
+	end;
+	
+	// querying method
+	//
+	translated_3ds_material type question to_translated_3ds_material
+		at translated_3ds_time type time;
+	end;
+has
+	// attributes
+	//
+	translated_3ds_point3_controllable type ambient_color_controller is none;
+	translated_3ds_point3_controllable type diffuse_color_controller is none;
+	translated_3ds_point3_controllable type specular_color_controller is none;
+	translated_3ds_point3_controllable type self_illum_color_controller is none;
+
+	// scalar controller attributes
+	//        
+	translated_3ds_float_controllable type specular_level_controller is none;
+	translated_3ds_float_controllable type glossiness_controller is none;
+	translated_3ds_float_controllable type soften_controller is none;
+	translated_3ds_float_controllable type opacity_controller is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new with
+	
+		// color controller parameters
+		//
+		translated_3ds_point3_controllable type ambient_color_controller is none;
+		translated_3ds_point3_controllable type diffuse_color_controller is none;
+		translated_3ds_point3_controllable type specular_color_controller is none;
+		translated_3ds_point3_controllable type self_illum_color_controller is none;
+	
+		// scalar controller parameters
+		//        
+		translated_3ds_float_controllable type specular_level_controller is none;
+		translated_3ds_float_controllable type glossiness_controller is none;
+		translated_3ds_float_controllable type soften_controller is none;
+		translated_3ds_float_controllable type opacity_controller is none;
+	is
+		with translated_3ds_standard_animated_material do
+		
+			// set color controller attributes
+			//
+			its ambient_color_controller is ambient_color_controller;
+			its diffuse_color_controller is diffuse_color_controller;
+			its specular_color_controller is specular_color_controller;
+			its self_illum_color_controller is self_illum_color_controller;
+		
+			// set scalar controller attributes
+			//        
+			its specular_level_controller is specular_level_controller;
+			its glossiness_controller is glossiness_controller;
+			its soften_controller is soften_controller;
+			its opacity_controller is opacity_controller;
+		end;
+	end;    // new
+	
+	//  
+	// getting method
+	//
+	
+	verb eval
+		translated_3ds_standard_material type material;
+		at translated_3ds_time type time;
+	is
+		// evaluate color controllers
+		//
+		if some ambient_color_controller then
+			material's ambient_color = ambient_color_controller get_value at time;
+		end;
+		if some diffuse_color_controller then
+			material's diffuse_color = diffuse_color_controller get_value at time;
+		end;
+		if some specular_color_controller then
+			material's specular_color = specular_color_controller get_value at time;
+		end;
+		if some self_illum_color_controller then
+			material's self_illum_color = self_illum_color_controller get_value at time;
+		end;
+		
+		// evaluate scalar controllers
+		//
+		if some specular_level_controller then
+			material's specular_level = specular_level_controller get_value at time;
+		end;
+		if some glossiness_controller then
+			material's glossiness = glossiness_controller get_value at time;
+		end;
+		if some soften_controller then
+			material's soften = soften_controller get_value at time;
+		end;
+		if some opacity_controller then
+			material's opacity = opacity_controller get_value at time;
+		end;    
+	end;    // eval
+		
+	//
+	// querying methods
+	//
+	
+	translated_3ds_material type question to_translated_3ds_material
+		at translated_3ds_time type time;
+	is
+		translated_3ds_standard_material type material;
+		eval material at time;
+		answer material;
+	end;    // to_translated_3ds_material
+end;    // translated_3ds_standard_animated_material

@@ -1,0 +1,24 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             locating.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some general definitions for locating          }
+{       behavior for 3 dimensional objects.                     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective locateable
+does
+	vector question get_location;
+end;    // locateable
+
+adjective relocateable
+does
+	verb set_location
+		to vector location;
+	end;
+end;    // relocateable

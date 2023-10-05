@@ -1,0 +1,85 @@
+{***************************************************************}
+{                         screen_coords.ores               		}
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{        Contains interface definitions for drawing             }
+{        behaviors.                                             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/pixels.ores";
+
+
+{***************************************************************}
+{		screen coordinates are defined as floating point		}
+{		coordinates from -1 to 1 in both horizontal and			}
+{		vertical directions.									}
+{								^								}
+{								| +								}
+{					-------------------------					}
+{					|<-1, 1>  <0, 1>  <1, 1>|					}
+{					|                       |					}
+{			  - <-- |<-1, 0>  <0, 0>  <1, 0>| --> +				}
+{					|                       |					}
+{					|<-1,-1>  <0,-1>  <1,-1>|					}
+{					-------------------------					}
+{								| -								}
+{								v 								}
+{***************************************************************}
+
+
+type screen_coords is vector;
+
+
+{***************************************************************}
+{				screen coordinate conversion functions			}
+{***************************************************************}
+
+
+screen_coords type question pixel_to_screen_coords
+	of pixel type pixel;
+is
+	scalar x = (pixel's h / screen_width) * 2 - 1;
+	scalar y = 1 - (pixel's v / screen_height) * 2;
+	answer <x y 0>;
+end;	// pixel_to_screen_coords
+
+
+pixel type question screen_coords_to_pixel
+	of screen_coords type screen_coords;
+is
+	integer h = trunc ((screen_coords.x + 1) / 2 * screen_width);
+	integer v = trunc ((1 - (screen_coords.y + 1) / 2) * screen_height);
+	answer new pixel of h by v;
+end;	// screen_coords_to_pixel
+
+
+screen_coords type question pixel_size_to_screen_size
+	of pixel type pixel;
+is
+	scalar x = (pixel's h / screen_width * 2);
+	scalar y = (pixel's v / screen_height * 2);
+	answer <x y 0>;
+end;	// pixel_size_to_screen_size
+
+
+pixel type question screen_size_to_pixel_size
+	of screen_coords type screen_coords;
+is
+	integer h = trunc (screen_coords.x * screen_width / 2);
+	integer v = trunc (screen_coords.y * screen_height / 2);
+	answer new pixel of h by v;
+end;	// screen_size_to_pixel_size
+
+
+
+
+
+
+
+
+

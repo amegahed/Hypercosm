@@ -1,0 +1,175 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             polygons.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains generalized polygon geometry definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/trans.ores";
+include "system/texture_mapping.ores";
+include "system/rendering.ores";
+include "system/printing.ores";
+include "system/mesh_topology.ores";
+include "system/mesh_geometry.ores";
+include "system/native_shapes.ores";
+
+subject polygon_geometry extends mesh_geometry type;
+
+subject polygon
+extends
+	transformable texturable printable object
+does
+	// constructor
+	//
+	verb new
+		of polygon_geometry type polygon_geometry;
+	end;
+
+	// constructing methods
+	//  
+	verb add_hole
+		of polygon_geometry type polygon_geometry;
+	end;
+	
+	// transforming methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+	
+	// texturing methods
+	//
+	verb apply
+		texture_mapping type texture_mapping;
+	end;    // apply
+	
+	// printing methods
+	//
+	verb print;
+has
+	// attributes
+	//
+	list type cycle_list is singly_linked_list;
+	
+	// rendering attributes
+	//
+	public boolean smoothing is true;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of polygon_geometry type polygon_geometry;
+	is
+		cycle_list add polygon_geometry;
+	end;    // new
+	
+	//
+	// constructing methods
+	//  
+	
+	verb add_hole
+		of polygon_geometry type polygon_geometry;
+	is
+		cycle_list append polygon_geometry;
+	end;    // add_hole
+	
+	//      
+	// transforming methods
+	//
+	
+	verb transform
+		from trans type trans;
+	is
+		iterator type iterator is cycle_list get_iterator;
+		while iterator is_iterating do
+			polygon_geometry type polygon_geometry is
+				polygon_geometry type iterator next;
+			polygon_geometry transform from trans;
+		end;
+	end;    // transform
+	
+	//    
+	// texturing methods
+	//
+	
+	verb apply
+		texture_mapping type texture_mapping;
+	is
+		iterator type iterator is cycle_list get_iterator;
+		while iterator is_iterating do
+			polygon_geometry type polygon_geometry is
+				polygon_geometry type iterator next;
+			polygon_geometry apply texture_mapping;
+		end;
+	end;    // apply
+	
+	//
+	// printing methods
+	//
+		
+	verb print is
+		write "polygon with ", cycle_list size - 1, " holes.", ;
+	end;    // print
+end;    // polygon
+
+subject polygons
+extends
+	polygon type[]
+does
+	// transforming methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+	
+	// texturing methods
+	//
+	verb apply
+		texture_mapping type texture_mapping;
+	end;    // apply
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// transforming methods
+	//
+	
+	verb transform
+		from trans type trans;
+	is
+		for each polygon type polygon in polygons do
+			polygon transform from trans;
+		end;
+	end;
+
+	//    
+	// texturing methods
+	//
+	
+	verb apply
+		texture_mapping type texture_mapping;
+	is
+		for each polygon type polygon in polygons do
+			polygon apply texture_mapping;
+		end;
+	end;    // apply
+	
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		for each polygon type polygon in polygons do
+			polygon print;
+		end;
+	end;    // print
+end;    // polygons

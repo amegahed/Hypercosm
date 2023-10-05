@@ -1,0 +1,161 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm   highlighted_multiline_text_sensor    3d      }
+{ |/  \|                       .ores                    To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a text display that    }
+{        can be highlighted when the mouse is over it.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "multiline_text_sensor.ores";
+
+subject highlighted_multiline_text_sensor
+extends
+	multiline_text_sensor
+does
+	// constructor
+	//
+	verb new
+		strings type text;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+		
+		// text colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = yellow, highlight_background = black;
+		
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	end;
+
+	// state changing methods
+	//
+	verb set_color
+		to color type text_color = white;
+		over color type background = black;
+	end;
+	verb set_highlight_color
+		to color type highlight_color = yellow;
+		over color type highlight_background = black;
+	end;
+		
+	// responses redefined
+	//
+	verb mouse_over_response;
+	verb mouse_away_response;
+has
+	// attributes
+	//
+	color type text_color, background;
+	color type highlight_color, highlight_background; 
+is
+	//
+	// constructor
+	//
+
+	verb new         
+		strings type text;
+		at vector location = <0 0 0>;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+		
+		// text colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = yellow, highlight_background = black;
+				
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	is
+		multiline_text_sensor new text at location with
+			text_size = static text_size;
+			text_spacing = static text_spacing;
+			h_alignment is static h_alignment;
+			
+			// text colors
+			//
+			text_color = static text_color;
+			background = static background;
+			
+			// callbacks
+			//
+			mouse_down_action is static mouse_down_action;
+			mouse_up_action is static mouse_up_action;
+			mouse_over_action is static mouse_over_action;
+			mouse_away_action is static mouse_away_action;
+		end;
+		
+		// initialize colors
+		//
+		highlighted_multiline_text_sensor's text_color = text_color;
+		highlighted_multiline_text_sensor's background = background;
+		highlighted_multiline_text_sensor's highlight_color = highlight_color;
+		highlighted_multiline_text_sensor's highlight_background = highlight_background;
+	end;
+	
+	//
+	// state changing methods
+	//
+	
+	verb set_color
+		to color type text_color = white;
+		over color type background = black;
+	is
+		highlighted_multiline_text_sensor's text_color = text_color;
+		highlighted_multiline_text_sensor's background = background;
+		
+		if not mouse_over then
+			multiline_text_sensor static set_color to text_color over background;
+		end;
+	end;    // set_color
+	
+	verb set_highlight_color
+		to color type highlight_color = yellow;
+		over color type highlight_background = black;
+	is
+		highlighted_multiline_text_sensor's highlight_color = highlight_color;
+		highlighted_multiline_text_sensor's highlight_background = highlight_background;
+		
+		if mouse_over then
+			multiline_text_sensor static set_color to highlight_color over highlight_background;
+		end;
+	end;    // set_highlight_color
+	
+	//
+	// responses redefined
+	//
+	   
+	verb mouse_over_response is
+		multiline_text_sensor static set_color to highlight_color over highlight_background;
+		
+		// call parent response
+		//
+		multiline_text_sensor static mouse_over_response;
+	end;    // mouse_over
+	
+	verb mouse_away_response is
+		multiline_text_sensor static set_color to text_color over background;
+		
+		// call parent response
+		//
+		multiline_text_sensor static mouse_away_response;
+	end;    // mouse_away
+end;    // highlighted_multiline_text_sensor

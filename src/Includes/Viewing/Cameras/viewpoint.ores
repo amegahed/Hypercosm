@@ -1,0 +1,90 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            viewpoint.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard camera control definitions.      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/position.ores";
+include "system/rendering.ores";
+
+subject viewpoint
+extends
+	position
+does
+	// constructor
+	//
+	verb new
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	end;
+	
+	// setting methods
+	//
+	verb set_viewpoint
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	is
+		// call superclass constructor
+		//
+		position new at location oriented by 
+			new orientation towards direction oriented by up_vector;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+	
+	verb set_viewpoint
+		at vector location;
+		towards vector direction;
+		oriented by vector up_vector = <0 0 1>;
+	is
+		set_location to location;
+		set_orientation_vectors towards direction oriented by up_vector;    
+	end;    // set_viewpoint
+		
+	//
+	// rendering methods
+	//
+	
+	shape instance is
+		orientation static instance with
+			move to location;
+		end;
+	end;    // instance
+			
+	//  
+	// printing methods
+	//
+	
+	verb print is
+		write "viewpoint at ", get_location, " towards ", get_direction, 
+			" oriented by ", get_up_vector, ;
+	end;    // print
+end;    // viewpoint

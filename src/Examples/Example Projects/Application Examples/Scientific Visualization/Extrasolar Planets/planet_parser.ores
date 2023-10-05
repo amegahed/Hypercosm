@@ -1,0 +1,72 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          planet_parser.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a set of parsers for planet data.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "planet.ores";
+
+planet type question parse_planet
+	from string type string;
+is
+	strings type words is string split by whitespace;
+	scalar degrees, minutes, seconds;
+	answer (new planet named words[2] with
+	
+		// set physical parameters
+		//
+		mass = words[3] to_scalar;
+		color = vrandom from grey to white;
+				
+		// set orbital parameters
+		//
+		major_axis = words[5] to_scalar;
+		eccentricity = words[6] to_scalar;
+		angle = random from 0 to 360;
+		parent_star_mass = words[8] to_scalar;
+		
+		// set right ascension
+		//
+		degrees = words[10] to_scalar;
+		minutes = words[11] to_scalar;
+		seconds = words[12] to_scalar;
+		right_ascension = degrees + (minutes / 60) + (seconds / 3600);        
+		// set declination
+		//        
+		degrees = words[14] to_scalar;
+		minutes = words[15] to_scalar;
+		seconds = words[16] to_scalar;
+		declination = degrees + (minutes / 60) + (seconds / 3600);
+		
+		// set animation parameters
+		//
+		period = words[4] to_scalar;
+		speed = words[7] to_scalar;
+	);
+end;    // parse_planet
+
+planet type[] question parse_planets
+	from strings type strings;
+is
+	planet type planets[];
+	integer start_line_number = 13;
+	integer line_number = start_line_number;
+	integer num_planets = num strings - 13 - 1;
+	// create array of planets
+	//    
+	dim none planets[1 .. num_planets];
+	
+	// parse planets from strings
+	//
+	for integer counter = 1 .. num planets do
+		planets[counter] is parse_planet from strings[start_line_number + counter - 1];
+	end;
+	
+	answer planets;
+end;    // parse_planets

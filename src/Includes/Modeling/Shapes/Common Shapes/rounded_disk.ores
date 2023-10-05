@@ -1,0 +1,43 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         rounded_disk.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       rounded disk.                                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_shapes.ores";
+
+shape rounded_disk with
+	scalar radius = 1;
+	scalar thickness = .5;
+	scalar umin = 0;
+	scalar umax = 360;
+is
+	disk with
+		move to <0 0 (thickness / 2)>;
+		radius = static radius - (thickness / 2);
+		umin = static umin;
+		umax = static umax;
+		normal = <0 0 -1>;
+	end;
+	disk with
+		move to <0 0 (-thickness / 2)>;
+		radius = static radius - (thickness / 2);
+		umin = static umin;
+		umax = static umax;
+	end;
+	torus with
+		outer_radius = radius;
+		inner_radius = radius - thickness;
+		umin = static umin;
+		umax = static umax;
+		vmin = -90;
+		vmax = 90;
+	end;
+end;    // rounded_disk

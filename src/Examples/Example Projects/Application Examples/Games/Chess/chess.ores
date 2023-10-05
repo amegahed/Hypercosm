@@ -1,0 +1,542 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             chess.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the rules of chess.            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/booleans.ores";
+
+enum chess_color is black, white;
+
+chess_color type question enemy_color
+	of chess_color type chess_color;
+is
+	when chess_color is
+		black:
+			answer white;
+		end;
+		white:
+			answer black;
+		end;
+	end;
+end;    // enemy_color
+	 
+abstract subject chess_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	// virtual method
+	// 
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+	// final methods
+	//
+	final verb move
+		to integer row, column; 
+		of chess_piece type chess_pieces[,];
+	end;
+	// chess board querying functions
+	//
+	objective boolean question found_piece 
+		in chess_color type chess_color;
+		at integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;    
+has
+	// attributes
+	//
+	public integer row, column;            // piece location
+	public chess_color type chess_color;         // side piece is on
+	boolean moved is false;                // has piece moved yet 
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece's row = row;
+		chess_piece's column = column;
+		chess_piece's chess_color is chess_color;
+	end;    // new    
+
+	objective boolean question valid_row
+		at integer row;
+	is
+		answer (1 <= row <= 8);
+	end;    // valid_row
+
+	objective boolean question valid_column
+		at integer column;
+	is
+		answer (1 <= column <= 8);
+	end;    // valid_column
+
+	objective boolean question valid_place
+		at integer row, column;
+	is
+		// chess piece must be on board
+		//
+		answer valid_row at row and valid_column at column;
+	end;    // valid_place
+
+	objective boolean question occupied
+		at integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		if valid_place at row column then
+			answer some chess_pieces[row, column];
+		else
+			answer no;
+		end;
+	end;    // occupied
+
+	objective boolean question found_piece 
+		in chess_color type chess_color;
+		at integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		if valid_place at row column then
+			chess_piece type piece is chess_pieces[row, column];
+			if some piece then
+				answer piece's chess_color is chess_color;
+			else
+				answer no;
+			end; 
+		else
+			answer no;
+		end;
+	end;    // found_piece
+
+	objective verb swap
+		integer reference i;
+		and integer reference j;
+	is
+		integer k = i;
+		i = j;
+		j = k;
+	end;    // swap
+
+	objective boolean question row_clear
+		integer row;
+		from integer column1;
+		to integer column2;
+		of chess_piece type chess_pieces[,];
+	is
+		if column2 < column1 then 
+			swap column1 and column2;
+		end;
+		for integer column = column1 + 1 .. column2 - 1 do
+			if occupied at row column of chess_pieces then
+				answer no;
+			end;
+		end; 
+		answer yes;
+	end;    // row_clear 
+			
+		 
+	objective boolean question column_clear
+		integer column;
+		from integer row1;
+		to integer row2;
+		of chess_piece type chess_pieces[,];
+	is
+		if row2 < row1 then 
+			swap row1 and row2;
+		end;
+		for integer row = row1 + 1 .. row2 - 1 do
+			if occupied at row column of chess_pieces then
+				answer no;
+			end;
+		end; 
+		answer yes;
+	end;    // column_clear 
+
+	objective boolean question diagonal_clear
+		from integer row1, column1;
+		to integer row2, column2;
+		of chess_piece type chess_pieces[,];
+	is
+		integer row;
+		if column2 < column1 then 
+			swap column1 and column2;
+			swap row1 and row2;
+		end;
+		if row2 > row1 then
+			row = row1 + 1;
+		else
+			row = row1 - 1;
+		end;
+		for integer column = column1 + 1 .. column2 - 1 do
+			if occupied at row column of chess_pieces then
+				answer no;
+			end;
+			if row2 > row1 then
+				row = itself + 1;
+			else
+				row = itself - 1;
+			end; 
+		end; 
+		answer yes;
+	end;    // diagonal_clear
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		// must move to a valid place on board
+		//
+		if not valid_place at row column then
+			answer no;
+		end;
+ 
+		// must move
+		//
+		if rows = 0 and columns = 0 then
+			answer no;
+		end;
+		// check to see if there is a chess piece interfering 
+		//
+		if rows = 0 then
+			
+			// horizontal move    
+			//
+			if not row_clear row from column to 
+				chess_piece's column of chess_pieces
+			then
+				answer no;
+			end;
+		elseif columns = 0 then
+			// vertical move
+			//
+			if not column_clear column from row to
+				chess_piece's row of chess_pieces
+			then
+				answer no;
+			end;
+		elseif abs rows = abs columns then
+			// diagonal move    
+			//
+			if not diagonal_clear from row column to chess_piece's 
+				row chess_piece's column of chess_pieces
+			then 
+				answer no;
+			end;
+		end;
+		// can not take your own pieces
+		//
+		answer not found_piece in chess_color at row column of 
+			chess_pieces; 
+	end;    // valid_move
+
+	verb move
+		to integer row, column; 
+		of chess_piece type chess_pieces[,];
+	is
+		// update chess board
+		//
+		chess_pieces[chess_piece's row, chess_piece's column] is none; 
+		chess_pieces[row, column] is chess_piece;
+		// update chess piece
+		//
+		chess_piece's row = row;
+		chess_piece's column = column;
+		moved is true;
+	end;    // move
+end;    // chess_piece 
+
+subject pawn_piece
+extends
+	chess_piece
+does
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+is
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece new at row column in chess_color; 
+	end;    // new
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		boolean attacking is found_piece in enemy_color of 
+			chess_color at row column of chess_pieces;
+		// must move to a valid square
+		//    
+		if not chess_piece static valid_move to row column
+			of chess_pieces
+		then
+			answer no;
+		end;
+		if attacking then
+			// must move 1 step forward and 1 to the side
+			//
+			when chess_color is
+				black:
+					answer rows = -1 and abs columns = 1;
+				end;
+				white:
+					answer rows = 1 and abs columns = 1;
+				end;
+			end;
+		else
+			// if not attacking, can not move to the side
+			//
+			if columns <> 0 then
+				answer no;
+			end;    
+			// first move can move 2 steps forward 
+			//
+			when chess_color is
+				black:
+					if moved then
+						answer rows = -1;
+					else
+						answer rows = -1 or rows = -2;
+					end;    
+				end;
+				white:
+					if moved then
+						answer rows = 1;
+					else
+						answer rows = 1 or rows = 2;
+					end;    
+				end;
+			end;
+		end;
+	end;    // valid_move
+end;    // pawn_piece
+
+subject rook_piece
+extends
+	chess_piece
+does
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+is
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece new at row column in chess_color;    
+	end;    // new
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		// must move to a valid square
+		//    
+		if not chess_piece static valid_move to row column
+			of chess_pieces
+		then
+			answer no;
+		end;
+	
+		// can only move horizontally or vertically
+		// 
+		answer rows = 0 or columns = 0;
+	end;    // valid_move
+end;    // rook_piece
+
+subject bishop_piece
+extends
+	chess_piece
+does
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+is
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece new at row column in chess_color; 
+	end;    // new
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		// must move to a valid square
+		//    
+		if not chess_piece static valid_move to row column 
+			of chess_pieces
+		then
+			answer no;
+		end;
+	
+		// can only move diagonally
+		//
+		answer abs rows = abs columns;
+	end;    // valid_move
+end;    // bishop_piece
+
+subject knight_piece
+extends
+	chess_piece
+does
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+is
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece new at row column in chess_color; 
+	end;    // new
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		// must move to a valid square
+		//    
+		if not chess_piece static valid_move to row column 
+			of chess_pieces
+		then
+			answer no;
+		end;
+		// can move in increments of 1 and 2
+		//
+		answer abs rows = 1 and abs columns = 2 or
+			abs columns = 1 and abs rows = 2;
+	end;    // valid_move
+end;    // knight_piece
+
+subject queen_piece
+extends
+	chess_piece
+does
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+is
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece new at row column in chess_color; 
+	end;    // new
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		// must move to a valid square
+		//    
+		if not chess_piece static valid_move to row column 
+			of chess_pieces
+		then
+			answer no;
+		end;
+		// can move horizontally or vertically
+		// 
+		if rows = 0 or columns = 0 then
+			answer yes;
+		end;
+		
+		// can move diagonally
+		//
+		answer abs rows = abs columns;
+	end;    // valid_move
+end;    // queen_piece
+
+subject king_piece
+extends
+	chess_piece
+does
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	end;
+is
+	verb new 
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		chess_piece new at row column in chess_color; 
+	end;    // new
+
+	boolean question valid_move
+		to integer row, column;
+		of chess_piece type chess_pieces[,];
+	is
+		integer rows = row - chess_piece's row;
+		integer columns = column - chess_piece's column;
+		// must move to a valid square
+		//    
+		if not chess_piece static valid_move to row column 
+			of chess_pieces
+		then
+			answer no;
+		end;
+	
+		// can only move 1 space
+		//    
+		answer abs rows <= 1 and abs columns <= 1;
+	end;    // valid_move
+end;    // king_piece

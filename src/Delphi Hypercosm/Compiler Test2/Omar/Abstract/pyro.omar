@@ -1,0 +1,114 @@
+{***************************************************************}
+{                          pyro.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pyro;
+
+
+include "system/3d.ores";
+include "system/check_keys.ores";
+include "system/random.ores";
+include "system/time.ores";
+
+
+const integer particles = 300;
+vector particle_location[1..particles];
+vector particle_velocity[1..particles];
+scalar apogee;
+color type explosion_color = <0 0 0>;
+
+verb init_explosion is
+    const scalar max_velocity = 12;
+
+    for integer counter = 1..particles do
+        particle_location[counter] = <0 0 0>;
+        particle_velocity[counter] = vrandom (<-1 -1 -1> *
+            max_velocity) to (<1 1 1> * max_velocity);
+    end;
+    
+    explosion_color.x = 1;
+    explosion_color.y = random 0 to 1;
+    explosion_color.z = random 0 to (1 - explosion_color.y);
+    write explosion_color,;
+end;    // init_explosion
+
+
+picture shell_picture
+    vector location;
+    boolean explosion;
+is
+    distant_light from <.3 -.5 1>;
+    parallelogram with
+        magnify by 60;
+        material is turf;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 1>;
+        radius = .2;
+    end;
+    if not explosion then
+        sphere with
+            magnify by .2;
+            move to location;
+            color = explosion_color;
+        end;
+    else
+        points particle_location with
+            color = explosion_color * (location.z) / apogee;
+            move to location;
+        end;
+    end;
+end;    // shell_picture
+
+
+verb move_particles is
+    for integer counter = 1..particles do
+        particle_location[counter] = particle_location[counter] +
+            particle_velocity[counter] * get_clamped_frame_duration;
+    end;
+end;    // move_particles
+
+
+anim boom with
+    double_buffer is on;
+    background = black;
+    eye = <0 -25 5>;
+    lookat = <0 0 6>;
+is
+    const vector acceleration = <0 0 -50>;
+    vector location = <0 0 0>;
+    scalar u = 7, v = 35;
+    vector velocity = <(random -u to u) (random -u to u) v>;
+    boolean explosion is false;
+
+    init_explosion;
+    while velocity.z > -v do
+        shell_picture location explosion;
+        check_keys;
+
+        // step dynamics
+        //
+        velocity = itself + acceleration * get_clamped_frame_duration;
+        location = itself + velocity * get_clamped_frame_duration;
+        if (velocity.z) < -u then
+            if explosion is false then
+                apogee = location dot <0 0 1>;
+            end;
+            explosion is true;
+            move_particles;
+        end;
+    end;
+end;    // boom
+
+
+anim pyro is
+    while true do
+        boom;
+    end;
+end;    // pyro

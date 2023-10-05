@@ -1,0 +1,83 @@
+{***************************************************************}
+{                          rocket.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rocket_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape rocket with
+    scalar thrust = 0;
+is
+    shape fin is
+        cone with
+            color = orange;
+            end1 = <1 0 0>;
+            end2 = <5 0 0>;
+            radius1 = 5;
+            radius2 = 2;
+            skew from <5 0 0> to <5 0 -1> about <1 0 0>;
+            scale by .1 along <0 1 0>;
+        end;
+    end;    // fin
+
+
+    shape fuselage is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 25>;
+            radius = 1;
+        end;
+        cone with
+            color = red;
+            end1 = <0 0 25>;
+            end2 = <0 0 35>;
+            radius1 = 1;
+            radius2 = 0;
+        end;
+        fin with
+            move to <0 0 5>;
+        end;
+        fin with
+            move to <0 0 5>;
+            rotate by 120 around <0 0 1>;
+        end;
+        fin with
+            move to <0 0 5>;
+            rotate by 240 around <0 0 1>;
+        end;
+    end;    // fuselage
+
+    fuselage;
+
+    // flame
+    cone with
+        color = yellow;
+        end1 = <0 0 0>;
+        end2 = <0 0 (thrust * -20)>;
+        radius1 = 1;
+        radius2 = 0;
+    end;
+end;    // rocket
+
+
+anim rocket_anim with
+    double_buffer is on;
+    eye = <20 -60 40>;
+    lookat = <0 0 15>;
+    background = black;
+is
+    shape scene is
+        rocket;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // rocket_anim

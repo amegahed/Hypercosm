@@ -1,0 +1,279 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  	    picking.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains some standard utilities that are used          }
+{       to perform picking by projecting a ray from the			}
+{		eye and then using the ray to perform intersection		}
+{		calculations with objects in the scene.					}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_rendering.ores";
+include "system/native_sensing.ores";
+include "system/trans_stacks.ores";
+include "system/viewing.ores";
+include "system/native_devices.ores";
+include "system/intersections.ores";
+include "system/shape_querying.ores";
+
+
+// get_eye_ray constructs a ray from the eye through a location
+// expressed in window coordinates (such as those returned by
+// get_mouse and get_click), and transforms that ray into the current
+// local coordinate space.  It is very useful for determining if the
+// mouse is over an object in the scene.
+
+
+verb get_eye_ray
+    through vector location = get_mouse;
+    at vector reference ray_location;
+    towards vector reference ray_direction;
+with
+    boolean normalize_world_direction is false;
+    trans_state type dest_coord_space is current;
+is
+    vector world_location, world_direction;
+     
+    // this is to abort this method if called from inside
+    // of a shape querying object instance because in that
+    // case, no picture is defined for the eye ray
+    //
+    if shape_querying then
+    	ray_location = <0 0 0>;
+    	ray_direction = <0 0 0>;
+    	return;
+    end;
+    
+    if projection is orthographic then
+        // The ray direction is a constant, because all rays from the
+        // eye to a point are parallel in an orthographic projection.
+        // So, the ray direction is the line of sight converted to the
+        // local coordinate system.  The ray location is the point, in
+        // local coordinates, of the mouse on a plane that is aligned
+        // with the window and centered on the eye.
+        //
+        // The tricky part is getting the location of that point on the
+        // plane.  In non-orthographic modes, we can use the 'project'
+        // native question, however in orthographic mode it doesn't do
+        // what we need.  We must determine the orientation of the
+        // camera, and map the plane of the screen into world
+        // coordinates.  This is magical and strongly tied to the
+        // projection code in the Hypercosm 3D Player.
+        //
+        trans type camera_trans;
+        scalar w, h;
+        scalar x, y;
+        scalar window_aspect_ratio;
+        
+        window_aspect_ratio = (height / width) * aspect_ratio /
+            (screen_height / screen_width);
+        
+        w = sqrt ((sqr field_of_view) /
+                  (1 + (sqr window_aspect_ratio)));
+        h = w * window_aspect_ratio;
+        
+        get_view_trans into camera_trans;
+        
+        world_location = eye +
+            ((camera_trans's x_axis) * (w / 2) * location.x) +
+            ((camera_trans's z_axis) * (h / 2) * location.y);
+        
+        world_direction = lookat - eye;
+    else
+        // Convert the eye, and the vector from the eye to the
+        // location, from world coordinates to the current local
+        // coordinates.  Project returns the vector from the eye to
+        // the location.
+        world_location = eye;
+        world_direction = project location;
+    end;
+    
+    if normalize_world_direction then
+        world_direction = normalized world_direction;
+    end;
+
+    // transform eye ray
+    //
+    ray_location = transformed_point world_location from world to dest_coord_space;
+    ray_direction = transformed_vector world_direction from world to dest_coord_space;
+end;    // get_eye_ray
+
+
+boolean question ray_touches_shape
+    shape target;
+    from vector ray_location;
+    towards vector ray_direction;
+    closer than scalar reference min_t refers to none;
+return
+    at vector point;
+    towards vector normal;
+is
+    scalar first_t;
+    
+    if ray_hits_shape ray_location ray_direction target
+        return at point towards normal
+    then
+        first_t = vlength of (point - ray_location) /
+            vlength of ray_direction;
+        
+        if first_t >= 0 then
+            if min_t refers to none then
+                answer yes;
+            end;
+            
+            if min_t > first_t then
+                min_t = first_t;
+                answer yes;
+            end;
+        end;
+    end;
+    
+    answer no;
+end;    // ray_touches_shape
+
+
+// shape_touched and its fellow questions in this file are designed to
+// aid in determining if the mouse, or a mouse click, is on an object
+// in your scene.  shape_touched is the most general, but it suffers
+// from the performance hit and the bugs in ray_hits_shape.  In some
+// cases, it is the right one to use - try it in your applet.  The
+// other questions are faster and more stable, but only do bounding
+// boxes and bounding spheres, and planes.
+//
+// An example of how to use all these questions is in the sample file
+// OMAR/Detection/picking_demo.omar.
+
+
+boolean question shape_touched
+    shape target;
+    at vector location = get_mouse;
+    closer than scalar reference min_t refers to none;
+return
+    at vector point;
+    towards vector normal;
+is
+    vector ray_location, ray_direction;
+    
+    get_eye_ray through location at ray_location towards ray_direction;
+    answer ray_touches_shape target from ray_location towards ray_direction
+        closer than min_t return at point towards normal;
+end;    // shape_touched
+
+
+// Cube_touched, block_touched and sphere_touched are utilities for
+// doing simple bounding box and bounding sphere tests on a ray from
+// the eye to a location, typically the mouse location or a mouse
+// click location. Cube_touched is generally faster than block_touched.
+
+
+boolean question cube_touched
+    at vector location = get_mouse;
+    closer than scalar reference min_t refers to none;
+is
+    vector ray_location, ray_direction;
+    get_eye_ray through location at ray_location towards ray_direction;
+    answer ray_hits_cube from ray_location towards ray_direction closer than min_t;
+end;    // cube_touched
+
+
+boolean question block_touched
+    at vector location = get_mouse;
+    closer than scalar reference min_t refers to none;
+with
+    vector vertex = <(-1) (-1) (-1)>;
+    vector side1 = <2 0 0>;
+    vector side2 = <0 2 0>;
+    vector side3 = <0 0 2>;
+is
+    vector ray_location, ray_direction;
+    get_eye_ray through location at ray_location towards ray_direction;
+    answer (ray_hits_block from ray_location towards ray_direction closer than min_t with
+        vertex = static vertex;
+        side1 = static side1;
+        side2 = static side2;
+        side3 = static side3;
+    );
+end;    // block_touched
+
+
+boolean question bounds_touched
+	of trans type trans = unit_trans;
+	at vector location = get_mouse;
+	closer than scalar reference min_t refers to none;
+is
+	vector ray_location, ray_direction;	
+    get_eye_ray through location at ray_location towards ray_direction;
+	answer (ray_hits_bounds trans 
+		from ray_location towards ray_direction closer than min_t);
+end;	// bounds_touched
+
+
+boolean question sphere_touched
+    at vector location = get_mouse;
+    closer than scalar reference min_t refers to none;
+with
+    vector center = <0 0 0>;
+    scalar radius = 1;
+is
+    vector ray_location, ray_direction;
+    get_eye_ray through location at ray_location towards ray_direction;
+    answer (ray_hits_sphere from ray_location towards ray_direction closer than min_t with
+        center = static center;
+        radius = static radius;
+    );
+end;    // sphere_touched
+
+
+boolean question plane_touched
+    at vector location = get_mouse;
+    closer than scalar reference min_t refers to none;
+with
+    vector origin = <0 0 0>;
+    vector x_axis = <1 0 0>;
+    vector y_axis = <0 1 0>;
+    
+    boolean restrict_to_bounds is false;
+    vector min_bounds = <-1 -1 0>;  // these bounds are tested against the
+    vector max_bounds = <1 1 0>;    // plane_location, which is in the form <x y 0>.
+return
+    vector plane_location;
+is
+    vector ray_location, ray_direction;
+    get_eye_ray through location at ray_location towards ray_direction;
+    answer (ray_hits_plane from ray_location towards ray_direction closer than min_t with
+        origin = static origin;
+        x_axis = static x_axis;
+        y_axis = static y_axis;
+        restrict_to_bounds is static restrict_to_bounds;
+        min_bounds = static min_bounds;
+        max_bounds = static max_bounds;
+        return plane_location
+    );
+end;    // plane_touched
+
+
+boolean question xy_plane_touched
+    at vector location = get_mouse;
+    closer than scalar reference min_t refers to none;
+with
+    boolean restrict_to_bounds is false;
+    vector min_bounds = <-1 -1 0>;  // these bounds are tested against the
+    vector max_bounds = <1 1 0>;    // plane_location, which is in the form <x y 0>.
+return
+    vector plane_location;
+is
+    vector ray_location, ray_direction;
+    get_eye_ray through location at ray_location towards ray_direction;
+    answer (ray_hits_xy_plane from ray_location towards ray_direction closer than min_t with
+        restrict_to_bounds is static restrict_to_bounds;
+        min_bounds = static min_bounds;
+        max_bounds = static max_bounds;
+        return plane_location
+    ); 
+end;    // xy_plane_touched

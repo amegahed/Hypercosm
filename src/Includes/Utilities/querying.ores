@@ -1,0 +1,58 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            querying.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard type related utilities.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/strings.ores";
+
+adjective boolean_queryable
+does
+	boolean question get_value;
+end;    // boolean_queryable
+
+adjective char_queryable
+does
+	char question get_value;
+end;    // char_queryable
+
+adjective integer_queryable
+does
+	integer question get_value;
+end;    // integer_queryable
+
+adjective lont_queryable
+does
+	long question get_value;
+end;    // long_queryable
+
+adjective scalar_queryable
+does
+	scalar question get_value;
+end;    // scalar_queryable
+
+adjective double_queryable
+does
+	double question get_value;
+end;    // double_queryable
+
+adjective complex_queryable
+does
+	complex question get_value;
+end;    // complex_queryable
+
+adjective vector_queryable
+does
+	vector question get_value;
+end;    // vector_queryable
+
+adjective string_queryable
+does
+	 string type question get_value;
+end;    // string_queryable

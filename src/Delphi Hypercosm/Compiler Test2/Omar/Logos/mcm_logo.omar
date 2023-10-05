@@ -1,0 +1,291 @@
+{***************************************************************}
+{                          mcm_logo.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do mcm_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/galaxy.omar";
+include "system/smokey_train.omar";
+include "system/sr71.omar";
+include "system/ash_tree.omar";
+include "system/wave.omar";
+include "system/saucer.omar";
+include "system/house.omar";
+include "system/alpha.omar";
+
+
+shape bubble is
+    sphere with
+        radius = 1;
+    end;
+    sphere with
+        radius = .9;
+    end;
+end;    // bubble
+
+
+shape train_bubble is
+    scalar angle = 15;
+
+    transparent white sphere;
+    smokey_train with
+        magnify by .01;
+        move to <0 0 (-sin angle)>;
+    end;
+    disk with
+        material is chalk colored light brown;
+        move to <0 0 (-sin angle)>;
+        radius = cos angle;
+    end;
+end;    // train_bubble
+
+
+shape sr71_bubble is
+    transparent white sphere;
+    sr71 with
+        material is metal colored white;
+        thrust = 1;
+        magnify by .0075;
+    end;
+end;    // sr71_bubble
+
+
+shape tree_bubble is
+    scalar angle = 30;
+
+    transparent white sphere;
+    ash_tree with
+        magnify by .7;
+        move to <0 0 (-sin angle)>;
+    end;
+    flat speckled dark green disk with
+        move to <0 0 (-sin angle)>;
+        radius = cos angle;
+    end;
+end;    // tree_bubble
+
+
+shape wave_bubble is
+    transparent white sphere;
+    wave type's form with
+        material is metal colored light blue;
+        steps = 8;
+        scale by .5 along <0 0 1>;
+    end;
+end;    // wave_bubble
+
+
+{
+shape clock_bubble is
+    scalar a = 45;
+
+    transparent white sphere;
+    clock with
+        material is golden;
+        magnify by .375;
+        move to 0 0 (-sin a);
+    end;
+    disk with
+        material is chalk colored light brown;
+        move to 0 0 (-sin a);
+        radius = cos a;
+    end;
+end;    {clock_bubble}
+
+
+shape microscope_bubble is
+    scalar a = 45;
+
+    transparent white sphere;
+    microscope with
+        material is golden;
+        magnify by .14;
+        rotate by 120 around 0 0 1;
+        move to 0 0 (-sin a);
+    end;
+    disk with
+        material is chalk colored light brown;
+        move to 0 0 (-sin a);
+        radius = cos a;
+    end;
+end;    {microscope_bubble}
+
+
+shape woman_bubble is
+    scalar a = 45;
+
+    transparent white sphere;
+    woman with
+        magnify by .05;
+        param = .25;
+        rotate by 120 around 0 0 1;
+        move to 0 0 (-sin a);
+    end;
+    disk with
+        material is chalk colored light brown;
+        move to 0 0 (-sin a);
+        radius = cos a;
+    end;
+end;    {woman_bubble}
+
+
+shape dragonfly_bubble is
+    scalar a = 0;
+
+    transparent white sphere;
+    ant with
+        magnify by .075;
+        rotate by 120 around 0 0 1;
+        move to 0 0 (-sin a);
+    end;
+    brown disk with
+        material is chalk colored light brown;
+        move to 0 0 (-sin a);
+        radius = cos a;
+    end;
+end;    {dragonfly_bubble}
+}
+
+
+shape saucer_bubble is
+    scalar a = 15;
+
+    transparent white sphere;
+    saucer with
+        material is plastic colored red;
+        move to <0 0 .3>;
+        magnify by .75;
+        rotate by 120 around <0 0 1>;
+        move to <0 0 (-sin a)>;
+    end;
+    disk with
+        material is chalk colored light brown;
+        move to <0 0 (-sin a)>;
+        radius = cos a;
+    end;
+end;    // saucer_bubble
+
+
+shape house_bubble is
+    scalar angle = 15;
+
+    transparent white sphere;
+    house with
+        material is chalk colored yellow;
+        magnify by .35;
+        move to <0 0 (-sin angle)>;
+    end;
+    flat speckled dark green disk with
+        move to <0 0 (-sin angle)>;
+        radius = cos angle;
+    end;
+end;    // house_bubble
+
+
+shape glass_spheres with
+    integer number = 6;
+is
+    for integer counter = 1..number do
+        scalar angle = counter / number * 360;
+        scalar x = cos angle * 2;
+        scalar z = sin angle * 2;
+        scalar y = 0;
+
+        if counter = 1 then
+            train_bubble with
+                rotate by 30 around <0 0 1>;
+                rotate by 30 around <1 0 0>;
+                move to <x y z>;
+            end;
+        elseif counter = 2 then
+            sr71_bubble with
+                rotate by 60 around <0 0 1>;
+                rotate by 30 around <1 0 0>;
+                move to <x y z>;
+            end;
+        elseif counter = 3 then
+            tree_bubble with
+                rotate by 30 around <1 0 0>;
+                move to <x y z>;
+            end;
+        elseif counter = 4 then
+            wave_bubble with
+                rotate by 30 around <0 0 1>;
+                rotate by 30 around <1 0 0>;
+                move to <x y z>;
+            end;
+        elseif counter = 5 then
+            house_bubble with
+                rotate by 30 around <0 0 1>;
+                rotate by 30 around <1 0 0>;
+                move to <x y z>;
+            end;
+        else
+            saucer_bubble with
+                rotate by 30 around <1 0 0>;
+                move to <x y z>;
+            end;
+        end;
+    end;
+end;    // glass_spheres
+
+
+shader spectrum
+is
+    scalar x, t;
+
+    {
+        x = location dot 1 0 0;
+        t = (x + 15) / 30;
+        spectrum_color = (1 - t) 0 t;
+        }
+
+    if (location dot <0 1 0>) < -.9 then
+        answer white;
+    else
+        x = location dot <1 0 0>;
+        t = (x + 15) / 30;
+        answer <(1 - t) 0 t>;
+    end;
+end;    // spectrum
+
+
+shape mcm_logo is
+
+    galaxy with
+        rotate by 30 around <1 0 0>;
+    end;
+    glass_spheres with
+        magnify by 5;
+        move to <0 5 0>;
+    end;
+end;    // mcm_logo
+
+
+picture mcm_picture
+    args type args;
+with
+    eye = <0 -40 2>;
+    // lookat = 0 0 2;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    max_refractions = 12;
+    shadows is on;
+    width = trunc (height * .75);
+    args check;
+is
+    distant_light from <.3 -1 .5> with
+        brightness = 1.25;
+    end;
+    mcm_logo;
+end;    // mcm_picture

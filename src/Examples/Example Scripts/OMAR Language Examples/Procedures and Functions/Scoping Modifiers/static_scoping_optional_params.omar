@@ -1,0 +1,32 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm  static_scoping_optional_params.omar   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the "static"           }
+{       scoping modifier in the OMAR language.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do static_scoping_example;
+
+verb write_integer with
+	integer i = 0;
+is
+	write "i = ", i, ;
+end;    // write_integer
+
+verb static_scoping_example is
+	integer i = 10;
+	// This method call uses the static scoping modifier to
+	// assign variables of the same name from two different
+	// scopes.  In this case, we use the "static" keyword to
+	// bypass the dynamic scope of the procedure call and
+	// get at the static scope of the calling context
+	//
+	write_integer with
+		i = static i;
+	end;
+end;    // static_scoping_example

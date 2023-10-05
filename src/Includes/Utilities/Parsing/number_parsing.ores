@@ -1,0 +1,144 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          number_parsing.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a selection of text parsing utilities          }
+{       for parsing numbers.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/string_parsing.ores";
+include "system/string_conversions.ores";
+
+integer question get_number_text_length
+	// text position
+	//
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch;
+	integer counter = 0;
+	
+	parse_char ch at column char_number on line line_number of text; 
+	while numerical ch and ch isn't null do
+		counter = itself + 1;
+		parse_char ch at column char_number on line line_number of text;
+	end;
+	
+	answer counter;
+end;    // get_number_text_length
+
+verb parse_number_string
+	string type reference string;
+
+	// text position
+	//    
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	integer string_length;
+
+	// initialize string
+	//
+	string is none;
+		
+	// scan through whitespace
+	//
+	scan_through_whitespace at column char_number on line line_number of text;
+	
+	// lookahead
+	//
+	string_length = get_number_text_length 
+		at column char_number on line line_number of text;
+				
+	// scan through chars
+	//   
+	if string_length > 0 then
+		dim string[1 .. string_length];
+		
+		for integer counter = 1 .. string_length do
+			char ch;
+			
+			parse_char ch at column char_number on line line_number of text;
+			string[counter] is ch;
+		end; 
+	end;
+end;    // parse_number_string
+
+verb parse_integer
+	integer reference i;
+
+	// text position
+	//    
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	string type string;
+	parse_number_string string at column char_number on line line_number of text;
+	i = string_to_integer of string;
+end;    // parse_integer
+
+integer question get_next_integer
+
+	// text position
+	//    
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	string type string;
+	parse_number_string string at column char_number on line line_number of text;
+	answer string_to_integer of string;
+end;    // get_next_integer
+
+verb parse_scalar
+	scalar reference s;
+
+	// text position
+	//    
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	string type string;
+	parse_string string at column char_number on line line_number of text;
+	s = string_to_scalar of string;
+end;    // parse_scalar
+
+scalar question get_next_scalar
+
+	// text position
+	//    
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	string type string;
+	parse_string string at column char_number on line line_number of text;
+	answer string_to_scalar of string;
+end;    // get_next_scalar

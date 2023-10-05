@@ -1,0 +1,64 @@
+{***************************************************************}
+{                          blob.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/args.ores";
+
+
+shape p_orbital is
+    blob [<0 0 -.5> <0 0 .5>] with
+        radii = [.75 .75];
+        strengths = [1 1];
+        threshold = .6;
+    end;
+end;    // p_orbital
+
+
+picture test
+    args type args;
+with
+    eye = <1 -3 2>;
+    facets = 0;
+    render_mode is shaded;
+    background = black;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+    args check;
+is
+    distant_light from <.1 -.3 1> with
+        brightness = .75;
+    end;
+    distant_light from <-.3 -.5 .75> with
+        brightness = .5;
+    end;
+
+
+    torus with
+        inner_radius = .9;
+        material is metal colored white;
+    end;
+    blob [<-.5 0 0> <.5 0 0> <0 -.5 0>
+        <0 .5 0> <0 0 .5> <0 0 -.5>]
+    with
+        radii = [.5 .5 .5 .5 .5 .5];
+        strengths = [1 1 1 1 1 1];
+        threshold = .4;
+        material is metal colored light orange;
+    end;
+
+     plane with
+        move to <0 0 -1>;
+        material is plastic colored white;
+     end;
+end;    // test

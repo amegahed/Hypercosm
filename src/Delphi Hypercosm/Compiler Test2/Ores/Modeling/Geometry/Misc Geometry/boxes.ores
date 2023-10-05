@@ -1,0 +1,106 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm      	    boxes.ores	 				3d      }
+{ |/  \|					    	  					To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of non axis aligned box 			}
+{		shaped	regions.										}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+	
+subject box
+does
+	// constructor
+	//
+	verb new
+		of vector vertices[1 .. 8] is none;
+	end;
+	
+	// querying methods
+	//
+	vector[] question get_vertices;		// returns 8 vertices
+	vector[,] question get_edges;		// returns 12 pairs of vertices
+	vector[,] question get_faces;		// returns 6 groups of 4 vertices
+has
+	public vector vertices[1 .. 8];
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of vector vertices[1 .. 8] is none;
+	is
+		if some vertices then
+			box's vertices is vertices;
+		end;
+	end;	// new
+	
+
+	//
+	// querying methods
+	//
+	
+	
+	vector[] question get_vertices is
+		answer vertices;
+	end;	// get_vertices
+	
+	
+	vector[,] question get_edges is
+		vector edges[1 .. 12, 1 .. 2];
+		
+		verb set_edge
+			integer index;
+			from integer index1;
+			to integer index2;
+		is
+			edges[index, 1] = vertices[index1];
+			edges[index, 2] = vertices[index2];
+		end;	// set_edge
+		
+		set_edge 1 from 1 to 2;
+		set_edge 2 from 2 to 3;
+		set_edge 3 from 3 to 4;
+		set_edge 4 from 4 to 1;
+		set_edge 5 from 5 to 6;
+		set_edge 6 from 6 to 7;
+		set_edge 7 from 7 to 8;
+		set_edge 8 from 8 to 5;
+		set_edge 9 from 1 to 5;
+		set_edge 10 from 2 to 6;
+		set_edge 11 from 3 to 7;
+		set_edge 12 from 4 to 8;
+		
+		answer edges;
+	end;	// get_edges
+	
+
+	vector[,] question get_faces is
+		vector faces[1 .. 6, 1 .. 4];
+
+		verb set_face
+			integer index;
+			to integer index1, index2, index3, index4;
+		is
+			faces[index, 1] = vertices[index1];
+			faces[index, 2] = vertices[index2];
+			faces[index, 3] = vertices[index3];
+			faces[index, 4] = vertices[index4];
+		end;	// set_edge
+		
+		set_face 1 to 1 2 3 4;
+		set_face 2 to 8 7 6 5;
+		set_face 3 to 1 2 6 5;
+		set_face 4 to 2 3 7 6;
+		set_face 5 to 3 4 8 7;
+		set_face 6 to 4 1 5 8;
+		
+		answer faces;
+	end;	// get_faces
+end;	// box

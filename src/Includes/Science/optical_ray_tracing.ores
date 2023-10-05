@@ -1,0 +1,121 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       optical_ray_tracing.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for simulating         }
+{       optical experiments.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/arrows.ores";
+
+color type spectrum[] is [red orange yellow green blue violet];
+scalar spectrum_indices[] is [1.6 1.7 1.8 1.9 2.0 2.1];
+
+vector question refraction
+	of vector direction;
+	about vector normal;
+with
+	scalar index_of_refraction = 2;
+is
+	vector parallel_direction = direction parallel normal;
+	vector perpendicular_direction = direction perpendicular normal;
+
+	answer parallel_direction + (perpendicular_direction / index_of_refraction);
+end;    // refraction
+
+vector[] question refract_intersections
+	at vector location;
+	towards vector reference direction;
+	about shape thing;
+with
+	scalar index_of_refraction = 2;
+	integer max_levels = 5;
+is
+	vector intersections[];
+	integer refraction_level = 0;
+	boolean done is false;
+	vector points[1 .. max_levels];
+	vector normal;
+
+	while refraction_level < max_levels and not done do
+		if (ray_hits_shape location direction thing
+			return at location towards normal)
+		then
+			refraction_level = itself + 1;
+			points[refraction_level] = location;
+			direction = (refraction of direction about normal with
+				index_of_refraction = static
+				index_of_refraction);
+			index_of_refraction = 1 / itself;
+		else
+			done is true;
+		end;
+	end;
+
+	// copy refraction points into intersection array
+	//
+	if refraction_level > 0 then
+		dim intersections[1 .. refraction_level];
+		intersections = points[1 .. refraction_level];
+	end;
+
+	answer intersections;
+end;    // refract_intersections
+
+shape arrow_rays
+	at vector intersections[];
+with
+	boolean inside is true;
+	color type inside_color = light blue;
+	color type outside_color = white;
+is
+	vector start_vertex = intersections[min intersections];
+	color type ray_color;
+
+	for integer counter = min intersections + 1 .. max intersections do
+		vector end_vertex = intersections[counter];
+
+		if inside then
+			ray_color = inside_color;
+		else
+			ray_color = outside_color;
+		end;
+		arrow from start_vertex to end_vertex with
+			color = ray_color;
+		end;
+		inside is not inside;
+		start_vertex = end_vertex;
+	end;
+end;    // arrow_rays
+
+shape arrow_ray_intersections
+	of shape thing;
+	at vector point;
+	towards vector direction;
+with
+	scalar index_of_refraction = 2;
+	color type outside_color = white;
+	color type inside_color = light blue;
+is
+	vector intersections[] is (refract_intersections
+		at point towards direction about thing with
+		index_of_refraction = static index_of_refraction);
+	
+	if some intersections then
+		vector last_point = intersections[max intersections];
+		arrow_rays at intersections with
+			outside_color = static outside_color;
+			inside_color = static inside_color;
+		end;
+		arrow from last_point to last_point + direction with
+			color = outside_color;
+		end;
+	end;
+end;    // arrow_ray_intersections

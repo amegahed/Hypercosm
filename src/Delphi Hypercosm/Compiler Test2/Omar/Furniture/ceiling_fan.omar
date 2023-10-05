@@ -1,0 +1,100 @@
+{***************************************************************}
+{                       ceiling_fan.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ceiling_fan_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+subject ceiling_fan
+extends
+    timed_actor
+does
+    shape instance;
+is
+    material type fan_material is plastic colored white;
+
+
+    objective shape blade with
+        scalar radius = 1;
+        scalar width = .15;
+    is
+        extrude [[0 .5] [.75 1] [1 0] [.75 -1] [0 -.5]] along <0 0 1>
+        with
+            material is wood_veneer;
+            scale by width along <0 1 0>;
+            scale by radius along <1 0 0>;
+            scale by .05 along <0 0 1>;
+        end;
+    end;    // blade
+
+
+    objective shape blades with
+        integer number = 3;
+        scalar pitch = 10;
+    is
+        for integer counter = 1 .. number do
+            blade with
+                rotate by pitch around <1 0 0>;
+                rotate by (counter / number * 360) around <0 0 1>;
+            end;
+        end;
+    end;    // blades
+
+
+    objective shape form with
+        scalar angle = 0;
+        scalar height = 1;
+    is
+        sphere with
+            radius = .25;
+            vmin = -90;
+            vmax = 0;
+        end;
+        cylinder with
+            material is aluminum;
+            end1 = <0 0 0>;
+            end2 = <0 0 (-height)>;
+            radius = .05;
+        end;
+        sphere with
+            radius = .25;
+            scale by .5 along <0 0 1>;
+            move to <0 0 (-height)>;
+        end;
+        blades with
+            move to <0 0 (-height)>;
+            rotate by angle around <0 0 1>;
+        end;
+    end;    // form
+
+
+    shape instance is
+        form with
+            material is fan_material;
+            angle = time * 360;
+        end;
+    end;    // instance
+end;    // ceiling_fan
+
+
+anim ceiling_fan_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    double_buffer is on;
+    args check;
+is
+    ceiling_fan type ceiling_fan;
+
+    mouse_controlled_actor ceiling_fan;
+end;    // ceiling_fan_anim

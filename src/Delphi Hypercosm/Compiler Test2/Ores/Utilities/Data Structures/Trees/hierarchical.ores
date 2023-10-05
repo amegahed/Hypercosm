@@ -1,0 +1,54 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	     hierarchical.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains general definitions of hierarchical            }
+{       types.                                                  }
+{                                                               }
+{		These interfaces define general hierarchical 			}
+{		behaviors.  Specific implementations may have			}
+{		different implementations.  							}
+{																}
+{		For example, a tree can return a collection of 			}
+{		children.  The specific type of collection depends		}
+{		upon the specific tree implementation.  One tree 		}
+{		may have a list of children while another has an 		}
+{		array of children.										}
+{																}
+{		The specific implementation used may depend upon 		}
+{		different implementation factors such as how often		}
+{		the tree is changed and other issues.					}
+{																}
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/collections.ores";
+
+
+adjective hierarchical
+does
+	// construction methods
+	//
+	verb add_child
+		object type child;
+	end;
+	
+	// querying methods
+	//
+    boolean question has_children;
+    integer question num_children;
+    collection type question get_children;
+    iterator type question children_iterator;
+
+    // This method returns a collection of descendents
+    // which includes the children, the children's children,
+    // and so on.
+    //
+    integer question num_descendents;
+    collection type question get_descendents;
+    iterator type question descendent_iterator;
+end;    // hierarchical

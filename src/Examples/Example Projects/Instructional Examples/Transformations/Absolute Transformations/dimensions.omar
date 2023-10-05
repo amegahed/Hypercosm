@@ -1,0 +1,76 @@
+{***************************************************************}
+{                          dimensions.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do dimensions_anim;
+
+include "system/3d.ores";
+include "system/abs_trans.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.ores";
+include "system/snowman.omar";
+
+shape dimensions_scene with
+	scalar time = 0;
+is
+	static material type material1 is glass colored white;
+	static material type material2 is glass colored red;
+	scalar h1 = 3.6 * .5;
+	scalar h2 = .6 + .3 * sin (time * 90);
+	snowman with
+		magnify by .5;
+		material is material1;
+		edges is silhouette;
+		render_mode is shaded_line;
+	end;
+	
+	snowman with 
+		material is material2;
+		edges is silhouette;
+		render_mode is shaded_line;
+	return with
+	
+		// apply the "dimensions" transformation
+		//
+		dimensions of <h2 h2 h2>;
+	end;
+	// annotations
+	//
+	block with
+		move to <0 0 1>;
+		magnify by h2 / 2;
+		color = white;
+		render_mode is wireframe;
+	end;
+	line [<0 0 h1> <.8 0 h1>];
+	line [<0 0 h2> <.6 0 h2>];
+	double_arrow from <.6 0 0> to <.6 0 h2> with
+		arrow_head_length = itself * 2;
+	end;
+	double_arrow from <.8 0 0> to <.8 0 h1>;
+	overlay_text "dimensions of <vector size>;" at <0 .85 0>;
+	{
+	futura_l_word "DIMENSIONS" with
+		rotate by 90 around <1 0 0>;
+		move to <-1 0 .75>;
+	end;
+	}
+end;    // dimensions_scene
+	
+	
+anim dimensions_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	mouse_controlled_animated_shape dimensions_scene;
+end;    // dimensions_anim

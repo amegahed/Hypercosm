@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         bitwise_array.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       N dimensional array utilities.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do test;
+
+include "system/booleans.ores";
+include "system/bitwise_array.ores";
+
+verb test is
+	bitwise_array type array;
+	bitwise_array type array2;
+	boolean bits[];
+	
+	array set_value of 1 to true;
+	array set_value of 5 to true;
+	array set_value of 20 to true;
+	array set_value of 24 to true;
+	
+	array2 = array;
+	array2 print;
+	
+	{
+	bits is array get;  
+	for integer counter = 1 .. array get_size do
+		if bits[counter] then
+			write "bits[", counter, "] = true", ;
+		else
+			write "bits[", counter, "] = false", ;
+		end;
+	end;
+	}
+end;    // test

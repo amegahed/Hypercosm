@@ -1,0 +1,275 @@
+{***************************************************************}
+{                          mixer.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do mixer_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/pipes.ores";
+include "system/futura_l.omar";
+
+
+subject mixer
+extends
+    timed_actor
+does
+    verb new with
+        boolean left is true;
+        boolean right is true;
+        string type left_label;
+        string type right_label;
+        boolean closed is true;
+
+        // color parameters
+        //
+        color type left_color = orange;
+        color type right_color = light blue;
+        color type mixer_color = red;
+
+        // animated plumbing parameters
+        //
+        scalar pipe_radius = .2;
+        scalar globule_radius = .15;
+        scalar spacing = .5;
+        scalar rpm = 60;
+    end;    // new
+
+    verb act;
+    shape instance;
+has
+    // mixer attributes
+    //
+    boolean left, right;
+    string type left_label, right_label;
+    boolean closed;
+
+    // color parameters
+    //
+    color type left_color, right_color, mixer_color;
+
+    // animated plumbing parameters
+    //
+    scalar pipe_radius, globule_radius;
+    scalar spacing, rpm;
+    spinning_shape type spinning_stirrer is none;
+is
+    objective shape stirrer is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .5>;
+            radius = .1;
+        end;
+        disk with
+            radius = .2;
+            rotate by 90 around <1 0 0>;
+            move to <.2 0 .5>;
+        end;
+        disk with
+            radius = .2;
+            rotate by 90 around <1 0 0>;
+            move to <-.2 0 .5>;
+        end;
+    end;    // stirrer
+
+
+    verb new with
+        boolean left is true;
+        boolean right is true;
+        string type left_label;
+        string type right_label;
+        boolean closed is true;
+
+        // color parameters
+        //
+        color type left_color = orange;
+        color type right_color = light blue;
+        color type mixer_color = red;
+
+        // animated plumbing parameters
+        //
+        scalar pipe_radius = .2;
+        scalar globule_radius = .15;
+        scalar spacing = .5;
+        scalar rpm = 60;
+    is
+        // initialize mixer's attributes
+        //
+        mixer's left is left;
+        mixer's right is right;
+        mixer's left_label is left_label;
+        mixer's right_label is right_label;
+        mixer's closed is closed;
+
+        // initialize mixer's color attributes
+        //
+        mixer's left_color = left_color;
+        mixer's right_color = right_color;
+        mixer's mixer_color = mixer_color;
+
+        // initialize mixer's plumbing parameters
+        mixer's pipe_radius = pipe_radius;
+        mixer's globule_radius = globule_radius;
+        mixer's spacing = spacing;
+        new spinning_stirrer in form of stirrer with
+            rpm = static rpm;
+        end;
+    end;    // new
+
+
+    verb act is
+        update;
+        spinning_stirrer act;
+    end;    // act
+
+
+    objective shape tank with
+        scalar tank_top = 1;
+        scalar tank_height = .75;
+        scalar tank_bottom = 0;
+        scalar tank_radius = 1;
+        scalar bottom_radius = .1;
+        boolean closed is false;
+    is
+        scalar middle = tank_top - tank_height;
+
+        cylinder with
+            end1 = <0 0 tank_top>;
+            end2 = <0 0 middle>;
+            radius = tank_radius;
+        end;
+        cone with
+            end1 = <0 0 middle>;
+            end2 = <0 0 tank_bottom>;
+            radius1 = tank_radius;
+            radius2 = bottom_radius;
+        end;
+        if closed then
+            disk with
+                center = <0 0 tank_top>;
+                normal = <0 0 -1>;
+                radius = tank_radius;
+            end;
+        end;
+    end;    // tank
+
+
+    shape instance is
+        if left then
+            // left tank
+            //
+            tank with
+                tank_top = 6;
+                tank_bottom = 4;
+                tank_height = 1.5;
+                tank_radius = 1.5;
+                bottom_radius = pipe_radius;
+                move to <-2 0 0>;
+                color = left_color;
+            end;
+
+            // left label
+            //
+            futura_l_word left_label with
+                magnify by 3;
+                rotate by 90 around <1 0 0>;
+                move to <-2 -2 5>;
+            end;
+
+            // left pipe
+            //
+            pipeline through [<-2 0 4> <-2 0 3.5> <-1 0 3.5>
+                <-1 0 3>]
+            with
+                radius = pipe_radius;
+                globule_radius = static globule_radius;
+                spacing = static spacing;
+                color = left_color;
+                offset = time;
+            end;
+        end;
+
+        if right then
+            // right tank
+            //
+            tank with
+                tank_top = 6;
+                tank_bottom = 4;
+                tank_height = 1.5;
+                tank_radius = 1.5;
+                bottom_radius = pipe_radius;
+                move to <2 0 0>;
+                color = right_color;
+            end;
+
+            // right label
+            //
+            futura_l_word right_label with
+                magnify by 3;
+                rotate by 90 around <1 0 0>;
+                move to <2 -2 5>;
+            end;
+
+            // right pipe
+            //
+            pipeline through [<2 0 4> <2 0 3.5> <1 0 3.5>
+                <1 0 3>]
+            with
+                radius = pipe_radius;
+                globule_radius = static globule_radius;
+                spacing = static spacing;
+                offset = time;
+                color = right_color;
+            end;
+        end;
+
+        // mixing tank
+        //
+        tank with
+            tank_top = 3;
+            tank_bottom = 1;
+            tank_height = 1.5;
+            tank_radius = 1.5;
+            bottom_radius = pipe_radius;
+            closed is static closed;
+            move to <0 0 0>;
+            color = mixer_color;
+        end;
+
+        // agitator
+        //
+        spinning_stirrer instance with
+            rotate by 180 around <1 0 0>;
+            move to <0 0 3>;
+            color = white;
+        end;
+    end;    // instance;
+end;    // mixer
+
+
+anim mixer_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-5 -10 7.5>;
+    lookat = <0 0 3>;
+    window_name is "Mixer";
+    args check;
+is
+    mixer type mixer;
+
+    shape environment is
+        plane with
+            magnify by 15;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+    mouse_controlled_actor mixer in environment;
+end;    // mixer_anim

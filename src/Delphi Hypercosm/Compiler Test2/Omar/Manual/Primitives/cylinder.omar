@@ -1,0 +1,90 @@
+{***************************************************************}
+{                          cylinder.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cylinder_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/arrow_shapes.ores";
+
+
+shape labelled_cylinder with
+    scalar umin = -30;
+    scalar umax = 260;
+is
+	shape cylinder_primitive is
+	    cylinder with
+	        umin = static umin;
+	        umax = static umax;
+	    end;
+    end;
+    
+    outlined cylinder_primitive with
+		material is glass colored cylinder_color;
+    end;
+    
+    mark at <0 0 1>;
+    mark at <0 0 -1>;
+    futura_l_word "UMIN" with
+        move to <1.25 0 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    futura_l_word "UMAX" with
+        move to <1.25 0 0>;
+        rotate by umax around <0 0 1>;
+    end;
+    futura_l_word "END1" with
+        move to <0 0 -1.1>;
+    end;
+    futura_l_word "END2" with
+        move to <0 0 1.1>;
+    end;
+    double_arrow from <0 0 -1> to <1 0 -1> with
+        rotate by 70 around <0 0 1>;
+    end;
+    futura_l_word "RADIUS" with
+        move to <.5 -.1 -1>;
+        rotate by 70 around <0 0 1>;
+    end;
+
+    // arcs showing longitude
+    //
+    arrow_arc to umax with
+        radius = .25;
+    end;
+    arrow_arc to umin with
+        radius = .4;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umin around <0 0 1>;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umax around <0 0 1>;
+    end;
+end;    // labelled_cylinder
+
+
+anim cylinder_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Cylinder Primitive";
+    args check;
+is
+	shape scene is
+	    labelled_cylinder;
+	    axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // cylinder_anim

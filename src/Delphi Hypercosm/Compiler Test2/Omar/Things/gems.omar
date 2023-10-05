@@ -1,0 +1,219 @@
+{***************************************************************}
+{                          gems.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ring_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/meshes.ores";
+include "system/surfaces.ores";
+include "system/solids.ores";
+
+
+// include "system/smpl_textures";
+// integer image1 = load_image "granite3.tga";
+shape diamond is
+    smooth_lathe [[0 0] [10 10] [13 6] [13 .01]] with
+        facets = 4;
+        smoothing is false;
+    end;
+end;    // diamond
+
+
+shape diamond_ring is
+    shape bevelled_torus is
+        ring with
+            center = <0 -1.5 0>;
+            normal = <0 1 0>;
+            inner_radius = 21;
+            outer_radius = 22;
+        end;    // front
+        ring with
+            center = <0 1.5 0>;
+            normal = <0 1 0>;
+            inner_radius = 21;
+            outer_radius = 22;
+        end;    // back
+        cylinder with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            radius = 23;
+        end;    // outside
+        cylinder with
+            end1 = <0 -.5 0>;
+            end2 = <0 .5 0>;
+            radius = 20;
+        end;    // inside
+        cone with
+            end1 = <0 -1.5 0>;
+            end2 = <0 -.5 0>;
+            radius1 = 22;
+            radius2 = 23;
+        end;    // front-top edge
+        cone with
+            end1 = <0 -1.5 0>;
+            end2 = <0 -.5 0>;
+            radius1 = 21;
+            radius2 = 20;
+        end;    // front-bottom edge
+        cone with
+            end1 = <0 1.5 0>;
+            end2 = <0 .5 0>;
+            radius1 = 22;
+            radius2 = 23;
+        end;    // back-top edge
+        cone with
+            end1 = <0 1.5 0>;
+            end2 = <0 .5 0>;
+            radius1 = 21;
+            radius2 = 20;
+        end;    // back-bottom edge
+    end;    // bevelled_torus
+
+
+    static shape diamond_clasp is
+        shape clasp is
+            cylinder with
+                end1 = <4 0 0>;
+                end2 = <24 0 10>;
+                radius = 1;
+            end;
+            sphere with
+                center = <24 0 10>;
+                radius = 1;
+            end;
+            cylinder with
+                end1 = <24 0 10>;
+                end2 = <16 0 13>;
+                radius = 1;
+            end;
+            sphere with
+                center = <16 0 13>;
+                radius = 1;
+            end;
+        end;    // clasp
+
+        clasp with
+            scale by .5 along <1 0 0>;
+        end;
+    end;    // diamond clasp
+
+
+    shape diamond_holder is
+        diamond_clasp;
+        diamond_clasp with
+            rotate by 90 around <0 0 1>;
+        end;
+        diamond_clasp with
+            rotate by 180 around <0 0 1>;
+        end;
+        diamond_clasp with
+            rotate by 270 around <0 0 1>;
+        end;
+    end;    // diamond_holder
+
+    {
+        metallic gold bevelled_torus with
+                magnify by .0435;
+                scale by 3 along 0 1 0;
+        end;
+        }
+    torus with
+        material is golden;
+        normal = <0 1 0>;
+        inner_radius = .8;
+        outer_radius = 1;
+        scale by 2 along <0 1 0>;
+    end;
+    glassy (white * 1.1) diamond with
+        magnify by .03;
+        move to <0 0 1>;
+    end;
+    diamond_holder with
+        material is golden;
+        rotate by 45 around <0 0 1>;
+        magnify by .03;
+        move to <0 0 1>;
+    end;
+end;    // diamond_ring
+
+
+picture ring_picture with
+    field_of_view = 40;
+    eye = <0 -5 3>;
+    lookat = <0 0 -.3>;
+    render_mode is shaded;
+    background = light light grey;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    refractions is on;
+    max_refractions = 8;
+is
+    distant_light from <3 -4 6> with
+        brightness = 1.2;
+    end;
+
+    // distant_light from 8 -4 2 with brightness = .8; end;
+    diamond_ring with
+        rotate by 87.5 around <1 0 0>;
+        rotate by 20 around <0 0 1>;
+        move to <0 0 .25>;
+    end;
+    glassy white diamond with
+        magnify by .02;
+        rotate by 45 around <1 0 0>;    // on side
+        rotate by -30 around <0 0 1>;
+        move to <-1 -1 0>;
+    end;    // emerald
+    glassy light red diamond with
+        magnify by .02;
+        rotate by 45 around <1 0 0>;    // on side
+        rotate by 40 around <0 0 1>;
+        move to <-.4 -1.2 0>;
+    end;    // ruby
+    glassy light yellow diamond with
+        magnify by .025;
+        rotate by 45 around <1 0 0>;    // on side
+        rotate by 100 around <0 0 1>;
+        move to <-.8 -1.6 0>;
+    end;    // topaz
+    glassy light cyan diamond with
+        magnify by .025;
+        rotate by 45 around <1 0 0>;    // on side
+        rotate by -45 around <0 0 1>;
+        move to <1.2 -.8 0>;
+    end;    // aquamarine
+
+    // semi_glossy show_image image1 in local plane with
+    semi_glossy granite grey plane with
+        color = white;
+        rotate the shader_trans by 45 around <0 0 1>;
+        magnify the shader_trans by 10;
+    end;
+
+    {
+        shadowless unshaded black plane with
+                move to 0 0 10;
+        end;
+        }
+end;    // ring_picture
+
+
+anim ring_anim
+    args type args;
+with
+    field_of_view = 40;
+    eye = <0 -5 3>;
+    lookat = <0 0 -.3>;
+    double_buffer is on;
+is
+    mouse_controlled_picture ring_picture;
+end;    // ring_anim

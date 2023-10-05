@@ -1,0 +1,100 @@
+{***************************************************************}
+{                          hyperboloid1.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do hyperboloid1_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/futura_l.omar";
+include "system/arrow_shapes.ores";
+
+
+shape labelled_hyperboloid1 with
+    scalar umin = -30;
+    scalar umax = 260;
+is
+	shape hyperboloid1_primitive is
+	    hyperboloid1 with
+	        radius1 = .5;
+	        umin = static umin;
+	        umax = static umax;
+	    end;
+	end;
+	
+	outlined hyperboloid1_primitive with
+		material is glass colored hyperboloid1_color;
+	end;
+	
+    futura_l_word "UMIN" with
+        move to <1.25 0 0>;
+        rotate by umin around <0 0 1>;
+    end;
+    futura_l_word "UMAX" with
+        move to <1.25 0 0>;
+        rotate by umax around <0 0 1>;
+    end;
+    mark at <0 0 -1>;
+    mark at <0 0 1>;
+    futura_l_word "END1" with
+        move to <0 0 -1.1>;
+    end;
+    futura_l_word "END2" with
+        move to <0 0 1.1>;
+    end;
+    double_arrow from <0 0 -1> to <1 0 -1> with
+        rotate by 70 around <0 0 1>;
+    end;
+    futura_l_word "RADIUS1" with
+        move to <.5 -.1 -1>;
+        rotate by 70 around <0 0 1>;
+    end;
+    double_arrow from <0 0 1> to <.5 0 1> with
+        rotate by 220 around <0 0 1>;
+    end;
+    futura_l_word "RADIUS2" with
+        rotate by 180 around <1 0 0>;
+        rotate by 180 around <0 1 0>;
+        move to <.9 0 1>;
+        rotate by 220 around <0 0 1>;
+    end;
+
+    // arcs showing longitude
+    //
+    arrow_arc to umax with
+        radius = .25;
+    end;
+    arrow_arc to umin with
+        radius = .4;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umin around <0 0 1>;
+    end;
+    line [<0 0 0> <1 0 0>] with
+        rotate by umax around <0 0 1>;
+    end;
+end;    // labelled_hyperboloid1
+
+
+anim hyperboloid1_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 32;
+    window_name is "The Hyperboloid1 Primitive";
+    args check;
+is
+	shape scene is
+		labelled_hyperboloid1;
+		axes;
+	end;
+	
+    mouse_controlled_shape scene;
+end;    // hyperboloid1_anim

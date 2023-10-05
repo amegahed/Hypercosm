@@ -1,0 +1,70 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             bishop.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of a chess piece.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do bishop_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape bishop is
+	color = white;
+	
+	cylinder with
+		end1 = <0 0 0>;
+		end2 = <0 0 1>;
+		radius = 8;
+	end;
+	disk with
+		radius = 8;
+	end;
+	hyperboloid1 with
+		end1 = <0 0 1>;
+		end2 = <0 0 5>;
+		radius1 = 8;
+		radius2 = 5;
+	end;
+	sphere with
+		radius = 6.5;
+		scale by .3 along <0 0 1>;
+		move to <0 0 5>;
+	end;
+	hyperboloid1 with
+		end1 = <0 0 5>;
+		end2 = <0 0 22>;
+		radius1 = 5;
+		radius2 = 1.75;
+	end;
+	sphere with
+		radius = 4;
+		scale by .2 along <0 0 1>;
+		move to <0 0 22>;
+	end;
+	sphere with
+		radius = 2.5;
+		scale by 2 along <0 0 1>;
+		move to <0 0 25>;
+	end;
+	sphere with
+		radius = 1;
+		move to <0 0 30>;
+	end;
+end;    // bishop
+
+anim bishop_anim
+	args type args;
+with
+	eye = <20 -60 40>;
+	lookat = <0 0 15>;
+	double_buffer is on;
+	args check;
+is
+	mouse_controlled_shape bishop;
+end;    // bishop_anim

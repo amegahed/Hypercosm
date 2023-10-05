@@ -1,0 +1,78 @@
+{***************************************************************}
+{                          abs_trans.ores                       }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the standard set of absolute transformations.  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_trans.ores";
+include "system/bounding.ores";
+
+
+verb dimensions
+    of vector v;
+    about vector point = <0 0 0>;
+is
+    bounding type bounds is trans get_bounds;
+    scaling of v / bounds get_size about point;
+end;    // dimensions
+
+
+verb size
+    of scalar s;
+    enum axis is x_axis, y_axis, z_axis;
+    along axis type axis;
+    about vector point = <0 0 0>;
+is
+    bounding type bounds is trans get_bounds;
+    vector size = bounds get_size;
+    
+    when axis is
+    	x_axis:
+    		magnify by (s / size.x) about point;
+    	end;
+    	y_axis:
+    		magnify by (s / size.y) about point;
+    	end;
+    	z_axis:
+    		magnify by (s / size.z) about point;
+    	end;
+    end;
+end;    // size
+
+
+verb limit
+    enum limit is x_min, x_max, y_min, y_max, z_min, z_max;
+    limit type limit;
+    to scalar s;
+is
+    bounding type bounds is trans get_bounds;
+    vector low = bounds get_min;
+    vector high = bounds get_max;
+    
+    when limit is
+    	x_min:
+            move to <(s - low.x) 0 0>;
+    	end;
+    	x_max:
+            move to <(s - high.x) 0 0>;
+    	end;
+    	y_min:
+            move to <(s - low.y) 0 0>;
+    	end;
+    	y_max:
+            move to <(s - high.y) 0 0>;
+    	end;
+    	z_min:
+            move to <(s - low.z) 0 0>;
+    	end;
+    	z_max:
+            move to <(s - high.z) 0 0>;
+    	end;
+    end;
+end;    // limit

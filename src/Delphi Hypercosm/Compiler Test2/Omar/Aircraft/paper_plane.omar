@@ -1,0 +1,80 @@
+{***************************************************************}
+{                          paper_plane.omar                     }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do flying_death;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+
+
+shape paper_airplane with
+    scalar dihedral = 30;
+is
+    shape wing is
+        polygon2d [[0 0] [104 0] [110 25] [90 27]] with
+            origin = <0 0 0>;
+            x_axis = <100 0 30>;
+            y_axis = <0 1 1>;
+        end;
+    end;    // wing
+
+
+    shape right_half is
+        polygon2d [[0 0] [100 0] [100 30]] with
+            origin = <0 0 0>;
+            x_axis = <1 0 0>;
+            y_axis = <0 0 1>;
+        end;
+        wing;
+    end;    // right_half
+
+    right_half with
+        move to <-65 0 0>;
+        rotate by -dihedral around <1 0 0>;
+    end;
+    right_half with
+        move to <-65 0 0>;
+        rotate by -dihedral around <1 0 0>;
+        scale by -1 along <0 1 0>;
+    end;
+end;    // paper_airplane
+
+
+picture flying_death with
+    field_of_view = 50;
+    eye = <-150 -250 150>;
+    lookat = <65 0 20>;
+    background = sky_blue;
+is
+    distant_light from <-50 -20 50>;
+    paper_airplane with
+        color = dark yellow;
+        dihedral = 30;
+        rotate by 5 around <0 1 0>;
+    end;
+    paper_airplane with
+        color = dark cyan;
+        dihedral = 15;
+        rotate by 10 around <0 0 1>;
+        move to <30 -100 50>;
+    end;
+    paper_airplane with
+        color = dark magenta;
+        dihedral = 25;
+        rotation of <5 5 -5>;
+        move to <50 80 40>;
+    end;
+    plane with
+        color = aqua;
+        normal = <-.1 0 1>;
+        magnify by 100;
+        move to <0 0 -40>;
+    end;
+end;    // flying_death

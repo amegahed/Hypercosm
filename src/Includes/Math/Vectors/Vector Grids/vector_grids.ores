@@ -1,0 +1,137 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          vector_grids.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for representing       }
+{                    and manipulating grids.                    }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/vector_grid.ores";
+
+vector_grid type question constant_vector_grid
+	integer rows;
+	by integer columns;
+	of vector v;
+is
+	vector_grid type vector_grid;
+	dim vector_grid[0 .. rows, 0 .. columns];
+	for integer row = 0 .. rows do    
+		for integer column = 0 .. columns do
+			vector_grid[row, column] = v;
+		end;
+	end;
+	
+	answer vector_grid;
+end;    // constant_vector_grid
+
+vector_grid type question square_vector_grid
+	integer rows;
+	by integer columns;
+with
+	// geometry parameters
+	//
+	vector vertex = <-1 -1 0>;
+	vector side1 = <2 0 0>;
+	vector side2 = <0 2 0>;
+is
+	vector_grid type vector_grid;
+	dim vector_grid[0 .. rows, 0 .. columns];
+	for integer row = 0 .. rows do
+		scalar ty = row / rows;
+		vector y_offset = side2 * ty;
+		
+		for integer column = 0 .. columns do
+			scalar tx = column / columns;
+			vector x_offset = side1 * tx;
+			
+			vector_grid[row, column] = vertex + x_offset + y_offset;
+		end;
+	end;
+	
+	answer vector_grid;
+end;    // square_vector_grid
+
+vector_grid type question quad_vector_grid
+	integer rows;
+	by integer columns;
+	of vector vector1, vector2, vector3, vector4;
+is
+	vector v1 = vector2 - vector1;
+	vector v2 = vector3 - vector4;
+	vector_grid type vector_grid;
+	dim vector_grid[0 .. rows, 0 .. columns];
+		
+	for integer row = 0 .. rows do
+		scalar t = (row / rows);
+		for integer column = 0 .. columns do
+			scalar s = (column / columns);
+			
+			// perform bilinear interpolation
+			//
+			vector p1 = vector1 + v1 * s;
+			vector p2 = vector4 + v2 * s;
+			vector_grid[row, column] = p1 + (p2 - p1) * t;
+		end;
+	end;
+
+	answer vector_grid;
+end;    // quad_vector_grid
+
+vector_grid type question disk_vector_grid    
+	integer rows;
+	by integer columns;
+with
+	scalar umin = 0, umax = 360;
+	scalar rmin = 0, rmax = 1;
+is
+	vector_grid type vector_grid;
+	dim vector_grid[0 .. rows, 0 .. columns];
+	for integer row = 0 .. rows do
+		scalar tx = row / rows;
+		scalar r = rmax - (rmax - rmin) * tx;
+		
+		for integer column = 0 .. columns do
+			scalar ty = column / columns;
+			scalar u = umin + (umax - umin) * ty;
+			scalar x = (cos u);
+			scalar y = (sin u);
+			
+			vector_grid[row, column] = <x y 0> * r;
+		end;
+	end;
+
+	answer vector_grid;
+end;    // disk_vector_grid
+
+vector_grid type question globe_vector_grid
+	integer rows;
+	by integer columns;
+with
+	scalar umin = 0, umax = 360;
+	scalar vmin = -90, vmax = 90;
+	scalar radius = 1;
+is
+	vector_grid type vector_grid;
+	dim vector_grid[0 .. rows, 0 .. columns];
+	for integer row = 0 .. rows do
+		scalar ty = row / rows;
+		scalar v = vmin + (vmax - vmin) * ty;
+		scalar z = sin v * radius;
+		scalar r = cos v * radius;
+		
+		for integer column = 0 .. columns do
+			scalar tx = column / columns;
+			scalar u = umin + (umax - umin) * tx;
+			scalar x = (cos u) * r;
+			scalar y = (sin u) * r;
+			vector_grid[row, column] = <x y z>;
+		end;
+	end;
+	
+	answer vector_grid;
+end;    // globe_vector_grid

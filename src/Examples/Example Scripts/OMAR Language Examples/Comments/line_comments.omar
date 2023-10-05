@@ -1,0 +1,30 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           line_comments.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of line            }
+{       comments using the OMAR language.                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do line_comment_example;
+
+// This is a line comment at the beginning of a line
+//
+integer a;  
+
+integer b;      // This is a line comment at the end of a line
+
+// This is
+// a line
+// comment
+// that spans
+// multiple
+// lines.
+
+verb line_comment_example
+is
+end;    // line_comment_example

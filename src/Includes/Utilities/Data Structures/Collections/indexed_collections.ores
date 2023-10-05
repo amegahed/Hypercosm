@@ -1,0 +1,249 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       indexed_collections.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class that can be used to access lists       }
+{       in a random access using integer indices.               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/lists.ores";
+include "system/indexing.ores";
+
+subject indexed_collection
+extends
+	indexable collection
+does
+	// constructor
+	//
+	verb new
+		indexing collection type collection;
+		starting at integer head = 1;
+	end;
+		
+	// random access element querying and setting methods
+	//
+	object type question get
+		element integer index;
+	end;
+	
+	// random access iterator querying methods
+	//
+	iterator type question get_indexed_iterator
+		at integer index;
+	end;
+	
+	// list searching methods
+	//
+	integer question find_index
+		of object type element;
+	end;
+	
+	// collection querying methods
+	//
+	boolean question contains
+		object type element;
+	end;
+		
+	// collection iteration methods
+	//
+	iterator type question get_iterator;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from object type source;
+	end;
+	object type question clone;
+has
+	// attributes
+	//
+	integer head;
+	list type list is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		indexing list type list;
+		starting at integer head = 1;
+	is
+		with indexed_list do
+			its list is list;
+			its head = head;
+		end;
+	end;    // new
+	
+	//
+	// list construction methods
+	//
+	
+	verb insert
+		object type element;
+		at integer index;
+	is
+		list_iterator type iterator is indexed_iterator at index;
+		iterator insert prev element;
+	end;    // insert
+	
+	object type question removed
+		integer index;
+	is
+		list_iterator type iterator is indexed_iterator at index;
+		answer iterator removed;
+	end;    // removed
+	
+	//
+	// random access element querying and setting methods
+	//
+	
+	object type question get
+		element integer index;
+	is
+		list_iterator type iterator is indexed_iterator at index;
+		answer iterator get;
+	end;    // get
+	
+	//    
+	// random access iterator querying methods
+	//
+	
+	list_iterator type question get_indexed_iterator
+		at integer index;
+	is
+		list_iterator type iterator is indexed_list's list get_start;
+		iterator skip index - 1;
+		answer iterator;
+	end;    // get_indexed_iterator
+	
+	//                
+	// list querying methods
+	//
+	
+	integer question get_index
+		at list_end type list_end;
+	is
+		when list_end is
+			head:
+				answer head;
+			end;
+			
+			tail:
+				answer head + size - 1;
+			end;
+		end;
+	end;    // get_index
+	
+	integer question find_index
+		of object type element;
+	is
+		integer index = head;
+		iterator type iterator is list get_iterator;
+		boolean found is false;
+		
+		while iterator is_iterating and not found do
+			if iterator next is element then
+				found is true;
+			else
+				index = itself + 1;
+			end;
+		end;
+		
+		answer index;
+	end;    // find_index
+	
+	//       
+	// collection construction methods
+	//
+	
+	verb add
+		object type element;
+	is
+		indexed_list's list add element;
+	end;    // add
+	
+	verb remove
+		object type element;
+	is
+		indexed_list's list remove element;
+	end;    // remove
+	
+	verb purge
+		object type element;
+	is
+		indexed_list's list purge element;
+	end;    // purge
+	
+	verb clear is
+		indexed_list's list clear;
+	end;    // clear
+	
+	//    
+	// collection querying methods
+	//
+	
+	boolean question contains
+		object type element;
+	is
+		answer indexed_list's list contains element;
+	end;    // contains
+	
+	//       
+	// collection iteration methods
+	//
+	
+	iterator type question get_iterator is
+		answer indexed_list's list get_iterator;
+	end;    // get_iterator
+	
+	//    
+	// element querying methods
+	//
+	
+	object type question get_first is
+		answer indexed_list's list get_first;
+	end;    // get_first
+	
+	object type question get_last is
+		iterator type iterator is get_finish;
+		answer iterator get;
+	end;    // get_last
+	
+	//    
+	// iterator querying methods
+	//
+	
+	list_iterator type question get_start is
+		answer indexed_list's list get_start;
+	end;    // start
+	
+	list_iterator type question get_finish is
+		list_iterator type iterator is get_start;
+		iterator to_last;
+		answer iterator;
+	end;    // get_finish
+	
+	//    
+	// copying and cloning methods
+	//
+	
+	verb copy 
+		from object type source;
+	is
+		indexed_list type source_list is indexed_list type source;
+		with indexed_list do
+			its head = source_list's head;
+			its list is source_list's list;
+		end;
+	end;    // copy
+	
+	object type question clone is
+		indexed_list type new_list indexing indexed_list's list starting at head;
+		answer new_list;
+	end;    // clone
+end;    // indexed_collection

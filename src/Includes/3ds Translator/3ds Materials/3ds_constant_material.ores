@@ -1,0 +1,56 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      3ds_constant_material.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains material definitions that correspond to        }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_material.ores";
+include "system/3ds_animated_material.ores";
+
+subject translated_3ds_constant_material
+extends
+	translated_3ds_material
+does
+	// constructor
+	//
+	verb new
+		of translated_3ds_animated_material type animated_material;
+	end;
+		
+	// querying methods
+	//
+	material type question to_material;
+has
+	// attributes
+	//
+	translated_3ds_animated_material type animated_material is none;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of translated_3ds_animated_material type animated_material;
+	is
+		with translated_3ds_constant_material do
+			its animated_material is animated_material;
+		end;
+	end;    // new
+	
+	//
+	// applying method
+	//
+	
+	material type question to_material is
+		translated_3ds_material type translated_3ds_material is 
+			animated_material to_translated_3ds_material at 0;
+		answer translated_3ds_material to_material;
+	end;    // to_translated_3ds_material
+end;    // translated_3ds_constant_material

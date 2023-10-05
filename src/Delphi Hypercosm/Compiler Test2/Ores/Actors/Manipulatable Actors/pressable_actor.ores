@@ -1,0 +1,59 @@
+{***************************************************************}
+{                          actors.ores                          }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/acting.ores";
+include "system/manipulation.ores";
+include "system/manipulation_behaviors.ores";
+
+
+abstract subject pressable_actor
+extends
+	pressable touchable_actor
+does
+	// actable methods
+	//
+    verb act;
+    
+    // renderable methods
+    //
+    abstract shape instance;
+    
+    // touchable methods
+    //
+    abstract verb touch
+        from vector location;
+        towards vector direction;
+    end;    // touch
+    
+    // pressable methods
+    //
+    abstract verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;    // press
+    abstract verb release
+        from vector location;
+        towards vector direction;
+    end;    // release
+is
+	//
+	// actable methods
+	//
+	
+	
+    verb act is
+        manipulate touchable type pressable_actor;
+    end;    // act
+end;    // pressable_actor

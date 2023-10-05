@@ -1,0 +1,60 @@
+{***************************************************************}
+{                          paris.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do paris;
+
+
+include "system/3d.ores";
+include "system/eiffel.omar";
+include "system/balloon.omar";
+
+
+picture paris
+    args type args;
+with
+    field_of_view = 60;
+    eye = <0 -400 300>;
+    lookat = <0 0 150>;
+    width = trunc (height * .75);
+    facets = 0;
+    reflections is on;
+    shadows is on;
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    eiffel_tower with
+        scale by 1.2 along <0 0 1>;
+        rotate by 20 around <0 0 1>;
+    end;
+    balloon with
+        material is plastic colored red;
+        magnify by 20;
+        move to <30 50 180>;
+    end;
+    balloon with
+        material is plastic colored yellow;
+        magnify by 20;
+        move to <-30 -60 100>;
+    end;
+    balloon with
+        material is plastic colored orange;
+        magnify by 20;
+        move to <-150 400 230>;
+    end;
+    ring with
+        material is chalk colored grey;
+        move to <0 0 1>;
+        inner_radius = 30;
+        outer_radius = 40;
+    end;
+    parallelogram with
+        material is chalk colored dark green;
+        magnify by 120;
+    end;
+end;    // paris

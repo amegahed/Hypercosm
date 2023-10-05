@@ -1,0 +1,49 @@
+do tactile_blob_anim;
+
+
+include "system/3d.ores";
+include "system/tactile_anims.ores";
+include "system/densities.ores";
+include "system/fields.ores";
+
+
+anim tactile_blob_anim
+    args type args;
+with
+    eye = <0 -15 15>;
+    lookat = <0 0 2>;
+    double_buffer is on;
+    background = dark blue;
+    ambient = white * .5;
+    args check;
+is
+    shape blob_shape is
+        density_field type density_field using noisy_field
+            from <-2 -2 -2> to <2 2 2>
+        with
+            x_steps = 10;
+            y_steps = 10;
+            z_steps = 10;
+        end;
+        
+        write "making blob", ;  
+        volume density_field's density with
+            threshold = .5;
+            capping is true;
+            move to <0 0 1>;
+            magnify by 3;
+            material is plastic poster "tie_dye.jpg";
+        end;
+    end;    // blob_shape
+    
+    
+    shape floor is
+        plane with
+            magnify by 10;
+            render_mode is wireframe;
+            color = green;
+        end;
+    end;    // floor
+
+    tactile_mouse_controlled_shape blob_shape titled "Tactile Blob" in floor;
+end;    // tactile_blob_anim

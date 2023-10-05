@@ -1,0 +1,228 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		     args.ores 					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the standard program argument parsing          }
+{       utility.                            					}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+include "system/args_parser.ores";
+include "system/native_rendering.ores";
+include "system/native_viewing.ores";
+include "system/strings.ores";
+include "system/string_utils.ores";
+include "system/mouse.ores";
+
+
+// It should be noted here that there are several predefined program 
+// arguments that are reserved and handled by the Hypercosm Player internally.
+// These reserved arguments cannot be handled in OMAR code because the
+// Hypercosm Player removes them from the "command line" before OMAR code
+// receives it.
+//
+// The reserved arguments are:
+//      -width
+//      -height
+//      -bench
+//      -log_sysinfo
+//      -starting_frame
+//      -frames
+//      -install
+//      -no-shm
+//      -transport
+
+
+subject args
+extends
+    strings type
+does
+    verb check;
+    verb print;
+is
+    verb check is
+        args_parser type parser parsing args;
+
+        parser reset;
+
+        // set attributes from program arguments
+        //
+        while some parser's arg do
+
+            // render_mode
+            //
+            if parser's arg matches "-render_mode" then
+                parser next_arg;
+                if parser's arg matches "pointplot" then
+                    render_mode is pointplot;
+                elseif parser's arg matches "wireframe" then
+                    render_mode is wireframe;
+                elseif parser's arg matches "hidden_line" then
+                    render_mode is hidden_line;
+                elseif parser's arg matches "shaded" then
+                    render_mode is shaded;
+                elseif parser's arg matches "shaded_line" then
+                    render_mode is shaded_line;
+                else
+                    write "unrecognized render mode argument", ;
+                end;
+
+            // edges
+            //
+            elseif parser's arg matches "-edges" then
+                parser next_arg;
+                if parser's arg matches "silhouette" then
+                    edges is silhouette;
+                elseif parser's arg matches "outline" then
+                    edges is outline;
+                elseif parser's arg matches "all" then
+                    edges is all;
+                else
+                    write "unrecognized edge mode argument", ;
+                end;
+
+            // edge orientation
+            //
+            elseif parser's arg matches "-edge_orientation" then
+                parser next_arg;
+                if parser's arg matches "front" then
+                    edge_orientation is front;
+                elseif parser's arg matches "all" then
+                    edge_orientation is all;
+                else
+                    write "unrecognized edge_orientation argument", ;
+                end;
+
+            // outline
+            //
+            elseif parser's arg matches "-outline" then
+                parser next_arg;
+                if parser's arg matches "subtle" then
+                    outline is subtle;
+                elseif parser's arg matches "bold" then
+                    outline is bold;
+                else
+                    write "unrecognized outline mode argument", ;
+                end;
+
+            // shading
+            //
+            elseif parser's arg matches "-shading" then
+                parser next_arg;
+                if parser's arg matches "face" then
+                    shading is face;
+                elseif parser's arg matches "vertex" then
+                    shading is vertex;
+                elseif parser's arg matches "pixel" then
+                    shading is pixel;
+                else
+                    write "unrecognized shading mode argument", ;
+                end;
+
+            // viewing
+            //
+            elseif parser's arg matches "-eye" then
+                eye = parser vector_arg;
+            elseif parser's arg matches "-lookat" then
+                lookat = parser vector_arg;
+            elseif parser's arg matches "-pitch" then
+                pitch = parser scalar_arg;
+            elseif parser's arg matches "-yaw" then
+                yaw = parser scalar_arg;
+            elseif parser's arg matches "-roll" then
+                roll = parser scalar_arg;
+
+            // projection
+            //
+            elseif parser's arg matches "-projection" then
+                parser next_arg;
+                if parser's arg matches "orthographic" then
+                    projection is orthographic;
+                elseif parser's arg matches "perspective" then
+                    projection is perspective;
+                elseif parser's arg matches "fisheye" then
+                    projection is fisheye;
+                elseif parser's arg matches "panoramic" then
+                    projection is panoramic;
+                else
+                    write "unrecognized projection argument", ;
+                end;
+
+            // non enumerated args
+            //
+            elseif parser's arg matches "-background" then
+                background = parser vector_arg;
+            elseif parser's arg matches "-ambient" then
+                ambient = parser vector_arg;
+            elseif parser's arg matches "-stereo" then
+                stereo = parser scalar_arg;
+            elseif parser's arg matches "-facets" then
+                facets = parser integer_arg;
+            elseif parser's arg matches "-field_of_view" then
+                field_of_view = parser scalar_arg;
+            elseif parser's arg matches "-double_buffer" then
+                double_buffer is parser boolean_arg;
+            elseif parser's arg matches "-show_pictures" then
+                show_pictures is parser boolean_arg;
+            elseif parser's arg matches "-save_pictures" then
+                save_pictures is parser boolean_arg;
+            elseif parser's arg matches "-min_feature_size" then
+                min_feature_size = parser scalar_arg;
+                
+			// animation attributes
+			//
+			{
+			elseif parser's arg matches "-max_fps" then
+				max_fps = parser integer_arg;
+			elseif parser's arg matches "-show_fps" then
+				show_fps is parser boolean_arg;
+			}
+
+			// user interface attributes
+			//                
+            elseif parser's arg matches "-buttons" then
+                mouse_buttons = parser integer_arg;
+
+            // The following three arguments (-frames, -width, and -height)
+            // are handled automatically by the interpreter. You can uncomment
+            // them, but they will have no effect here.
+            //
+            {           
+            elseif parser's arg matches "-frames" then
+                frames = parser integer_arg;
+            elseif parser's arg matches "-width" then
+                width = parser integer_arg;
+            elseif parser's arg matches "-height" then
+                height = parser integer_arg;
+            }
+            
+            // collaboration attributes
+            //
+            {
+            elseif parser's arg matches "-ip_address" then
+	            parser next_arg;
+	            new connecting_ip_address;        
+	            write "connecting ip address is ", parser's arg, ;
+	            connecting_ip_address get_host_by_name parser's arg;
+            end;
+            }
+            end;
+
+            parser next_arg;
+        end;
+    end;    // check
+
+
+    verb print is
+        write "program arguments:", ;
+        for integer counter = min args .. max args do
+            write "arg[", counter, "] = ", args[counter], ;
+        end;
+    end;    // print
+end;    // args

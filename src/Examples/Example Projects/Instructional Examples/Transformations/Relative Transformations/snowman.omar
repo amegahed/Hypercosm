@@ -1,0 +1,61 @@
+{***************************************************************}
+{                          snowman.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do snowman_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape snowman is
+	// body
+	//
+	sphere with
+		center = <0 0 1>;
+	end;
+	sphere with
+		center = <0 0 2.4>;
+		radius = .6;
+	end;
+	sphere with
+		center = <0 0 3.2>;
+		radius = .4;
+	end;
+	// nose
+	//
+	cone with
+		end1 = <0 -.3 3.2>;
+		end2 = <0 -.8 3.2>;
+		radius1 = .1;
+		radius2 = 0;
+		material is plastic colored orange;
+	end;
+	// eyes
+	//
+	sphere with
+		center = <-.2 -.2 3.4>;
+		radius = .1;
+		material is chalk colored charcoal;
+	end;
+	sphere with
+		center = <.2 -.2 3.4>;
+		radius = .1;
+		material is chalk colored charcoal;
+	end;
+end;    // snowman
+
+anim snowman_anim
+	args type args;
+with
+	eye = <3 -8 4>;
+	lookat = <0 0 2>;
+	window_name is "Mr. Snow";
+	args check;
+is
+	mouse_controlled_shape snowman;
+end;    // snowman_anim

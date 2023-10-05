@@ -1,0 +1,385 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            3ds_arc.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains arc definitions that correspond to             }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/3ds_shape.ores";
+include "system/3ds_editable_spline.ores";
+include "system/3ds_modifier_stacks.ores";
+
+final subject translated_3ds_arc
+extends
+	translated_3ds_collapsable translated_3ds_shape
+does
+	// constructor
+	//
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar from_angle = 0;
+		scalar to_angle = 360;
+		boolean pie_slice is true;
+		boolean reverse is false;
+			
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+	  
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	end;
+	
+	// setting method
+	//
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar from_angle = 0;
+		scalar to_angle = 360;
+		boolean pie_slice is true;
+		boolean reverse is false;
+			
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+	  
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	end;
+	
+	// collapsing method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_arc type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	scalar radius;
+	scalar from_angle;
+	scalar to_angle;
+	boolean pie_slice;
+	boolean reverse;
+	
+private 
+	// recycling attributes
+	//
+	translated_3ds_arc type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_arc type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new with
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar from_angle = 0;
+		scalar to_angle = 360;
+		boolean pie_slice is true;
+		boolean reverse is false;
+		
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+		
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	is
+		translated_3ds_shape new with
+		
+			// set shape parameters
+			//
+			steps = static steps;
+			optimize is static optimize;
+			adaptive is static adaptive;
+			renderable is static renderable;
+			thickness = static thickness;
+			
+			// set texturing parameters
+			// 
+			gen_mapping_coords is static gen_mapping_coords;        
+		end;
+		
+		if verbose_recycling then
+			write "new 3ds arc", ;
+		end;
+					
+		with translated_3ds_arc do
+		
+			// set geometry attributes
+			//
+			its radius = radius;
+			its from_angle = from_angle;
+			its to_angle = to_angle;
+			its pie_slice is pie_slice;
+			its reverse is reverse;
+		end;
+	end;    // new
+	
+	//
+	// setting method
+	//
+	
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar from_angle = 0;
+		scalar to_angle = 360;
+		boolean pie_slice is true;
+		boolean reverse is false;
+			
+		// shape parameters
+		//
+		integer steps = 4;
+		boolean optimize is false;
+		boolean adaptive is false;
+		boolean renderable is false;
+		scalar thickness = 1;
+	  
+		// texturing parameters
+		// 
+		boolean gen_mapping_coords is false;
+	is
+		with translated_3ds_arc do
+		
+			// set geometry attributes
+			//
+			its radius = radius;
+			its from_angle = from_angle;
+			its to_angle = to_angle;
+			its pie_slice is pie_slice;
+			its reverse is reverse;
+			
+			// set shape parameters
+			//
+			its steps = steps;
+			its optimize is optimize;
+			its adaptive is adaptive;
+			its renderable is renderable;
+			its thickness = thickness;
+			
+			// set texturing parameters
+			// 
+			its gen_mapping_coords is gen_mapping_coords;
+		end;    
+	end;    // set
+	
+	//      
+	// collapsing method
+	//
+	
+	translated_3ds_stackable type question get_collapsed is
+		const integer num_segments = 3;
+		translated_3ds_spline_vertices type vertices;
+		translated_3ds_spline_segments type segments;
+		translated_3ds_spline type spline is none;
+		translated_3ds_splines type splines is none;
+		translated_3ds_editable_spline type editable_spline is none;
+		
+		// geometric variables
+		//
+		scalar arc_angle, angle, a;
+			  
+		// compute geometric variables
+		// 
+		if to_angle < from_angle then
+			to_angle = itself + 360;
+		end;
+		arc_angle = to_angle - from_angle;
+		angle = arc_angle / num_segments;
+		a = (sin angle) * (sqrt (4 + 3 * sqr tan (angle / 2)) - 1);
+		
+		// create vertices
+		//
+		dim none vertices[1 .. num_segments + 1];
+		for integer counter = 1 .. num vertices do
+			scalar t = (counter - 1) / (num vertices - 1);
+			scalar u = from_angle + t * arc_angle;
+			scalar x = cos u;
+			scalar y = sin u;
+			vector point = <x y 0> * radius;
+			vector tangent = <-y x 0> * radius * a;
+			vertices[counter] is translated_3ds_bezier_vertex 
+				at point from (-tangent / 3) to (tangent / 3);
+		end;
+		
+		// create segments
+		//
+		dim none segments[1 .. num_segments];      
+		for integer counter = 1 .. num_segments do
+			segments[counter] is translated_3ds_spline_segment type's get;
+			segments[counter] set curve from vertices[counter] to vertices[counter + 1];
+		end;
+		
+		// create spline
+		//
+		spline is translated_3ds_spline type's get;
+		spline append_vertices vertices;
+		spline append_segments segments;
+		
+		// create splines
+		//
+		splines is [spline];
+		
+		// create editable spline
+		//
+		editable_spline is translated_3ds_editable_spline type's get;
+		editable_spline set to splines with
+		
+			// set shape parameters
+			//
+			steps = static steps;
+			optimize is static optimize;
+			adaptive is static adaptive;
+			renderable is static renderable;
+			thickness = static thickness; 
+			
+			// set texturing parameters
+			//
+			gen_mapping_coords is static gen_mapping_coords;
+		end;
+		
+		// add pie_slice
+		//
+		if pie_slice then
+			translated_3ds_spline_vertex type center_vertex is
+				translated_3ds_corner_vertex at <0 0 0>;
+			
+			spline append_vertex center_vertex;
+			spline append_segment (translated_3ds_line_segment 
+				from center_vertex to vertices[1]) to head;
+			spline append_segment (translated_3ds_line_segment 
+				from vertices[num vertices] to center_vertex) to tail;
+		end;
+		
+		recycle;
+		answer editable_spline;
+	end;    // get_collapsed
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_arc type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_arc type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_arc;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_arc;
+		
+		translated_3ds_arc is none;
+	end;        // recycle  
+end;    // translated_3ds_arc
+
+//
+// procedural interface
+//
+
+shape translated_3ds_arc with
+	
+	// geometry parameters
+	//
+	scalar radius = 1;
+	scalar from_angle = 0;
+	scalar to_angle = 360;
+	boolean pie_slice is true;
+	boolean reverse is false;
+	
+	// shape parameters
+	//
+	integer steps = 4;
+	boolean optimize is false;
+	boolean adaptive is false;
+	boolean renderable is false;
+	scalar thickness = 1; 
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+	
+	// modifier stack
+	//
+	translated_3ds_arc type translated_3ds_arc is translated_3ds_arc type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_arc;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_arc set with
+		// set geometry parameters
+		//
+		radius = static radius;
+		from_angle = static from_angle;
+		to_angle = static to_angle;
+		pie_slice is static pie_slice;
+		reverse is static reverse;
+		
+		// set shape parameters
+		//
+		steps = static steps;
+		optimize is static optimize;
+		adaptive is static adaptive;
+		renderable is static renderable;
+		thickness = static thickness;
+		
+		// set texturing parameters
+		// 
+		gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;    // translated_3ds_arc

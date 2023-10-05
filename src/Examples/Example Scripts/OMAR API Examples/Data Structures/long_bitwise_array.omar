@@ -1,0 +1,31 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      long_bitwise_array.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       long bitwise array utilities.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do test;
+
+include "system/booleans.ores";
+include "system/long_bitwise_array.ores";
+
+verb test is
+	long_bitwise_array type array;
+	long_bitwise_array type array2;
+	
+	array set_value of 1 to true;
+	array set_value of 5 to true;
+	array set_value of 20 to true;
+	array set_value of 24 to true;
+	array set_value of 32 to true;
+	array set_value of 55 to true;
+	
+	array2 = array;
+	array2 print;
+end;    // test

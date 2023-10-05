@@ -1,0 +1,68 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            nested_loops.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of how looping      }
+{       statements can be nested inside of other looping        }
+{       statements in the OMAR language.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do nested_loops_example;
+
+verb nested_loops_example is
+	integer x, y;
+	write "Using nested for loops to print out roman numeral", ;
+	write "representations of the powers of 2 from 1 to 5000:", ;
+	y = 1;
+	
+	// outer looping statement
+	//
+	while (y < 5000) do
+		write y, "    ";
+		x = y;
+		
+		// inner looping statements
+		//
+		while (x >= 1000) do 
+			write "M"; 
+			x = itself - 1000; 
+		end;
+		
+		if (x >= 500) then 
+			write "D"; 
+			x = itself - 500; 
+		end;
+		
+		while (x >= 100) do 
+			write "C"; 
+			x = itself - 100;
+		end;
+		
+		if (x >= 50) then 
+			write "L"; 
+			x = itself - 50; 
+		end;
+		
+		while (x >= 10) do 
+			write "X"; 
+			x = itself - 10; 
+		end;
+		
+		if (x >= 5) then 
+			write "V"; 
+			x = itself - 5; 
+		end;
+		
+		while (x >= 1) do 
+			write "I"; 
+			x = itself - 1; 
+		end;
+		
+		write;
+		y = itself * 2;
+	end;
+end;    // nested_loops_example

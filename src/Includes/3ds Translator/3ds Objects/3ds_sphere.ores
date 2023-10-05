@@ -1,0 +1,648 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          3ds_sphere.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains sphere definitions that correspond to          }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_sliceable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+include "system/triangle_fan_meshes.ores";
+include "system/tessellation.ores";
+
+final subject translated_3ds_sphere
+extends
+	translated_3ds_collapsable translated_3ds_sliceable_object
+does
+	// constructor
+	//
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar hemi = 0;
+		boolean base_to_pivot is false;
+		
+		// tessellation parameters
+		//
+		integer segments = 16;
+		boolean squash is false;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//    
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+			
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+		boolean hemi_capping is true;
+		boolean slice_capping is true;
+	end;
+	
+	// setting method
+	//
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar hemi = 0;
+		boolean base_to_pivot is false;
+		
+		// tessellation parameters
+		//
+		integer segments = 16;
+		boolean squash is false;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//    
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+			
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+		boolean hemi_capping is true;
+		boolean slice_capping is true;
+	end;
+		
+	// collapsing method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_sphere type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	scalar radius;
+	scalar hemi;
+	boolean base_to_pivot;
+	
+	// tessellation attributes
+	//
+	integer segments;
+	boolean squash;
+	boolean smooth;
+		
+	// additional attributes that
+	// are not provided by 3DS Max
+	//
+	boolean capping;
+	boolean hemi_capping;
+	boolean slice_capping;
+	
+private 
+	// recycling attributes
+	//
+	translated_3ds_sphere type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_sphere type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar hemi = 0;
+		boolean base_to_pivot is false;
+		
+		// tessellation parameters
+		//
+		integer segments = 16;
+		boolean squash is false;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//    
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+			
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+		boolean hemi_capping is true;
+		boolean slice_capping is true;
+	is
+		translated_3ds_sliceable_object new with
+			
+			// set slicing parameters
+			//
+			slice_on is static slice_on;
+			slice_from = static slice_from;
+			slice_to = static slice_to;
+					
+			// set texturing parameters
+			//
+			gen_mapping_coords is static gen_mapping_coords;
+		end;
+
+		if verbose_recycling then
+			write "new 3ds sphere", ;
+		end;
+					
+		with translated_3ds_sphere do
+		
+			// set geometry attributes
+			//
+			its radius = radius;
+			its hemi = hemi;
+			its base_to_pivot is base_to_pivot;
+			
+			// set tessellation attributes
+			//
+			its segments = segments;
+			its squash is squash;
+			its smooth is smooth;
+				
+			// set additional attributes that
+			// are not provided by 3DS Max
+			//
+			its capping is capping;
+			its hemi_capping is hemi_capping;
+			its slice_capping is slice_capping;
+		end;
+	end;    // new  
+
+	//
+	// setting method
+	//
+	
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius = 1;
+		scalar hemi = 0;
+		boolean base_to_pivot is false;
+		
+		// tessellation parameters
+		//
+		integer segments = 16;
+		boolean squash is false;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//    
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+			
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+		boolean hemi_capping is true;
+		boolean slice_capping is true;
+	is
+		with translated_3ds_sphere do
+		
+			// set geometry attributes
+			//
+			its radius = radius;
+			its hemi = hemi;
+			its base_to_pivot is base_to_pivot;
+			
+			// set tessellation attributes
+			//
+			its segments = segments;
+			its squash is squash;
+			its smooth is smooth;
+				
+			// set additional attributes that
+			// are not provided by 3DS Max
+			//
+			its capping is capping;
+			its hemi_capping is hemi_capping;
+			its slice_capping is slice_capping;
+			
+			// set slicing parameters
+			//
+			its slice_on is slice_on;
+			its slice_from = slice_from;
+			its slice_to = slice_to;
+					
+			// set texturing parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+		end;    
+	end;    // set
+	
+	//
+	// collapsing method
+	//
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;     
+		
+		// sphere sweep parameters
+		//
+		scalar umin, umax, uspan;
+		scalar vmin, vmax, vspan;
+		scalar z;
+			
+		// compute range in longitude
+		//
+		if slice_on then
+			umin = normalized_positive_angle of slice_to;
+			umax = normalized_positive_angle of slice_from;
+			if umax = 0 then
+				umax = 360;
+			end;
+			if umax < umin then
+				umin = itself - 360;
+			end;
+			uspan = umax - umin;
+		else
+			umin = 0;
+			umax = 360;
+			uspan = 360;
+		end;
+		
+		// compute range in lattitude
+		//
+		if hemi > 0 then
+			// slice from the bottom
+			//
+			vmin = -90 + (180 * hemi);
+			vmax = 90;
+			z = sin vmin;
+		elseif hemi < 0 then
+			// slice from the top
+			//
+			vmin = -90;
+			vmax = 90 + (180 * hemi);
+			z = sin vmax;
+		else
+			vmin = -90;
+			vmax = 90;
+			z = 0;
+		end;            
+		vspan = vmax - vmin;
+		
+		// restrict radius to positive values
+		//
+		if radius > 0 then
+			vector_grid type vertex_grid;
+			vector_grid type normal_grid;
+			vector center = <0 0 0>;
+					
+			// rows = number of vertical divisions
+			// columns = number of horizontal divisions
+			//
+			integer rows =  1 + trunc ((segments - .5) * (1 - abs hemi) / 2);
+			integer columns = segments;
+			
+			// clamp grid tessellation to minimum values
+			//
+			if rows < min_circle_tessellation then
+				rows = min_circle_tessellation;
+			end;
+			if columns < min_circle_tessellation then
+				columns = min_circle_tessellation;
+			end;
+	
+			// create grid
+			//
+			dim vertex_grid[0 .. rows, 0 .. columns];
+			dim normal_grid[0 .. rows, 0 .. columns];
+			
+			// set center
+			//
+			if base_to_pivot then
+				if hemi > 0 then
+					center = <0 0 (radius * -z)>;
+				else
+					center = <0 0 radius>;
+				end;
+			end;
+			
+			// compute side vertices and normals
+			//     
+			for integer row = 0 .. rows do
+				scalar t = row / rows;
+				scalar v = vmin + t * vspan;
+		 
+				for integer column = 0 .. columns do
+					scalar s = column / columns;
+					scalar u = umin + s * uspan;
+					vector point;
+					
+					// rotate for lattitude
+					//
+					point = rotated_point <0 (radius) 0> by v around <1 0 0>;
+					
+					// rotate for longitude
+					//
+					point = rotated_point point by u around <0 0 1>;
+				
+					// set grid points
+					//
+					vertex_grid[row, column] = center + point;
+					normal_grid[row, column] = point;
+				end;
+			end;
+			editable_mesh add_element (get_grid_mesh 
+				of vertex_grid oriented to normal_grid
+			with
+				smoothing is smooth;
+				closed is true;
+				reversed is (height < 0);
+				mending is false;
+				textured is gen_mapping_coords;
+			);
+			
+			// add capping faces
+			//
+			if capping then
+				if slice_capping then
+					if uspan <> 360 then
+						vector face1[];
+						vector face2[];
+						boolean hemi_vertex is hemi <> 0 and abs hemi <> .5;
+						
+						if hemi_vertex and abs hemi < .5 then
+							dim face1[0 .. rows + 2];
+							dim face2[0 .. rows + 2];                               
+						else
+							dim face1[0 .. rows + 1];
+							dim face2[0 .. rows + 1]; 
+						end;
+						
+						if hemi > .5 then
+						
+							// cap slice with bottom clipped
+							//
+							face1[0] = center + <0 0 (radius * z)>;
+							face2[0] = face1[0];
+ 
+							for integer row = 1 .. rows + 1 do
+								face1[row] = vertex_grid[rows - row + 1, 0];
+								face2[row] = vertex_grid[rows - row + 1, columns];
+							end;
+						elseif hemi > 0 then
+						
+							// cap slice through center with bottom clipped
+							//
+							face1[0] = center;
+							face2[0] = center;
+ 
+							for integer row = 1 .. rows + 1 do
+								face1[row] = vertex_grid[rows - row + 1, 0];
+								face2[row] = vertex_grid[rows - row + 1, columns];
+							end;
+							
+							if hemi_vertex then
+								face1[rows + 2] = center + <0 0 (radius * z)>;
+								face2[rows + 2] = face1[rows + 2];
+							end;
+						elseif hemi = 0 then
+						
+							// cap slice through center with no clipping
+							//
+							face1[0] = center;
+							face2[0] = center;
+ 
+							for integer row = 1 .. rows + 1 do
+								face1[row] = vertex_grid[rows - row + 1, 0];
+								face2[row] = vertex_grid[rows - row + 1, columns];
+							end;
+						elseif hemi > -.5 then
+						
+							// cap slice through center with top clipped
+							//
+							face1[0] = center;
+							face2[0] = center;
+							face1[1] = center + <0 0 (radius * z)>;
+							face2[1] = face1[1];    
+							
+							for integer row = 1 .. rows + 1 do
+								face1[1 + row] = vertex_grid[rows - row + 1, 0];
+								face2[1 + row] = vertex_grid[rows - row + 1, columns];
+							end; 
+						else
+							// cap slice with top clipped
+							//
+							face1[0] = center + <0 0 (radius * z)>;
+							face2[0] = face1[0];    
+							
+							for integer row = 1 .. rows + 1 do
+								face1[row] = vertex_grid[rows - row + 1, 0];
+								face2[row] = vertex_grid[rows - row + 1, columns];
+							end;                    
+						end;
+						
+						editable_mesh add_element (get_triangle_fan_mesh of face1 with
+							open is true;
+							one_sided is true;
+							reversed is true;
+							textured is gen_mapping_coords;
+						);
+						editable_mesh add_element (get_triangle_fan_mesh of face2 with
+							open is true;
+							one_sided is true;
+							reversed is false;
+							textured is gen_mapping_coords;
+						);
+					end;
+				end;    // if slice capping
+					
+				if hemi_capping and vspan <> 180 then
+					integer row;
+					
+					// select row of hemi cap vertices
+					//
+					if hemi > 0 then
+						row = 0;
+					else
+						row = rows;
+					end;
+												
+					if uspan <> 360 then
+						vector face[0 .. columns + 1];
+						face[0] = center + <0 0 (radius * z)>;                              
+						for integer column = 1 .. columns + 1 do
+							face[column] = vertex_grid[row, column - 1];
+						end;
+						
+						editable_mesh add_element (get_triangle_fan_mesh of face with
+							open is true;
+							one_sided is true;
+							reversed is (hemi > 0);
+							textured is gen_mapping_coords;
+						);
+					else
+						vector face[0 .. columns];
+						
+						face[0] = center + <0 0 (radius * z)>;
+						for integer column = 1 .. columns do
+							face[column] = vertex_grid[row, column - 1];
+						end;
+						
+						editable_mesh add_element (get_triangle_fan_mesh of face with
+							open is false; 
+							one_sided is true;
+							reversed is (hemi > 0);
+							textured is gen_mapping_coords;
+						);
+					end;
+				end;    // if hemi_capping  
+			end;    // capping
+		end;    // if radius > 0
+		
+		recycle;
+		answer editable_mesh;
+	end;    // get_collapsed
+
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_sphere type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_sphere type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_sphere;
+		end;
+	end;    // get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_sphere;
+		
+		translated_3ds_sphere is none;
+	end;        // recycle          
+end;    // translated_3ds_sphere
+
+//
+// procedural interface
+//
+
+shape translated_3ds_sphere with
+	
+	// geometry parameters
+	//
+	scalar radius = 1;
+	scalar hemi = 0;
+	boolean base_to_pivot is false;
+	
+	// tessellation parameters
+	//
+	integer segments = 16;
+	boolean squash is false;
+	boolean smooth is true;
+	
+	// slicing parameters
+	//    
+	boolean slice_on is false;
+	scalar slice_from = 0;
+	scalar slice_to = 0;
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+		
+	// additional parameters that
+	// are not provided by 3DS Max
+	//
+	boolean capping is true;
+	boolean hemi_capping is true;
+	boolean slice_capping is true;
+	
+	// modifier stack
+	//
+	translated_3ds_sphere type translated_3ds_sphere is translated_3ds_sphere type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_sphere;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_sphere set with
+	
+		// set geometry parameters
+		//
+		radius = static radius;
+		hemi = static hemi;
+		base_to_pivot is static base_to_pivot;
+		
+		// set tessellation parameters
+		//
+		segments = static segments;
+		squash is static squash;
+		smooth is static smooth;
+		
+		// set slicing parameters
+		//    
+		slice_on is static slice_on;
+		slice_from = static slice_from;
+		slice_to = static slice_to;
+		
+		// set texturing parameters
+		//
+		gen_mapping_coords is static gen_mapping_coords;
+			
+		// set additional parameters that
+		// are not provided by 3DS Max
+		//
+		capping is static capping;
+		hemi_capping is static hemi_capping;
+		slice_capping is static slice_capping;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;    // translated_3ds_sphere

@@ -1,0 +1,142 @@
+{***************************************************************}
+{                          vectors2.ores                        }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{		Contains standard two dimensional vector functions.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+	
+
+type vector2 is complex;
+subject vectors2 extends vector2 type[];
+enum vector2_axis is x, y;
+
+
+scalar question dot2
+	of vector2 type v1;
+	to vector2 type v2;
+is
+	answer (real v1 * real v2) + (imag v1 * imag v2);
+end;	// dot2
+
+
+vector2 type question parallel2
+	of vector2 type v1;
+	to vector2 type v2;
+is
+	answer v2 * (dot2 of v1 to v2 / dot2 of v2 to v2);
+end;	// parallel2
+
+
+vector2 type question normalized2
+    vector2 type v;
+is
+	scalar magnitude = sqrt (dot2 of v to v);
+
+	if magnitude = 0 then
+		answer <0 0>;
+	end;
+
+    answer v / magnitude;
+end;    // normalized2
+
+
+verb normalize2
+    vector2 type reference v;
+is
+    v = normalized2 v;
+end;    // normalize2
+
+
+scalar question vlength2
+    of vector2 type v;
+is
+    answer sqrt (dot2 of v to v);
+end;    // vlength2
+
+
+vector question vorient
+    vector v1;
+    towards vector v2;
+is
+    if v1 dot v2 < 0 then
+        answer -v1;
+    else
+        answer v1;
+    end;
+end;    // vorient 
+
+
+vector2 type question vreflect2
+    vector2 type v;
+    across vector2 type normal;
+is
+    vector2 type p = parallel2 of v to normal;
+    answer (v - p * 2);
+end;    // vreflect2
+
+
+vector2 type question vclamp2
+    vector2 type v;
+    from vector2 type low;
+    to vector2 type high;
+is
+    answer <(clamp real v from real low to real high)
+            (clamp imag v from imag low to imag high)>;
+end;    // vclamp2
+
+
+vector2 type question vsnap2
+    vector2 type v;
+    to vector2 type range;
+is
+    answer <(snap real v to real range)
+            (snap imag v to imag range)>;
+end;    // vsnap2
+
+
+vector2 type question vmod2
+    vector2 type v;
+    to vector2 type range;
+is
+    answer <(smod real v to real range)
+            (smod imag v to imag range)>;
+end;    // vmod2
+
+
+scalar question vangle2
+    from vector2 type v1;
+    to vector2 type v2;
+is
+    answer acos ((dot2 of v1 to v2) / ((vlength2 of v1) * (vlength2 of v2)));
+end;    // vangle2
+
+
+vector2_axis type question principal_axis2 
+	of vector2 type v;
+is
+	scalar x = abs real v;
+	scalar y = abs imag v;
+	
+	if x > y then
+		answer x;
+	else
+		answer y;
+	end;
+end;	// principal_axis2
+
+
+vector2 type question axis_vector2
+	of vector2_axis type vector_axis;
+is
+	when vector_axis is
+		x: answer <1 0>; end;
+		y: answer <0 1>; end;
+	end;
+end;	// axis_vector2

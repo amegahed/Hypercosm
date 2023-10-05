@@ -1,0 +1,39 @@
+do test;
+
+
+subject string
+extends
+	char[]
+does
+	verb print;
+is
+    verb print is
+		write string;
+    end;	// print
+end;    // string
+
+
+subject strings
+extends
+	string type[]
+does
+	verb print;
+is
+	verb print is
+		{
+    	for each string type string in strings do
+    		string print;
+    		write;
+    	end;
+    	}
+    	for integer counter = min strings .. max strings do
+    		strings[counter] print;
+    	end;
+	end;	// print
+end;	// strings
+
+
+verb test is
+	strings type strings is ["this" "that"];
+	strings print;
+end;	// test

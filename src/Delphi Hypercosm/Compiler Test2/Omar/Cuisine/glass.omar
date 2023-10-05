@@ -1,0 +1,109 @@
+{***************************************************************}
+{                          glass.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do rotating_glass;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/check_keys.ores";
+
+
+shape drinking_glass is
+    hyperboloid1 with
+        end1 = <0 0 .1>;
+        end2 = <0 0 .6>;
+        radius1 = 1;
+        radius2 = .2;
+    end;
+    hyperboloid1 with
+        end1 = <0 0 .6>;
+        end2 = <0 0 3>;
+        radius1 = .2;
+        radius2 = 1;
+    end;
+    ring with
+        center = <0 0 3>;
+        normal = <0 0 1>;
+        inner_radius = .9;
+        outer_radius = 1;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 .1>;
+        radius = 1;
+    end;
+    hyperboloid1 with
+        end1 = <0 0 .7>;
+        end2 = <0 0 3>;
+        radius1 = 0;
+        radius2 = .9;
+    end;
+
+    {inside of glass}
+    disk with
+        center = <0 0 0>;
+        normal = <0 0 1>;
+        radius = 1;
+    end;
+end;    // drinking_glass
+
+
+picture glass_picture with
+    field_of_view = 35;
+    eye = <3 -10 6>;
+    lookat = <0 0 1.5>;
+    facets = 8;
+is
+    distant_light from <.3 -1 .5>;
+    drinking_glass with
+        material is golden;
+    end;
+end;    // glass_picture
+
+
+anim rotating_glass
+    args type args;
+with
+    double_buffer is on;
+    args check;
+is
+    scalar angle = 0;
+    scalar x, y, z;
+
+    while true do
+        x = sin angle * 5;
+        y = cos angle * 10 + 5;
+        z = 5;
+        glass_picture with
+            eye = <x y z>;
+            roll = angle;
+        end;
+        check_keys;
+        angle = angle + 5;
+    end;
+end;    // rotating_glass
+
+
+anim glass_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    lookat = <0 0 1.5>;
+    double_buffer is on;
+    args check;
+is
+    shape thing is
+        drinking_glass with
+            material is golden;
+        end;
+    end;    // thing
+
+    mouse_controlled_shape thing;
+end;    // glass_anim

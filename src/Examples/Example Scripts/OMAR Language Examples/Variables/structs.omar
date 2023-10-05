@@ -1,0 +1,37 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            structs.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of a structure data       }
+{       type in the OMAR language.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do struct_example;
+
+include "system/native_string.ores";
+
+struct person has
+	string type name;
+	integer age;
+end;    // person
+
+verb write_person
+	person type person;
+is
+	write "person named ", person's name, " with age = ", person's age, ;
+end;    // write_person
+
+verb struct_example is
+	person type employee;
+	
+	with employee do
+		its name is "Bob";
+		its age = 46;
+	end;
+	
+	write_person employee;
+end;    // struct_example

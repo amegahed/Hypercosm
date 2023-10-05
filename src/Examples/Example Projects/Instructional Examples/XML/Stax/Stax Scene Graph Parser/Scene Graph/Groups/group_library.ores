@@ -1,0 +1,70 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          group_library.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a library of groups in the scene graph.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "object_group.ores";
+include "system/hashtable.ores";
+	
+subject group_library
+does
+	// construction methods
+	//
+	verb add_group
+		object_group type group;
+		named string type name;
+	end;
+	
+	// query methods
+	//
+	boolean question has_group
+		named string type name;
+	end;
+	object_group type question get_group
+		named string type name;
+	end;
+has
+	// attributes 
+	//
+	hashtable type hashtable;
+is
+	//
+	// construction methods
+	//
+	
+	
+	verb add_group
+		object_group type group;
+		named string type name;
+	is
+		hashtable enter group as name;
+	end;    // add
+	
+	
+	//
+	// query methods
+	//
+	
+	boolean question has_group
+		named string type name;
+	is
+		answer hashtable has_entry named name;
+	end;    // has_group
+	
+		
+	object_group type question get_group
+		named string type name;
+	is
+		answer object_group type hashtable get_entry named name;
+	end;    // get_group
+end;    // object_group_library
+
+group_library type group_library;
+

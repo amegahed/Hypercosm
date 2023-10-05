@@ -1,0 +1,88 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    3ds_smooth_quat_controller.ores     3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_bezier_quat_controller.ores";
+
+subject translated_3ds_smooth_quat_controller 
+extends
+	translated_3ds_bezier_quat_controller
+does
+	// constructor
+	//
+	verb new
+		of quat type values[];
+		at translated_3ds_time type times[];
+	end;
+is
+	//
+	// objective getting methods
+	//
+
+	objective quat type[] question get_tangents
+		of quat type values[];
+		at translated_3ds_time type times[];
+	is
+		quat type tangents[min values .. max values];
+		quat type slopes[1 .. num values - 1];
+			
+		// compute slopes
+		//
+		for integer counter = 1 .. num values - 1 do
+			vector dv = values[counter + 1]'s v - values[counter]'s v;
+			scalar ds = values[counter + 1]'s s - values[counter]'s s;
+			scalar dx = times[counter + 1] - times[counter];
+			slopes[counter]'s v = dv / dx;
+			slopes[counter]'s s = ds / dx;
+		end;
+			
+		// compute tangents
+		//
+		for integer counter = 1 .. num values do
+			if counter = 1 then
+				tangents[counter] = slopes[counter];
+			elseif counter = num values then
+				tangents[counter] = slopes[counter - 1];
+			else
+				tangents[counter]'s v = (slopes[counter - 1]'s v + slopes[counter]'s v) / 2;
+				tangents[counter]'s s = (slopes[counter - 1]'s s + slopes[counter]'s s) / 2;
+			end;
+		end;
+			
+		answer tangents;
+	end;    // get_tangents
+	
+	objective quat type[] question get_flipped_tangents
+		of quat type tangents[];
+	is
+		quat type flipped_tangents[min tangents .. max tangents];
+		for integer counter = min tangents .. max tangents do
+			flipped_tangents[counter]'s v = -tangents[counter]'s v;
+			flipped_tangents[counter]'s s = -tangents[counter]'s s;
+		end;
+		answer flipped_tangents;
+	end;    // get_flipped_tangents
+	
+	//
+	// constructor
+	//
+			
+	verb new
+		of quat type values[];
+		at translated_3ds_time type times[];
+	is
+		quat type in_tangents[] is (get_tangents of values at times);
+		quat type out_tangents[] is (get_flipped_tangents of in_tangents);
+		translated_3ds_bezier_quat_controller new  
+			of values from in_tangents to out_tangents at times;
+	end;    // new
+end;    // translated_3ds_smooth_quat_controller

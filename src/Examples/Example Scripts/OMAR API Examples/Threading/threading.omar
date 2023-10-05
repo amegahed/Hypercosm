@@ -1,0 +1,114 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             threading.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       threading utilities.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/thread.ores";
+include "system/timed_thread.ores";
+include "system/scheduler.ores";
+include "system/strings.ores";
+include "system/string_conversions.ores";
+
+subject iteration_thread
+extends
+	thread
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+	with
+		integer iterations = 10;
+	end;
+	
+	// updating method
+	//
+	verb update;
+	
+	// printing methods
+	//
+	string type question to_string;
+has
+	// attributes
+	//
+	string type name;
+	integer iterations;
+	integer count = 0;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		named string type name is none;
+	with
+		integer iterations = 10;
+	is
+		// call superclass constructor
+		//
+		thread new;
+		
+		// set attributes
+		//
+		with iteration_thread do
+			its name is name;
+			its iterations = iterations;
+		end;
+	end;    // new
+	
+	//
+	// updating method
+	//
+		
+	verb update is
+		write "updating thread '", name, "' with count = ", count, ;
+		count = itself + 1; 
+		if count = iterations then
+			destroy;
+		end;
+	end;    // update
+	
+	//
+	// printing methods
+	//
+	
+	string type question to_string is
+		string type result is none;
+		result add "iteration thread named ";
+		result add name;
+		result add " with iterations = ";
+		result add integer_to_string of iterations;
+		
+		answer result;
+	end;    // to_string
+end;    // iteration_thread
+
+verb example is
+	iteration_thread type thread1 named "thread1" with
+		iterations = 5;
+	end;
+	iteration_thread type thread2 named "thread2" with
+		iterations = 10;
+	end;
+	timed_thread type thread3 lasting .1;
+	
+	thread1 run;
+	thread2 run;
+	thread3 run;
+	
+	while scheduler has_threads do
+		(printing type scheduler) print;
+		scheduler update;
+	end;
+	
+	write "done.", ;
+end;    // example

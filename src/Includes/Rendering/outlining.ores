@@ -1,0 +1,26 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           outlining.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard rendering related utilities.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+shape outlined
+	shape instance;
+with
+	scalar offset = .001;
+is
+	instance with
+		magnify by (1 - offset);
+	end;
+	
+	instance with
+		render_mode is wireframe;
+		magnify by (1 + offset);
+	end;
+end;    // outlined

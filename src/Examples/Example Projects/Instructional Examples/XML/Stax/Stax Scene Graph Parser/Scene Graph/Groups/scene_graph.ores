@@ -1,0 +1,16 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           scene_graph.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of objects in the scene graph     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "group_instance.ores";
+include "sphere_instance.ores";
+include "cylinder_instance.ores";
+include "cone_instance.ores";

@@ -1,0 +1,101 @@
+{***************************************************************}
+{                          vpolynomials.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the subject "vpolynomial" which can be used    }
+{       to evaluate 3-dimensional polynomial functions of       }
+{       arbitrary degree (linear, cubic, etc.)                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/vpolynomial.ores";
+
+
+{***************************************************************}
+{					sequences of vpolynomials					}
+{***************************************************************}
+
+
+subject vpolynomials 
+extends
+    vpolynomial type[]
+does
+	// evaluation methods
+	//
+    vector question get_value
+        at scalar t;
+    end;
+    vectors type question get_values 
+        in integer steps;
+    end;
+    vpolynomials type question get_derivative;
+    
+    // printable methods
+    //
+    verb print;
+is
+    //
+	// evaluation methods
+	//
+	
+	
+    vector question get_value
+        at scalar t;
+    is
+    	integer index = min vpolynomials + 
+    		iclamp (trunc num vpolynomials) 
+    		from 0 to (num vpolynomials - 1);
+    	scalar t2 = (t * num vpolynomials) - index;
+    	
+    	answer vpolynomials[index] get_value at t2;
+    end;	// get_value
+    
+    
+    vectors type question get_values 
+        in integer steps;
+    is
+    	vector get_values[0 .. num vpolynomials * steps];
+    	
+    	for integer counter = 1 .. num vpolynomials do
+    		vpolynomial type vpolynomial is vpolynomials[counter];
+       		vectors type segment_get_values is vpolynomial get_values in steps;
+       		integer index = (counter - 1) * steps;
+    		get_values[index .. index + steps] = segment_get_values[..];
+    	end;
+    	
+    	answer get_values;
+    end;	// get_values
+    
+    
+    vpolynomials type question get_derivative is
+    	vpolynomial type vpolynomials2[min vpolynomials .. max vpolynomials];
+    	
+    	for integer counter = min vpolynomials .. max vpolynomials do
+    		vpolynomials2[counter] is vpolynomials[counter] get_derivative;
+    	end;
+    	
+    	answer vpolynomials;
+    end;	// get_derivative 
+    
+
+    //
+    // printable methods
+    //
+    
+        
+    verb print is
+    	{
+    	for each vpolynomial type vpolynomial in vpolynomials do
+    		vpolynomial print;
+    	end;
+    	}
+    	for integer counter = min vpolynomials .. max vpolynomials do
+    		vpolynomials[counter] print;
+    	end;
+    end;	// print
+end;    // vpolynomials
+

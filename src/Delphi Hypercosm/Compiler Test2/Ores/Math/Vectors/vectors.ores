@@ -1,0 +1,51 @@
+{***************************************************************}
+{                          vectors.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{		Contains standard three dimensional vector functions.   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/vector.ores";
+
+
+subject vectors
+extends
+	vector[]
+does
+	verb normalize;
+	vectors type question normalized;
+	verb flip;	
+	vectors type question flipped;
+is
+	verb normalize is
+		for integer counter = min vectors .. max vectors do
+			global normalize vectors[counter];
+		end;
+	end;	// normalize
+	
+	
+	vectors type question normalized is
+		vectors type normalized_vectors = vectors;
+		normalized_vectors normalize;
+		answer normalized_vectors;
+	end;	// normalized
+	
+	
+	verb flip is
+		for integer counter = min vectors .. max vectors do
+			vectors[counter] = -itself;
+		end;
+	end;	// flip
+	
+	
+	vectors type question flipped is
+		vectors type flipped_vectors = vectors;
+		flipped_vectors flip;
+		answer flipped_vectors;
+	end;	// flipped
+end;	// vectors

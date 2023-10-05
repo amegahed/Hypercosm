@@ -1,0 +1,298 @@
+{***************************************************************}
+{                          futura_l.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   Displays the futura_l character set that is available in    }
+{   "futura_l.ores"                                             }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************} 
+do font_picture;
+
+
+include "system/3d.ores";
+include "system/futura_l.ores";
+
+
+picture font_picture with
+	eye = <0 0 2.3>;
+is
+	scalar x, y, z, x_step, y_step, x_start, y_start;
+
+	x_start = -.9;
+	y_start = .38;
+	x = x_start;
+	y = y_start;
+	z = 0;
+	x_step = .18;
+	y_step = -.2;
+	futura_l_0 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_1 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_2 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_3 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_4 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_5 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_6 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_7 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_8 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	y = y + y_step;
+	x = x_start;
+	futura_l_9 with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_a with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_b with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_c with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_d with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_e with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_f with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_g with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_h with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	y = y + y_step;
+	x = x_start;
+	futura_l_i with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_j with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_k with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_l with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_m with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_n with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_o with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_p with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_q with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	y = y + y_step;
+	x = x_start;
+	futura_l_r with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_s with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_t with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_u with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_v with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_w with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_x with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_y with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_z with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	y = y + y_step;
+	x = x_start;
+	futura_l_la with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lb with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lc with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_ld with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_le with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lf with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lg with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lh with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_li with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	y = y + y_step;
+	x = x_start;
+	futura_l_lj with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lk with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_ll with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lm with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_ln with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lo with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lp with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lq with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lr with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	y = y + y_step;
+	x = x_start;
+	futura_l_ls with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lt with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lu with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lv with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lw with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lx with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_ly with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lz with
+		move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_lparen with
+	    move to <x y z>;
+	end;
+	x = x + x_step;
+	futura_l_rparen with
+	    move to <x y z>;
+	end;
+end;	// font_picture

@@ -1,0 +1,231 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            sky_banner.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a waving sky banner.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do sky_banner_anim;
+
+include "system/3d.ores";
+include "system/step_actor.ores";
+include "system/anims.ores";
+include "system/grid_shapes.ores";
+include "system/native_noise.ores";
+include "glider.omar";
+
+subject banner 
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new with
+		scalar length = 1.5;
+		scalar height = .5;
+		integer steps = 10;
+		integer lines = 8;
+		vector attach_point = <-5 0 0>;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+has
+	// banner attributes
+	//
+	scalar length, height;
+	integer steps, lines;
+	vector attach_point;
+is
+	scalar s;
+	material type banner_material is plastic textured new texture
+		using new image named "hyper.jpg";
+
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		scalar length = 1.5;
+		scalar height = .5;
+		integer steps = 10;
+		integer lines = 8;
+		vector attach_point = <-5 0 0>;
+	is
+		// call superclass constructor
+		//
+		timed_actor new;
+		
+		// set attributes
+		//
+		with banner do
+			its length = length;
+			its height = height;
+			its steps = steps;
+			its lines = lines;
+			its attach_point = attach_point;
+		end;
+	end;    // new
+
+	//
+	// rendering methods
+	//
+	
+	
+	objective scalar question wavy_function
+		at scalar x, y;
+	is
+		scalar n1 = (noise2 at (x * 2) (y * 2)) * 2 - 1;
+		scalar n2 = (noise2 at (x - s * 2) ((y - s) * -2)) * 2 - 1;
+		answer (n1 + n2) / 2;
+	end;    // wavy_function
+
+	objective shape form with
+		integer steps = 10;
+		scalar t = 0;
+	is
+		scalar x, y;
+		s = t;
+		height_function using wavy_function with
+			h_steps = static steps;
+			v_steps = static steps;
+			x_center = t;
+			triangulate is on;
+		end;
+	end;    // form
+
+	shape attach_line at
+		scalar x, y;
+	with
+		scalar t = 0;
+	is
+		scalar z = wavy_function at (x + t) y;
+		line [attach_point <(x * length) y (z * height)>];
+	end;    // attach_lines
+
+	shape attach_lines with
+		scalar t = 0;
+	is
+		for integer counter = 0 .. lines do
+			scalar y = (counter / lines) * 2 - 1; 
+			attach_line at -1 y with
+				t = static t;
+			end;
+		end;
+	end;    // attach_lines
+
+	shape instance is
+		scalar time = timer get_time;
+		
+		form with
+			material is banner_material;
+			t = time;
+			scale by length along <1 0 0>;
+			scale by height along <0 0 1>;
+			steps = banner's steps;
+			rotate by 90 around <1 0 0>;
+		end;
+		if lines <> 0 then
+			attach_lines with
+				t = time;
+				// scale by length along <1 0 0>;
+				// scale by height along <0 0 1>;
+				rotate by 90 around <1 0 0>;
+			end;
+		end;
+	end;    // instance
+end;    // banner 
+
+subject sky_banner 
+extends
+	timed_actor
+does
+	// rendering method
+	//
+	shape instance;
+	
+	// animation method
+	//
+	verb update;
+has
+	// attributes
+	//
+	banner type small_banner with
+		attach_point = <-5 0 0>;
+		length = 3;
+		steps = 10;
+		lines = 5;
+	end;
+is
+	// implementation
+	//
+	const scalar orbit_radius = 2;
+
+	//
+	// rendering methods
+	//
+	
+	
+	shape stuff is
+		scalar magby = .4;
+		scalar time = timer get_time;
+		
+		glider with
+			rotate by 10 around <1 0 0>;
+			material is plastic colored white;
+			magnify by .025;
+			rotate by 180 around <0 1 0>;
+			move to <0 orbit_radius 0>;
+			rotate by -(time * 15) around <0 0 1>;
+			rotate by 20 around <0 1 0>;
+		end;
+		small_banner instance with
+			//scale by .5 along <0 0 1>;
+			rotate by 180 around <0 1 0>;
+			rotate by 30 around <0 0 1> about <5 0 0>;
+			magnify by magby;
+			move to <-(5.5*magby) orbit_radius 0>;
+			rotate by -(time * 15) around <0 0 1>;
+			rotate by 20 around <0 1 0>;
+		end;
+	end;    // stuff
+
+	shape instance is
+		stuff;
+	end;    // instance
+
+	//
+	// animation methods
+	//
+	
+	
+	verb update is
+		small_banner update;
+		
+		// call superclass constructor
+		//
+		timed_actor static update;
+	end;    // update
+end;    // sky_banner 
+
+anim sky_banner_anim 
+	args type args;
+with
+	eye = <-1.5 -3 .5>;
+	lookat = <.25 0 0>;
+	field_of_view = 80;
+	background = <0 .25 .5>;
+	ambient = white * .1;
+	render_mode is shaded;
+	double_buffer is on;
+	args check;
+is
+	sky_banner type sky_banner;
+	mouse_controlled_actor sky_banner;
+end;    // sky_banner_anim

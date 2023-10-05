@@ -1,0 +1,184 @@
+{***************************************************************}
+{                        reflection.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do thing_anim;
+
+
+include "system/3d.ores";
+include "system/time.ores";
+
+
+shape thing is
+    sphere with material is metal colored white; end;
+    color = blue;
+    sphere with
+        center = <1 1 -1>;
+        radius = .3;
+    end;
+    sphere with
+        center = <-1 1 -1>;
+        radius = .3;
+    end;
+    sphere with
+        center = <1 -1 -1>;
+        radius = .3;
+    end;
+    sphere with
+        center = <-1 -1 -1>;
+        radius = .3;
+    end;
+    color = green;
+    sphere with
+        center = <1 1 1>;
+        radius = .3;
+    end;
+    sphere with
+        center = <-1 1 1>;
+        radius = .3;
+    end;
+    sphere with
+        center = <1 -1 1>;
+        radius = .3;
+    end;
+    sphere with
+        center = <-1 -1 1>;
+        radius = .3;
+    end;
+    color = red;
+    cylinder with
+        end1 = <-1 -1 -1>;
+        end2 = <1 -1 -1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1 -1 -1>;
+        end2 = <1 1 -1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1 1 -1>;
+        end2 = <-1 1 -1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <-1 1 -1>;
+        end2 = <-1 -1 -1>;
+        radius = .2;
+    end;
+    color = magenta;
+    cylinder with
+        end1 = <-1 -1 1>;
+        end2 = <1 -1 1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1 -1 1>;
+        end2 = <1 1 1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1 1 1>;
+        end2 = <-1 1 1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <-1 1 1>;
+        end2 = <-1 -1 1>;
+        radius = .2;
+    end;
+    color = yellow;
+    cylinder with
+        end1 = <-1 -1 -1>;
+        end2 = <-1 -1 1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1 -1 -1>;
+        end2 = <1 -1 1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <1 1 -1>;
+        end2 = <1 1 1>;
+        radius = .2;
+    end;
+    cylinder with
+        end1 = <-1 1 -1>;
+        end2 = <-1 1 1>;
+        radius = .2;
+    end;
+end;    // thing
+
+
+shape thing2 is
+
+    {metallic gold} sphere with
+        center = <0 0 0>;
+        radius = .5;
+        rotate by -60 around <0 0 1>;
+        color = gold;
+    end;
+
+    {metallic orange} cylinder with
+        end2 = <0 0 .5>;
+        end1 = <0 0 -.5>;
+        radius = .3;
+        color = orange;
+    end;
+
+    {glossy red} cylinder with
+        end1 = <1 0 0>;
+        end2 = <-1 0 0>;
+        radius = .1;
+        color = red;
+    end;
+end;    // thing2
+
+
+picture thing_picture with
+    scalar angle = 0;
+is
+    distant_light from <0 -1 .5>;
+
+    thing with
+            rotate by 40 around <1 0 0>;
+            rotate by -20 around <0 1 0>;
+            rotate by -40 around <0 0 1>;
+            rotate by angle around <0 0 1>;
+    end;
+
+end;    // thing_picture
+
+
+anim thing_anim
+    args type args;
+with
+    field_of_view = 30;
+    eye = <0 -13 2>;
+    background = sky_blue;
+
+    render_mode is shaded;
+    facets = 0;
+    min_feature_size = .00625;
+    reflections is on;
+    shadows is on;
+    scanning is random;
+    double_buffer is off;
+    args check;
+is
+    timer type t with
+        ticks_per_second = 4;
+    end;
+
+    while true do
+        thing_picture with
+            angle = t position;
+        end;
+    end;
+end;    // thing_anim

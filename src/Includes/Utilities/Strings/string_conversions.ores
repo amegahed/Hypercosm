@@ -1,0 +1,281 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       string_conversions.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{           Contains several standard string utilities.         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/math.ores";
+include "system/strings.ores";
+
+{***************************************************************}
+{       Methods to convert primitive types to strings           }
+{***************************************************************}
+
+string type question integer_to_string
+	of integer number;
+is
+	boolean negative is false;
+	string type string;
+	string type digit = " ";
+
+	if number = 0 then
+		answer "0";
+	elseif number < 0 then
+		negative is true;
+		number = -number;
+	end;
+
+	while number > 0 do
+		digit[1] is digit_to_char of number;
+		string is digit plus string;
+		number = number div 10;
+	end;
+
+	if negative then
+		digit[1] is "-";
+		string is digit plus string;
+	end;
+
+	answer string;
+end;    // integer_to_string
+
+//  Be warned, scalar_to_string's "to integer significant_digits"
+//  argument actually specifies the digits to supply after the
+//  decimal point, regardless of actual significance.  In addition,
+//  scalars are only precise out to _about_ 8 digits, regardless of
+//  the scale of the number.  (So 123456789.0 is only precise to
+//  123456780, and 1.23456789 is only precise to 1.2345678)
+//  scalar_to_string will cheerfully generate digits beyond the limit
+//  of precision, thus digits beyond the 7th or 8th digit of
+//  precision are probably bogus.
+//
+string type question scalar_to_string
+	of scalar s;
+	to integer significant_digits = 6;
+is
+	string type string;
+	integer integer_part, fractional_part;
+
+	if (s = 0) then
+		string is "0";
+		if (significant_digits > 0) then
+			string add ".";
+			for integer i = 1..significant_digits do
+				string add "0";
+			end;
+		end;
+		answer string;
+	elseif (s < 0) then
+		string is "-";
+		s = -s;
+	end;
+
+	// Do the integral part
+	//
+	integer_part = trunc s;
+	string add integer_to_string of integer_part;
+
+	if (significant_digits > 0) then
+		char c;
+		integer significant_digit = 1;
+		string add ".";
+
+		// To properly handle rounding, I need one extra place
+		//
+		significant_digits = itself + 1;
+
+		// Write out significant places
+		//
+		while (significant_digit <= significant_digits) do
+			scalar s2;
+			integer i2;
+			scalar multiplier = 10 ^ significant_digit;
+			s2 = s * multiplier;
+			i2 = trunc s2;
+			// If s2 is very large, trunc will return a negative
+			// number (the precision of integer is blown).  This
+			// works around the problem, but the result is obviously
+			// bogus.  Since we've already passed
+			// the 8ish digits of significance that you get from a
+			// scalar, so the number would be bogus anyway.
+			//
+			if i2 < 0 then i2 = - i2; end;
+			i2 = itself mod 10;
+			string add integer_to_string of i2;
+			significant_digit = itself + 1;
+		end;
+
+		// Use the last place for rounding
+		//
+		c is string[max string];
+		if char_to_integer of c > 5 then
+			string type string2 = string left (max string - 1);
+			integer spot_to_increment = max string2;
+
+			while true do
+				integer n;
+
+				if spot_to_increment < 1 then
+					answer string2;
+				end;
+				if string2[spot_to_increment] is "-" then
+					answer string2;
+				end;
+				if string2[spot_to_increment] is "." then
+					spot_to_increment = itself - 1;
+				end;
+
+				n = char_to_integer of string2[spot_to_increment];
+				n = (itself + 1) mod 10;
+				string2[spot_to_increment] is digit_to_char of n;
+				if n > 0 then
+					answer string2;
+				end;
+				spot_to_increment = itself - 1;
+			end;
+		else
+			// The last place doesn't require rounding up.
+			// Discard the last place and return.
+			//
+			string type string2 = string left (max string - 1);
+			answer string2;
+		end;
+	end;
+	answer string;
+end;    // scalar_to_string
+
+string type question vector_to_string
+	of vector v;
+	to integer significant_digits = 6;
+is
+	string type string;
+
+	string add "<";
+	string add scalar_to_string of (v.x) to significant_digits;
+	string add " ";
+	string add scalar_to_string of (v.y) to significant_digits;
+	string add " ";
+	string add scalar_to_string of (v.z) to significant_digits;
+	string add ">";
+
+	answer string;
+end;    // vector_to_string
+
+{***************************************************************}
+{       Methods to convert strings to primitive types           }
+{***************************************************************}
+
+integer question string_to_integer
+	of string type string;
+return
+	integer unread_characters;
+is
+	char ch;
+	integer i, counter;
+	boolean done is false;
+	boolean reverse_sign is false;
+
+	unread_characters = 0;
+	if num string < 1 then
+		answer 0;
+	end;
+
+	// read integer part
+	//
+	i = 0;
+	counter = min string;
+	if string[counter] is "-" then
+		reverse_sign is true;
+		counter = itself + 1;
+	end;
+
+	while counter <= max string and not done do
+		ch is string[counter];
+		counter = itself + 1;
+		if not numerical ch then
+			done is true;
+			counter = itself - 1;
+		else
+			i = (itself * 10) + char_to_integer of ch;
+		end;
+	end;
+
+	if reverse_sign then
+		i = -itself;
+	end;
+	unread_characters = ((max string) - counter) + 1;
+
+	answer i;
+end;    // string_to_integer
+
+scalar question string_to_scalar
+	of string type string;
+return
+	integer unread_characters;
+is
+	char ch;
+	integer i, counter;
+	scalar s, coeff;
+	boolean done is false;
+	boolean reverse_sign is false;
+
+	unread_characters = 0;
+	if num string < 1 then
+		answer 0;
+	end;
+
+	// read integer part
+	//
+	i = 0;
+	counter = min string;
+	if string[counter] is "-" then
+		reverse_sign is true;
+		counter = itself + 1;
+	elseif string[counter] is "+" then
+		counter = itself + 1;
+	end;
+
+	while counter <= max string and not done do
+		ch is string[counter];
+		counter = itself + 1;
+		if ch is "." then
+			done is true;
+		elseif not numerical ch then
+			done is true;
+			counter = itself - 1;
+		else
+			i = (itself * 10) + char_to_integer of ch;
+		end;
+	end;
+
+	// read fractional part
+	//
+	s = 0;
+	coeff = .1;
+	done is false;
+	while counter <= max string and not done do
+		ch is string[counter];
+		counter = itself + 1;
+		if not numerical ch then
+			done is true;
+			counter = itself - 1;
+		else
+			s = itself + coeff * char_to_integer of ch;
+			coeff = itself / 10;
+		end;
+	end;
+
+	s = itself + i;
+	if reverse_sign then
+		s = -itself;
+	end;
+	unread_characters = ((max string) - counter) + 1;
+
+	answer s;
+end;    // string_to_scalar

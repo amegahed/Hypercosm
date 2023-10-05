@@ -1,0 +1,16 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         chess_materials.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of materials used in chess.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/materials.ores";
+
+material type black_marble is plastic poster "black_marble.jpg";
+material type white_marble is plastic poster "white_marble.jpg";

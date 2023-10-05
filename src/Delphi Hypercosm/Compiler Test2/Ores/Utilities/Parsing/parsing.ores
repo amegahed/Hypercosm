@@ -1,0 +1,19 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		     parsing.ores 				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a selection of text parsing utilities.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/text_parsing.ores";
+include "system/char_parsing.ores";
+include "system/line_parsing.ores";
+include "system/string_parsing.ores";
+include "system/number_parsing.ores";
+include "system/whitespace_parsing.ores";

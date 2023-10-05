@@ -1,0 +1,99 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             bumps.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{           Contains some standard bump mapping shaders.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_images.ores";
+include "system/native_shading.ores";
+include "system/native_noise.ores";
+
+shader wavy
+	color type color;
+	in coords type coords is local;
+is
+	vector v = location in coords;
+	scalar x = v dot <1 0 0>;
+	scalar y = v dot <0 1 0>;
+	scalar z = v dot <0 0 1>;
+
+	x = (sin (x * 360)) * .5;
+	y = (sin (y * 360)) * .5;
+	z = (sin (z * 360)) * .5;
+	set_normal to (normal + <x y z>);
+
+	answer color;
+end;    // wavy
+
+shader bumpy
+	color type color;
+is
+	vector v = location in local;
+	vector s = vnoise (v * 10);
+	scalar x = (s dot <1 0 0>) * .5;
+	scalar y = (s dot <0 1 0>) * .5;
+
+	set_normal in surface to (<x y 1>);
+
+	answer color;
+end;    // bumpy
+
+shader ridged
+	color type color;
+	in coords type coords is local;
+	along vector direction = <0 0 1>;
+	step scalar stepsize = 10;
+is
+	scalar x = (location in coords) dot direction;
+	scalar offset = sin (x * 360 * stepsize) * .3;
+	vector n = normal in coords;
+
+	n = itself + (direction * offset);
+	set_normal in coords to n;
+
+	answer color;
+end;    // ridged
+
+shader riveted
+	color type color;
+	in coords type coords is parametric;
+is
+	vector v = location in coords;
+	scalar x = v dot <1 0 0>;
+	scalar y = v dot <0 1 0>;
+	scalar d;
+
+	x = x * 10;
+	y = y * 10;
+	x = x - round x;
+	y = y - round y;
+	d = (x * x) + (y * y);
+	if d < .1 then
+		set_normal in surface to <(x * d) (y * d) .1>;
+	end;
+
+	answer color;
+end;    // riveted
+
+shader show_bumps
+	image type image;
+	times scalar factor = 1;
+	in coords type coords is parametric;
+	color type color;
+is
+	vector v = location in coords;
+	scalar x = (v dot <1 0 0>) * factor;
+	scalar y = (v dot <0 1 0>) * factor;
+	color type color1 = image get_color at x y;
+	color type color2 = image get_color at (x + .01) y;
+
+	set_normal in surface to <0 0 1> + (color1 - color2);
+	
+	answer color;
+end;    // show_bumps

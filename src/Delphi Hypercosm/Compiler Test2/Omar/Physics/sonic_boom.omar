@@ -1,0 +1,234 @@
+{***************************************************************}
+{                          sonic_boom.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sonic_boom;
+
+
+include "system/3d.ores";
+include "system/paths.ores";
+include "system/interactions.ores";
+include "system/check_keys.ores";
+include "system/sr71.omar";
+include "system/rocket.omar";
+include "system/button_meter.omar";
+include "system/digital.omar";
+
+
+scalar max_speed = 3.5;
+scalar sound_speed = .15;
+scalar dist = 0;
+scalar air_resistance = .1;
+scalar thrust = 0;
+scalar speed = 0;
+boolean instruments_changed is true;
+vector orientation = <0 0 0>;
+scalar current_mach = 0, current_speed = 0;
+
+
+wave_path type sonic_wave with
+    steps = 8;
+    spacing = 4;
+    expansion_speed = sound_speed;
+end;    // wave_path
+
+
+shape runway_markers with
+    scalar width = 1;
+    integer markers = 10;
+is
+    for integer counter = -markers..markers do
+        parallelogram with
+            scale by (width / 2) along <0 1 0>;
+            move to <(counter) 0 0>;
+        end;
+    end;
+end;    // runway_markers
+
+
+shape flying_sr71 with
+    path type path is sonic_wave;
+is
+    sr71 with
+        steps = 2;
+        thrust = static thrust;
+        magnify by .0075;
+        scale by -1 along <1 0 0>;
+        material is silver;
+    end;
+
+    // sound waves at front and rear
+    //
+    path instance with
+        move to <-1.25 0 0>;
+        render_mode is wireframe;
+    end;
+    // path instance with move to .75 0 0; end;
+
+    {
+    runway_markers with
+        steps = dist * sound_speed;
+        offset = steps - trunc(steps);
+        move to offset 0 -.15;
+    end;
+    }
+end;    // flying_sr71
+
+
+shape flying_rocket with
+    path type path is sonic_wave;
+is
+    rocket with
+        thrust = static thrust;
+        magnify by .05;
+    end;
+
+    // sound waves at front and rear
+    //
+    path instance with
+        move to <-1.75 0 0>;
+        render_mode is wireframe;
+    end;
+    // path instance with magnify by .5; end;
+end;    // flying_rocket
+
+
+picture sonic_picture with
+    eye = <0 -8 0>;
+    field_of_view = 50;
+    roll = 0;
+    projection is perspective;
+    background = black;
+    window_name is "Sonic Waves";
+is
+    distant_light from <.3 -.5 1>;
+
+    flying_sr71 with
+        move to <(1 - (4 * speed / max_speed)) 0 0>;
+        rotate by (orientation dot <0 1 0>) * -180 around <1 0 0>;
+        rotate by (orientation dot <1 0 0>) * 180 around trans's z_axis;
+    end;
+end;    // sonic_picture
+
+
+picture instruments_picture with
+    window_name is "Instruments";
+is
+    static button_meter type thrust_meter labelled "Thrust"
+        controls thrust in 24;
+
+    static digital_gauge type mach_meter labelled "Mach Meter"
+        shows current_mach
+    with
+        places = 3;
+        decimal_places = 2;
+        width = 1.8;
+    end;
+
+    static digital_gauge type speed_meter labelled "Speed (mph)"
+        shows current_speed
+    with
+        places = 4;
+        decimal_places = 0;
+        width = 1.8;
+        height = 1.6;
+    end;
+
+    scalar aspect_ratio = height / width;
+
+    thrust_meter instance with
+        render_mode is wireframe;
+        magnify by .9;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 .65 0>;
+    end;
+    mach_meter instance with
+        material is constant_color light blue;
+        scale by 1 / aspect_ratio along <0 1 0>;
+    end;
+    speed_meter instance with
+        material is constant_color light blue;
+        scale by 1 / aspect_ratio along <0 1 0>;
+        move to <0 -.625 0>;
+    end;
+end;    // instruments_picture
+
+
+verb step is
+    scalar acceleration;
+    static scalar previous_mach = 0;
+
+    //  step sonic wave
+    //
+    sonic_wave step to (<(-speed * sound_speed) 0 0>) in relative;
+
+    // acceleration
+    //
+    acceleration = (thrust * air_resistance * max_speed);
+
+    // air resistance
+    //
+    acceleration = itself - speed * air_resistance;
+    if (abs (acceleration) > .001) then
+        speed = speed + acceleration;
+    end;
+
+    // move aircraft
+    //
+    dist = itself + speed;
+
+    // compute current mach and speed in mph
+    //
+    current_mach = speed;
+    current_speed = speed * 760;
+    instruments_changed is (previous_mach <> current_mach);
+    previous_mach = current_mach;
+end;    // step
+
+
+anim sonic_boom
+    args type args;
+with
+    facets = 18;
+    double_buffer is on;
+    args check;
+is
+    integer total_width = width;
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging orientation);
+        button2_behavior is button1_behavior;
+        button3_behavior is button1_behavior;
+        default_cursor is arrow;
+    end;
+
+    while true do
+        if mouse_down or instruments_changed or
+                (frame_number mod 7 = 0) then
+            instruments_picture with
+                width = trunc (total_width * 1 / 4);
+                h_center = (screen_width div 2) + ((
+                    total_width - width) div 2);
+                ortho_view;
+            end;
+        end;
+
+        sonic_picture with
+            aspect_ratio = 3 / 4;
+            width = trunc (total_width * 3 / 4);
+            h_center = (screen_width div 2) - ((total_width -
+                width) div 2);
+        end;
+
+        check_keys;
+        interaction update;
+
+        step;
+    end;
+end;    // sonic_boom

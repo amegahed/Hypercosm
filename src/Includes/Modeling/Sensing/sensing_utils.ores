@@ -1,0 +1,177 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         sensing_utils.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utilities routines used by various functions   }
+{       in the Sensing directory.                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/math.ores";
+
+// Given a plane defined by an origin, x_axis and y_axis, and a location in
+// space that (presumably) lies on the plane, compute x and y such that:
+//
+//   location = origin + (x * x_axis) + (y * y_axis)
+//
+// Then, the location, expressed in the plane's coordinate system, is <x y 0>.
+//
+vector question location_in_plane
+	vector location;
+	vector plane_origin;
+	vector plane_x_axis;
+	vector plane_y_axis;
+is
+	trans type trans with
+		origin = plane_origin;
+		x_axis = plane_x_axis;
+		y_axis = plane_y_axis;
+		z_axis = x_axis cross y_axis;
+	end;
+	
+	trans invert;
+	location = trans transformed location;
+	answer location;
+end;    // location_in_plane
+
+// Determine whether a plane intersects a parallelogram.  The plane is defined
+// by the plane_trans as (origin + (x * x_axis) + (y * y_axis) for all x and y,
+// and the parallelogram is defined by the parallelogram_trans as the same
+// equation for -1 <= x <= 1 and -1 <= y <= 1.
+//
+boolean question plane_intersects_parallelogram
+	trans type plane_trans;
+	trans type parallelogram_trans;
+return
+	boolean coplanar;
+	trans type transformed_plane_trans;
+is
+	scalar Nx, Ny, NdotO;
+	scalar intercept;
+	
+	coplanar is false;
+	
+	// Transform the plane into the coordinate space of the parallelogram, so
+	// we can do the math for an intersection against a simple rectangle
+	// defined by -1 <= x <= 1, -1 <= y <= 1, z = 0.
+	//
+	parallelogram_trans invert;
+	plane_trans transform from parallelogram_trans;
+	
+	// The normal to the plane is N = plane_trans's z_axis.
+	// The origin to the plane is O = plane_trans's origin.
+	// The plane is defined by:
+	//   N dot p = N dot O
+	//
+	// Intersecting the plane with the z = 0 plane gives the following line:
+	//
+	//   N.x * x + N.y * y = N dot O
+	//
+	// We can then solve this line for its intercept points with the four
+	// lines that define the edges of the rectangle, and see if the intercepts
+	// are in the bounds of the edges.
+	//
+	
+	Nx = plane_trans's z_axis.x;
+	Ny = plane_trans's z_axis.y;
+	
+	if (Nx = 0) and (Ny = 0) then
+
+		// The plane is parallel to the rectangle.  If the origin to the plane
+		// lies in the z = 0 plane, then they intersect.
+		//
+		if plane_trans's origin.z = 0 then
+			coplanar is true;
+			transformed_plane_trans = plane_trans;
+			answer yes;
+		else
+			answer no;
+		end;
+	end;
+	
+	NdotO = plane_trans's z_axis dot plane_trans's origin;
+	
+	if Ny <> 0 then
+
+		// intersect with the line x = 1
+		//
+		intercept = (NdotO - Nx) / Ny;
+		
+		if -1 <= intercept <= 1 then
+			answer yes;
+		end;
+		
+		// intersect with the line x = -1
+		//
+		intercept = (NdotO + Nx) / Ny;
+		
+		if -1 <= intercept <= 1 then
+			answer yes;
+		end;
+	end;
+	
+	if Nx <> 0 then
+
+		// intersect with the line y = 1
+		//
+		intercept = (NdotO - Ny) / Nx;
+		
+		if -1 <= intercept <= 1 then
+			answer yes;
+		end;
+		
+		// intersect with the line y = -1
+		//
+		intercept = (NdotO + Ny) / Nx;
+		
+		if -1 <= intercept <= 1 then
+			answer yes;
+		end;
+	end;
+	
+	answer no;
+end;    // plane_intersects_parallelogram
+
+// Determine whether two parallelograms intersect.  The parallelograms are
+// defined by parallelogram1_trans and parallelogram2_trans as
+// (origin + (x * x_axis) + (y * y_axis) for -1 <= x <= 1 and -1 <= y <= 1.
+//
+boolean question parallelogram_intersects_parallelogram
+	trans type parallelogram1_trans;
+	trans type parallelogram2_trans;
+is
+	// Treat one parallelogram as an infinite plane, and see if it intersects
+	// the other.  If it does, treat the second as a plane, and see it it
+	// intersects the first.
+	//
+	// The only complication is that if the parallelograms are coplanar, we
+	// need to do more tests to see if they actually intersect.
+	//
+	boolean coplanar;
+	trans type transformed_p1;
+	
+	if (plane_intersects_parallelogram
+			parallelogram1_trans parallelogram2_trans
+			return coplanar transformed_p1) then
+		if coplanar then
+
+			// The parallelograms are coplanar.  We have the trans of the
+			// first one, transformed into the coordinate space of the second
+			// one.  So, we can test the first against a simple rectangle
+			// defined by -1 <= x <= 1, -1 <= y <= 1, z = 0.
+			//
+			
+			// TODONOW
+		elseif (plane_intersects_parallelogram
+					parallelogram2_trans parallelogram1_trans) then
+			// They intersect.
+			answer yes;
+		end;
+	end;
+	
+	answer no;
+end;    // parallelogram_intersects_parallelogram

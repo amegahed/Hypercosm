@@ -1,0 +1,58 @@
+do multiline_checklist_selector_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "strings.ores";
+include "native_text.ores";
+include "Multiline Checklist Selector.ores";
+
+
+strings type title is [
+    "Procedure Checklist"
+    "Steps"
+];
+strings type step1 is ["This"];
+strings type step2 is ["That"];
+strings type step3 is ["The" "Other" "Thing!"];
+strings type checklist[] is [
+    step1 step2 step3
+];
+
+
+anim multiline_checklist_selector_test with
+    background = dark blue;
+    double_buffer is true;
+is
+    multiline_text_sensor type step_display title at <-1 .8 0> with
+        h_alignment is left;
+    end;
+   
+    multiline_checklist_selector type checklist_selector of checklist at <.95 0 0>
+        using step_display
+    with
+        h_alignment is right;
+    end;
+    
+    verb checklist_action is
+        {
+        strings type text is checklist_selector selected_item;
+        
+        write "selected item is ";
+        for each string type string in text do
+            write string;
+        end;
+        write;
+        }
+    end;    // checklist_action
+
+    picture checklist_selector_picture is
+        checklist_selector draw;
+        step_display draw;
+    end;
+    
+    checklist_selector's mouse_down_action is (new action type of checklist_action);
+    while true do
+        checklist_selector_picture;
+    end;
+end;    // multiline_checklist_selector_test

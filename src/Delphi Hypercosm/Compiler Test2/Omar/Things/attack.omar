@@ -1,0 +1,80 @@
+{***************************************************************}
+{                          attack.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do attack_picture;
+
+
+include "system/3d.ores";
+include "system/solids.ores";
+include "system/shaders.ores";
+include "system/jumbo.omar";
+include "system/dragonfly.omar";
+
+
+picture attack_picture with
+    eye = <-20 -20 10>;
+    field_of_view = 35;
+    eye = <-20 -20 -30>;
+    lookat = <6 .2 4>;
+
+    // eye = 30 1 0;                // front view
+    // eye = 5 -20 0;               // side view
+    // field_of_view = 65;
+    // eye = 10 -10 5;
+    render_mode is shaded;
+    shading is vertex;
+    background = sky_blue;
+    ambient = white * .45;
+
+    {
+        reflections is on;
+        shadows is on;
+        refractions is on;
+        }
+is
+    distant_light from <1.5 -3 1>;
+    jumbo with
+        material is plastic colored <.9 .9 .9> polished semi shiny;
+        rotate by 180 around <0 0 1>;
+        move to <-150 0 0>;
+        rotation of <-20 0 180>;
+        magnify by .03;
+
+        {
+                magnify by .03;
+                rotation of -20 0 180;
+                move to 5 0 0;
+                }
+    end;
+
+    {airplane}
+
+    dragonfly type's form with
+        color = dark green;
+        magnify by 1.25;
+        rotation of <10 0 5>;
+        move to <10 .5 10>;
+
+        {
+                rotation of -40 0 180;
+                move to 10 .5 3;
+                }
+    end;
+
+    {dragonfly}
+
+    plane with
+        move to <0 0 -31>;
+        magnify the shader_trans by 100;
+    end;
+    cloudy plane with
+        move to <0 0 100>;
+        magnify the shader_trans by 50;
+    end;
+end;    // attack_picture

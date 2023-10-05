@@ -1,0 +1,81 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              enums.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of enumerated types in the OMAR language.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do enum_example;
+
+include "system/native_string.ores";
+
+enum season is spring, summer, autumn, winter;      // definition of the seasons of the year
+enum suit is hearts, diamonds, spades, clovers;     // definition of the suits of cards
+
+string type question season_to_string
+	of season type season;
+is
+	when season is
+		spring:
+			answer "spring";
+		end;
+		summer:
+			answer "summer";
+		end;
+		autumn:
+			answer "autumn";
+		end;
+		winter:
+			answer "winter";
+		end;
+	end;
+end;    // season_to_string
+
+string type question suit_to_string
+	of suit type suit;
+is
+	when suit is
+		hearts:
+			answer "hearts";
+		end;
+		diamonds:
+			answer "diamonds";
+		end;
+		spades:
+			answer "spades";
+		end;
+		clovers:
+			answer "clovers";
+		end;
+	end;
+end;    // suit_to_string
+
+verb enum_example is
+	
+	// declaration of variables using enumerated types
+	//
+	suit type suit is hearts;
+	
+	write "suit is ", suit_to_string of suit, ;
+	write "The seasons are: ";
+	for season type season is spring .. winter do
+		write season_to_string of season;
+		if season isn't winter then
+			write ", ";
+		end;
+	end;
+
+	{
+	// mistakes that will be caught by the compiler
+	//
+	season is hearts;           // compile error - assigned enum constant to wrong type
+	suit is winter;             // compile error - assigned enum constant to wrong type
+	season is suit;             // compile error - assigned two differing types
+	suit is 128;                // compile error - assigned value out of range
+	}
+end;    // enum_example

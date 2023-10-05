@@ -1,0 +1,121 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	     bicubic_patch.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		bicubic patch.  Bicubic surface patches are used 		}
+{		to approximate curved surfaces using cubic spline		}
+{		curves.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/bicubic_grids.ores";
+include "system/mesh_shapes.ores";
+include "system/vector_fields.ores";
+include "system/vector_grid.ores";
+
+
+integer default_patch_steps = 8;
+
+
+shape bicubic_patch
+    integer rows;
+    by integer columns;
+    of bicubic_basis type bicubic_basis;
+with
+	// tessellation paramters
+	//
+    boolean triangulate is false;
+    boolean alternate is false;	
+	
+	// rendering parameters
+	//
+    boolean smoothing is true;
+    boolean closed is false;
+        
+    // texturing parameters
+    //
+    boolean textured is true;
+	texture_mapping type mapping is unit_parametric_mapping;
+	  
+	// diagnostic rendering parameters
+	//
+    boolean show_row_tangents is false;
+    boolean show_column_tangents is false;
+    boolean show_normals is false;
+    if rows = 0 then
+        rows = default_patch_steps;
+    end;
+    if columns = 0 then
+        columns = default_patch_steps;
+    end;
+is
+    // bicubic vertices
+    //
+    vector_grid type grid is get_bicubic_vertices
+        rows by columns of bicubic_basis;
+
+    // bicubic row and column tangents
+    //
+    vector_grid type row_tangents_grid is get_bicubic_row_tangents
+        rows by columns of bicubic_basis;
+    vector_grid type column_tangents_grid is get_bicubic_column_tangents
+        rows by columns of bicubic_basis;
+    vector_grid type normals_grid;
+
+    // find normals from tangents
+    //
+    dim normals_grid[min grid..max grid, min grid[] .. max grid[]];
+    for integer row = min grid .. max grid do
+        for integer column = min grid[] .. max grid[] do
+            normals_grid[row, column] = column_tangents_grid[row,
+                column] cross row_tangents_grid[row, column];
+        end;
+    end;
+
+    // create bicubic mesh
+    //
+    grid_mesh of grid oriented to normals_grid with
+    
+    	// tessellation paramters
+    	//
+        triangulate is static triangulate;
+        alternate is static alternate;
+        
+        // rendering paramters
+        //
+        smoothing is static smoothing;
+        closed is static closed;
+        
+        // texturing parameters
+        //
+        textured is static textured;
+        mapping is static mapping;
+    end;
+
+    // create grid vector fields
+    //
+    if show_row_tangents then
+        vector_field2 of lines in row_tangents_grid at grid with
+            length = 1 / columns;
+            color = light red;
+        end;
+    end;
+    if show_column_tangents then
+        vector_field2 of lines in column_tangents_grid at grid with
+            length = 1 / rows;
+            color = light blue;
+        end;
+    end;
+    if show_normals then
+        vector_field2 of lines in normals_grid at grid with
+            length = 1 / (rows + columns);
+            color = light green;
+        end;
+    end;
+end;    // bicubic_patch

@@ -1,0 +1,234 @@
+{***************************************************************}
+{                          space_station.omar                   }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do space_station_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/bumps.ores";
+include "system/shaders.ores";
+include "system/earth.omar";
+
+
+shape space_station is
+    shape fuel_section is
+        scalar rot_by = 360 / 3;
+        color type fuel_cell_color = light orange;
+
+        metallic bumpy fuel_cell_color sphere with
+            center = <0 0 1>;
+            radius = 1;
+        end;
+        metallic bumpy fuel_cell_color sphere with
+            center = <0 0 1>;
+            radius = 1;
+            rotate by rot_by around <1 0 0>;
+        end;
+        metallic bumpy fuel_cell_color sphere with
+            center = <0 0 1>;
+            radius = 1;
+            rotate by -rot_by around <1 0 0>;
+        end;
+        cylinder with
+            radius = .1;
+            end1 = <0 1.0 1.4>;
+            end2 = <0 -1.0 1.4>;
+            rotate by (rot_by / 2) around <1 0 0>;
+        end;
+        cylinder with
+            radius = .1;
+            end1 = <0 1 1.4>;
+            end2 = <0 -1 1.4>;
+            rotate by (-rot_by / 2) around <1 0 0>;
+        end;
+        cylinder with
+            radius = .1;
+            end1 = <0 1 1.4>;
+            end2 = <0 -1 1.4>;
+            rotate by 180 around <1 0 0>;
+        end;
+        paraboloid with
+            top = <0 0 0>;
+            base = <-1 0 0>;
+            radius = .75;
+            move to <-.5 0 0>;
+        end;
+    end;    // fuel_section
+
+
+    shape central_spar is
+
+        // central conduit
+        sphere with
+            center = <0 0 0>;
+            radius = 1.0;
+            scale by .1 along <0 1 0>;
+            scale by .1 along <0 0 1>;
+        end;
+
+        // fuel_end connector
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <-1.25 0 0>;
+            radius1 = .25;
+            radius2 = 1.0;
+            scale by .1 along <0 1 0>;
+            scale by .1 along <0 0 1>;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <1.0 0 0>;
+            radius1 = .25;
+            radius2 = 1.0;
+            scale by .05 along <0 1 0>;
+            scale by .2 along <0 0 1>;
+        end;
+
+        // crew_qaurters flange
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <1.0 0 0>;
+            radius1 = .25;
+            radius2 = 1.0;
+            scale by .05 along <0 0 1>;
+            scale by .2 along <0 1 0>;
+        end;
+    end;    // central_spar
+
+
+    shape crew_quarters is
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <0 1.5 0>;
+            radius1 = .25;
+            radius2 = .75;
+            scale by .05 along <1 0 0>;
+            scale by .1 along <0 0 1>;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <0 -1.5 0>;
+            scale by .05 along <1 0 0>;
+            scale by .1 along <0 0 1>;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <0 0 1.5>;
+            scale by .05 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <0 0 -1.5>;
+            scale by .05 along <1 0 0>;
+            scale by .1 along <0 1 0>;
+        end;
+        sphere with
+            center = <0 0 0>;
+            radius = .15;
+            scale by .40 along <1 0 0>;
+        end;
+        hyperboloid1 with
+            end1 = <0 0 0>;
+            end2 = <.5 0 0>;
+            radius1 = .45;
+            radius2 = .05;
+            scale by .1 along <0 0 1>;
+            scale by .1 along <0 1 0>;
+        end;
+        lighted x 200 y 40 metallic panelled x 200 y 40 <.9 .9 1>
+            torus
+        with
+            center = <0 0 0>;
+            normal = <1 0 0>;
+            inner_radius = 1.35;
+            outer_radius = 1.55;
+            scale by 2 along <1 0 0>;
+        end;
+    end;    // crew_quarters
+
+    central_spar;
+    fuel_section with
+        magnify by .2;
+        move to <-1.25 0 0>;
+    end;
+    crew_quarters with
+        move to <1.0 0 0>;
+    end;
+end;    // space_station
+
+
+picture space_station_picture
+    args type args;
+with
+    field_of_view = 15;
+    eye = <10 -20 15>;
+    roll = 40;
+    ambient = black;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+    args check;
+is
+    distant_light from <1 -.5 1> with
+        brightness = 1.5;
+    end;
+
+//    celestial_sphere;
+    
+    metallic <.8 .8 1> space_station with
+        rotate by -90 around <0 1 0>;
+        move to <0 0 -.5>;
+    end;
+end;    // space_station_picture
+
+
+anim twirling_station_anim with
+    double_buffer is on;
+is
+    scalar view = 360 / 65;
+    scalar x = 10;
+    scalar rad1 = 180;
+
+
+    picture space_station_picture with
+        scalar spin = 0;
+        render_mode is wireframe;
+        edges is silhouette;
+        field_of_view = 130;
+        projection is fisheye;
+        eye = <1 -2 3>;
+    is
+        distant_light from <.3 -.5 1>;
+        distant_light from <.3 .5 1>;
+        glossy white space_station with
+            rotate by spin around <1 0 0>;
+        end;
+    end;    // space_station_picture
+
+    while true do
+        space_station_picture with
+            spin = x;
+            eye = <(5 * cos rad1) (1.5 * sin rad1) 0>;
+            facets = 4;
+        end;
+        x = x + view;
+        rad1 = rad1 - 3;
+    end;
+end;    // twirling_station_anim
+
+
+anim space_station_anim with
+    eye = <2 -8 4>;
+    lookat = <0 0 0>;
+    double_buffer is on;
+is
+    mouse_controlled_shape space_station;
+end;    // space_station_anim

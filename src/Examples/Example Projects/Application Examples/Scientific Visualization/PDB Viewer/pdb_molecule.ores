@@ -1,0 +1,125 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          pdb_molecule.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a utility class definition to parse files      }
+{       in the PDB (Protein Data Bank) format.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/text_resource.ores";
+include "pdb_atom.ores";
+
+subject PDB_molecule
+extends
+	renderable object
+does
+	verb new
+		from string type filename;
+	end;
+	verb parse
+		from string type filename;
+	end;
+	// renderable methods
+	//    
+	shape instance;
+	
+	// querying methods
+	//
+	vector question get_size;
+	vector question get_center;
+	integer question num_atoms;
+	volume_extents type question get_extents;
+has
+	// attributes
+	//
+	linked_list type atom_list;
+	volume_extents type extents;
+is
+	verb new
+		from string type filename;
+	is
+		parse from filename;
+	end;    // new
+	
+	
+	verb parse_line
+		string type line;
+	is
+		string type record is line substring from 1 to 4;
+		
+		if record matches "ATOM" then
+			PDB_atom type atom from line;
+			
+			atom_list add atom;
+			extents extend to atom's location;
+		end; 
+	end;    // parse_line
+	
+	
+	verb parse
+		from string type filename;
+	is
+		text_resource type text_resource named filename;
+		strings type lines;
+		integer line = 1;
+		
+		// wait for data to download
+		//
+		text_resource finish_loading;
+		
+		// parse file into a series of text lines
+		//
+		lines is text_resource get_lines;
+		if some lines then
+			for integer counter = 1 .. num lines do
+				parse_line lines[counter];
+			end;
+		end;
+	end;    // parse
+	 
+	// renderable methods
+	// 
+	
+			
+	shape instance is
+		objective shape atoms is
+			iterator type iterator is PDB_molecule's atom_list get_iterator;
+			
+			while iterator has_next do
+				PDB_atom type atom is PDB_atom type iterator next;
+				atom instance;
+			end;
+		end;    // atoms
+		
+		atoms;
+	end;    // instance
+	
+	
+	// querying methods
+	//
+	
+	
+	vector question get_size is
+		answer extents get_size;
+	end;    // get_size
+	
+	
+	vector question get_center is
+		answer extents get_center;
+	end;    // get_center 
+	
+	
+	integer question num_atoms is
+		answer atom_list get_size;
+	end;    // num_atoms
+	  
+	
+	volume_extents type question get_extents is
+		answer extents;
+	end;    // get_extents
+end;    // PDB_molecule

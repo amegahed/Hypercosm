@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script>
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+function GetPlugin()
+{
+	return InternetExplorer ? window.HyperX1 : window.document.HyperX1;
+}
+function formHandler() {
+	var Choice = document.form.site.options[document.form.site.selectedIndex].value;
+	//alert(Choice);
+	GetPlugin().SendMessage(Choice);
+}
+</script>
+</head>
+<body>
+<form name="form">
+<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif">Select Primitive To Display: </font>
+<select name="site" size=1 onChange="javascript:formHandler()">
+<option value="sphere">Sphere 
+<option value="cylinder">Cylinder 
+<option value="cone">Cone 
+<option value="paraboloid">Paraboloid 
+<option value="hyperboloid1">Hyperboloid1 
+<option value="hyperboloid2">Hyperboloid2
+<option value="block">Block 
+<option value="torus">Torus 
+<option value="mesh">Mesh 
+<option value="shaded_triangle">Shaded Triangle
+<option value="shaded_polygon">Shaded Polygon
+<option value="plane">Plane
+<option value="triangle">Triangle
+<option value="parallelogram">Parallelogram
+<option value="polygon">Polygon
+<option value="disk">Disk
+<option value="ring">Ring
+<option value="points">Points
+<option value="lines">Lines 
+<option value="volume">Volume 
+</select>
+</div>
+</form>
+<div align="center">
+  <SCRIPT SRC="http://www.hypercosm.com/download/player/scripts/checkforplayer.js"></SCRIPT>
+  <!--HypercosmAppletBegin--> <!--HypercosmAppletEnd--> </div>
+</body>
+</html>

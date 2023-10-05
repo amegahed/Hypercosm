@@ -1,0 +1,33 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         native_sensing.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains native utilities for sensing shape             }
+{       intersections.                                          }
+{                                                               }
+{                              NOTE:                            }
+{       Native entities may not be changed.  Doing so may       }
+{       cause the the system to malfunction or even crash.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+native boolean question shape_hits_shape
+	shape thing1;
+	shape thing2;
+return
+	at vector point;
+	towards vector normal;
+end;    // shape_hits_shape
+
+native boolean question ray_hits_shape
+	vector location, direction;
+	shape thing;
+return
+	at vector point;
+	towards vector normal;
+end;    // ray_hits_shape

@@ -1,0 +1,299 @@
+{***************************************************************}
+{                          piston.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do piston_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/actors.ores";
+include "system/random.ores";
+include "system/anims.ores";
+
+
+subject piston
+extends
+    actor
+does
+    verb new with
+        integer molecules = 15;
+        scalar molecule_radius = .15;
+        scalar max_speed = .1;
+        scalar radius = 1;
+        scalar height = 1.5;
+        scalar volume = .5;
+    end;    // new
+
+    verb act;
+    verb accelerate_molecules
+        by scalar factor;
+    end;    // accelerate_molecules
+
+    verb set_volume
+        to scalar volume;
+    end;    // set_volume
+
+    shape instance;
+has
+    scalar molecule_radius;
+    scalar max_speed;
+    scalar radius;
+    scalar height;
+    scalar volume;
+    scalar volume_height;
+    vector molecule_location[];
+    vector molecule_velocity[];
+    boolean molecule_collision[];
+is
+    verb new with
+        integer molecules = 15;
+        scalar molecule_radius = .15;
+        scalar max_speed = .1;
+        scalar radius = 1;
+        scalar height = 1.5;
+        scalar volume = .5;
+    is
+        boolean done;
+        vector max_velocity = <1 1 1> * 3 ^ (1 / 3) * max_speed;
+
+        // initialize piston
+        //
+        with piston do
+            its molecule_radius = molecule_radius;
+            its max_speed = max_speed;
+            its radius = radius;
+            its height = height;
+        end;
+        set_volume to volume;
+
+        // dimension molecule arrays
+        dim molecule_location[1..molecules];
+        dim molecule_velocity[1..molecules];
+        dim molecule_collision[1..molecules];
+
+        // initialize locations
+        //
+        for each vector location in molecule_location do
+            done is false;
+            while not done do
+                scalar r = radius - molecule_radius;
+                scalar x = random -r to r;
+                scalar y = random -r to r;
+
+                if sqrt (x * x + y * y) < r then
+                    scalar z = random molecule_radius to
+                        (height - molecule_radius);
+
+                    location = <x y z>;
+                    done is true;
+                end;
+            end;
+        end;
+
+        // initialize velocities
+        //
+        for each vector velocity in molecule_velocity do
+            velocity = vrandom -max_velocity to max_velocity;
+        end;
+
+        // initialize collision flags
+        //
+        for each boolean collision in molecule_collision do
+            collision is false;
+        end;
+    end;    // new
+
+
+    vector question reflect
+        vector v, n;
+    is
+        vector parallel_comp = v parallel n;
+        vector perpendicular_comp = v - parallel_comp;
+
+        answer perpendicular_comp - parallel_comp;
+    end;    // reflect
+
+
+    verb act is
+        // initialize collision flags
+        //
+        for each boolean collision in molecule_collision do
+            collision is false;
+        end;
+
+        // step molecules
+        //
+        for integer counter = min molecule_location..max
+            molecule_location
+        do
+            // move molecule
+            //
+            vector velocity = molecule_velocity[counter];
+            vector location = molecule_location[counter]
+                + velocity;
+
+            // collision with sides of cylinder
+            //
+            scalar x = location dot <1 0 0>;
+            scalar y = location dot <0 1 0>;
+            scalar r = sqrt (x * x + y * y);
+            scalar z;
+
+            if r > (radius - molecule_radius) then
+                scalar x2 = x * (radius - molecule_radius) / r;
+                scalar y2 = y * (radius - molecule_radius) / r;
+                vector normal = <x2 y2 0>;
+                z = location dot <0 0 1>;
+
+                location = <x2 y2 z>;
+                velocity = reflect velocity normal;
+                molecule_collision[counter] is true;
+            end;
+
+            // collision with bottom of cylinder
+            //
+            z = location dot <0 0 1>;
+            if (z < molecule_radius) then
+                x = velocity dot <1 0 0>;
+                y = velocity dot <0 1 0>;
+                z = abs (velocity dot <0 0 1>);
+                velocity = <x y z>;
+                x = location dot <1 0 0>;
+                y = location dot <0 1 0>;
+                location = <x y molecule_radius>;
+                molecule_collision[counter] is true;
+            end;
+
+            // collision with top of cylinder
+            //
+            z = location dot <0 0 1>;
+            if (z > volume_height - molecule_radius) then
+                x = velocity dot <1 0 0>;
+                y = velocity dot <0 1 0>;
+                z = abs (velocity dot <0 0 1>);
+                velocity = <x y (-z)>;
+                x = location dot <1 0 0>;
+                y = location dot <0 1 0>;
+                location = <x y (volume_height -
+                    molecule_radius)>;
+                molecule_collision[counter] is true;
+            end;
+            molecule_location[counter] = location;
+            molecule_velocity[counter] = velocity;
+        end;
+    end;    // act
+
+
+    verb accelerate_molecules
+        by scalar factor;
+    is
+        for each vector velocity in molecule_velocity do
+            velocity = itself * factor;
+        end;
+    end;    // accelerate_molecules
+
+
+    verb set_volume
+        to scalar volume;
+    is
+        volume_height = volume * height;
+        volume_height = clamp volume_height from
+            (molecule_radius * 2) to height;
+        piston's volume = volume_height / height;
+    end;    // set_volume
+
+
+    shape handle is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius = .1;
+        end;
+        cylinder with
+            end1 = <-.75 0 1>;
+            end2 = <.75 0 1>;
+            radius = .1;
+        end;
+    end;    // handle
+
+
+    shape molecules is
+        for integer counter = min molecule_location..max
+            molecule_location
+        do
+            if molecule_collision[counter] then
+                sphere_color = red;
+            else
+                sphere_color = cyan;
+            end;
+            sphere with
+                color = sphere_color;
+                center = molecule_location[counter];
+                radius = molecule_radius;
+            end;
+        end;
+    end;    // molecules
+
+
+    shape plunger is
+        disk with
+            material is aluminum;
+            radius = static radius;
+        end;
+        handle;
+    end;    // handle
+
+
+    shape instance is
+        scalar volume_height;
+
+        volume_height = height * volume;
+
+        transparent white cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 height>;
+            radius = static radius;
+        end;
+
+        // bottom
+        //
+        disk with
+            material is aluminum;
+            radius = static radius;
+        end;
+
+        // plunger of gas cylinder
+        //
+        plunger with
+            material is wood;
+            move to <0 0 volume_height>;
+        end;
+
+        // draw actual gas molecules
+        //
+        molecules;
+    end;    // gas_cylinder
+end;    // piston
+
+
+anim piston_anim
+    args type args;
+with
+    eye = <1 -5 3>;
+    lookat = <0 0 1>;
+    double_buffer is on;
+    window_name is "Piston";
+    args check;
+is
+    piston type piston with
+        volume = 1;
+    end;
+
+    mouse_controlled_actor piston;
+end;    // piston_anim

@@ -1,0 +1,152 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           char_parsing.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a selection of text parsing utilities          }
+{       for parsing characters.                                 }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/line_parsing.ores";
+
+char question get_next_char
+	// text position
+	//
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch is null;
+	
+	if line_number <= max text then
+		string type line is text[line_number];
+		if char_number <= max line then
+			ch is line[char_number];
+		else
+			ch is cr;
+		end;
+	end; 
+	
+	answer ch;
+end;    // get_next_char
+
+verb skip_char
+ 
+	// text position
+	//
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;    
+is
+	if line_number <= max text then
+		string type line is text[line_number];
+		
+		if char_number <= max line then
+		
+			// go to next char on same line
+			//
+			char_number = itself + 1;
+		else
+			// go to next line
+			//
+			line_number = itself + 1;
+		  
+			if line_number <= max text then
+			
+				// go to first character of next line
+				//
+				char_number = min text[line_number];
+				
+				// go to next valid line
+				//
+				skip_blank_lines at column char_number on line line_number of text;
+			end;            
+		end;
+	end;
+end;    // skip_char
+	
+verb parse_char
+	char reference ch;
+
+	// text position
+	//
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	ch is get_next_char at column char_number on line line_number of text;
+	skip_char at column char_number on line line_number of text;
+end;    // parse_char
+
+verb parse_error
+	string type error_string;
+	
+	// text position
+	//     
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;    
+is
+	write "Parse error on char ", char_number, " of line ", line_number, ":", ;
+	write error_string, ;
+end;    // parse_error
+
+verb match_char
+	char ch;
+	
+	// text position
+	//
+	at column integer reference char_number;
+	on line integer reference line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	if ch is get_next_char at column char_number on line line_number of text then
+		skip_char at column char_number on line line_number of text;
+	else
+		string type error_string is "Expected ";
+		error_string add quotated [ch];
+		parse_error error_string 
+			at column char_number on line line_number of text;
+	end;
+end;    // match_char
+
+integer question get_char_text_length
+	// text position
+	//
+	at column integer char_number;
+	on line integer line_number;
+	
+	// source text
+	//
+	of strings type text;
+is
+	char ch;
+	integer counter = 0;
+	
+	parse_char ch at column char_number on line line_number of text; 
+	while alphabetical ch and ch isn't null do
+		counter = itself + 1;
+		parse_char ch at column char_number on line line_number of text;
+	end;
+	
+	answer counter;
+end;    // get_char_text_length

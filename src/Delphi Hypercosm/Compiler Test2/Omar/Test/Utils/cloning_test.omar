@@ -1,0 +1,69 @@
+do test;
+
+
+include "system/copying.ores";
+include "system/printing.ores";
+
+
+subject thing
+extends
+	copyable cloneable printable object
+does
+	verb new with
+		integer value = 0;
+	end;
+	
+	// copyable and cloneable methods
+	//
+    verb copy 
+        object type source;
+    end;
+    object type question clone;
+    
+    // printable methods
+    //
+    verb print;
+has
+	public integer value;
+is
+	verb new with
+		integer value = 0;
+	is
+		thing's value = value;
+	end;	// new
+	
+	
+    verb copy 
+        object type source;
+    is
+    	thing type source_thing is thing type source;
+    	value = source_thing's value;
+    end;
+    
+    
+    object type question clone is
+    	thing type new_thing;
+    	new_thing copy thing;
+    	answer new_thing;
+    end;
+    
+    
+    verb print is
+    	write "value = ", value, ;
+    end;
+end;	// thing
+
+
+verb test is
+	thing type thing1 with
+		value = 5;
+	end;
+	thing type thing2 is thing type thing1 clone;
+	
+	thing1 print;
+	thing2 print;
+	thing1's value = 10;
+	thing1 print;
+	thing2 print;
+	write "done", ;
+end;	

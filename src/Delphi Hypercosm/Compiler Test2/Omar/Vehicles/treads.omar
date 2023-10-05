@@ -1,0 +1,269 @@
+{***************************************************************}
+{                          treads.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do tread_anim;
+
+
+include "system/3d.ores";
+include "system/math.ores";
+include "system/check_keys.ores";
+
+
+shape treads with
+    scalar distance = 0;
+    scalar tread_radius = 1;
+    scalar tread_length = 4;
+    integer tread_number = 10;
+    scalar tread_seperation = 0;
+    scalar tread_thickness = .1;
+    shape wheel;
+    shape tread;
+is
+    scalar circumference = pi * 2 * tread_radius;
+    scalar tread_spacing = (circumference + tread_length * 2) /
+        tread_number;
+    scalar tread_size = (tread_spacing - tread_seperation);
+    scalar offset;
+    scalar angle;
+    scalar x;
+
+
+    shape scaled_tread is
+        if some tread then
+            tread with
+                scale by (tread_size / 2) along <1 0 0>;
+                scale by tread_thickness along <0 0 1>;
+            end;
+        else
+            block with
+                scale by (tread_size / 2) along <1 0 0>;
+                scale by tread_thickness along <0 0 1>;
+            end;
+        end;
+    end;    // scaled_tread
+
+    if (distance > 0) then
+        offset = distance - trunc (distance / tread_spacing) *
+            tread_spacing;
+    else
+        offset = distance - (trunc (distance / tread_spacing) - 1)
+            * tread_spacing;
+    end;
+    angle = distance / circumference * 360;
+    if some wheel then
+        wheel with
+            rotate by angle around <0 1 0>;
+            scale by (tread_radius - .2) along <1 0 0>;
+            scale by (tread_radius - .2) along <0 0 1>;
+            scale by 4 along <0 1 0>;
+            move to <-(tread_length / 2) 0 0>;
+        end;
+        wheel with
+            rotate by angle around <0 1 0>;
+            scale by (tread_radius - .2) along <1 0 0>;
+            scale by (tread_radius - .2) along <0 0 1>;
+            scale by 4 along <0 1 0>;
+            move to <(tread_length / 2) 0 0>;
+        end;
+    end;
+
+    // draw upper treads
+    //
+    x = -(tread_length / 2) + offset;
+    while x <= (tread_length / 2) do
+        scaled_tread with
+            move to <x 0 tread_radius>;
+        end;
+        x = x + tread_spacing;
+    end;
+
+    // draw front treads
+    //
+    x = x - (tread_length / 2);
+    while x <= (circumference / 2) do
+        scaled_tread with
+            move to <0 0 tread_radius>;
+            rotate by (x / circumference) * 360 around
+                <0 1 0>;
+            move to <(tread_length / 2) 0 0>;
+        end;
+        x = x + tread_spacing;
+    end;
+
+    // draw lower treads
+    //
+    x = x - (circumference / 2);
+    while x <= tread_length do
+        scaled_tread with
+            move to <((tread_length / 2) - x) 0 (-tread_radius)>;
+        end;
+        x = x + tread_spacing;
+    end;
+
+    // draw back treads
+    //
+    x = x - tread_length;
+    while x <= (circumference / 2) do
+        scaled_tread with
+            move to <0 0 (-tread_radius)>;
+            rotate by (x / circumference) * 360 around
+                <0 1 0>;
+            move to <(-tread_length / 2) 0 0>;
+        end;
+        x = x + tread_spacing;
+    end;
+end;    // treads
+
+
+shape tire is
+    cylinder with
+        end1 = <0 -.3 0>;
+        end2 = <0 .3 0>;
+        radius = 1;
+    end;
+    cone with
+        end1 = <0 -.3 0>;
+        end2 = <0 -.4 0>;
+        radius1 = 1;
+        radius2 = .8;
+    end;
+    cone with
+        end1 = <0 .3 0>;
+        end2 = <0 .4 0>;
+        radius1 = 1;
+        radius2 = .8;
+    end;
+    ring with
+        center = <0 -.4 0>;
+        normal = <0 1 0>;
+        inner_radius = .6;
+        outer_radius = .8;
+    end;
+    ring with
+        center = <0 .4 0>;
+        normal = <0 1 0>;
+        inner_radius = .6;
+        outer_radius = .8;
+    end;
+    cone with
+        material is chalk colored white;
+        end1 = <0 .4 0>;
+        end2 = <0 .35 0>;
+        radius1 = .6;
+        radius2 = .5;
+    end;    // whitewall
+    cone with
+        material is chalk colored white;
+        end1 = <0 -.4 0>;
+        end2 = <0 -.35 0>;
+        radius1 = .6;
+        radius2 = .5;
+    end;    // whitewall
+end;    // tire
+
+
+shape hubcap is
+    disk with
+        center = <0 0 0>;
+        normal = <0 1 0>;
+        radius = .5;
+    end;
+    cone with
+        material is plastic colored grey;
+        end1 = <0 -.1 0>;
+        end2 = <0 0 0>;
+        radius1 = .1;
+        radius2 = .35;
+    end;
+    disk with
+        material is plastic colored grey;
+        center = <0 -.1 0>;
+        normal = <0 1 0>;
+        radius = .1;
+    end;
+end;    // hubcap
+
+
+shape tread_wheel is
+    tire with material is chalk colored light grey; end;
+    hubcap with
+        material is chalk colored white;
+        move to <0 -.35 0>;
+    end;
+end;    // tread_wheel
+
+
+shape tread_unit with
+    scalar time = 0;
+is
+    scalar length = 2;
+    scalar width = 2;
+
+
+    shape round_tread is
+        sphere;
+    end;    // round_tread
+
+    treads with
+        tread_length = length * 2;
+        distance = time;
+        scale by -1 along <0 1 0>;
+        move to <0 width 0>;
+        tread does round_tread;
+        wheel does tread_wheel;
+    end;
+    treads with
+        tread_length = length * 2;
+        distance = time;
+        move to <0 (-width) 0>;
+        tread does round_tread;
+        wheel does tread_wheel;
+    end;
+    cylinder with
+        material is metal;
+        end1 = <-length (-width) 0>;
+        end2 = <(-length) width 0>;
+        radius = .5;
+    end;
+    cylinder with
+        material is metal;
+        end1 = <length (-width) 0>;
+        end2 = <length width 0>;
+        radius = .5;
+    end;
+end;    // tread_unit
+
+
+picture tread_picture with
+    scalar t = 0;
+is
+    distant_light from <.3 -.5 1>;
+    tread_unit with
+        material is chalk colored light brown;
+        time = t;
+        move to <t 0 1.1>;
+    end;
+    parallelogram with
+        color = aqua;
+        magnify by 5;
+    end;
+end;    // tread_picture
+
+
+anim tread_anim with
+    double_buffer is on;
+        field_of_view = 30;
+is
+    while true do
+        tread_picture with
+            t = (get_mouse dot <1 0 0>) * 5;
+        end;
+                check_keys;
+    end;
+end;    // tread_anim

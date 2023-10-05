@@ -1,0 +1,500 @@
+{***************************************************************}
+{                          jumbo.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do jumbo_anim;
+
+include "system/3d.ores";
+include "system/hulls.ores";
+include "system/anims.ores";
+
+
+shape jumbo with
+    scalar thrust = 0;
+    scalar aileron_deflection = 0;
+    scalar elevator_deflection = 0;
+    scalar rudder_deflection = 0;
+    integer steps = facets;
+    boolean triangulate is off;
+is
+    static shape jet_engine with
+        scalar thrust = 0;
+    is
+        torus with
+            center = <0 0 0>;
+            normal = <1 0 0>;
+            inner_radius = .8;
+            outer_radius = 1;
+            scale by 10 along <1 0 0>;
+        end;
+        cone with
+            end1 = <.8 0 0>;
+            end2 = <2.5 0 0>;
+            radius1 = .8;
+            radius2 = .35;
+        end;
+        cone with
+            end1 = <2 0 0>;
+            end2 = <3 0 0>;
+            radius1 = .3;
+            radius2 = 0;
+        end;
+        paraboloid with
+            base = <-.5 0 0>;
+            top = <-1 0 0>;
+            radius = .4;
+        end;
+
+        // connector pod
+        cone with
+            end1 = <0 0 .5>;
+            end2 = <0 0 1.5>;
+            radius1 = 1.5;
+            radius2 = 2;
+            skew from <0 0 1.5> to <4 0 1.5>;
+            scale by .1 along <0 1 0>;
+            move to <-.5 0 0>;
+        end;
+        if (thrust > 0) then
+            cone with
+                material is flame;
+                end1 = <2 0 0>;
+                end2 = <(3 + thrust * 5) 0 0>;
+                radius1 = .3;
+                radius2 = 0;
+            end;
+        end;
+    end;    // jet_engine
+
+
+    static shape fuselage with
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        const integer sections = 6;
+
+        // cross section
+        //
+        scalar x_section[0..sections, 1..2];
+
+        // initialize round cross section
+        //
+        for integer counter = 0 .. sections - 1 do
+            scalar angle = (counter / sections) * -360;
+
+            x_section[counter, 1] = sin angle;
+            x_section[counter, 2] = cos angle;
+        end;
+        x_section[sections, 1] = x_section[0, 1];
+        x_section[sections, 2] = x_section[0, 2];
+
+        // front fuselage
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [-343 -325 -300 -288 -257 -185 -125]
+
+            // y mins
+            [-11 -18 -23 -25 -27 -28 -28]
+
+            // y maxes
+            [11 18 23 25 27 28 28]
+
+            // z mins
+            [-12 -21 -29 -32 -36 -40 -42]
+
+            // z maxes
+            [12 19 28 37 39 36 28]
+        with
+            rows = steps; columns = steps;
+            triangulate is static triangulate;
+                        closed is true;
+        end;
+
+        // middle fuselage
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [-125 50]
+
+            // y mins
+            [-28 -28]
+
+            // y maxes
+            [28 28]
+
+            // z mins
+            [-42 -42]
+
+            // z maxes
+            [28 28]
+        with
+            rows = steps; columns = steps;
+            triangulate is static triangulate;
+                        closed is true;
+        end;
+
+        // rear fuselage
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [50 125 250 330 335]
+
+            // y mins
+            [-28 -28 -15 -2 0]
+
+            // y maxes
+            [28 28 15 2 0]
+
+            // z mins
+            [-42 -38 -10 8 15]
+
+            // z maxes
+            [28 28 28 28 25]
+        with
+            rows = steps; columns = steps;
+            triangulate is static triangulate;
+                        closed is true;
+        end;
+    end;    // fuselage
+
+
+    static shape main_wing with
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        linear_hull
+            // cross section
+            [[10 0] [-1 2] [-7 2.5] [-10 1.5] [-8 0] [10 .01]]
+
+            // x displacement
+            [27 131 294]
+
+            // y mins
+            [-138 -52 88]
+
+            // y maxes
+            [5 33 131]
+
+            // z mins
+            [-28 -18 -1]
+
+            // z maxes
+            [-13 -7 6]
+        with
+            rows = steps; columns = steps;
+            triangulate is static triangulate;
+                        closed is true;
+        end;
+    end;    // main_wing
+
+
+    static shape wing with
+        scalar aileron_deflection = 0;
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        static shape aileron is
+            parallelogram with
+                scale by 45 along <1 0 0>;
+                scale by 15 along <0 1 0>;
+            end;
+        end;    // aileron
+
+        scalar aileron_angle = (clamp aileron_deflection
+            from -1 to 1) * 60;
+
+        main_wing with
+            steps = static steps;
+            triangulate is static triangulate;
+            material is aluminum;
+        end;
+        aileron with
+            rotate by aileron_angle around <1 0 0> about
+                <0 -15 0>;
+
+            // dihedral angle of wing
+            rotate by -5 around <0 1 0>;
+
+            // sweep of wing
+            rotate by 30 around <0 0 1>;
+            move to <250 85 0>;
+        end;
+    end;    // wing
+
+
+    static shape main_h_stab with
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        linear_hull
+            // cross section
+            [[10 0] [-1 2] [-7 2.5] [-10 1.5] [-8 0] [10 .01]]
+
+            // x displacement
+            [0 105]
+
+            // y mins
+            [222 324]
+
+            // y maxes
+            [321 349]
+
+            // z mins
+            [1 24]
+
+            // z maxes
+            [11 30]
+        with
+            rows = steps div 2; columns = steps div 2;
+            triangulate is static triangulate;
+                        closed is true;
+        end;
+    end;    // main_h_stab
+
+
+    static shape h_stab with
+        scalar elevator_deflection = 0;
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        static shape elevator is
+            parallelogram with
+                scale by 30 along <1 0 0>;
+                scale by 10 along <0 1 0>;
+            end;
+        end;    // elevator
+
+        scalar elevator_angle = (clamp elevator_deflection
+            from -1 to 1) * 60;
+
+        main_h_stab with
+            steps = static steps;
+            triangulate is static triangulate;
+        end;
+        elevator with
+            rotate by elevator_angle around <1 0 0> about
+                <0 -10 0>;
+
+            // dihedral angle of h_stab
+            rotate by -10 around <0 1 0>;
+
+            // sweep of h_stab
+            rotate by 15 around <0 0 1>;
+            move to <60 325 15>;
+        end;
+    end;    // h_stab
+
+
+    static shape main_tail with
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        linear_hull
+            // cross section
+            [[-105 0] [-97 10] [-81 14] [-36 18] [39 12]
+            [118 0] [39 -12] [-36 -18] [-81 -14] [-97 -10]
+            [-105 0]]
+
+            // x displacement
+            [27 133]
+
+            // y mins
+            [191 318]
+
+            // y maxes
+            [311 352]
+
+            // z mins
+            [-5 -1]
+
+            // z maxes
+            [5 1]
+        with
+            rows = steps div 2; columns = steps div 2;
+            triangulate is static triangulate;
+                        closed is true;
+        end;
+    end;    // main_tail
+
+
+    static shape tail with
+        scalar rudder_deflection = 0;
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        static shape rudder is
+            parallelogram with
+                color = white;
+                scale by 40 along <1 0 0>;
+                scale by 15 along <0 1 0>;
+            end;
+        end;    // rudder
+
+        scalar rudder_angle = (clamp rudder_deflection
+            from -1 to 1) * 60;
+
+        main_tail with
+            steps = static steps;
+            triangulate is static triangulate;
+        end;
+        rudder with
+            rotate by rudder_angle around <1 0 0> about
+                <0 -15 0>;
+
+            // sweep of h_stab
+            rotate by 20 around <0 0 1>;
+            move to <80 315 0>;
+        end;
+    end;    // tail
+
+
+    static shape jumbo_half with
+        scalar thrust = 0;
+        scalar aileron_deflection = 0;
+        scalar elevator_deflection = 0;
+        integer steps = facets;
+        boolean triangulate is false;
+    is
+        wing with
+            steps = static steps;
+            triangulate is static triangulate;
+            aileron_deflection = static aileron_deflection;
+            rotate by -90 around <0 0 1>;
+        end;
+
+        // wing fairing
+        sphere with
+            radius = 12;
+            scale by 8 along <1 0 0>;
+            move to <-60 -25 -25>;
+        end;
+        jet_engine with
+            thrust = static thrust;
+            magnify by 15;
+            move to <-110 -100 -40>;
+            material is plastic colored light grey;
+        end;
+        jet_engine with
+            thrust = static thrust;
+            magnify by 15;
+            move to <-30 -180 -35>;
+            material is plastic colored light grey;
+        end;
+        h_stab with
+            steps = static steps;
+            triangulate is static triangulate;
+            elevator_deflection = static elevator_deflection;
+            move to <0 0 8>;
+            rotate by -90 around <0 0 1>;
+            material is aluminum;
+        end;
+    end;    // jumbo_half
+
+
+    scalar dihedral = thrust * 10;
+
+    fuselage with
+        steps = static steps;
+        triangulate is static triangulate;
+    end;
+    tail with
+        steps = static steps;
+        triangulate is static triangulate;
+        rudder_deflection = static rudder_deflection;
+        rotate by -90 around <0 1 0>;
+        rotate by -90 around <0 0 1>;
+        material is plastic colored red;
+    end;
+    jumbo_half with
+        steps = static steps;
+        triangulate is static triangulate;
+        thrust = static thrust;
+        aileron_deflection = static aileron_deflection;
+        elevator_deflection = static elevator_deflection;
+        rotate by -dihedral around <1 0 0>;
+    end;
+    jumbo_half with
+        steps = static steps;
+        triangulate is static triangulate;
+        thrust = static thrust;
+        scale by -1 along <0 1 0>;
+        aileron_deflection = -static aileron_deflection;
+        elevator_deflection = static elevator_deflection;
+        rotate by dihedral around <1 0 0>;
+    end;
+
+    // nose
+    paraboloid with
+        material is chalk colored grey;
+        base = <-343 0 0>;
+        top = <-355 0 0>;
+        radius = 12;
+    end;
+end;    // jumbo
+
+
+picture jumbo_picture
+    args type args;
+with
+    eye = <-40 -80 20>;
+    lookat = <0 0 8>;
+    field_of_view = 30;
+    width = 512;
+    height = 384;
+    render_mode is shaded;
+    shading is face;
+
+    ambient = white / 2;
+    args check;
+is
+    distant_light from <-.4 -.5 1>;
+
+    jumbo with
+        rotate by -30 around <1 0 0>;
+        rotate by 10 around <0 1 0>;
+        magnify by .05;
+        move to <0 0 10>;
+        material is plastic colored white;
+    end;
+
+    plane with
+        color = light brown;
+        magnify by 30;
+    end;
+end;    // jumbo_picture
+
+
+anim jumbo_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <-20 40 40>;
+    field_of_view = 50;
+    window_name is "Boeing 747";
+    background = sky_blue;
+    args check;
+is
+    shape aircraft is
+        jumbo with
+            magnify by .05;
+            material is plastic colored lime_green polished semi shiny;
+        end;
+    end;    // aircraft
+
+    mouse_controlled_shape aircraft;
+end;    // jumbo_anim

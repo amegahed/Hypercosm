@@ -1,0 +1,175 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              math.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{               Contains some standard math functions.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_math.ores";
+include "system/constants.ores";
+include "system/fractions.ores";
+include "system/trigonometry.ores";
+
+{***************************************************************}
+{                       boolean functions                       }
+{***************************************************************}
+
+boolean question even
+	integer i;
+is
+	answer i mod 2 = 0;
+end;    // even
+
+boolean question odd
+	integer i;
+is
+	answer i mod 2 = 1;
+end;    // odd
+
+{***************************************************************}
+{                       integer functions                       }
+{***************************************************************}
+
+integer question isqr
+	integer i;
+is
+	answer i * i;
+end;    // isqr
+
+integer question iabs
+	integer i;
+is
+	if i < 0 then
+		answer -i;
+	else
+		answer i;
+	end;
+end;    // iabs
+
+integer question isign
+	integer i;
+is
+	if i < 0 then
+		answer -1;
+	elseif i > 0 then
+		answer 1;
+	else
+		answer 0;
+	end;
+end;    // isign
+
+integer question iclamp
+	integer i;
+	from integer low;
+	to integer high;
+is
+	if i < low then
+		answer low;
+	elseif i > high then
+		answer high;
+	else
+		answer i;
+	end;
+end;    // iclamp
+
+integer question ifloor
+	scalar s;
+is
+	if (s > 0) or (s = trunc s) then
+		answer trunc s;
+	else
+		answer (trunc s) - 1;
+	end;
+end;    // ifloor
+
+integer question iceiling
+	scalar s;
+is
+	if (s < 0) or (s = trunc s) then
+		answer trunc s;
+	else
+		answer (trunc s) + 1;
+	end;
+end;    // iceiling
+
+{***************************************************************}
+{                        scalar functions                       }
+{***************************************************************}
+
+scalar question sqr
+	scalar s;
+is
+	answer s * s;
+end;    // sqr
+
+scalar question sqrt
+	scalar s;
+is
+	answer s ^ .5;
+end;    // sqrt
+
+scalar question log
+	base scalar b = 10;
+	of scalar s;
+is
+	answer (ln s) / (ln b);
+end;    // log
+
+scalar question abs
+	scalar s;
+is
+	if s < 0 then
+		answer -s;
+	else
+		answer s;
+	end;
+end;    // abs
+
+integer question sign
+	scalar s;
+is
+	if s < 0 then
+		answer -1;
+	elseif s > 0 then
+		answer 1;
+	else
+		answer 0;
+	end;
+end;    // sign
+
+{***************************************************************}
+{                multiargument scalar functions                 }
+{***************************************************************}
+
+scalar question smod
+	scalar s;
+	to scalar range;
+is
+	answer s - (trunc (s / range) * range);
+end;    // smod
+
+scalar question snap
+	scalar s;
+	to scalar range;
+is
+	answer round(s / range) * range;
+end;    // snap
+	
+scalar question clamp
+	scalar s;
+	from scalar low;
+	to scalar high;
+is
+	if s < low then
+		answer low;
+	elseif s > high then
+		answer high;
+	else
+		answer s;
+	end;
+end;    // clamp

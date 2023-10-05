@@ -1,0 +1,87 @@
+{***************************************************************}
+{                          long_lat.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do long_lat_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+
+
+anim long_lat_anim with
+    eye = <2 -8 4>;
+    lookat = <0 0 0>;
+    field_of_view = 30;
+is
+    scalar s = .8;
+    scalar t = -.2;
+    scalar u = 1.25;
+
+	shape scene is
+	    axes;
+	    sphere with
+	    	render_mode is wireframe;
+	    end;
+	
+	    line [<-1 0 0.01> <1 0 0.01>];
+	    line [<-0.01 0 -1> <-0.01 0 1>];
+	    line [<0 -1 0> <0 1 0>];
+	
+	    // longitude marks
+	    //
+	    futura_l_word "0" with
+	        move to <s t 0>;
+	    end;
+	    futura_l_word "90" with
+	        rotate by -90 around <0 0 1>;
+	        move to <s t 0>;
+	        rotate by 90 around <0 0 1>;
+	    end;
+	    futura_l_word "180" with
+	        rotate by -180 around <0 0 1>;
+	        move to <s t 0>;
+	        rotate by 180 around <0 0 1>;
+	    end;
+	    futura_l_word "270" with
+	        rotate by -270 around <0 0 1>;
+	        move to <s t 0>;
+	        rotate by 270 around <0 0 1>;
+	    end;
+	
+	    // arcs
+	    //
+	    arrow_arc to 359 with
+	        radius = .5;
+	    end;
+	    arrow_arc to 90 with
+	        radius = .75;
+	        rotate by 90 around <1 0 0>;
+	    end;
+	    arrow_arc to -90 with
+	        radius = .75;
+	        rotate by 90 around <1 0 0>;
+	    end;
+	
+	    // lattitude marks
+	    //
+	    futura_l_word "90" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 0 u>;
+	    end;
+	    futura_l_word "-90" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 0 (-u)>;
+	    end;
+	    line [<-.15 0 (-u)> <-.1 0 (-u)>];
+	end;
+	mouse_controlled_shape scene;
+end;    // long_lat_anim

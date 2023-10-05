@@ -1,0 +1,76 @@
+do get_mouse_anim;
+
+include "system/3d.ores";
+include "system/native_overlay_text.ores";
+
+verb report_mouse_location
+    at vector location;
+is
+    string type message is "mouse location: ";
+    vector mouse_location = get_mouse;
+    
+    message add "<";
+    message add scalar_to_string of mouse_location.x;
+    message add " ";
+    message add scalar_to_string of mouse_location.y;
+    message add " ";
+    message add scalar_to_string of mouse_location.z;
+    message add ">";
+    
+    overlay_text message at location;
+end;    // report_mouse_location
+    
+verb report_mouse_button
+    mouse_button type mouse_button;
+    at vector location;
+is
+    string type message is "mouse button ";
+    
+    message add mouse_button_to_string of mouse_button;
+    message add " is ";
+    
+    if mouse_down of mouse_button then
+        message add "down";
+    else
+        message add "up";
+    end;
+    
+    overlay_text message at location;
+end;    // report_mouse_button
+    
+verb report_mouse_click
+    at vector location;
+is
+    static click type last_click is none;
+    string type message is "last mouse click is ";
+    click type next_click is get_click;
+    
+    // update last click
+    //
+    if some next_click then
+        last_click is next_click;
+    end;
+    
+    if some last_click then
+        message add click_to_string of last_click;
+    else
+        message add "none";
+    end;
+    
+    overlay_text message at location;
+end;    // report_mouse_click
+    
+         
+anim get_mouse_anim
+is
+    picture scene is
+        report_mouse_location at <0 .5 0>;
+        report_mouse_button left at <0 .25 0>;
+        report_mouse_button middle at <0 0 0>;
+        report_mouse_button right at <0 -.25 0>;
+        report_mouse_click at <0 -.5 0>;
+    end;    // scene
+    while true do
+        scene;
+    end;
+end;    // get_mouse_anim

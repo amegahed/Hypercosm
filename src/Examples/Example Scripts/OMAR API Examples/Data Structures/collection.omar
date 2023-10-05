@@ -1,0 +1,102 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            collection.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       collection utilities.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/printing.ores";
+include "system/string_conversions.ores";
+include "system/linked_list.ores";
+
+subject thing
+extends
+	printable object
+does
+	// constructor
+	//
+	verb new with
+		integer i = 0;
+	end;    // new
+
+	// converting method
+	//
+	string type question to_string;
+has
+	// attributes
+	//
+	integer i;
+is
+	//
+	// constructor
+	//
+
+	verb new with
+		integer i = 0;
+	is
+		thing's i = i;
+	end;    // new
+
+	//
+	// converting method
+	//
+
+	string type question to_string is
+		answer integer_to_string of i;
+	end;    // to_string
+end;    // thing
+
+verb example is
+	thing type thing1 with
+		i = 5;
+	end;
+	thing type thing2 with
+		i = 10;
+	end;
+	thing type thing3 with
+		i = 15;
+	end;
+	thing type thing4 with
+		i = 20;
+	end;
+	mutable_collection type collection is new linked_list;
+	thing type thing is none;
+
+	collection add thing2;
+	collection add thing1;
+	collection add thing3;
+	collection add thing2;
+	collection add thing4;
+	collection add thing2;
+	
+	write "collection of ", collection get_size, " items :", ;
+	collection print;
+	write;
+	write "after removing thing1 from somewhere in the collection: ", ;
+	collection remove thing1;
+	collection print;
+	write;
+		
+	write "after removing thing3 from somewhere in the collection: ", ;
+	collection remove thing3;
+	collection print;
+	write;
+	
+	if collection contains thing2 then
+		write "collection contains thing2", ;
+	else
+		write "collection does not contain thing2", ;
+	end;
+	
+	write "after purging thing2 from collection: ", ;
+	collection purge thing2;
+	collection print;
+	write;
+end;    // example

@@ -1,0 +1,58 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       list_display_selector.omar       3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a list display        }
+{       selector user interface component.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do list_display_selector_anim;
+
+include "system/3d.ores";
+include "system/list_display_selector.ores";
+ 
+anim list_display_selector_anim with
+	double_buffer is true;
+is
+	string type list[] is [
+		"This"
+		"That"
+		"Other Thing"
+		"Yet Another Thing"
+		"Last Thing"
+	];
+	string type labels[] is [
+		"First Step"
+		"Second Step"
+		"Third Step"
+		"Fourth Step"
+		"Last Step"
+	];
+	text_display type text_display of "Steps" at <-1 .8 0> aligned to middle_left;
+	list_display_selector type list_display_selector
+		of list labelled labels
+		at <.95 0 0> aligned to middle_right
+		using text_display
+	with
+		selected is false;
+	end;
+		
+	verb list_display_action is
+		write "selected item is ", list_display_selector get_selected_step, ;
+	end;    // list_display_action
+	
+	picture scene is
+		list_display_selector draw;
+		text_display draw;
+	end;
+	
+	list_display_selector set_selection_action to (new action of list_display_action);
+	while true do
+		scene;
+		list_display_selector update;
+	end;
+end;    // list_display_selector_anim

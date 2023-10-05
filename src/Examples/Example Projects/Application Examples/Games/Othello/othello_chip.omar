@@ -1,0 +1,55 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           othello_chip.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of an othello        }
+{       chip.                                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do othello_chip_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape othello_chip with
+	color type color1 = grey;
+	color type color2 = white;
+	scalar thickness = .4;
+is
+	torus with
+		vmin = -90;
+		vmax = 90;
+		inner_radius = 1 - thickness;
+		material is plastic colored ((color1 + color2) / 2);
+	end;
+	disk with
+		center = <0 0 (thickness / 2)>;
+		normal = <0 0 -1>;
+		radius = 1 - (thickness / 2);
+		material is plastic colored color1;
+	end;
+	disk with
+		center = <0 0 (-thickness / 2)>;
+		normal = <0 0 1>;
+		radius = 1 - (thickness / 2);
+		material is plastic colored color2;
+	end;
+end;    // othello_chip
+
+anim othello_chip_anim
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	shape thing is
+		othello_chip;
+	end;
+	mouse_controlled_shape thing with
+		auto_camera is on;
+	end;
+end;    // othello_chip_anim

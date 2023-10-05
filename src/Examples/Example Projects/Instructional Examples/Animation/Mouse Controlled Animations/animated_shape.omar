@@ -1,0 +1,64 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  	 animated_shape.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of animated shapes      	}
+{		in an animation.										}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do fish_animated_shape_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "fish_parts.ores";
+
+scalar tail_wags_per_sec = 1 / 4;
+scalar fin_wags_per_sec = 1;
+scalar max_tail_deflection = 20;
+scalar max_fin_deflection = 30;
+        
+        
+shape fish_animated_shape with
+    scalar time = 0;
+is
+    scalar tail_deflection = sin (time * 360 *  tail_wags_per_sec) * max_tail_deflection;
+    scalar fin_deflection = sin (time * 360 * fin_wags_per_sec) * max_fin_deflection;
+    
+    body;
+    open_eyes;
+    // top fin
+    //
+    top_fin with
+        rotate by tail_deflection around <8 0 -5>;
+        move to <0 0 13>;
+    end;
+    tail with
+        angle = tail_deflection;
+        rotate by tail_deflection around <0 0 1>;
+        move to <15 0 0>;
+    end;
+    // side fins
+    //
+    side_fin with
+        rotate by (fin_deflection - 45) around <1 0 0>;
+        move to <-10 -4 -4>;
+    end;
+    side_fin with
+        rotate by (45 - fin_deflection) around <1 0 0>;
+        move to <-10 4 -4>;
+    end;
+end;    // fish_animated_shape
+    
+    
+anim fish_animated_shape_anim
+    args type args;
+with
+    eye = <-50 -30 10>;
+    args check;
+is
+    mouse_controlled_animated_shape fish_animated_shape;
+end;    // fish_animated_shape_anim

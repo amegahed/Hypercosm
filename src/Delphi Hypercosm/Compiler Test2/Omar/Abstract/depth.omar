@@ -1,0 +1,41 @@
+{***************************************************************}
+{                          depth.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do depth_picture;
+
+
+include "system/3d.ores";
+include "system/native_shading.ores";
+
+shader show_depth is
+    scalar d = distance;
+    scalar front_distance = 2;
+    scalar back_distance = 5;
+    scalar factor;
+
+    factor = 1 - (distance - front_distance) / (back_distance -
+        front_distance);
+    if (factor < 0) then
+        factor = 0;
+    end;
+    if (factor > 1) then
+        factor = 1;
+    end;
+
+    answer white * factor;
+end;    // show_depth
+
+
+picture depth_picture with
+    eye = <1 -3 2>;
+    render_mode is shaded;
+    facets = 0;
+is
+    show_depth torus;
+end;    // depth_picture

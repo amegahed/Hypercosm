@@ -1,0 +1,98 @@
+{***************************************************************}
+{                          ring.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do ring_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.ores";
+include "system/arrow_shapes.ores";
+
+shape labelled_ring with
+	scalar umin = -30;
+	scalar umax = 260;
+is
+	shape ring_primitive is
+		ring with
+			umin = static umin;
+			umax = static umax;
+			move to <0 0 -.01>;
+		end;
+	end;
+	
+	ring_primitive with
+		material is glass colored ring_color;
+		render_mode is shaded_line;
+	end;
+	
+	futura_l_word "UMIN" with
+		move to <1.25 0 0>;
+		rotate by umin around <0 0 1>;
+	end;
+	futura_l_word "UMAX" with
+		move to <1.25 0 0>;
+		rotate by umax around <0 0 1>;
+	end;
+	arrow from <-.01 0 0> to <-.01 0 .5>;
+	futura_l_word "NORMAL" with
+		rotate by 90 around <1 0 0>;
+		move to <-.4 0 .25>;
+	end;
+	// arcs showing longitude
+	//
+	arrow_arc to umax with
+		radius = .7;
+	end;
+	arrow_arc to umin with
+		radius = .8;
+	end;
+	line [<0 0 0> <1 0 0>] with
+		rotate by umin around <0 0 1>;
+	end;
+	line [<0 0 0> <1 0 0>] with
+		rotate by umax around <0 0 1>;
+	end;
+	line [<.5 0 0> <.5 0 .8>];
+	double_arrow from <0 0 .75> to <.5 0 .75>;
+	line [<-1 0 0> <-1 0 .8>];
+	double_arrow from <0 0 .75> to <-1 0 .75>;
+	futura_l_word "INNER" with
+		rotate by 90 around <1 0 0>;
+		move to <.8 0 .85>;
+	end;
+	futura_l_word "RADIUS" with
+		rotate by 90 around <1 0 0>;
+		move to <.8 0 .65>;
+	end;
+	futura_l_word "OUTER" with
+		rotate by 90 around <1 0 0>;
+		move to <-.5 0 .85>;
+	end;
+	futura_l_word "RADIUS" with
+		rotate by 90 around <1 0 0>;
+		move to <-.5 0 .65>;
+	end;
+end;    // labelled_ring
+
+shape ring_scene is
+	labelled_ring;
+	axes;
+end;    // ring_scene
+	
+	
+anim ring_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 32;
+	window_name is "The Ring Primitive";
+	args check;
+is
+	mouse_controlled_shape ring_scene;
+end;    // ring_anim

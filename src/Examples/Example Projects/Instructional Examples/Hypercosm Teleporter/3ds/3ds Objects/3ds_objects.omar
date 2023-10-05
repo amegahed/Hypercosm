@@ -1,0 +1,92 @@
+do translated_3ds_objects_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/rectangular_grid.ores";
+include "system/message_listening_multi_actor.ores";
+// 3ds objects
+//
+include "3ds_bicubic_patch.omar";
+include "3ds_box.omar";
+include "3ds_c_ext.omar";
+include "3ds_capsule.omar";
+include "3ds_chamfer_box.omar";
+include "3ds_chamfer_cyl.omar";
+include "3ds_cone.omar";
+include "3ds_cylinder.omar";
+include "3ds_gen_gon.omar";
+include "3ds_l_ext.omar";
+include "3ds_oil_tank.omar";
+include "3ds_plane.omar";
+include "3ds_prism.omar";
+include "3ds_pyramid.omar";
+include "3ds_sphere.omar";
+include "3ds_spindle.omar";
+include "3ds_teapot.omar";
+include "3ds_torus.omar";
+include "3ds_tube.omar";
+
+anim translated_3ds_objects_anim 
+	args type args;
+with
+	eye = <5 -10 5> * 25;
+	lookat = <0 0 12.5>;
+	field_of_view = 32;
+	background_name is none;
+	background = light grey;
+	animation_paused is true;
+	args check;
+is
+	shape environment is
+		rectangular_grid with
+			h_steps = 25;
+			v_steps = 25;
+			magnify by 50;
+			render_mode is wireframe;
+			color = grey;
+		end;
+	end;    // environment
+	
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_bicubic_patch_scene)
+		named "3ds_bicubic_patch";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_box_scene)
+		named "3ds_box";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_c_ext_scene)
+		named "3ds_c_ext";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_capsule_scene)
+		named "3ds_capsule";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_chamfer_box_scene)
+		named "3ds_chamfer_box";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_chamfer_cyl_scene)
+		named "3ds_chamfer_cyl";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_cone_scene)
+		named "3ds_cone";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_cylinder_scene)
+		named "3ds_cylinder";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_gen_gon_scene)
+		named "3ds_gen_gon";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_l_ext_scene)
+		named "3ds_l_ext";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_oil_tank_scene)
+		named "3ds_oil_tank";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_plane_scene)
+		named "3ds_plane";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_prism_scene)
+		named "3ds_prism";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_pyramid_scene)
+		named "3ds_pyramid";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_sphere_scene)
+		named "3ds_sphere";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_spindle_scene)
+		named "3ds_spindle";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_teapot_scene)
+		named "3ds_teapot";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_torus_scene)
+		named "3ds_torus";
+	multi_actor add_actor (new animated_tessellated_shape of translated_3ds_tube_scene)
+		named "3ds_tube";
+																																		  
+	mouse_controlled_actor multi_actor within new static_shape of environment;
+end;    // translated_3ds_objects_anim

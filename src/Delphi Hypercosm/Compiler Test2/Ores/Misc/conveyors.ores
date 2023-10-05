@@ -1,0 +1,989 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		   conveyors.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains subjects useful in modeling conveyor belts.	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/transformations.ores";
+include "system/actors.ores";
+include "system/groups.ores";
+include "system/standard_colors.ores";
+include "system/swapping.ores";
+include "system/common_materials.ores";
+
+
+subject conveyor_belt 
+extends
+    timed_actor
+does
+    verb new with
+        scalar tread_length = 1, tread_width = 1; 
+        scalar tread_seperation = .5, tread_thickness = .1;
+
+        // component materials
+        //
+        material type roller_material is aluminum;
+        material type belt_material is chalk colored light grey;
+        material type tread_material is chalk colored grey;
+    end;    // new
+
+    verb add_roller using
+        shape roller_shape does none with
+            scalar radius = 1;
+        end;    // roller
+        at vector center;
+    with
+        scalar radius = 1;
+    end;    // add_roller
+
+    verb add_belts with
+        boolean orientation is false;
+        scalar belt_width = .75;
+        boolean closed is false;
+        shape tread;
+    end;    // add_belts
+
+    verb delete_belts;
+    verb set_speed
+        to scalar speed;
+    end;    // set_speed
+
+    verb advance
+        by scalar time_step;
+    end;
+
+    // geometric representations
+    //    
+    shape rollers;
+    shape belts;
+    shape treads;
+    shape instance;
+has
+    struct roller has
+        vector center;
+        scalar radius, circumference;
+        scalar umin, umax;
+        scalar start_angle, end_angle, offset;
+        scalar arc_angle, arc_length;
+        scalar angular_speed, angular_offset;
+        boolean orientation;
+
+        shape roller_shape with
+            scalar radius = 1;
+        end;    // roller_shape
+
+        roller type next is none;
+    end;    // roller
+
+
+    struct belt has
+        vector center, direction;
+        scalar length, offset;
+        belt type next is none;
+    end;    // belt
+
+    // tread attributes
+    //    
+    scalar tread_length, tread_width;
+    scalar tread_seperation, tread_thickness;
+    shape tread;
+
+    // conveyor line attributes
+    //    
+    scalar belt_width; 
+    scalar speed;
+    scalar offset = 0;
+    boolean closed;
+
+    // component colors
+    //
+    color type roller_color, belt_color, tread_color; 
+
+    // roller and belt lists
+    //
+    roller type roller_list is none;
+    roller type last_roller is none;
+    belt type belt_list is none;
+    belt type last_belt is none;
+
+    // materials
+    //
+    material type roller_material;
+    material type belt_material;
+    material type tread_material;
+is
+    objective shape unit_roller is
+        cylinder;
+        disk with
+            move to <0 0 -.99>;
+        end;
+        disk with
+            rotate by 180 around <0 1 0>;
+            move to <0 0 .99>;
+        end;
+    end;    // unit_roller
+
+
+    objective shape default_roller with
+        scalar radius = 1;
+    is
+        scalar rim_width = .5;
+
+        if radius > .5 then
+            cylinder with
+                radius = static radius;
+            end;
+            cylinder with
+                radius = static radius - rim_width;
+            end;
+            ring with
+                outer_radius = radius;
+                inner_radius = radius - rim_width;
+                move to <0 0 -.99>;
+            end;
+            ring with
+                outer_radius = radius;
+                inner_radius = radius - rim_width;
+                rotate by 180 around <0 1 0>;
+                move to <0 0 .99>;
+            end;
+        else
+            unit_roller with
+                scale by radius along <1 0 0>;
+                scale by radius along <0 1 0>;
+            end;
+        end;
+    end;    // default_roller
+
+
+    verb new with
+        scalar tread_length = 1, tread_width = 1;
+        scalar tread_seperation = .5, tread_thickness = .1;
+
+        // component colors
+        //
+        material type roller_material is aluminum;
+        material type belt_material is chalk colored light grey;
+        material type tread_material is chalk colored grey;
+    is
+        with conveyor_belt do
+            its tread_length = tread_length;
+            its tread_width = tread_width;
+            its tread_seperation = tread_seperation;
+            its tread_thickness = tread_thickness;
+
+            // assign component materials
+            //
+            its roller_material is roller_material;
+            its belt_material is belt_material;
+            its tread_material is tread_material;
+        end;
+    end;    // new
+
+
+    objective verb find_belt
+        vector reference belt_center;
+        vector reference belt_direction;
+        from roller type roller1;
+        to roller type roller2;
+    with
+        boolean orientation is false;
+    is
+        vector v = roller2's center - roller1's center;
+        scalar dr = roller1's radius - roller2's radius;
+        scalar distance = vlength of v;
+        
+        if distance > abs (dr) then
+            vector direction = v / distance;
+            vector perpendicular_direction = direction cross 
+                <0 1 0>;
+            scalar dr_squared = sqr (dr);
+            scalar p = sqrt (sqr (distance) - dr_squared);
+            vector point1, point2;
+            scalar q, x, y;
+            
+            if orientation then
+                perpendicular_direction = -itself;
+            end;
+
+            // compute belt's tangent point1
+            //
+            q = roller1's radius / distance;
+            x = q * p;
+            y = q * dr;
+            point1 = roller1's center + (direction * y) + (
+                perpendicular_direction * x);
+                
+            // compute belt's tangent point2
+            //
+            q = roller2's radius / distance;
+            x = q * p;
+            y = q * dr;
+            point2 = roller2's center + (direction * y) + (
+                perpendicular_direction * x);
+                
+            // compute belt position
+            //
+            belt_center = (point2 + point1) / 2;
+            belt_direction = point2 - belt_center;
+        else
+            belt_center = <0 0 0>;
+            belt_direction = <0 0 0>;
+        end;
+    end;    // find_belt
+
+
+    objective verb find_crossover_belt
+        vector reference belt_center;
+        vector reference belt_direction;
+        from roller type roller1;
+        to roller type roller2;
+    with
+        boolean orientation is false;
+    is
+        vector v = (roller2's center - roller1's center);
+        scalar distance = vlength of v;
+
+        // compute cross over point
+        //
+        scalar crossover_dist = distance * roller1's radius / (roller1's 
+            radius + roller2's radius);
+            
+        if crossover_dist > roller1's radius then
+            vector direction = v / distance;
+            vector perpendicular_direction = direction cross 
+                <0 1 0>;
+            scalar r_squared, x, y;
+            vector point1, point2;
+                
+            if orientation then
+                perpendicular_direction = -itself;
+            end;
+
+            // compute belt's tangent point1
+            //
+            r_squared = sqr (roller1's radius);
+            y = r_squared / crossover_dist;
+            x = sqrt (r_squared - sqr (y));
+            point1 = roller1's center + (direction * y) + (
+                perpendicular_direction * x);
+                
+            // compute belt's tangent point2
+            //    
+            r_squared = sqr (roller2's radius);
+            y = r_squared / (crossover_dist - distance);
+            x = sqrt (r_squared - sqr (y));
+            point2 = roller2's center + (direction * y) - (
+                perpendicular_direction * x);
+                
+            // compute belt's position
+            //
+            belt_center = (point2 + point1) / 2;
+            belt_direction = point2 - belt_center;
+        else
+            belt_center = <0 0 0>;
+            belt_direction = <0 0 0>;
+        end;
+    end;    // find_crossover_belt
+
+
+    objective boolean question turn_orientation
+        from vector direction1;
+        to vector direction2;
+    is
+        vector normal = direction1 cross direction2;
+        
+        answer (normal dot <0 1 0>) > 0;
+    end;    // turn_orientation
+
+
+    verb add_roller using 
+        shape roller_shape does none with
+            scalar radius = 1;
+        end;    // roller
+        at vector center;
+    with
+        scalar radius = 1;
+    is
+        roller type roller;
+
+        // initialize roller
+        roller's center = center;
+        roller's radius = radius;
+        roller's umin = 0;
+        roller's umax = 360;
+        roller's circumference = 2 * pi * radius;
+        roller's arc_length = roller's circumference;
+        roller's orientation is false;
+        roller's arc_angle = 360;
+        roller's angular_offset = 0;
+        roller's offset = 0;
+
+        if some roller_shape then
+            roller's roller_shape does roller_shape;
+        else
+            roller's roller_shape does default_roller;
+        end;
+
+        // add roller to tail of list
+        //
+        if some last_roller then
+            last_roller's next is roller;
+            last_roller is roller;
+        else
+            roller_list is roller;
+            last_roller is roller;
+        end;
+    end;    // add_roller
+
+
+    verb add_belt
+        from roller type roller1;
+        to roller type roller2;
+        at vector center;
+        in vector direction;
+    is
+        belt type belt;
+        vector point;
+        scalar x, y;
+        scalar angle;
+
+        // initialize belt
+        //      
+        belt's center = center;
+        belt's direction = direction;
+        belt's length = sqrt (direction dot direction) * 2;
+        belt's offset = 0;
+
+        // add belt to list
+        //
+        if some last_belt then
+            last_belt's next is belt;
+            last_belt is belt;
+        else
+            belt_list is belt;
+            last_belt is belt;
+        end;
+
+        // set umin and umax 
+        //
+        point = (center - direction) - roller1's center;
+        x = point dot <1 0 0>;
+        y = point dot <0 0 1>;
+        angle = arctan y x;
+        if roller1's center <> roller_list's center then
+            roller1's umax = angle;
+        else
+            roller1's umax = angle;
+            roller1's umin = angle - 360;
+        end;
+        point = (center + direction) - roller2's center;
+        x = point dot <1 0 0>;
+        y = point dot <0 0 1>;
+        angle = arctan y x;
+        if roller2's center <> last_roller's center then
+            roller2's umin = angle;
+        else
+            roller2's umin = angle;
+            roller2's umax = angle + 360;
+        end;
+    end;    // add_belt
+
+
+    verb check_rollers is
+        for each roller type roller and its next in roller_list do
+            // find umin and umax
+            //
+            if not roller's orientation then
+                swap_scalars roller's umin and roller's umax;
+            end;
+            if (roller's umin > roller's umax) then
+                roller's umin = itself - 360;
+            end;
+            if (roller's umax > 360) then
+                roller's umin = itself - 360;
+                roller's umax = itself - 360;
+            end;
+            if (roller's umin = roller's umax) then
+                roller's umax = roller's umin + 360;
+            end;
+
+            // find start angle and end angle
+            //
+            if roller's orientation then
+                roller's start_angle = roller's umin;
+                roller's end_angle = roller's umax;
+            else
+                roller's start_angle = roller's umax;
+                roller's end_angle = roller's umin;
+            end;
+        end;
+
+        if not closed then
+            scalar wrap_angle;
+            roller type roller is roller_list;
+
+            // check first roller
+            //
+            wrap_angle = (roller's circumference - tread_length) 
+                / roller's circumference * 360;
+
+            if roller's orientation then
+                roller's start_angle = 
+                    roller's end_angle - wrap_angle; 
+            else
+                roller's start_angle = 
+                    roller's end_angle + wrap_angle; 
+            end;
+    
+            // check last roller
+            //
+            roller is last_roller;              
+            wrap_angle = (roller's circumference - tread_length) 
+                / roller's circumference * 360;
+
+            if roller's orientation then
+                roller's end_angle = 
+                    roller's start_angle + wrap_angle; 
+            else
+                roller's end_angle = 
+                    roller's start_angle - wrap_angle; 
+            end;
+        end;
+    end;    // check_rollers
+
+
+    verb compute_arc_angle
+        of roller type roller;
+        from belt type prev_belt;
+        to belt type next_belt;
+    is
+        boolean wraparound;
+
+        // compute roller's arc angle based on umin, umax
+        // and belt directions
+        //
+        roller's arc_angle = abs ((roller's end_angle + 360) - (roller
+            's start_angle + 360));
+
+        wraparound is (turn_orientation from prev_belt's direction
+            to next_belt's direction) is roller's orientation;
+        if wraparound then
+            if roller's arc_angle < 180 then
+                roller's arc_angle = 360 - itself;
+            end;
+        else
+            if roller's arc_angle > 180 then
+                roller's arc_angle = 360 - itself;
+            end;
+        end;
+    end;    // compute_arc_angle
+
+
+    objective scalar question arc_length
+        of scalar angle;
+        at scalar circumference;    
+    is
+        answer (angle / 360) * circumference;
+    end;    // arc_length 
+
+
+    objective scalar question arc_angle
+        of scalar offset;
+        at scalar circumference;
+    is
+        answer (offset / circumference) * 360;        
+    end;    // arc_angle
+
+    
+    verb compute_offsets is
+        roller type roller is roller_list;
+        belt type belt is belt_list;
+        belt type last_belt is none;
+        scalar offset = 0;
+
+        if some roller then
+    
+            // find first roller's arc offset
+            //
+            roller's arc_angle = abs ((roller's end_angle + 360) 
+                - (roller 's start_angle + 360));
+            roller's arc_length = arc_length of
+                roller's arc_angle at roller's 
+                circumference; 
+
+            offset = -roller's arc_length;
+            roller is roller's next;
+
+            while some belt do
+                belt's offset = offset;
+                offset = offset - belt's length;
+                last_belt is belt;
+                belt is its next;
+                if some belt then
+                    compute_arc_angle of roller from 
+                        last_belt to belt;
+                end;
+                roller's offset = offset;
+                roller's arc_length = arc_length of
+                    roller's arc_angle at roller's 
+                    circumference; 
+                offset = itself - roller's arc_length;
+
+                roller is its next;
+                if not some roller then
+                    roller is roller_list;
+                end;
+            end;
+        end;
+    end;    // compute_offsets
+
+
+    objective shape cube is
+        block; 
+    end;    // cube
+
+
+    objective shape square is
+        parallelogram;
+    end;    // square
+
+
+    verb set_tread_shape with
+        shape tread;
+    is
+        if some tread then
+
+            // user defined tread shape
+            //
+            conveyor_belt's tread does tread;
+        else
+            // default treads
+            //
+            if tread_thickness <> 0 then
+                conveyor_belt's tread does cube;
+            else
+                conveyor_belt's tread does square;
+            end;
+        end; 
+    end;    // set_tread_shape
+
+
+    verb add_belts with
+        boolean orientation is false;
+        scalar belt_width = .75;
+        boolean closed is false;
+        shape tread;
+    is
+        roller type roller is roller_list;
+        roller type next_roller;
+        roller type next_next_roller;
+        vector next_center, next_direction;
+        vector next_next_center, next_next_direction;
+        boolean next_orientation is orientation;
+
+        // set belt attributes
+        //
+        conveyor_belt's belt_width = belt_width;
+        conveyor_belt's closed is closed;
+        set_tread_shape with
+            tread does static tread;
+        end;
+
+        // look ahead 
+        //
+        if some roller then
+            next_roller is roller's next;
+        end;
+        if some next_roller then
+            next_next_roller is next_roller's next;
+        end;
+
+        // main loop
+        //
+        while some next_next_roller do
+
+            // find direction to next next roller
+            //
+            find_belt next_next_center next_next_direction 
+                from roller to next_next_roller
+            with
+                orientation is static orientation;
+            end;
+
+            // find center and direction to next roller
+            //
+            find_belt next_center next_direction from roller 
+                to next_roller
+            with
+                orientation is static orientation;
+            end;
+
+            // do crossover
+            //
+            if orientation is turn_orientation from 
+                next_direction to next_next_direction
+            then
+                find_crossover_belt next_center 
+                    next_direction from roller to 
+                    next_roller
+                with
+                    orientation is static orientation;
+                end;
+                next_orientation is not orientation;
+            end;
+
+            // make belt
+            //
+            add_belt from roller to next_roller at next_center
+                in next_direction;
+            roller's orientation is orientation;
+
+            // advance
+            //
+            orientation is next_orientation;
+            roller is next_roller;
+            next_roller is next_next_roller;
+            next_next_roller is its next;
+        end;
+        if some next_roller then
+            find_belt next_center next_direction from roller 
+                to next_roller
+            with
+                orientation is static orientation;
+            end;
+            add_belt from roller to next_roller at next_center
+                in next_direction;
+            roller's orientation is orientation;
+            next_roller's orientation is orientation;
+        end;
+        if some next_next_roller then
+            next_next_roller's orientation is orientation;
+        end;
+
+        // wraparound belt
+        //
+        if closed then
+            roller is last_roller;
+            next_roller is roller_list;
+
+            find_belt next_center next_direction from roller 
+                to next_roller
+            with
+                orientation is static orientation;
+            end;
+
+            add_belt from roller to next_roller at next_center
+                in next_direction;
+        end;
+
+        check_rollers;
+        compute_offsets;
+    end;    // add_belts
+
+
+    verb delete_belts is
+        belt_list is none;
+    end;    // delete_belts
+
+
+    verb set_speed
+        to scalar speed;
+    is
+        conveyor_belt's speed = speed;
+
+        for each roller type roller and its next in roller_list do
+            roller's angular_speed = speed * 360 / roller's 
+                circumference;
+            if not roller's orientation then
+                roller's angular_speed = -itself;
+            end;
+        end;
+    end;    // set_speed
+
+    
+    verb advance
+        by scalar time_step;
+    is
+        for each roller type roller and its next in roller_list do     
+            roller's angular_offset = itself + roller's 
+                angular_speed * time_step;
+        end;
+        offset = itself + speed * time_step;
+    end;    // acvance
+
+
+    shape rollers is
+        for each roller type roller and its next in roller_list do
+            roller's roller_shape with
+                radius = roller's radius;
+                rotate by roller's angular_offset around 
+                    <0 0 1>;
+                rotate by 90 around <1 0 0>;
+                magnify by .95;
+                move to roller's center;
+            end;
+        end;
+    end;    // rollers
+
+
+    shape roller_belt
+        from scalar umin = 0;
+        to scalar umax = 360; 
+        at vector center = <0 0 0>;
+    with 
+        scalar radius = 1;
+    is
+        cylinder with
+            radius = static radius;
+            umin = static umin;
+            umax = static umax;
+            rotate by 90 around <1 0 0>;
+            scale by belt_width along <0 1 0>;
+            move to center;
+            edges is silhouette;
+        end;
+    end;    // roller_belt
+
+
+    shape roller_belts is
+        for each roller type roller and its next in roller_list do
+            roller_belt from roller's umin to 
+                roller's umax at roller's center 
+            with
+                radius = roller's radius;
+            end;
+        end;
+    end;    // roller_belts
+
+
+    shape roller_belt_list is
+        roller type roller is roller_list;
+
+        // first roller belt
+        //
+        if some roller then
+            roller_belt with
+                radius = roller's radius;    
+                rotate by roller's angular_offset 
+                    around <0 -1 0>;
+                move to roller's center;
+            end;
+            roller is roller's next;
+        end;
+
+        // intermediate roller belts
+        //    
+        while some roller's next do
+            roller_belt from roller's umin to 
+                roller's umax at roller's center 
+            with
+                radius = roller's radius;
+            end;
+            roller is roller's next;
+        end;
+
+        // last roller belt
+        //
+        if some roller then
+            roller_belt with
+                radius = roller's radius;    
+                rotate by roller's angular_offset 
+                    around <0 -1 0>;
+                move to roller's center;
+            end;
+        end;
+    end;    // roller_belt_list
+
+
+    shape belts is
+        if some belt_list and belt_width <> 0 then
+            for each belt type belt and its next in belt_list do
+                parallelogram with
+                    trans's x_axis = belt's direction;
+                    scale by belt_width along <0 1 0>;
+                    move to belt's center;
+                end;
+            end;
+
+            if closed then
+                roller_belts;
+            else
+                roller_belt_list;
+            end;
+        end;
+    end;    // belts
+
+
+    shape treads is
+        scalar tread_spacing = tread_length + tread_seperation;
+
+        objective shape scaled_tread is
+            conveyor_belt's tread with
+                scale by (tread_length / 2) along <1 0 0>;
+                scale by (tread_width / 2) along <0 1 0>;
+                scale by (tread_thickness / 2) along <0 0 1>;
+            end;
+        end;    // scaled_tread
+
+
+        shape roller_treads is
+            for each roller type roller and its next in 
+                roller_list
+            do
+                circular_row of scaled_tread
+                    from roller's start_angle 
+                    to roller's end_angle
+                with
+                    offset = roller's offset + 
+                        conveyor_belt's offset;
+                    radius = roller's radius;
+                    spacing = tread_spacing;
+                    yaw = 90;
+                    roll = 90;
+                    rotate by 90 around <1 0 0>;    
+                    move to roller's center;
+                end;
+            end;
+        end;    // roller_treads
+
+
+        shape roller_tread_list is
+            roller type roller is roller_list;
+
+            // first roller treads 
+            //
+            if some roller then
+                circular_row of scaled_tread
+                    from roller's start_angle 
+                    to roller's end_angle
+                with
+                    offset = roller's offset + 
+                        conveyor_belt's offset;
+                    radius = roller's radius;
+                    spacing = tread_spacing;
+                    yaw = 90;
+                    roll = 90;
+                    rotate by 90 around <1 0 0>;    
+                    move to roller's center;
+                end;
+                roller is roller's next;
+            end;
+
+            // intermediate roller treads
+            //    
+            while some roller's next do
+                circular_row of scaled_tread
+                    from roller's start_angle 
+                    to roller's end_angle
+                with
+                    offset = roller's offset + 
+                        conveyor_belt's offset;
+                    radius = roller's radius;
+                    spacing = tread_spacing;
+                    yaw = 90;
+                    roll = 90;
+                    rotate by 90 around <1 0 0>;    
+                    move to roller's center;
+                end;
+                roller is roller's next;
+            end;
+
+            // last roller treads 
+            //
+            if some roller then
+                circular_row of scaled_tread
+                    from roller's start_angle 
+                    to roller's end_angle 
+                with
+                    offset = roller's offset + 
+                        conveyor_belt's offset;
+                    radius = roller's radius;
+                    spacing = tread_spacing;
+                    yaw = 90;
+                    roll = 90;
+                    rotate by 90 around <1 0 0>;    
+                    move to roller's center;
+                end;
+            end;
+        end;    // roller_tread_list
+
+
+        shape belt_treads is
+            for each belt type belt and its next in belt_list do
+                linear_row from <-(belt's length / 2) 0 0>
+                    to <(belt's length / 2) 0 0>
+                    of scaled_tread
+                with
+                    offset = belt's offset + 
+                        conveyor_belt's offset;
+                    spacing = tread_spacing;
+                    trans's x_axis = belt's direction / 
+                        belt's length * 2;
+                    trans's y_axis = <0 1 0>;
+                    trans's z_axis = -trans's x_axis cross 
+                        trans's y_axis;
+                    move to belt's center;
+                end;
+            end;    
+        end;    // belt_treads
+        
+        if tread_width <> 0 then
+            belt_treads;
+            if closed then
+                roller_treads;
+            else
+                roller_tread_list;
+            end;
+        end;
+    end;    // treads
+
+    
+    shape instance is
+        rollers with
+            material is roller_material;
+        end;
+        belts with 
+            material is belt_material;
+        end;
+        treads with 
+            material is tread_material;
+        end;
+    end;    // instance
+end;    // conveyor_belt 
+
+
+// alternate roller shapes for conveyor belts
+//
+
+
+shape spoke_roller with
+    scalar radius = 1;
+is
+    cylinder with
+        radius = static radius;
+    end;
+    disk with
+        radius = static radius;
+        move to <0 0 -1>;
+        render_mode is wireframe;
+        edges is all;
+        color = white;
+    end;
+    disk with
+        radius = static radius;
+        move to <0 0 -1>;
+        rotate by 180 around <1 0 0>;
+        render_mode is wireframe;
+        edges is all;
+        color = white;
+    end;
+end;    // spoke_roller
+

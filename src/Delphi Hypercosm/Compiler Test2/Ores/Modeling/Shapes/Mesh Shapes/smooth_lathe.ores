@@ -1,0 +1,65 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	      smooth_lathe.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		smooth lathe.  A lathe is a shape which has been		}
+{		turned around an axis like the leg of a table.			}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/grid_mesh.ores";
+
+
+shape smooth_lathe
+    scalar param[, ];
+with
+    boolean smoothing is true;
+    boolean closed is false;
+    boolean triangulate is false;
+    boolean alternate is true;
+    integer facets = 8;
+is
+    integer h_min = min param[];
+    integer h_max = max param[];
+    integer v_min = min param;
+    integer v_max = max param;
+    integer width = facets * 2 + 1;
+    vector vertices[v_min..v_max, 0..width];
+
+    if (h_max - h_min + 1 = 2) then
+
+        // initialize array of vertices
+        //
+        for integer v_counter = v_min..v_max do
+            for integer h_counter = 0..width do
+                scalar height = param[v_counter, h_min];
+                scalar radius = param[v_counter, h_max];
+                scalar x = cos (h_counter / width * 360)
+                    * radius;
+                scalar y = sin (h_counter / width * 360)
+                    * radius;
+
+                vertices[v_counter, h_counter] = <x y height>;
+            end;
+        end;
+
+        // create mesh from grid of vertices
+        //
+        grid_mesh of vertices with
+            smoothing is static smoothing;
+            mending is true;
+            closed is static closed;
+            triangulate is static triangulate;
+            alternate is static alternate;
+        end;
+    else
+        write "error - the lathe shape must take an", ;
+        write "        array of height, radius pairs", ;
+    end;
+end;    // smooth_lathe

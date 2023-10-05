@@ -1,0 +1,120 @@
+do test_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/quaternions.ores";
+
+
+verb interpolate_trans1
+	trans type reference trans;
+	from trans type start_trans;
+	to trans type end_trans;
+	by scalar t;
+is
+	trans's origin = start_trans's origin + (end_trans's origin - start_trans's origin) * t;
+	trans's x_axis = start_trans's x_axis + (end_trans's x_axis - start_trans's x_axis) * t;
+	trans's y_axis = start_trans's y_axis + (end_trans's y_axis - start_trans's y_axis) * t;
+	trans's z_axis = start_trans's z_axis + (end_trans's z_axis - start_trans's z_axis) * t;	
+end;	// interpolate_trans1
+
+
+verb interpolate_quat
+	quat type reference quat;
+	from quat type start_quat;
+	to quat type reference end_quat;
+	by scalar t;
+is
+	quat is start_quat interpolated to end_quat by t;
+end;	// interpolate_quat
+
+
+verb interpolate_trans
+	trans type reference trans;
+	from trans type start_trans;
+	to trans type end_trans;
+	by scalar t;
+is
+	quat type start_quat, end_quat, quat;
+	start_quat set_axes to start_trans;
+	end_quat set_axes to end_trans;	
+	interpolate_quat quat from start_quat to end_quat by t;
+	quat get_axes trans;	
+end;	// interpolate_trans
+
+
+anim reorient
+	shape thing;
+	from trans type prev_trans;
+	to trans type next_trans;
+	in scalar duration;
+is
+	boolean done is false;
+	scalar start_time = get_seconds;
+	scalar elapsed_time = 0;
+		
+	shape scene with
+		scalar t = 0;
+	is
+		thing with
+			interpolate_trans global trans from prev_trans to next_trans by elapsed_time / duration;
+		end;
+	end;
+	
+	shape environment is
+		axes;
+	end;
+		
+	while not done do
+		elapsed_time = get_seconds - start_time;
+			
+		if elapsed_time > duration then
+			done is true;
+		else
+			mouse_controlled_animated_shape scene in environment with 
+				frames = 1;
+			end;
+		end;
+	end;
+end;	// reorient
+
+
+shape thing is
+	block with
+		material is glass colored block_color;
+	end;
+	block with
+		render_mode is wireframe;
+		color = white;
+	end;
+	axes;
+end;
+	
+	
+anim test_anim with
+	eye = <0 -5 2>;
+	width = 512;
+	height = 384;
+is
+	trans type start_trans, end_trans = start_trans;
+	scalar duration = 1;
+	
+	//rotate the start_trans by 0 around <0 0 1>;
+	//rotate the end_trans by -90 around <0 0 1>;
+	
+	while true do
+		scalar angle = random -360 to 360;
+		vector axis = normalized vrandom <-1 -1 -1> to <1 1 1>;
+		//scalar angle = 60;
+		//vector axis = <0 0 1>;
+
+		// create next transformation
+		//
+		write "rotating by ", angle, " around ", axis, ;
+		rotate the end_trans by angle around axis;
+			
+		reorient thing from start_trans to end_trans in duration;
+		start_trans = end_trans;
+	end;
+end;	// test_anim

@@ -1,0 +1,235 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          collections.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utilities which provide a few useful           }
+{       utilities for aggregating objects into collections.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/printing.ores";
+include "system/iterators.ores";
+include "system/mutable_collecting.ores";
+
+abstract subject collection
+extends
+	mutable_collectable object
+does
+	// collection construction methods
+	//
+	abstract verb add
+		object type element;
+	end;
+	abstract verb remove
+		object type element;
+	end;
+	verb purge
+		object type element;
+	end;
+	abstract verb clear;
+	
+	// collection batch construction methods
+	//
+	verb add_all
+		of collection type collection;
+	end;
+	verb remove_all
+		of collection type collection;
+	end;   
+	verb purge_all
+		of collection type collection;
+	end; 
+	
+	// methods for adding only existing elements
+	// (elements which are not <none>)
+	//
+	verb add_element
+		object type element;
+	end;
+	verb add_all_elements
+		collection type collection;
+	end;
+	
+	// collection querying methods
+	//
+	abstract boolean question is_empty;
+	abstract integer question get_size;
+	
+	// collection searching methods
+	//
+	boolean question contains
+		object type element;
+	end;
+		
+	// batch searching methods
+	//
+	boolean question contains_all
+		of collection type collection;
+	end;
+		
+	// collection iteration methods
+	//
+	iterable type question get_iterable;
+	abstract iterator type question get_iterator;
+	verb iterate
+		verb action
+			on each object type element;
+		end;
+	end;
+	  
+	// converting methods
+	//
+	object type[] question to_array;
+	
+	// printing method
+	//
+	verb print;
+is
+	//
+	// collection construction methods
+	//
+	
+	verb purge
+		object type element;
+	is
+		while contains element do
+			remove element;
+		end;
+	end;    // purge
+	
+	//    
+	// collection batch construction methods
+	//
+	
+	verb add_all
+		of collection type collection;
+	is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			add iterator next;
+		end;
+	end;    // add_all
+	
+	verb remove_all
+		of collection type collection;
+	is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			remove iterator next;
+		end;
+	end;    // remove_all
+	
+	verb purge_all
+		of collection type collection;
+	is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			purge iterator next;
+		end;
+	end;    // purge_all
+	
+	//
+	// methods for adding only existing elements
+	// (elements which are not <none>)
+	//
+	
+	verb add_element
+		object type element;
+	is
+		if some element then
+			add element;
+		end;
+	end;    // add_element
+	
+	verb add_all_elements
+		collection type collection;
+	is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			add_element iterator next;
+		end;
+	end;    // add_all_elements
+	
+	//
+	// collection searching methods
+	//
+	
+	boolean question contains
+		object type element;
+	is
+		iterator type iterator is collection get_iterator;
+		iterator advance to element;
+		answer iterator get is element;
+	end;    // contains
+	
+	//            
+	// collection batch searching methods
+	//
+		
+	boolean question contains_all
+		of collection type collection;
+	is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			if not contains iterator next then
+				answer false;
+			end;
+		end;
+		answer true;
+	end;    // contains_all
+	
+	//    
+	// collection iteration methods
+	//
+   
+	iterable type question get_iterable is
+		answer iterable type get_iterator;
+	end;    // get_iterable
+	
+	verb iterate
+		verb action
+			on each object type element;
+		end;
+	is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			action on each iterator next;
+		end;
+	end;    // iterate
+	
+	//    
+	// converting methods
+	//
+	
+	object type[] question to_array is
+		object type array[];
+		iterator type iterator is collection get_iterator;
+		integer index = 1;
+		
+		// create array of pointers
+		//
+		dim none array[1 .. get_size];
+		
+		while iterator is_iterating do
+			array[index] is iterator next;
+			index = itself + 1;
+		end;  
+		
+		answer array;
+	end;    // to_array
+	
+	//
+	// collection printing method
+	//
+	
+	verb print is
+		iterator type iterator is collection get_iterator;
+		while iterator is_iterating do
+			global print iterator next;
+		end; 
+	end;    // print
+end;    // collection

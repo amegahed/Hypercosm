@@ -1,0 +1,250 @@
+{***************************************************************}
+{                       conversions.ores                        }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{    A collection of functions for conversion between units of  }
+{    length, area, volume, mass, and temperature.               }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/constants.ores";
+include "system/physics.ores";
+
+
+/////////////////////////////////
+// CONVERSIONS - Motion        //
+/////////////////////////////////
+
+//meters per second squared & gravity
+scalar question mps2_to_gs
+    scalar mps2;
+is
+    answer mps2 / gravity;
+end;
+
+scalar question gs_to_mps2
+    scalar gs;
+is
+    answer gs * gravity;
+end;
+
+//meters per second & lightspeed
+scalar question mps_to_lightspeed
+    scalar mps;
+is
+    answer mps / speed_of_light;
+end;
+
+scalar question lightspeed_to_mps
+    scalar s;
+is
+    answer s * speed_of_light;
+end;
+
+
+//////////////////////////////////////////
+// CONVERSIONS - Length & Distance      //
+//////////////////////////////////////////
+
+scalar question meters_to_lightyears
+    scalar m;
+is
+    answer m * (1 / light_year);
+end;
+
+scalar question lightyears_to_meters
+    scalar ly;
+is
+    answer ly * light_year;
+end;
+
+scalar question meters_to_feet
+    scalar m;
+is
+    answer m * 3.281;
+end;
+
+scalar question feet_to_meters
+    scalar f;
+is
+    answer f * .3048;
+end;
+
+scalar question kilometers_to_miles
+    scalar km;
+is
+    answer km * .6214;
+end;
+
+scalar question miles_to_kilometers
+    scalar mi;
+is
+    answer mi * 1.609;
+end;
+
+scalar question millimeters_to_inches
+    scalar mm;
+is
+    answer mm * .03937;
+end;
+
+scalar question inches_to_millimeters
+    scalar i;
+is
+    answer i * 25.4;
+end;
+
+scalar question parsecs_to_lightyears
+    scalar p;
+is
+    answer p * (parsec / light_year);
+end;
+
+scalar question lightyears_to_parsecs
+    scalar ly;
+is
+    answer ly * (light_year / parsec);
+end;
+
+scalar question lightyears_to_astrounits
+    scalar ly;
+is
+    answer ly * (light_year / astronomical_unit);
+end;
+
+scalar question astrounits_to_lightyears
+    scalar au;
+is
+    answer au * (astronomical_unit / light_year);
+end;
+
+
+//////////////////////////
+// CONVERSIONS - Area   //
+//////////////////////////
+
+scalar question acres_to_squaremeters
+    scalar acres;
+is
+    answer acres * 4046.9;
+end;
+
+scalar question squaremeters_to_acres
+    scalar m2;
+is
+    answer m2 * 0.0002471;
+end;
+
+
+//////////////////////////////
+// CONVERSIONS - Volume     //
+//////////////////////////////
+
+scalar question litres_to_gallons
+    scalar l;
+is
+    answer l * .2642;
+end;
+
+scalar question gallons_to_litres
+    scalar gal;
+is
+    answer gal * 3.785;
+end;
+
+scalar question millilitres_to_fluidounces
+    scalar ml;
+is
+    answer ml * .0338;
+end;
+
+scalar question fluidounces_to_millilitres
+    scalar floz;
+is
+    answer floz * 29.57;
+end; 
+
+
+//////////////////////////////////////
+// CONVERSIONS - Mass & Weight      //
+//////////////////////////////////////
+
+scalar question grams_to_ounces
+    scalar g;
+is
+    answer g * .0353;
+end;
+
+scalar question ounces_to_grams
+    scalar oz;
+is
+    answer oz * 28.34952;
+end;
+
+scalar question kilograms_to_pounds
+    scalar kg;
+is
+    answer kg * 2.205;
+end;
+
+scalar question pounds_to_kilograms
+    scalar lb;
+is
+    answer lb * .4536;
+end;
+
+scalar question ounces_to_troyounces
+    scalar oz;
+is
+    answer oz * .9115;
+end;
+
+scalar question troyounces_to_ounces
+    scalar toz;
+is
+    answer toz * 1.09714;
+end;
+
+
+//////////////////////////////////
+// CONVERSIONS - Temperature    //
+//////////////////////////////////
+
+scalar question celsius_to_fahrenheit
+    scalar C;
+is
+    answer ((C * 1.8) + 32);
+end; // celsius_to_fahrenheit
+
+scalar question fahrenheit_to_celsius
+    scalar F;
+is
+    answer ((F - 32) / 1.8);
+end; // fahrenheit_to_celsius
+
+scalar question kelvin_to_celsius
+    scalar K;
+is
+    answer (K - 273.15);
+end; // kelvin_to_celsius
+
+scalar question celsius_to_kelvin
+    scalar C;
+is
+    answer (C + 273.15);
+end; // celsius_to_kelvin
+
+scalar question kelvin_to_fahrenheit
+    scalar K;
+is
+    answer ((K * 1.8) - 459.67);
+end; // kelvin_to_fahrenheit
+
+scalar question fahrenheit_to_kelvin
+    scalar F;
+is
+    answer ((F + 459.67) / 1.8);
+end; // fahrenheit_to_kelvin

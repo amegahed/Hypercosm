@@ -1,0 +1,273 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            3ds_plane.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains plane definitions that correspond to           }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_textureable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+
+final subject translated_3ds_plane
+extends
+	translated_3ds_collapsable translated_3ds_texturable_object
+does
+	// constructor
+	//
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar length = 2;
+		scalar width = 2;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+	end;
+	
+	// setting methods
+	//
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar length = 2;
+		scalar width = 2;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+	end;
+		
+	// collapsing method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_plane type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	scalar length;
+	scalar width;
+	
+	// tessellation attributes
+	//
+	integer length_segments;
+	integer width_segments;
+	
+private 
+	// recycling attributes
+	//
+	translated_3ds_plane type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_plane type free_list is none;
+	
+	//
+	// constructor
+	//
+
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar length = 2;
+		scalar width = 2;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+	is
+		translated_3ds_texturable_object new with
+		
+			// set texturing parameters
+			//
+			gen_mapping_coords is static gen_mapping_coords;
+		end;
+		
+		if verbose_recycling then
+			write "new 3ds plane", ;
+		end;
+					
+		with translated_3ds_plane do
+		
+			// set geometry attributes
+			//
+			its length = length;
+			its width = width;
+			
+			// set tessellation attributes
+			//
+			its length_segments = length_segments;
+			its width_segments = width_segments;
+		end;
+	end;    // new  
+
+	//
+	// setting methods
+	//
+	
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar length = 2;
+		scalar width = 2;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+	is
+		with translated_3ds_plane do
+		
+			// set geometry attributes
+			//
+			its length = length;
+			its width = width;
+			
+			// set tessellation attributes
+			//
+			its length_segments = length_segments;
+			its width_segments = width_segments;
+			
+			// set texturing parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+		end;
+	end;    // set
+	
+	
+	//
+	// collapsing method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;
+			
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <(-width / 2) (-length / 2) 0>;
+			side1 = <width 0 0>;
+			side2 = <0 length 0>;
+			h_steps = width_segments;
+			v_steps = length_segments;
+			one_sided is false;
+			textured is gen_mapping_coords;
+		);
+		
+		recycle;
+		answer editable_mesh;
+	end;    // get_collapsed
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_plane type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_plane type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_plane;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_plane;
+		
+		translated_3ds_plane is none;
+	end;        // recycle          
+end;    // translated_3ds_plane
+
+//
+// procedural interface
+//
+
+shape translated_3ds_plane with
+	
+	// geometry parameters
+	//
+	scalar length = 2;
+	scalar width = 2;
+	
+	// tessellation parameters
+	//
+	integer length_segments = 1;
+	integer width_segments = 1;
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+	
+	// modifier stack
+	//
+	translated_3ds_plane type translated_3ds_plane is translated_3ds_plane type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_plane;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_plane set with
+	
+		// set geometry parameters
+		//
+		length = static length;
+		width = static width;
+		
+		// set tessellation parameters
+		//
+		length_segments = static length_segments;
+		width_segments = static width_segments;
+		
+		// set texturing parameters
+		//
+		gen_mapping_coords is static gen_mapping_coords;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;    // translated_3ds_plane

@@ -1,0 +1,31 @@
+do zoom_icon_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+anim zoom_icon_anim with
+	width = 256;
+	height = 256;
+	eye = <50 -50 50>;
+	projection is perspective;
+	field_of_view = 2;
+	facets = 8;
+	background_name is none;
+	background = white;
+is
+	shape scene is
+		block with
+			magnify by .5;
+			material is plastic colored orange;
+		end;
+		parallelogram with
+			scale by 1.75 along <0 1 0>;
+			rotate by 45 around <0 0 1>;
+			material is plastic colored white poster "vertical_arrow.gif";
+		end;
+	end;
+		
+	mouse_controlled_shape scene;
+end;	// zoom_icon_anim

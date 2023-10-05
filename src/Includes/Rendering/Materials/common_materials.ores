@@ -1,0 +1,49 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        common_materials.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard common material definitions.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/materials.ores";            
+include "system/common_textures.ores";                      
+
+//
+// some common materials (non parametric)
+//
+
+const material type golden is metal colored gold;
+const material type copper is metal colored light orange;
+const material type silver is metal colored light light grey polished shiny;
+const material type aluminum is metal colored white polished semi shiny;
+const material type titanium is metal colored grey polished semi shiny;
+const material type rubber is chalk colored charcoal;
+const material type blackness is constant_color black;
+
+//
+// some common textured materials
+//
+
+material type wood is (chalk textured wood_texture
+	with color = light brown);
+material type wood_veneer is (plastic colored light brown textured wood_texture
+	with color = dark brown);
+material type stone is (chalk textured stone_texture
+	with color = grey);
+material type rock is (chalk textured rock_texture
+	with color = dark grey);
+material type stucco is (chalk textured stucco_texture
+	with color = grey);
+material type planks is (plastic textured plank_texture
+	with color = brown);
+material type brushed_metal is (metal textured scratched_texture
+	with color = grey);
+material type turf is (chalk textured turf_texture
+	with color = dark green);
+material type flame is (constant_color white textured flame_texture
+	with color = yellow);

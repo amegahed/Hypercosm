@@ -1,0 +1,52 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        question_references.omar        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of question method references in the OMAR       }
+{       language.                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do question_references_example;
+
+integer question add
+	integer a, b;
+is
+	answer a + b;
+end;    // add
+
+integer question mult
+	integer a, b;
+is
+	answer a * b;
+end;    // mult
+	
+	
+verb question_references_example 
+is
+	// functional method variable declaration and initializer
+	//
+	integer question f does none                
+		of integer a, b;        
+	end;
+	for integer i = 1 .. 2 do
+	
+		// assign question method reference, f, to add or mult  
+		// depending upon whether it has been previously assigned
+		//
+		if f does none then             
+			f does add;             
+		else
+			f does mult;
+		end;
+		// call whatever method action refers to - the first time
+		// through, this will refer to add, the second time 
+		// through, this will refer to mult
+		//                      
+		write "f of 4 and 5 = ", f of 4 5, ;                
+	end;
+end;    // question_references_example

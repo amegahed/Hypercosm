@@ -1,0 +1,44 @@
+{***************************************************************}
+{                        native_lights.ores                     }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{               Contains native lighting primitives.            }
+{                                                               }
+{***************************************************************}
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/standard_colors.ores";
+
+
+native shape distant_light
+    from vector direction = <0 0 1>;
+with
+    scalar brightness = 1;
+    color type color = white;
+    boolean shadows is true;
+end;    // distant_light
+
+
+native shape point_light with
+    scalar brightness = 1;
+    color type color = white;
+    boolean shadows is true;
+end;    // point_light
+
+
+native shape spot_light
+    towards vector direction = <0 0 1>;
+with
+    scalar brightness = 1;
+    scalar angle = 90;
+    color type color = white;
+    boolean shadows is true;
+end;    // spot_light

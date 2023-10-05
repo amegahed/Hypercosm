@@ -1,0 +1,101 @@
+{***************************************************************}
+{                          say_no.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do just_say_no;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/solids.ores";
+include "system/chess_board.omar";
+
+
+shape no_symbol is
+    ring with
+        normal = <0 1 0>;
+        inner_radius = .8;
+    end;
+    parallelogram with
+        vertex = <-.9 0 -.15>;
+        side1 = <1.8 0 0>;
+        side2 = <0 0 .2>;
+        rotate by 45 around <0 1 0>;
+        move to <0 .01 0>;
+    end;
+end;    // no_symbol
+
+
+shape balls is
+    sphere with
+        material is metal colored white;
+        center = <1 -.5 .5>;
+        radius = .2;
+    end;
+    sphere with
+        material is metal colored light raspberry;
+        center = <-.4 .4 .9>;
+        radius = .4;
+    end;
+    sphere with
+        material is copper;
+        center = <-.2 -1.5 .4>;
+        radius = .3;
+    end;
+    sphere with
+        material is plastic colored red;
+        center = <.2 0 .3>;
+        radius = .3;
+    end;
+    glassy <.7 1 .8> sphere with
+        center = <-.1 -1.2 1.4>;
+        radius = .2;
+    end;
+    sphere with
+        material is plastic colored blue;
+        center = <1.2 1.3 .5>;
+        radius = .4;
+    end;
+    glassy <.9 .9 1> sphere with
+        center = <-.8 -1.2 .4>;
+        radius = .2;
+    end;
+    sphere with
+        material is golden;
+        center = <-1.4 -1.5 .5>;
+        radius = .3;
+    end;
+end;    // balls
+
+
+picture just_say_no
+    args type args;
+with
+    field_of_view = 55;
+    eye = <0 -8 0>;
+    render_mode is shaded;
+    background = black;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    ambient = white * .5;
+    args check;
+is
+    distant_light from <20 -10 15>;
+    chess_board with
+        rotation of <50 20 30>;
+        magnify by .4;
+    end;
+    balls with
+        rotation of <50 20 30>;
+    end;
+    unshaded red no_symbol with
+        move to <0 -4 0>;
+    end;
+end;    // just_say_no

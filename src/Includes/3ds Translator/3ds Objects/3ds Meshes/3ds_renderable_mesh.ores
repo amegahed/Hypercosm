@@ -1,0 +1,229 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_renderable_mesh.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains editable mesh definitions that correspond      }
+{       to entities from Discreet's 3D Studio Max software.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_object.ores";
+include "system/meshes.ores";
+	
+	
+subject translated_3ds_renderable_mesh
+extends
+	transformable texturable renderable printable translated_3ds_object
+does
+	// constructor
+	//
+	verb new
+		of meshes type meshes is none;
+	end;
+	
+	// setting methods
+	//
+	verb set
+		to meshes type meshes;
+	end;
+	verb reset;
+	
+	// attributes querying methods
+	//
+	mesh type question get_mesh;
+	
+	// transforming methods
+	//
+	verb transform
+		from trans type trans;
+	end;
+		
+	// texturing methods
+	//
+	verb apply
+		texture_mapping type texture_mapping;
+	end;    // apply
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// converting method
+	//
+	string type question to_string;
+	
+	// printing method
+	//
+	verb print;
+		
+	// recycling methods
+	//
+	objective translated_3ds_renderable_mesh type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	mesh type mesh is none; 
+private 
+	// recycling attributes
+	//
+	translated_3ds_renderable_mesh type next is none;
+is
+	// recycling free list attributes
+	//
+	translated_3ds_renderable_mesh type free_list is none;
+	
+	//
+	// constructor
+	//
+	
+	verb new
+		of meshes type meshes is none;
+	is
+		if verbose_recycling then
+			write "new 3ds renderable mesh", ;
+		end;
+		set to meshes;
+	end;    // new
+	
+	//
+	// setting methods
+	//
+
+	verb set
+		to meshes type meshes;
+	is
+		if some meshes then
+			mesh is meshes to_mesh;
+		else
+			mesh is none;
+		end;
+	end;    // set
+	
+	verb reset is
+		mesh is none;
+	end;    // reset
+	
+	//
+	// attributes querying methods
+	//
+	
+	mesh type question get_mesh is
+		answer mesh;
+	end;    // get_mesh
+	
+	//        
+	// transforming methods
+	//
+	
+	verb transform
+		from trans type trans;
+	is
+		if some mesh then
+			mesh transform from trans;
+		end;
+	end;    // transform
+	
+	//    
+	// texture applying methods
+	//
+	
+	verb apply
+		texture_mapping type texture_mapping;
+	is
+		if some mesh then
+			mesh apply texture_mapping;
+		end;
+	end;    // apply
+	
+	//      
+	// rendering methods
+	//
+	
+	shape instance is
+		if some mesh then
+			if mesh is_valid then
+				global mesh 
+					(mesh's geometry's vertices) 
+					(mesh's topology's edges)
+					(mesh's topology's face_indices)
+				with
+					// geometry and texturing parameters
+					//
+					normals is mesh's geometry's normals;
+					texcoords is mesh's geometry's texcoords;
+					
+					// rendering parameters
+					//
+					smoothing is mesh's smoothing;
+					mending is false;
+					closed is mesh's closed;
+				end;
+			end;
+		end;
+	end;    // instance
+	
+	//
+	// converting method
+	//
+	
+	string type question to_string is
+		answer "3ds renderable mesh";
+	end;    // to_string    
+	
+	//  
+	// printing method
+	//
+	
+	verb print is
+		write to_string, ":", ;
+		if some mesh then
+			mesh print;
+			write;
+		end;
+	end;    // print
+  
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_renderable_mesh type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_renderable_mesh type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_renderable_mesh;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// recycle mesh
+		//
+		if some mesh then
+			if recycleable type mesh then
+				recycleable type recycleable is recycleable type mesh;
+				recycleable recycle;
+				mesh is none;
+			end;
+		end;
+		
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_renderable_mesh;
+		
+		translated_3ds_renderable_mesh is none;
+	end;        // recycle  
+end;    // translated_3ds_renderable_mesh

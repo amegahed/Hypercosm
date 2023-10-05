@@ -1,0 +1,74 @@
+{***************************************************************}
+{                          ants.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do curious_ants;
+
+
+include "system/3d.ores";
+include "system/magnifier.omar";
+include "system/ant.omar";
+// integer image1 = load_image "stone4.tga";
+
+
+picture curious_ants
+    args type args;
+with
+    field_of_view = 50;
+    eye = <0 -3 2>;
+    lookat = <0 0 .2>;
+    render_mode is shaded;
+    background = sky_blue;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    facets = 0;
+    args check;
+is
+    distant_light from <-3 -3 1.5> with
+        brightness = 1;
+    end;
+    tilted_magnifying_glass with
+        material is metal colored light orange;
+        rotate by -30 around <0 0 1>;
+    end;
+    ant with
+        material is plastic colored red;
+        magnify by .12;
+        rotate by 150 around <0 0 1>;
+        move to <-1 1.3 0>;
+    end;
+    ant with
+        material is plastic colored red;
+        magnify by .12;
+        rotate by 70 around <0 0 1>;
+        move to <-.2 1 0>;
+    end;
+    ant with
+        material is plastic colored charcoal;
+        magnify by .1;
+        rotate by -120 around <0 0 1>;
+        move to <-.5 -.5 0>;
+    end;
+    ant with
+        material is plastic colored red;
+        magnify by .1;
+        move to <.8 .5 0>;
+    end;
+    ant with
+        material is plastic colored red;
+        magnify by .09;
+        rotate by 60 around <0 0 1>;
+        move to <.5 1.5 0>;
+    end;
+    plane with
+        magnify by 2;
+        rotate the shader_trans by 45 around <0 0 1>;
+        magnify the shader_trans by 3;
+    end;
+end;    // curious_ants

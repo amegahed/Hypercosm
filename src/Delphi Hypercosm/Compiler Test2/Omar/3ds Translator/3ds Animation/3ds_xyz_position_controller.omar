@@ -1,0 +1,64 @@
+do xyz_position_controller_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_sphere.ores";
+include "system/3ds_animation.ores";
+include "system/anims.ores";
+
+
+shape Sphere01 is
+	translated_3ds_sphere with
+		radius = 10;
+		segs = 16;
+		color = dark red;
+	end;
+end;	// Sphere01
+
+
+translated_3ds_smooth_float_controller type Sphere01_x_position_controller of [
+	0 25 -25 0
+] at converted_3ds_ticks_array_from_frames_array of [
+	0 25 50 75
+];	// Sphere01_x_controller
+
+
+translated_3ds_smooth_float_controller type Sphere01_z_position_controller of [
+	0 50 -50 50
+] at converted_3ds_ticks_array_from_frames_array of [
+	25 50 75 100
+];	// Sphere01_z_controller
+
+
+translated_3ds_xyz_position_controller type Sphere01_position_controller with 
+	x_position_controller is Sphere01_x_position_controller;
+	z_position_controller is Sphere01_z_position_controller;
+end;	// Sphere01_position_controller
+
+
+shape Scene with
+	scalar time = 0;
+is
+	Sphere01 with
+		Sphere01_position_controller apply to trans at (converted_3ds_ticks_from_seconds of time);
+	end;
+end;	// Scene
+
+
+anim xyz_position_controller_anim with
+	eye = <0 -200 50>;
+	lookat = <0 0 0>;
+is
+	shape environment is
+		plane with
+			magnify by 100;
+			render_mode is wireframe;
+		end;
+	end;	// environment
+	
+	mouse_controlled_animated_shape Scene in environment
+		titled "3DS XYZ Position Controller"
+	with
+		duration = converted_3ds_seconds_from_frames of 100;
+	end;
+end;	// xyz_position_controller_anim

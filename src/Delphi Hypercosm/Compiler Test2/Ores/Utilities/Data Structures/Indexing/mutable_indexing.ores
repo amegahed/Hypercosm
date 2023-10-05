@@ -1,0 +1,23 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	     mutable_indexing.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of indexing behavior for			}
+{		an immutable ("read-only") indexable collection.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+adjective mutable_indexable
+does
+    // random access element setting methods
+    //
+    verb set
+        element integer index;
+        to object type item;
+    end;
+end;	// mutable_indexable

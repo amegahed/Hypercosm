@@ -1,0 +1,100 @@
+{***************************************************************}
+{                          hourglass.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do hourglass_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/hulls.ores";
+
+
+shape hourglass is
+    shape enclosure with
+        integer sections = 4;
+        integer steps = facets;
+    is
+        // cross section
+        //
+        scalar x_section[0..sections, 1..2];
+
+        // initialize round cross section
+        //
+        for integer counter = 0 .. sections - 1 do
+            scalar angle = (counter / sections) * -360;
+
+            x_section[counter, 1] = sin angle;
+            x_section[counter, 2] = cos angle;
+        end;
+        x_section[sections, 1] = x_section[0, 1];
+        x_section[sections, 2] = x_section[0, 2];
+
+        // body is sampled at 9 discrete points
+        //
+        linear_hull
+            // cross section
+            (x_section)
+
+            // x displacement
+            [-1.5 -1 0 1 1.5]
+
+            // ymins
+            [-1 -.85 -.1 -.85 -1]
+
+            // ymaxes
+            [1 .85 .1 .85 1]
+
+            // zmins
+            [-1 -.85 -.1 -.85 -1]
+
+            // zmaxes
+            [1 .85 .1 .85 1]
+        with
+            rows = steps; columns = steps;
+            triangulate is off;
+            alternate is on;
+            mending is on;
+        end;
+    end;    // enclosure
+
+    // glass enclosure
+    //
+    transparent white enclosure with
+        rotate by 90 around <0 1 0>;
+    end;
+
+    // top and bottom parts
+    //
+    rounded_disk with
+        material is chalk colored light brown;
+        radius = 1.2;
+        thickness = .15;
+        move to <0 0 -1.5>;
+    end;
+    rounded_disk with
+        material is chalk colored light brown;
+        radius = 1.2;
+        thickness = .15;
+        move to <0 0 1.5>;
+    end;
+end;    // hourglass
+
+
+anim hourglass_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    facets = 12;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape hourglass;
+end;    // hourglass_anim

@@ -1,0 +1,52 @@
+do paddle_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape paddle with
+    color type color = red;
+    scalar height = 1.5;
+    scalar radius = 1;
+is   
+    material is plastic colored color;
+    
+    disk with
+        radius = static radius;
+    end;
+    
+    disk with
+        radius = static radius;
+        center = <0 0 (static height / 4)>;
+    end;
+    cylinder with
+        radius = static radius;
+        end1 = <0 0 0>;
+        end2 = <0 0 (static height / 4)>;
+    end;
+    cylinder with
+        radius = static radius / 3;
+        end1 = <0 0 (height / 4)>;
+        end2 = <0 0 (height / 2)>;
+    end;
+    
+    sphere with
+        radius = static radius / 3;
+        center = <0 0 (height / 2)>;
+        vmin = 90;
+        vmax = 0;
+    end;    
+end;    // paddle
+
+anim paddle_anim
+	args type args;
+with
+	args check;
+is
+	shape scene is
+		paddle;
+	end;
+	
+	mouse_controlled_shape scene titled "Air Hockey Paddle" with
+		auto_camera is on;
+	end;
+end;	// paddle_anim

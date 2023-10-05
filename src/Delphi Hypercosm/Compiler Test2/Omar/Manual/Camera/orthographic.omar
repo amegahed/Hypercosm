@@ -1,0 +1,106 @@
+{***************************************************************}
+{                          orthographic.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do orthographic_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/futura_l.omar";
+include "system/figures.ores";
+include "system/arrow_shapes.ores";
+
+
+shape orthographic_scene is
+    line [<-1 -1 -1> <1 -1 -1> <1 1 -1> <-1 1 -1> <-1 -1 -1>];
+    line [<-1 -1 1> <1 -1 1> <1 1 1> <-1 1 1> <-1 -1 1>];
+    line [<-1 -1 -1> <-1 -1 1>];
+    line [<1 -1 -1> <1 -1 1>];
+    line [<1 1 -1> <1 1 1>];
+    line [<-1 1 -1> <-1 1 1>];
+end;    // orthographic_scene
+
+
+shape orthographic_rays is
+    line [<.25 1 -.25> <.25 -1 -.25>];
+    line [<-.25 1 -.25> <-.25 -1 -.25>];
+    line [<.25 1 .25> <.25 -1 .25>];
+    line [<-.25 1 .25> <-.25 -1 .25>];
+end;    // orthographic_rays
+
+
+shape orthographic_projection is
+    {image on plane}
+    line [<-.25 -1 -.25> <.25 -1 -.25> <.25 -1 .25> <-.25 -1 .25> <
+        -.25 -1 -.25>];
+end;    // orthographic_projection
+
+
+shape orthographic_screen is
+    parallelogram with
+        rotate by 90 around <1 0 0>;
+        scale by .6 along <1 0 0>;
+        scale by .4 along <0 0 1>;
+    end;
+end;    // orthographic_screen
+
+
+anim orthographic_anim with
+    eye = <6 -6 4>;
+    field_of_view = 30;
+    lookat = <0 0 0>;
+is
+	shape scene is
+	    arrow from <0 -1 0> to <0 2.5 0> with
+	        arrow_head_length = .05;
+	        color = green;
+	    end;
+	    mark at <0 0 0>;
+	    orthographic_scene with
+	        magnify by .25;
+	        move to <0 1.25 0>;
+	        color = red;
+	    end;
+	    outlined orthographic_screen with
+	        material is glass;
+	        move to <0 -.99 0>;
+	    end;
+	    futura_l_word "IMAGE PLANE" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 -1 -.5>;
+	    end;
+	    futura_l_word "LINE" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 .15>;
+	    end;
+	    futura_l_word "OF" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 0>;
+	    end;
+	    futura_l_word "SIGHT" with
+	        rotate by 90 around <1 0 0>;
+	        rotate by 90 around <0 0 1>;
+	        move to <0 2.05 -.15>;
+	    end;
+	    futura_l_word "SCENE" with
+	        rotate by 90 around <1 0 0>;
+	        move to <0 1 .5>;
+	    end;
+	    orthographic_rays with
+	        color = blue;
+	    end;
+	    orthographic_projection with
+	        color = red;
+	    end;
+	end;
+	
+	mouse_controlled_shape scene;
+end;    // orthographic_pic

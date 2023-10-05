@@ -1,0 +1,41 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_key_controller.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains controller definitions that correspond to      }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_keys.ores";
+
+subject translated_3ds_key_controller 
+does
+	// constructor
+	//
+	verb new
+		using translated_3ds_keys type keys;
+	end;
+has
+	// attributes
+	//
+	public translated_3ds_keys type keys;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		using translated_3ds_keys type keys;
+	is
+		translated_3ds_key_controller's keys is keys;
+		
+		// sort array of keys
+		//
+		translated_3ds_key_controller's keys sort;
+	end;    // new
+end;    // translated_3ds_key_controller

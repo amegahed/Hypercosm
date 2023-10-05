@@ -1,0 +1,57 @@
+do loft_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_loft.ores";
+include "system/3ds_shapes.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim loft_anim
+is
+	material type hyper_material is plastic poster "hyper.jpg";
+	material type tie_dye_material is plastic poster "tie_dye.jpg";
+	material type flag_material is plastic textured (new texture
+		using (new image named "flag.gif") with
+		interpolation is off; wraparound is on);
+
+	translated_3ds_shape type path is (new translated_3ds_n_gon with
+		sides = 4;
+		radius = 50;
+	); 
+	translated_3ds_shape type cross_section is (new translated_3ds_ellipse with
+		length = 15;
+		width = 10;
+	);
+	
+	shape scene with
+		scalar time = 0;
+	is
+		translated_3ds_loft with
+		
+			// creation method parameters
+			//
+			path is static path;
+			cross_section is static cross_section;
+		
+		    // tessellation parameters
+		    //
+			path_steps = 16;
+			shape_steps = 4 + trunc(sin(time * 90) * 4);
+			
+			// texturing parameters
+			//
+			gen_mapping_coords is true;
+		    material is hyper_material;
+		end;
+				
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Loft" with
+		auto_camera is on;
+	end;
+end;	// loft_anim

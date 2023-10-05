@@ -1,0 +1,318 @@
+{***************************************************************}
+{                          book.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do book_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/shaders.ores";
+
+
+shape book is
+    shape rounded_rect with
+        scalar width = 1;
+        scalar height = 1;
+        scalar thickness = .1;
+    is
+        scalar radius = thickness / 2;
+        scalar w = width / 2;
+        scalar h = height / 2;
+
+        block with
+            scale by (w - radius / 2) along <1 0 0>;
+            scale by (h - radius / 2) along <0 1 0>;
+            scale by radius along <0 0 1>;
+        end;
+        sphere with
+            move to <w h 0>;
+            radius = static radius;
+        end;
+        sphere with
+            move to <-w h 0>;
+            radius = static radius;
+        end;
+        sphere with
+            move to <w (-h) 0>;
+            radius = static radius;
+        end;
+        sphere with
+            move to <-w (-h) 0>;
+            radius = static radius;
+        end;
+        cylinder with
+            end1 = <w h 0>;
+            end2 = <-w h 0>;
+            radius = static radius;
+        end;
+        cylinder with
+            end1 = <-w h 0>;
+            end2 = <-w (-h) 0>;
+            radius = static radius;
+        end;
+        cylinder with
+            end1 = <-w (-h) 0>;
+            end2 = <w (-h) 0>;
+            radius = static radius;
+        end;
+        cylinder with
+            end1 = <w (-h) 0>;
+            end2 = <w h 0>;
+            radius = static radius;
+        end;
+    end;    // rounded_rect
+
+
+    shape rounded_cylinder with
+        scalar umin = 0, umax = 360;
+        scalar height = 2;
+        scalar radius = 1;
+        scalar thickness = .1;
+    is
+        scalar inner_radius = radius - thickness / 2;
+        scalar outer_radius = radius + thickness / 2;
+
+        cylinder with
+            end1 = <0 0 (-height / 2)>;
+            end2 = <0 0 height> / 2;
+            radius = inner_radius;
+            umin = static umin;
+            umax = static umax;
+        end;
+        cylinder with
+            end1 = <0 0 (-height / 2)>;
+            end2 = <0 0 height> / 2;
+            radius = outer_radius;
+            umin = static umin;
+            umax = static umax;
+        end;
+        torus with
+            inner_radius = static inner_radius;
+            outer_radius = static outer_radius;
+            umin = static umin;
+            umax = static umax;
+            move to <0 0 (-height)> / 2;
+        end;
+        torus with
+            inner_radius = static inner_radius;
+            outer_radius = static outer_radius;
+            umin = static umin;
+            umax = static umax;
+            move to <0 0 height> / 2;
+        end;
+    end;    // rounded_cylinder
+
+
+    shape pages with
+        integer steps = 15;
+        scalar disp = .1;
+        scalar height = .4;
+        scalar thickness = .4;
+    is
+        scalar points[1..steps * 2][1..2];
+
+        // top page
+        //
+        for integer i = 1..steps do
+            scalar t = (i - 2) / (steps - 2);
+            scalar x, y;
+
+            if (i = 1) then
+                x = -1;
+                y = 0;
+            else
+                scalar angle = -90 + (t * 360);
+
+                x = (-1 + thickness / 2) + (t * (2 -
+                    thickness / 2));
+                y = sin angle * disp + disp;
+            end;
+            points[i][1] = x;
+            points[i][2] = y;
+        end;
+        for integer i = 1..steps do
+            scalar t = (i - 1) / (steps - 1);
+            scalar angle = -80 + ((1 - t) * 315);
+            scalar x = .75 - (t * (.75 + 1));
+            scalar y = sin angle * disp + disp + thickness;
+
+            if (t > .75) then
+                y = itself * (1 - sqr (t - .75) / sqr (1.2 -
+                    .75));
+            end;
+            points[i + steps][1] = x;
+            points[i + steps][2] = y;
+        end;
+                extrude points with
+                        color = beige;
+                end;
+    end;    // pages
+
+
+{   shader show_page
+        image type image;
+    is
+        vector point = location in local;
+        scalar x = point dot <1 0 0>;
+        scalar y = point dot <0 1 0>;
+        scalar z = point dot <0 0 1>;
+
+        if (x < .01) or (x > .99) then
+            answer  metallic gold;
+        elseif (y < .01) or (y > .99) then
+            answer metallic gold;
+        else
+            answer show_image in local image;
+        end;
+    end;    // show_page
+}
+
+    shape page1 is
+
+        pages with
+            thickness = .4;
+            scale by 3 along <0 1 0>;
+            move the shader_trans to <-.5 -.5 0>;
+            scale the shader_trans by 1.85 along <1 0 0>;
+            scale the shader_trans by 3 along <0 1 0>;
+            move the shader_trans to <-.15 0 0>;
+        end;
+    end;    // page1
+
+
+    shape page2 is
+
+        pages with
+            thickness = .4;
+            scale by -1 along <1 0 0>;
+            scale by 3 along <0 1 0>;
+            move the shader_trans to <-.5 -.5 0>;
+            scale the shader_trans by 1.85 along <1 0 0>;
+            scale the shader_trans by 3 along <0 1 0>;
+            move the shader_trans to <.15 0 0>;
+        end;
+    end;    // page2
+
+
+    const scalar cover_thickness = .05;
+
+    page1 with
+        move to <1 0 cover_thickness>;
+    end;
+    page2 with
+        move to <-1 0 cover_thickness>;
+    end;
+
+    // book covers
+    //
+    color = dark red;
+    rounded_rect with
+        width = 2;
+        height = 3.25;
+        thickness = cover_thickness;
+
+        {rotate by -2 around 0 1 0;}
+        move to <-1.25 0 cover_thickness>;
+        magnify the shader_trans by .5;
+    end;
+
+    rounded_rect with
+        width = 2;
+        height = 3.25;
+        thickness = cover_thickness;
+
+        {rotate by 2 around 0 1 0;}
+        move to <1.25 0 cover_thickness>;
+        magnify the shader_trans by .5;
+    end;
+
+    // spine of book
+    //
+    rounded_cylinder with
+        umin = 90 - 40;
+        umax = 90 + 40;
+        radius = .5;
+        height = 3.25;
+        thickness = cover_thickness;
+        rotate by 90 around <1 0 0>;
+        move to <0 0 (cover_thickness - radius + .1)>;
+        magnify the shader_trans by .5;
+    end;
+
+    // inside cover backing
+    //
+    parallelogram with
+        material is chalk colored light brown;
+        scale by .9 along <1 0 0>;
+        scale by 1.6 along <0 1 0>;
+        move to <-1.25 0 (2 * cover_thickness + .01)>;
+    end;
+    parallelogram with
+        material is chalk colored light brown;
+        scale by .9 along <1 0 0>;
+        scale by 1.6 along <0 1 0>;
+        move to <1.25 0 (2 * cover_thickness + .01)>;
+    end;
+    cylinder with
+        material is chalk colored light brown;
+        umin = 90 - 40;
+        umax = 90 + 40;
+        radius = .55;
+        rotate by 90 around <1 0 0>;
+        move to <0 0 (2 * cover_thickness - radius + .1)>;
+        scale by 1.6 along <0 1 0>;
+    end;
+end;    // book
+
+
+picture book_picture with
+    eye = <3 -8 6>;
+    field_of_view = 40;
+    render_mode is shaded;
+    shading is face;
+    background = sky_blue;
+    ambient = white * .4;
+    facets = 0;
+    shadows is on;
+    save_pictures is on;
+is
+    spot_light towards <20 30 -20> with
+        move to <-20 -30 20>;
+        brightness = 2;
+        angle = 8;
+    end;
+
+
+    book;
+
+    plane with
+        magnify by 10;
+        rotate by 80 around <0 0 1>;
+    end;
+end;    // book_picture
+
+
+anim book_anim with
+    eye = <3 -8 6>;
+    field_of_view = 40;
+    double_buffer is on;
+is
+    shape scene is
+        book;
+        {
+        plane with
+            magnify by 3;
+            render_mode is wireframe;
+        end;
+        }
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // book_anim

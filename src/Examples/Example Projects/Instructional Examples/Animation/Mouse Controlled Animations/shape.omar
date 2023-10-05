@@ -1,0 +1,52 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  	  	 shape.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of shapes in an      	}
+{		animation.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do fish_shape_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "fish_parts.ores";
+
+shape fish_shape
+is
+    // fish body parts
+    //   
+    body;
+    open_eyes;
+    tail with
+        move to <15 0 0>;
+    end;
+    
+    // fish fins
+    //
+    top_fin with
+        move to <0 0 13>;
+    end;
+    side_fin with
+        rotate by -45 around <1 0 0>;
+        move to <-10 -4 -4>;
+    end;
+    side_fin with
+        rotate by 45 around <1 0 0>;
+        move to <-10 4 -4>;
+    end;
+end;    // fish_shape
+    
+    
+anim fish_shape_anim
+    args type args;
+with
+    eye = <-50 -30 10>;
+    args check;
+is
+    mouse_controlled_shape fish_shape;
+end;    // fish_shape_anim

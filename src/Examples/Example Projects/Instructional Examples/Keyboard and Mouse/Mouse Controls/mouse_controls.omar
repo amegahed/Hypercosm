@@ -1,0 +1,25 @@
+do mouse_controls_anim;
+
+include "system/3d.ores";
+include "fish.omar";
+
+anim mouse_controls_anim with
+	eye = <-50 -30 10>;
+is
+	fish type fish;
+	
+	picture scene is
+		vector orientation = get_mouse * 180;
+		
+		fish instance with
+			rotate by orientation.y around <0 1 0>;
+			rotate by orientation.x around <0 0 1>;
+		end;
+		
+		default_lights;
+	end;    // scene
+	while true do
+		scene;
+		fish update;
+	end;
+end;    // mouse_controls_anim

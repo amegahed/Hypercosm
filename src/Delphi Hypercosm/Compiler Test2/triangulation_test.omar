@@ -1,0 +1,20 @@
+do test;
+
+
+include "3d.ores";
+include "anims.ores";
+
+
+shape thing is
+	polygon [
+		<-2 -2 0> <-2 2 0> <1 2 0> <1 -1 0> <2 -1 0>
+		<2 -2 0> <0 -2 0> <0 1 0> <-1 1 0> <-1 -2 0>
+	];	
+end;	// thing
+
+
+anim test with
+	eye = <0 -8 4>;
+is
+	mouse_controlled_shape thing;
+end;	// test

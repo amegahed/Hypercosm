@@ -1,0 +1,46 @@
+{***************************************************************}
+{                          spiral.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do spiral_anim;
+
+
+include "system/3d.ores";
+include "system/figures.ores";
+include "system/shapes.ores";
+include "system/time.ores";
+
+
+picture spiral_picture with
+    scalar time = 0;
+
+    eye = <0 -2 2>;
+    field_of_view = 30;
+    render_mode is wireframe;
+is
+    spiral with
+        turns = 15;
+        steps = 300;
+        rotate by time around <0 0 1>;
+    end;
+end;    // spiral_picture
+
+
+anim spiral_anim with
+    double_buffer is on;
+is
+    timer type t with
+        ticks_per_second = 180;
+    end;
+
+    while true do
+        spiral_picture with
+            time = t position;
+        end;
+    end;
+end;    // spiral_anim

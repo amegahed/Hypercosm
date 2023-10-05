@@ -1,0 +1,276 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          chess_pieces.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of renderable chess pieces.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/rendering.ores";
+include "pawn.omar";
+include "rook.omar";
+include "bishop.omar";
+include "knight.omar";
+include "queen.omar";
+include "king.omar";
+
+subject renderable_pawn
+extends
+	renderable pawn_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		// call superclass constructor
+		//
+		pawn_piece new at row column in chess_color;
+	end;    // new
+
+	//
+	// rendering method
+	//
+	
+	
+	shape instance is
+		pawn with
+			magnify by .05;
+			global move to <(column - 4.5) (row - 4.5) 0>;
+		end;
+	end;    // instance
+end;    // renderable_pawn
+
+subject renderable_rook
+extends
+	renderable rook_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		// call superclass constructor
+		//
+		rook_piece new at row column in chess_color;
+	end;    // new
+
+	//
+	// rendering method
+	//
+	
+	
+	shape instance is
+		rook with
+			magnify by .05;
+			global move to <(column - 4.5) (row - 4.5) 0>;
+		end;
+	end;    // instance
+end;    // renderable_rook
+
+subject renderable_bishop
+extends
+	renderable bishop_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		// call superclass constructor
+		//
+		bishop_piece new at row column in chess_color;
+	end;    // new
+
+	//
+	// rendering method
+	//
+	
+	
+	shape instance is
+		bishop with
+			magnify by .05;
+			global move to <(column - 4.5) (row - 4.5) 0>;
+		end;
+	end;    // instance
+end;    // renderable_bishop
+
+subject renderable_knight
+extends
+	renderable knight_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		// call superclass constructor
+		//
+		knight_piece new at row column in chess_color;
+	end;    // new
+
+	//
+	// rendering method
+	//
+	
+	
+	shape instance is
+		knight with
+			magnify by .05;
+			if chess_color is white then
+				rotate by 90 around <0 0 1>;
+			else
+				rotate by -90 around <0 0 1>;
+			end;
+			global move to <(column - 4.5) (row - 4.5) 0>;
+		end;
+	end;    // instance
+end;    // renderable_knight
+
+subject renderable_queen
+extends
+	renderable queen_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		// call superclass constructor
+		//
+		queen_piece new at row column in chess_color;
+	end;    // new
+
+	//
+	// rendering method
+	//
+	
+	
+	shape instance is
+		queen with
+			magnify by .05;
+			global move to <(column - 4.5) (row - 4.5) 0>;
+		end;
+	end;    // instance
+end;    // renderable_queen
+
+subject renderable_king
+extends
+	renderable king_piece
+does
+	// constructor
+	//
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	end;
+	
+	// rendering method
+	//
+	shape instance;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at integer row, column;
+		in chess_color type chess_color;
+	is
+		// call superclass constructor
+		//
+		king_piece new at row column in chess_color;
+	end;    // new
+
+	//
+	// rendering method
+	//
+	
+	
+	shape instance is
+		king with
+			magnify by .05;
+			global move to <(column - 4.5) (row - 4.5) 0>;
+		end;
+	end;    // instance
+end;    // renderable_king

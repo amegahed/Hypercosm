@@ -1,0 +1,49 @@
+{***************************************************************}
+{                          move.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do move_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.omar";
+include "system/snowman.omar";
+
+
+anim move_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    field_of_view = 30;
+    lookat = <.75 0 .85>;
+    args check;
+is
+	shape scene is
+        snowman with
+            magnify by .5;
+            color = white;
+            render_mode is wireframe;
+        end;
+        snowman with
+            magnify by .5;
+            move to <1.5 0 0>;
+            color = red;
+            render_mode is wireframe;
+        end;
+        arrow from <0 0 .75> to <1.5 0 .75>;
+        futura_l_word "MOVE" with
+            rotate by 90 around <1 0 0>;
+            move to <.75 0 .85>;
+        end;
+        axes;
+	end;
+	
+    mouse_controlled_shape scene titled "The Move Transformation";
+end;    // move_anim

@@ -1,0 +1,122 @@
+{***************************************************************}
+{                       color_conversions.ores                  }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains methods to convert colors between different    }
+{		color spaces.											}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/color.ores";
+
+
+// *** rgb_to_hsv ***
+// Takes a red-green-blue color value and returns a corresponding
+// hue-saturation-value color.  Hue ranges from 0-360.  0 and 360 are red,
+// 120 is green, and 240 is blue.  Saturation ranges from 0 (no color) to
+// 1 (full color purity).  Value ranges from 0 (black) to 1 (full color
+// brightness).
+//
+color type question rgb_to_hsv
+    color type rgb;
+is
+    scalar r, g, b;
+    scalar h, s, v;
+    scalar cmax, cmin, delta;
+
+    r = rgb dot <1 0 0>;
+    g = rgb dot <0 1 0>;
+    b = rgb dot <0 0 1>;
+
+    cmax = r;
+    if g > cmax then cmax = g; end;
+    if b > cmax then cmax = b; end;
+
+    cmin = r;
+    if g < cmin then cmin = g; end;
+    if b < cmin then cmin = b; end;
+
+    v = cmax;
+
+    if cmax <> 0 then
+        delta = cmax - cmin;
+        s = delta / cmax;
+    else
+        s = 0;
+    end;
+
+    if s = 0 then
+        h = 0;      // hue is undefined if saturation is 0
+    else
+        if r = cmax then                // between yellow and magenta
+            h = (g - b) / delta;
+        elseif g = cmax then            // between cyan and yellow
+            h = 2 + ((b - r) / delta);
+        else                            // between magenta and cyan
+            h = 4 + ((r - g) / delta);
+        end;
+
+        h = itself * 60;
+        if h < 0 then
+            h = itself + 360;
+        end;
+    end;
+
+    answer <h s v>;
+end;    // rgb_to_hsv
+
+
+// *** hsv_to_rgb ***
+// Takes a hue-saturation-value color and returns a corresponding
+// red-green-blue color.  Red, green, and blue values range from 0 to 1.
+//
+color type question hsv_to_rgb
+    color type hsv;
+is
+    scalar r, g, b;
+    scalar h, s, v;
+    scalar f, p, q, t;
+    integer i;
+
+    h = hsv dot <1 0 0>;
+    s = hsv dot <0 1 0>;
+    v = hsv dot <0 0 1>;
+
+    if s = 0 then
+        r = v;
+        g = v;
+        b = v;
+    else
+        if h >= 360 then
+            h = itself - 360;
+        end;
+
+        h = itself / 60;
+        i = trunc h;
+        f = h - i;
+
+        p = v * (1 - s);
+        q = v * (1 - (s * f));
+        t = v * (1 - (s * (1 - f)));
+
+        if i = 0 then
+            r = v;  g = t;  b = p;
+        elseif i = 1 then
+            r = q;  g = v;  b = p;
+        elseif i = 2 then
+            r = p;  g = v;  b = t;
+        elseif i = 3 then
+            r = p;  g = q;  b = v;
+        elseif i = 4 then
+            r = t;  g = p;  b = v;
+        else
+            r = v;  g = p;  b = q;
+        end;
+    end;
+
+    answer <r g b>;
+end;    // hsv_to_rgb

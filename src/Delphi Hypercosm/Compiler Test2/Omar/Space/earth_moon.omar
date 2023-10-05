@@ -1,0 +1,71 @@
+{***************************************************************}
+{                          earth_moon.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+material type earth_surface is chalk textured new texture type
+    using new image type named "grid.jpg";
+material type moon_surface is chalk textured new texture type
+    using new image type named "stucco.jpg";
+
+
+subject animated_earth
+extends
+    step_actor
+does
+    shape instance;
+is
+    objective shape earth is
+        sphere with
+            material is earth_surface;
+        end;
+    end;
+
+
+    objective shape moon is
+        sphere with
+            material is moon_surface;
+            scale by -1 along <0 0 1>;
+        end;
+    end;
+
+
+    shape instance is
+        earth with
+            rotate by steps around <0 0 1>;
+            rotate by 22.5 around <0 1 0>;
+        end;
+
+        moon with
+            magnify by .2;
+            move to <4 0 0>;
+            rotate by (steps / 5) around <0 0 1>;
+        end;
+    end;
+end;    // animated_earth
+
+
+anim test
+    args type args;
+with
+    double_buffer is on;
+    eye = <2 -8 4>;
+    ambient = black;
+    facets = 10;
+    args check;
+is
+    animated_earth type earth;
+
+    mouse_controlled_actor earth;
+end;    // test

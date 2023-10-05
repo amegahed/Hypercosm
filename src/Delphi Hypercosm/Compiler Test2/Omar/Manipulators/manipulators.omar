@@ -1,0 +1,86 @@
+do manipulator_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/reporting_manipulators.ores";
+include "system/manipulator_group.ores";
+include "system/common_materials.ores";
+include "system/fish.omar";
+
+
+shape thing1 is
+    sphere with
+        move to <2 -2 1>;
+        material is plastic colored red;
+    end;
+end;    // thing1
+
+
+shape thing2 is 
+    paraboloid with
+        material is plastic poster "Panels.jpg";
+        scale by 2 along <0 0 1>;
+        move to <-2 2 2>;
+    end;
+end;    // thing
+
+
+shape thing3 is
+    torus with
+        outer_radius = 1.5;
+        inner_radius = .5;
+        move to <2 2 1>;
+        material is wood;
+    end;
+end;    // thing3
+
+
+shape thing4 is
+    static fish type fish;
+    fish instance with
+        magnify by .1;
+        rotate by 90 around <0 0 1>;
+        move to <-2 -2 1>;
+    end;
+end;    // thing4;
+
+
+reporting_translation_manipulator type manipulator1 controlling thing1 
+    named "Ball" with
+    handle_size = .5;
+end;
+reporting_rotation_manipulator type manipulator2 around z_axis controlling thing2
+    named "Gumdrop" with
+    handle_size = .5;
+end;
+reporting_orientation_manipulator type manipulator3 controlling thing3
+    named "Doughnut" with
+    handle_size = .5;
+end;
+reporting_transformation_manipulator type manipulator4 controlling thing4
+    named "Fish" with
+    handle_size = .5;
+end;
+
+
+manipulator type manipulators[] is [manipulator1 manipulator2 manipulator3 manipulator4];
+manipulator_group type manipulator_group using manipulators;
+
+
+anim manipulator_anim with
+    eye = <-10 -10 10>;
+    lookat = <0 0 1>;
+is
+    shape scene is
+        plane with
+            magnify by 10;
+            material is glass;
+           //material is wood;
+        end;
+    end;
+    
+    mouse_controlled_actor manipulator_group in scene
+    	titled "Manipulators";
+end;    // manipulator_anim

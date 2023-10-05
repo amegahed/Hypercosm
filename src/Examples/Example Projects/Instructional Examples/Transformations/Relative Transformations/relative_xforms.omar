@@ -1,0 +1,48 @@
+do relative_xforms_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// transformations
+//
+include "direct.omar";
+include "magnify.omar";
+include "move.omar";
+include "orient.omar";
+include "rotate.omar";
+include "scale.omar";
+include "skew.omar";
+include "slant.omar";
+include "stretch.omar";
+
+anim relative_xforms_anim 
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <0 0 .85>;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_shape of direct_scene) 
+		named "direct";     
+	multi_actor add_actor (new animated_shape of magnify_scene) 
+		named "magnify";   
+	multi_actor add_actor (new animated_shape of move_scene) 
+		named "move";   
+	multi_actor add_actor (new animated_shape of orient_scene) 
+		named "orient";   
+	multi_actor add_actor (new animated_shape of rotate_scene) 
+		named "rotate";   
+	multi_actor add_actor (new animated_shape of scale_scene) 
+		named "scale";  
+	multi_actor add_actor (new animated_shape of skew_scene) 
+		named "skew"; 
+	multi_actor add_actor (new animated_shape of slant_scene) 
+		named "slant"; 
+	multi_actor add_actor (new animated_shape of stretch_scene) 
+		named "stretch"; 
+																					
+	mouse_controlled_actor multi_actor;
+end;    // relative_xforms_anim

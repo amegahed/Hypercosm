@@ -1,0 +1,111 @@
+do parse_xml;
+
+include "system/string_utils.ores";
+include "system/xml_resource.ores";
+include "system/sax_parser.ores";
+include "system/xml_error_handler.ores";
+
+// Implementation of an xml_content_handler for this example
+//
+subject xml_content_handler
+extends
+	xml_content_handling object
+does
+	verb start_document;
+	verb end_document;
+	
+	verb start_element
+		named string type name;
+		of xml_attributes type attributes;
+	end;
+	
+	verb end_element
+		named string type name;
+		of string type value;
+	end;
+	
+	string type[] question get_supported_element_names;	
+is
+	verb start_document is
+		write "--- START ---", ;
+	end;
+	
+	
+	verb end_document is
+		write "--- END ---", ;
+	end;
+	
+	
+	verb start_element
+		named string type name;
+		of xml_attributes type attributes;
+	is
+		indent;
+		write "<", name;
+		
+		if some attributes then
+			integer num_attributes = attributes get_length;
+			if num_attributes > 0 then
+				for integer i = 1 .. num_attributes do
+					string type attribute_name is none;
+					string type attribute_value is none;
+					attribute_name is attributes get_name_by_index i;
+					attribute_value is attributes get_value_by_index i;
+					
+					// write attribute name
+					//
+					if some attribute_name then
+						write " ", attribute_name;
+					end;
+					
+					// write attribute value
+					//
+					write "=", get_double_quotated attribute_value;
+				end;
+			end;
+		end;
+		
+		write ">",;
+		indentation = itself + 1;
+	end;
+	
+	
+	verb end_element
+		named string type name;
+		of string type value;
+	is
+		boolean has_value is false;
+		string type normalized_value is none;
+		
+		if some value then
+			normalized_value is normalize_whitespace in value;
+			if some normalized_value then
+				has_value is true;
+			end;
+		end;
+		if has_value then		
+			indent;
+			write normalized_value,;
+		end;
+		
+		indentation = itself - 1;
+		indent;	
+		write "</", name, ">",;
+	end;
+	
+	
+	string type[] question get_supported_element_names is
+		answer ["root" "scene" "block" "sphere" "cylinder" "cone" "group" "instance" "clone" "material" "trans"];
+	end;
+end;	// xml_content_handler
+
+// This example parses an XML file using the OO wrapper for the native XML API.
+//
+verb parse_xml is
+	xml_resource type xml_resource named "scene.xml";
+	sax_parser type parser;
+	 
+	parser set_xml_content_handler to new xml_content_handler;
+	parser set_xml_error_handler to new xml_error_handler;
+	parser parse xml_resource get_xml;
+end;	// parse_xml

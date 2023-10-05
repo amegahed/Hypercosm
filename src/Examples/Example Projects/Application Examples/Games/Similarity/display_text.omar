@@ -1,0 +1,59 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          display_text.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a an example of Hypercosm's text display       }
+{       utilities.                                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do display_text_test;
+
+include "system/anims.ores";
+include "system/renderable_text.ores";
+include "system/string_utils.ores";
+
+shape show_word
+	string type str;
+	using text_style type style is simple_text;
+is
+	text str using style with
+		rotate by 90 around <0 0 1>;
+		rotate by -90 around <0 1 0>;
+	end;
+end;    // show_word
+
+shape show_number
+	integer number;
+	at vector location = <0 0 0>;
+	using text_style type style is simple_text;
+is
+	string type s = integer_to_string of number;
+	text s using style with
+		rotate by 90 around <0 0 1>;
+		rotate by -90 around <0 1 0>;
+		move to location;
+	end;
+end;    // show_number
+
+shape display_text_test_shape
+is
+	show_number 1234567890 at <-9 0 0>;
+	show_word "XabcdefghijklmnopqrstuvwxyzX" with
+		move to <-4 5 0>;
+	end;
+	show_word "XABCDEFGHIJKLMNOPQRSTUVWXYZX" with
+		move to <0 5 0>;
+	end;
+end;    // display_text_test_shape
+
+anim display_text_test
+with
+	eye = <1 4 31>;
+	lookat = <0 4 0>;
+is
+	mouse_controlled_shape display_text_test_shape;
+end;    // display_text_test

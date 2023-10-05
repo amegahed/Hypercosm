@@ -1,0 +1,61 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       animated_shape_actor.ores        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/timed_actor.ores";
+
+subject animated_shape_actor
+extends
+	timed_actor
+does
+	// constructor
+	//
+	verb new
+		of shape form with
+			scalar time = 0;
+		end;
+	end;
+
+	// rendering method
+	//
+	shape instance; 
+has
+	// attributes
+	//
+	shape form with
+		scalar time = 0;
+	end;
+is
+	//
+	// constructor
+	//
+	
+	verb new
+		of shape form with
+			scalar time = 0;
+		end;
+	is
+		// set animated actor attributes
+		//
+		animated_shape_actor's form does form;
+	end;    // new
+	
+	//
+	// rendering method
+	//
+	
+	shape instance is
+		form with
+			time = static time;
+		end; 
+	end;    // instance
+end;    // animated_shape_actor

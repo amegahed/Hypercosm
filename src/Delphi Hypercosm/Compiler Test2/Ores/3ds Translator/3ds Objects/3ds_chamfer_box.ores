@@ -1,0 +1,680 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		3ds_chamfer_box.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains chamfer box definitions that correspond to 	}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+
+include "system/3ds_textureable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+include "system/comparisons.ores";
+
+
+final subject translated_3ds_chamfer_box
+extends
+    translated_3ds_collapsable translated_3ds_texturable_object
+does
+    // constructor
+    //
+	verb new with
+	
+		// geometry parameters
+		//
+	    scalar length = 2;
+	    scalar width = 2;
+	    scalar height = 2;
+		scalar fillet = .25;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		integer height_segments = 1;
+		integer fillet_segments = 4;
+		boolean smooth is true;
+		
+		//  texturing parameters
+		//
+	    boolean gen_mapping_coords is false;
+	end;
+	
+    // attributes setting method
+    //
+	verb set with
+	
+		// geometry parameters
+		//
+	    scalar length = 2;
+	    scalar width = 2;
+	    scalar height = 2;
+		scalar fillet = .25;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		integer height_segments = 1;
+		integer fillet_segments = 4;
+		boolean smooth is true;
+		
+		//  texturing parameters
+		//
+	    boolean gen_mapping_coords is false;
+	end;
+	
+	// collapsable method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_chamfer_box type question get;
+	reference verb recycle;	
+has
+	// geometry attributes
+	//
+    scalar length;
+    scalar width;
+    scalar height;
+	scalar fillet;
+	
+	// tessellation attributes
+	//
+	integer length_segments;
+	integer width_segments;
+	integer height_segments;
+	integer fillet_segments;
+	boolean smooth;
+	
+private	
+	// recycling attributes
+	//
+	translated_3ds_chamfer_box type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_chamfer_box type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+	
+		// geometry parameters
+		//
+	    scalar length = 2;
+	    scalar width = 2;
+	    scalar height = 2;
+		scalar fillet = .25;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		integer height_segments = 1;
+		integer fillet_segments = 4;
+		boolean smooth is true;
+		
+		//  texturing parameters
+		//
+	    boolean gen_mapping_coords is false;
+	is
+	    translated_3ds_texturable_object new with
+	    
+            // set texturing parameters
+            //
+	        gen_mapping_coords is static gen_mapping_coords;
+	    end;
+
+		if verbose_recycling then
+			write "new 3ds chamfer box", ;
+		end;
+				    
+		with translated_3ds_chamfer_box do
+		
+			// set geometry attributes
+			//
+		    its length = length;
+		    its width = width;
+		    its height = height;
+			its fillet = fillet;
+			
+			// set tessellation attributes
+			//
+			its length_segments = length_segments;
+			its width_segments = width_segments;
+			its height_segments = height_segments;
+			its fillet_segments = fillet_segments;
+			its smooth is smooth;
+	    end;
+	end;	// new	
+
+
+	//
+    // attributes setting method
+    //
+    
+    
+	verb set with
+	
+		// geometry parameters
+		//
+	    scalar length = 2;
+	    scalar width = 2;
+	    scalar height = 2;
+		scalar fillet = .25;
+		
+		// tessellation parameters
+		//
+		integer length_segments = 1;
+		integer width_segments = 1;
+		integer height_segments = 1;
+		integer fillet_segments = 4;
+		boolean smooth is true;
+		
+		//  texturing parameters
+		//
+	    boolean gen_mapping_coords is false;
+	is
+		with translated_3ds_chamfer_box do
+		
+			// set geometry attributes
+			//
+		    its length = length;
+		    its width = width;
+		    its height = height;
+			its fillet = fillet;
+			
+			// set tessellation attributes
+			//
+			its length_segments = length_segments;
+			its width_segments = width_segments;
+			its height_segments = height_segments;
+			its fillet_segments = fillet_segments;
+			its smooth is smooth;
+			
+            // set texturing parameters
+            //
+	        its gen_mapping_coords is gen_mapping_coords;
+	    end;	
+	end;	// set
+	
+	
+    //
+	// collapsable method
+	//
+	
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;		
+		
+		// instance parameters
+		//
+		scalar half_width, half_length, half_height;
+		scalar w, l, h, z;
+
+
+		mesh type question corner
+			at vector location;
+		with
+			// geometry parameters
+			//
+			vector x_axis = <1 0 0>;
+			vector y_axis = <0 1 0>;
+		is
+			// grid parameters
+			// rows = number of vertical divisions
+			// columns = number of horizontal divisions
+			//
+			integer rows = fillet_segments;
+			integer columns = fillet_segments;
+		    vector vertex_grid[0 .. rows, 0 .. columns];
+		    vector normal_grid[0 .. rows, 0 .. columns];
+		    vector z_axis = x_axis cross y_axis;
+		
+			// compute vertices
+			//       
+		    for integer row = 0 .. rows do
+				scalar t = row / rows;
+				scalar v = t * 90;
+		 
+		    	for integer column = 0 .. columns do
+			    	scalar s = column / columns;
+			    	scalar u = s * 90;
+		    		vector point, normal;
+		    		
+		    		// rotate for lattitude
+		    		//
+		    		normal = rotated_vector x_axis by -v around y_axis;
+		    		
+		    		// rotate for longitude
+		    		//
+		    		normal = rotated_vector normal by u around z_axis;
+		    		
+		    		// set point and normal
+		    		//
+		    		normal_grid[row, column] = normal;
+		    		vertex_grid[row, column] = location + normal * fillet;
+		    	end;
+		    end;
+		    
+		    answer (get_grid_mesh of vertex_grid oriented to normal_grid with
+		    
+			    // rendering paramters
+			    //
+				smoothing is smooth;
+				mending is false;
+				closed is true;
+				reversed is false;
+				textured is gen_mapping_coords;
+			);
+	   	end;	// corner
+	   	
+	   	
+		mesh type question edge
+			at vector location;
+		with
+			vector x_axis = <1 0 0>;
+			vector y_axis = <0 1 0>;
+			scalar length = 1;
+			integer segments = 1;
+		is
+			// grid parameters
+			// rows = number of vertical divisions
+			// columns = number of horizontal divisions
+			//
+			integer rows = segments;
+			integer columns = fillet_segments;
+		    vector vertex_grid[0 .. rows, 0 .. columns];
+		    vector normal_grid[0 .. rows, 0 .. columns];
+		    vector z_axis = x_axis cross y_axis;
+		
+			// compute vertices
+			//       
+		    for integer row = 0 .. rows do
+				scalar t = row / rows;
+			    scalar z = (t - .5) * length;
+			    			 
+		    	for integer column = 0 .. columns do
+			    	scalar s = column / columns;
+			    	scalar u = s * 90;
+		    		vector point, normal;
+		    		
+		    		// rotate for longitude
+		    		//
+		    		normal = rotated_point x_axis by u around z_axis;
+		    		normal_grid[row, column] = normal;
+		    		
+		    		// translate for location and height
+		    		//
+		    		vertex_grid[row, column] = location + (normal * fillet) + (z_axis * z);
+		    	end;
+		    end;
+		    
+		    answer (get_grid_mesh of vertex_grid oriented to normal_grid with
+		    
+			    // rendering paramters
+			    //
+				smoothing is smooth;
+				mending is false;
+				closed is true;
+				reversed is false;
+				textured is gen_mapping_coords;
+			);
+		end;	// edge
+	
+		
+		// check range of height
+		//
+		if height < 0 then
+			z = height;
+		else
+			z = 0;
+		end;
+		
+		// check range of tessellation parameters
+		//
+		if length_segments < 1 then
+			length_segments = 1;
+		end;
+		if width_segments < 1 then
+			width_segments = 1;
+		end;
+		if height_segments < 1 then
+			height_segments = 1;
+		end;
+		if fillet_segments < 1 then
+			fillet_segments = 1;
+		end;
+		   			
+		// normalize geometry
+		//
+		width = abs width;
+		length = abs length;
+		height = abs height;
+		fillet = smaller of abs fillet and (smallest of 
+			[(width / 2) (length / 2) (height / 2)]);
+		
+		// initialize instance parameters
+		//
+		half_width = (width / 2);
+		half_length = (length / 2);
+		half_height = (height / 2);	
+		w = half_width - fillet;
+		l = half_length - fillet;
+		h = half_height - fillet;
+
+		// add sides
+		//
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <-w -l z>;
+			side1 = <(w * 2) 0 0>;
+			side2 = <0 (l * 2) 0>;
+		    h_steps = width_segments;
+		    v_steps = length_segments;
+			smoothing is static smooth;
+			one_sided is true;
+			reversed is true;
+			textured is gen_mapping_coords;
+		);	// bottom side
+		
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <-w -l (z + height)>;
+			side1 = <(w * 2) 0 0>;
+			side2 = <0 (l * 2) 0>;
+		    h_steps = width_segments;
+		    v_steps = length_segments;
+			smoothing is static smooth;
+			one_sided is true;
+			reversed is false;
+			textured is gen_mapping_coords;
+		);	// top side
+
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <-half_width -l (z + fillet)>;
+			side1 = <0 (l * 2) 0>;
+			side2 = <0 0 (h * 2)>;
+			h_steps = length_segments;
+			v_steps = height_segments;
+			smoothing is static smooth;
+			one_sided is true;
+			reversed is true;
+			textured is gen_mapping_coords;
+		);	// left side
+
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <half_width -l (z + fillet)>;
+			side1 = <0 (l * 2) 0>;
+			side2 = <0 0 (h * 2)>;
+			h_steps = length_segments;
+			v_steps = height_segments;
+			smoothing is static smooth;
+			one_sided is true;
+			reversed is false;
+			textured is gen_mapping_coords;
+		);	// right side
+		
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <-w -half_length (z + fillet)>;
+			side1 = <(w * 2) 0 0>;
+			side2 = <0 0 (h * 2)>;
+			h_steps = width_segments;
+			v_steps = height_segments;
+			smoothing is static smooth;
+			one_sided is true;
+			reversed is false;
+			textured is gen_mapping_coords;
+		);	// front side
+		
+		editable_mesh add_element (get_rectangular_grid_mesh with
+			vertex = <-w half_length (z + fillet)>;
+			side1 = <(w * 2) 0 0>;
+			side2 = <0 0 (h * 2)>;
+			h_steps = width_segments;
+			v_steps = height_segments;
+			smoothing is static smooth;
+			one_sided is true;
+			reversed is true;
+			textured is gen_mapping_coords;
+		);	// back side
+		
+		// add corners
+		//
+		editable_mesh add_element (corner at <w l (z + height - fillet)> with
+			x_axis = <1 0 0>;
+			y_axis = <0 1 0>;
+		);	// upper back right corner
+		
+		editable_mesh add_element (corner at <-w l (z + height - fillet)> with
+			x_axis = <0 1 0>;
+			y_axis = <-1 0 0>;
+		);	// upper back left corner
+		
+		editable_mesh add_element (corner at <-w -l (z + height - fillet)> with
+			x_axis = <-1 0 0>;
+			y_axis = <0 -1 0>;
+		);	// upper front left corner
+
+		editable_mesh add_element (corner at <w -l (z + height - fillet)> with
+			x_axis = <0 -1 0>;
+			y_axis = <1 0 0>;
+		);	// upper front right corner
+
+		editable_mesh add_element (corner at <w l (z + fillet)> with
+			x_axis = <0 1 0>;
+			y_axis = <1 0 0>;
+		);	// lower back right corner
+		
+		editable_mesh add_element (corner at <-w l (z + fillet)> with
+			x_axis = <-1 0 0>;
+			y_axis = <0 1 0>;
+		);	// lower back left corner
+		
+		editable_mesh add_element (corner at <-w -l (z + fillet)> with
+			x_axis = <0 -1 0>;
+			y_axis = <-1 0 0>;
+		);	// lower front left corner
+
+		editable_mesh add_element (corner at <w -l (z + fillet)> with
+			x_axis = <1 0 0>;
+			y_axis = <0 -1 0>;
+		);	// lower front right corner
+		
+		// add edges
+		//
+		editable_mesh add_element (edge at <w l (z + half_height)> with
+			x_axis = <1 0 0>;
+			y_axis = <0 1 0>;
+			length = (h * 2);
+			segments = height_segments;
+		);	// back right z edge
+
+		editable_mesh add_element (edge at <-w l (z + half_height)> with
+			x_axis = <0 1 0>;
+			y_axis = <-1 0 0>;
+			length = (h * 2);
+			segments = height_segments;
+		);	// back left z edge
+
+		editable_mesh add_element (edge at <-w -l (z + half_height)> with
+			x_axis = <-1 0 0>;
+			y_axis = <0 -1 0>;
+			length = (h * 2);
+			segments = height_segments;
+		);	// front left z edge
+
+		editable_mesh add_element (edge at <w -l (z + half_height)> with
+			x_axis = <0 -1 0>;
+			y_axis = <1 0 0>;
+			length = (h * 2);
+			segments = height_segments;
+		);	// front right z edge
+
+		editable_mesh add_element (edge at <w 0 (z + height - fillet)> with
+			x_axis = <1 0 0>;
+			y_axis = <0 0 1>;
+			length = (l * 2);
+			segments = length_segments;
+		);	// upper right y edge		
+
+		editable_mesh add_element (edge at <-w 0 (z + height - fillet)> with
+			x_axis = <0 0 1>;
+			y_axis = <-1 0 0>;
+			length = (l * 2);
+			segments = length_segments;
+		);	// upper left y edge		
+
+		editable_mesh add_element (edge at <-w 0 (z + fillet)> with
+			x_axis = <-1 0 0>;
+			y_axis = <0 0 -1>;
+			length = (l * 2);
+			segments = length_segments;
+		);	// lower left y edge
+		
+		editable_mesh add_element (edge at <w 0 (z + fillet)> with
+			x_axis = <0 0 -1>;
+			y_axis = <1 0 0>;
+			length = (l * 2);
+			segments = length_segments;
+		);	// lower right y edge
+		
+		editable_mesh add_element (edge at <0 l (z + height - fillet)> with
+			x_axis = <0 0 1>;
+			y_axis = <0 1 0>;
+			length = (w * 2);
+			segments = width_segments;
+		);	// upper back x edge
+		
+		editable_mesh add_element (edge at <0 l (z + fillet)> with
+			x_axis = <0 1 0>;
+			y_axis = <0 0 -1>;
+			length = (w * 2);
+			segments = width_segments;
+		);	// lower back x edge
+
+		editable_mesh add_element (edge at <0 -l (z + fillet)> with
+			x_axis = <0 0 -1>;
+			y_axis = <0 -1 0>;
+			length = (w * 2);
+			segments = width_segments;
+		);	// lower back x edge
+
+		editable_mesh add_element (edge at <0 -l (z + height - fillet)> with
+			x_axis = <0 -1 0>;
+			y_axis = <0 0 1>;
+			length = (w * 2);
+			segments = width_segments;
+		);	// lower back x edge
+				
+	    recycle;																											
+		answer editable_mesh;
+	end;	// get_collapsed
+	
+		
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_chamfer_box type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_chamfer_box type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_chamfer_box;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+		
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_chamfer_box;
+		
+		translated_3ds_chamfer_box is none;
+	end;		// recycle			
+end;    // translated_3ds_chamfer_box
+
+
+//
+// procedural interface
+//
+
+
+shape translated_3ds_chamfer_box with
+
+	// geometry parameters
+	//
+    scalar length = 2;
+    scalar width = 2;
+    scalar height = 2;
+	scalar fillet = .25;
+	
+	// tessellation parameters
+	//
+	integer length_segments = 1;
+	integer width_segments = 1;
+	integer height_segments = 1;
+	integer fillet_segments = 4;
+	boolean smooth is true;
+	
+	//  texturing parameters
+	//
+    boolean gen_mapping_coords is false;
+    
+    // modifier stack
+    //
+	translated_3ds_chamfer_box type translated_3ds_chamfer_box is translated_3ds_chamfer_box type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_chamfer_box;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_chamfer_box set with
+	
+		// set geometry parameters
+		//
+	    length = static length;
+	    width = static width;
+	    height = static height;
+		fillet = static fillet;
+		
+		// set tessellation parameters
+		//
+		length_segments = static length_segments;
+		width_segments = static width_segments;
+		height_segments = static height_segments;
+		fillet_segments = static fillet_segments;
+		smooth is static smooth;
+		
+		//  set texturing parameters
+		//
+	    gen_mapping_coords is static gen_mapping_coords;   
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;	// translated_3ds_chamfer_box
+
+

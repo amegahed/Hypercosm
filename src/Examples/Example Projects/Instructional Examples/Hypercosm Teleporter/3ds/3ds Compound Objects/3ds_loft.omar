@@ -1,0 +1,75 @@
+do translated_3ds_loft_anim;
+
+include "system/3d.ores";
+include "system/3ds_loft.ores";
+include "system/3ds_shapes.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+translated_3ds_shape type path is (new translated_3ds_arc with
+	radius = 50;
+    from_angle = 0;
+    to_angle = 270;
+    pie_slice is false;
+); 
+translated_3ds_shape type cross_section1 is (new translated_3ds_ellipse with
+	length = 15;
+	width = 10;
+);
+translated_3ds_shape type cross_section2 is (new translated_3ds_rectangle with
+	length = 15;
+	width = 10;
+);
+
+shape translated_3ds_loft_shape with
+    scalar time = 0;
+    scalar tessellation = 1;
+is
+	translated_3ds_loft with
+	
+		// creation method parameters
+		//
+		path is static path;
+		cross_sections is [cross_section1 cross_section2];
+		path_offsets is [0 1];
+	
+	    path_steps = round (8 * tessellation);
+		shape_steps = round (8 * tessellation);
+		gen_mapping_coords is true;
+	end;
+end;    // translated_3ds_loft_shape
+	
+shape translated_3ds_loft_scene with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+    static material type hyper_material is plastic poster "hyper.jpg";
+    
+	translated_3ds_loft_shape with
+	    //time = static time;
+	    tessellation = static tessellation;
+	    
+	    magnify by .5;
+        material is hyper_material;
+	end;
+end;    // translated_3ds_loft_scene
+	
+	
+anim translated_3ds_loft_anim with
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_loft_scene
+		within new static_shape of environment
+	    titled "3DS Loft"
+	with
+		auto_camera is on;
+	end;
+end;	// translated_3ds_loft_anim

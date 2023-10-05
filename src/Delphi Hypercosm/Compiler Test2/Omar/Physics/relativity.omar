@@ -1,0 +1,360 @@
+{***************************************************************}
+{                          relativity.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do relativity_anim;
+
+
+include "system/3d.ores";
+include "system/meshes.ores";
+include "system/grid_shapes.ores";
+include "system/paths.ores";
+include "system/check_keys.ores";
+include "system/anims.ores";
+include "system/arrows.ores";
+
+
+subject gravity_well
+extends
+    pressable_actor
+does
+    shape instance;
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    end;
+    verb release
+        from vector location;
+        towards vector direction;
+    end;
+    verb touch
+        from vector location;
+        towards vector direction;
+    end;
+    verb act;
+has
+    enum action is placing_ball, dropping_ball, setting_direction, animating;
+    action type action is none;
+
+    vector ball_location = <0 0 0>;
+    vector ball_velocity = <0 0 0>;
+    vector ball_direction = <0 0 0>;
+
+    // paths
+    //
+    path type ball_path is none;
+    path type shadow_path is none;
+    pixie_path type sparkle_path is none;
+is
+    const scalar ball_radius = .1;
+    const scalar speed = .5;
+    const vector fall_rate = <0 0 -.005> * speed;
+
+
+    texture type graph_texture is new texture using
+        new image named "grid.jpg";
+    material type well_material is metal textured graph_texture;
+    material type plane_material is constant_color evergreen
+        textured graph_texture;
+    material type planet_material is chalk colored red
+        textured graph_texture;
+
+
+    objective scalar question gravity
+        at scalar x, y;
+    is
+        scalar shallowness = .25;   // affects shape of curve
+        scalar r_squared = sqr x + sqr y;
+
+        answer -shallowness / (r_squared + shallowness);
+    end;    // gravity
+
+
+
+    objective shape potential_well is
+        integer steps = 16;
+        // represent gravitational field as
+        // a height field
+        //
+        height_function using gravity with
+            material is well_material;
+            h_steps = static steps;
+            v_steps = static steps;
+        end;
+    end;    // potential_well
+
+
+
+    objective shape direction_plane is
+        parallelogram with
+            magnify by 100;
+        end;
+    end;    // direction_plane
+
+
+    objective shape gravitational_environment is
+
+        // shape forming potential well
+        //
+        sphere with
+            radius = .1;
+            color = blend gold to orange by .5;
+            center = <0 0 -1>;
+        end;
+
+        parallelogram with
+            material is plane_material;
+            move to <0 0 -1>;
+        end;
+    end;    // gravitational_environment
+
+
+    shape instance is
+        potential_well;
+        gravitational_environment;
+
+        if some action then
+            sphere with
+                material is planet_material;
+                center = ball_location + <0 0 ball_radius>;
+                radius = ball_radius;
+            end;
+        end;
+        if action is setting_direction then
+            arrow from ball_location to ball_location + ball_direction with
+                move to <0 0 ball_radius>;
+            end;
+        end;
+
+        // draw paths of ball and shadow
+        //
+        if some ball_path then
+            ball_path instance with
+                color = dark dark grey;
+            end;
+        end;
+        if some shadow_path then
+            shadow_path instance with
+                color = white;
+            end;
+        end;
+        if some sparkle_path then
+            sparkle_path instance with
+                move to <0 0 ball_radius>;
+            end;
+        end;
+    end;    // instance
+
+
+    verb animate is
+        scalar x = ball_location dot <1 0 0>;
+        scalar y = ball_location dot <0 1 0>;
+
+        ball_velocity = ball_direction / 5 * speed;
+
+        // initialize paths
+        //
+        {
+        new ball_path at ball_location with
+            steps = 50;
+        end;
+        }
+        new shadow_path at <x y -.99> with
+            steps = 100;
+        end;
+        new sparkle_path at ball_location with
+            size = ball_radius;
+            steps = 10;
+            sparkle is true;
+
+            // for wave path,
+            // wave_speed = .005;
+            // spacing = 1;
+        end;
+    end;    // animate
+
+
+    verb press
+        from vector location;
+        towards vector direction;
+    with
+        boolean double_click is false;
+    is
+        when action is
+            placing_ball:
+                // we should never get a press in this state
+            end;
+
+            setting_direction:
+                // no change in state - wait for the release
+            end;
+        else
+            if ray_hits_shape location direction potential_well
+                    return at location towards direction then
+                // the user clicked on the well - start over
+                //
+                if action is animating then
+                    ball_path is none;
+                    shadow_path is none;
+                    sparkle_path is none;
+                end;
+                action is placing_ball;
+                ball_location = location;
+                ball_direction = <0 0 0>;
+                ball_velocity = <0 0 0>;
+            end;
+        end;
+    end;    // press
+
+
+    verb release
+        from vector location;
+        towards vector direction;
+    is
+        vector arrow_location;
+
+        when action is
+            placing_ball:
+                if ray_hits_shape location direction potential_well
+                        return at location towards direction then
+                    ball_location = location;
+                    action is setting_direction;
+                else
+                    action is dropping_ball;
+                    ball_velocity = <0 0 0>;
+                end;
+            end;
+
+            setting_direction:
+                if ray_hits_shape location direction direction_plane
+                        return at arrow_location towards direction then
+                    ball_direction = arrow_location - ball_location;
+                end;
+                action is animating;
+                animate;
+            end;
+        end;
+    end;    // release
+
+
+    verb touch
+        from vector location;
+        towards vector direction;
+    is
+        boolean override is false;
+        vector arrow_location;
+
+        when action is
+            placing_ball:
+                if ray_hits_shape location direction potential_well
+                        return at location towards direction then
+                    ball_location = location;
+                    override is true;
+                    set_cursor to arrow;
+                else
+                    action is dropping_ball;
+                    ball_velocity = <0 0 0>;
+                end;
+            end;
+
+            setting_direction:
+                if ray_hits_shape location direction direction_plane
+                        return at arrow_location towards direction then
+                    ball_direction = arrow_location - ball_location;
+                end;
+                override is true;
+                set_cursor to arrow;
+            end;
+        else
+            // Set the cursor to the arrow if clicking will cause a
+            // new animation to start.
+            // Unfortunately, this makes the applet too slow.
+            //
+            {           
+            if ray_hits_shape location direction potential_well
+                return at location towards direction
+            then
+                if not ((some current_interaction) and
+                        (current_interaction is_tracking)) then
+                    set_cursor to arrow;
+                end;
+            end;
+            }       
+        end;
+
+        if override then
+            if some current_interaction then
+                current_interaction override;
+            end;
+        end;
+    end;
+
+
+    verb step is
+        if action is dropping_ball then
+            ball_velocity = itself + fall_rate;
+            ball_location = itself + ball_velocity;
+            if ball_location dot <0 0 1> < -1 then
+                action is none;
+                ball_velocity = <0 0 0>;
+            end;
+        elseif action is animating then
+            // compute acceleration
+            //
+            scalar x = (ball_location dot <1 0 0>);
+            scalar y = (ball_location dot <0 1 0>);
+            scalar z = gravity at x y;
+            vector direction = normalized <x y 0>;
+            vector acceleration = direction * z / 10 * speed;
+
+            // attract ball
+            //
+            ball_velocity = itself + acceleration;
+            ball_location = <x y z> + ball_velocity;
+
+            // advance paths
+            //
+            if some ball_path then
+                ball_path step to <x y (z + .02)>;
+            end;
+            if some shadow_path then
+                shadow_path step to <x y -.99>;
+            end;
+            if some sparkle_path then
+                sparkle_path step to <x y z>;
+            end;
+        end;
+    end;    // step
+    
+    
+    verb act is
+        manipulate touchable type gravity_well;
+        step;
+        reset_frame_events;
+    end;    // act
+end;    // gravity_well
+
+
+anim relativity_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <1 -3 2>;
+    lookat = <0 0 -.75>;
+    field_of_view = 50;
+    render_mode is shaded;
+    shading is vertex;
+    window_name is "Relativity";
+    args check;
+is
+    gravity_well type gravity_well;
+
+    mouse_controlled_actor gravity_well;
+end;    // relativity_anim

@@ -1,0 +1,23 @@
+{***************************************************************}
+{                          textures.ores                        }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{              Contains standard texture definitions.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_textures.ores";
+
+
+texture type wood_texture using new image named "wood.jpg";
+texture type stone_texture using new image named "stone.jpg";
+texture type rock_texture using new image named "rock.jpg";
+texture type stucco_texture using new image named "stucco.jpg";
+texture type plank_texture using new image named "planks.jpg";
+texture type scratched_texture using new image named "scratched.jpg";
+texture type turf_texture using new image named "turf.jpg";
+texture type flame_texture using new image named "flame.png";

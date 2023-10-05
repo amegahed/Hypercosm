@@ -1,0 +1,46 @@
+do translated_3ds_texture_mapping_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/rectangular_grid.ores";
+include "system/message_listening_multi_actor.ores";
+// 3ds texture mapping
+//
+include "3ds_box_mapping.omar";
+include "3ds_cylindrical_mapping.omar";
+include "3ds_planar_mapping.omar";
+include "3ds_spherical_mapping.omar";
+
+anim translated_3ds_texture_mapping_anim 
+	args type args;
+with
+	eye = <500 -500 500>;
+	lookat = <0 0 -10>;
+	field_of_view = 30;
+	background_name is none;
+	background = light grey;
+	args check;
+is
+	shape environment is
+		rectangular_grid with
+			h_steps = 25;
+			v_steps = 25;
+			magnify by 150;
+			render_mode is wireframe;
+			color = grey;
+		end;
+	end;    // environment
+	
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new animated_shape of box_mapping_scene) 
+		named "3ds_box_mapping";
+	multi_actor add_actor (new animated_shape of cylindrical_mapping_scene) 
+		named "3ds_cylindrical_mapping";
+	multi_actor add_actor (new animated_shape of planar_mapping_scene) 
+		named "3ds_planar_mapping";        
+	multi_actor add_actor (new animated_shape of spherical_mapping_scene) 
+		named "3ds_spherical_mapping";  
+		
+	mouse_controlled_actor multi_actor within new static_shape of environment;
+end;    // translated_3ds_texture_mapping_anim

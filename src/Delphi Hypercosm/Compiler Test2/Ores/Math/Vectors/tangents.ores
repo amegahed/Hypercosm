@@ -1,0 +1,113 @@
+{***************************************************************}
+{                         tangents.ores                         }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{      Contains procedures useful in determining tangents.      }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/vectors.ores";
+
+
+vector[] question get_vertex_differences
+    of vector vertices[];
+is
+    vector differences[min vertices .. max vertices - 1];
+
+    for integer counter = min differences .. max differences do
+        vector current = vertices[counter];
+        vector next = vertices[counter + 1];
+
+        differences[counter] = next - current; 
+    end;
+
+    answer differences;
+end;    // get_vertex_differences
+
+
+vector[] question get_vertex_tangents
+    of vector vertices[];
+is
+    vector tangents[min vertices .. max vertices];
+    vector sides[] is get_vertex_differences of vertices;
+
+    // find perimeter tangents
+    //
+    if vertices[min vertices] = vertices[max vertices] then
+
+        // vertices wraparound
+        // 
+        vector side1 = sides[max vertices - 1];
+        vector side2 = sides[min vertices];
+        vector tangent = (side1 + side2) / 2;
+        scalar length1 = vlength of side1;
+        scalar length2 = vlength of side2;
+        scalar length = (length1 + length2) / 2;
+
+        if vlength of tangent > 0 then
+            tangent = normalized tangent;
+        end;
+        tangents[min vertices] = tangent * length;
+        tangents[max vertices] = tangents[min vertices];
+    else
+        // vertices do not wraparound
+        //
+        tangents[min vertices] = sides[min vertices];
+        tangents[max vertices] = sides[max vertices - 1];
+    end;    
+
+    // find interior tangents
+    //
+    for integer counter = min vertices + 1 .. max vertices - 1 do
+        vector side1 = sides[counter - 1];
+        vector side2 = sides[counter];
+        vector tangent = (side1 + side2) / 2;
+        scalar length1 = vlength of side1;
+        scalar length2 = vlength of side2;
+        scalar length = (length1 + length2) / 2;
+
+        if vlength of tangent > 0 then
+            tangent = normalized tangent;
+        end;
+        tangents[counter] = tangent * length;
+    end;        
+
+    answer tangents;
+end;    // get_vertex_tangents
+
+
+vector[, ] question get_column_tangents_grid
+    of vector vertices[,];
+is
+    integer rows = num vertices;    
+    integer columns = num vertices[];
+    vector tangents[min vertices .. max vertices, 
+        min vertices[] .. max vertices[]];
+
+    for integer row = min vertices .. max vertices do
+        tangents[row, ..] = get_vertex_tangents of vertices[row, ..];
+    end;
+
+    answer tangents;
+end;    // get_column_tangents_grid
+
+
+vector[, ] question get_row_tangents_grid
+    of vector vertices[,];
+is
+    integer rows = num vertices;
+    integer columns = num vertices[];
+    vector tangents[min vertices .. max vertices, 
+        min vertices[] .. max vertices[]];
+
+    for integer column = min vertices[] .. max vertices[] do
+        tangents[.., column] = get_vertex_tangents of vertices[.., column];
+    end;
+
+    answer tangents;
+end;    // get_row_tangents_grid
+

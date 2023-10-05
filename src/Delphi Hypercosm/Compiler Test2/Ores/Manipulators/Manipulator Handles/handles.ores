@@ -1,0 +1,44 @@
+{***************************************************************}
+{                           labels.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{        Contains some basic single or double sided labels.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/meshes.ores";
+
+
+scalar default_handle_size = .5;
+
+
+shape blank_label with
+    boolean one_sided is false;
+is
+    mesh
+        [<-1 -1 0> <1 -1 0> <1 1 0> <-1 1 0>]
+        [[1 2] [2 3] [3 4] [4 1]]
+        [1 2 3 4 0]
+    with
+        closed is one_sided;
+        texcoords = [<0 0 0> <1 0 0> <1 1 0> <0 1 0>];
+    end; 
+end;    // blank_label
+
+
+enum handle_state is unselected, selected, highlighted, hidden;
+type handle_states is handle_state type[];
+
+
+verb set_handle_states
+    handle_states type handle_states;
+    to handle_state type handle_state;
+is
+    for each handle_state type element_handle_state in handle_states do
+        element_handle_state is handle_state;
+    end;
+end;    // set_handle_states

@@ -1,0 +1,26 @@
+do smooth_icon_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+anim smooth_icon_anim with
+	width = 128;
+	height = 128;
+	eye = <-50 50 50>;
+	projection is orthographic;
+	field_of_view = 3;
+	background_name is none;
+	background = black;
+is
+	shape scene is
+		sphere with
+			material is plastic colored red;
+			render_mode is shaded;
+			shading is vertex;
+		end;
+	end;
+		
+	mouse_controlled_shape scene;
+end;	// smooth_icon_anim

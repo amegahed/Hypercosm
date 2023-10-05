@@ -1,0 +1,83 @@
+{***************************************************************}
+{                          sunburst.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sunburst_door_picture;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/shaders.ores";
+include "system/bumps.ores";
+include "system/solids.ores";
+include "system/architect.omar";
+include "system/sun.omar";
+
+
+picture sunburst_door_picture with
+    eye = <5 -7.5 2>;
+    lookat = <-.5 -.5 2>;
+    field_of_view = 50;
+    render_mode is shaded;
+    background = black;
+    ambient = black;
+    width = trunc (height * .75);
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+is
+    distant_light from <.3 -.5 1> with
+        brightness = .5;
+    end;
+    point_light with
+        move to <0 -2 3>;
+        brightness = 2;
+        color = yellow;
+    end;
+    sunburst with
+        material is golden;
+        magnify by .7;
+        rotate by 90 around <1 0 0>;
+        rotate by 35 around <0 0 1>;
+        rotate by -10 around trans's x_axis;
+        move to <-.5 -.5 2>;
+    end;
+
+    flat wooden front_door with
+        magnify by 2;
+        scale by -1 along <0 1 0>;
+        rotate by -130 around <0 0 1> about <-1 0 0>;
+        move to <0 0 2.1>;
+    end;
+    flat wooden square_frame with
+        scale by 2.6 along <0 0 1>;
+        scale by 1.2 along <1 0 0>;
+        move to <0 0 2.1>;
+    end;
+
+    {wall}
+    flat marble purple polygon [<-1.2 0 0> <-8 0 0> <-8 0 8>
+        <8 0 8> <8 0 0> <1.2 0 0> <1.2 0 4.2> <-1.2 0 4.2>];
+
+    {
+        parallelogram with
+                magnify by 10;
+                rotate by 90 around 0 1 0;
+                move to -3 0 0;
+        end;
+        parallelogram with
+                magnify by 10;
+                rotate by 90 around 0 1 0;
+                move to 3 0 0;
+        end;
+        }
+    glossy checkered grey white plane with
+        magnify by 10;
+    end;
+end;    // sunburst_picture

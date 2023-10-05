@@ -1,0 +1,84 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            actor.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of actors in an          }
+{       animation.                                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do fish_actor_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "animated_shape.omar";
+include "bubbles.ores";
+
+material type bubble_material is glass;
+
+subject fish_actor
+extends
+	advanceable timed_actor
+does
+	// rendering method
+	//
+	shape instance;
+	// animation method
+	//   
+	verb advance
+		by scalar time_step;
+	end;
+has
+	// attributes
+	//
+	bubble_stream type bubble_stream;    
+is
+	//
+	// rendering method
+	//
+	
+	
+	shape instance 
+	is 
+		// create animated fish
+		//
+		fish_animated_shape with
+			time = timer get_time;
+		end;
+		
+		// add bubbles
+		//
+		bubble_stream instance with
+			move to <-21 0 0>;
+			material is bubble_material;
+		end;
+	end;    // instance
+	
+	
+	//
+	// animation methods
+	//
+	
+	
+	verb advance 
+		by scalar time_step;
+	is         
+		// advance bubbles
+		//
+		bubble_stream advance by time_step;
+	end;    // update
+end;    // fish_actor
+	
+anim fish_actor_anim
+	args type args;
+with
+	eye = <-50 -30 10>;
+	args check;
+is
+	fish_actor type fish_actor;
+	
+	mouse_controlled_actor fish_actor;
+end;    // fish_actor_anim

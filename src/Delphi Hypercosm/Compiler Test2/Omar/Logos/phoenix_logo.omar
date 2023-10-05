@@ -1,0 +1,268 @@
+{***************************************************************}
+{                          phoenix_logo.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do phoenix_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape vertical is
+    extrude [[-.1 0] [.1 0] [0 1]];
+end;    // vertical
+
+
+shape letter_p is
+    vertical;
+    tube with
+        umin = -90;
+        umax = 80;
+        inner_radius = .35;
+        outer_radius = .4;
+        rotate by -90 around <1 0 0>;
+        scale by .5 along <0 1 0>;
+        move to <0 0 .6>;
+    end;
+end;    // letter_p
+
+
+shape letter_h is
+    vertical with move to <.2 0 0>; end;
+    vertical with move to <-.2 0 0>; end;
+
+    block with
+        scale by .175 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        scale by .025 along <0 0 1>;
+        move to <0 0 .6>;
+    end;
+end;    // letter_h
+
+
+shape letter_o is
+    tube with
+        inner_radius = .45;
+        outer_radius = .5;
+        rotate by -90 around <1 0 0>;
+        scale by .5 along <0 1 0>;
+        move to <0 0 .5>;
+    end;
+end;    // letter_o
+
+
+shape letter_e is
+    vertical with
+        move to <-.1 0 0>;
+    end;
+
+    // lower
+    //
+    block with
+        scale by .15 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        scale by .025 along <0 0 1>;
+        move to <.25 0 .025>;
+        move to <-.1 0 0>;
+    end;
+
+    // middle
+    //
+    block with
+        scale by .125 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        scale by .025 along <0 0 1>;
+        move to <.17 0 .6>;
+        move to <-.1 0 0>;
+    end;
+
+    // upper
+    //
+    block with
+        scale by .1 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        scale by .025 along <0 0 1>;
+        move to <.1 0 .975>;
+        move to <-.1 0 0>;
+    end;
+end;    // letter_e
+
+
+shape letter_n is
+    vertical with move to <.2 0 0>; end;
+    vertical with move to <-.2 0 0>; end;
+
+    block with
+        scale by .175 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+        scale by .025 along <0 0 1>;
+                skew from <1 0 0> to <1 0 -1>;
+        move to <0 0 .6>;
+    end;
+end;    // letter_n
+
+
+shape letter_i is
+    vertical;
+end;    // letter_i
+
+
+shape letter_x is
+    vertical with
+                skew from <0 0 1> to <-.35 0 1>;
+        move to <.2 0 0>;
+    end;
+    vertical with
+                skew from <0 0 1> to <.35 0 1>;
+        move to <-.2 0 0>;
+    end;
+end;    // letter_x
+
+
+shape phoenix_logo with
+    color type color1 = red;
+    color type color2 = yellow;
+    scalar angle = 0;
+    scalar thickness = .5;
+is
+    scalar p_width = .7;
+    scalar h_width = .9;
+    scalar o_width = 1;
+    scalar e_width = .5;
+    scalar n_width = .9;
+    scalar i_width = .2;
+    scalar x_width = .9;
+
+    scalar total_width = p_width + h_width + o_width + e_width +
+        n_width + i_width + x_width;
+
+    scalar offset = (-total_width / 2);
+    color type color_increment = (color2 - color1) / 7;
+    color type letter_color = color1;
+
+    letter_p with
+        offset = itself + p_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + p_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+    letter_h with
+        offset = itself + h_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + h_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+    letter_o with
+        offset = itself + o_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + o_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+    letter_e with
+        offset = itself + e_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + e_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+    letter_n with
+        offset = itself + n_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + n_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+    letter_i with
+        offset = itself + i_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + i_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+    letter_x with
+        offset = itself + x_width / 2;
+        scale by thickness / 2 along <0 1 0>;
+        rotate by angle around <0 0 1>;
+        move to <offset 0 0>;
+        offset = itself + x_width / 2;
+        color = letter_color;
+        letter_color = itself + color_increment;
+    end;
+end;    // phoenix_logo
+
+
+subject spinning_phoenix_logo
+extends
+    timed_actor
+does
+    shape instance;
+is
+    shape instance is
+        scalar angle = time * 90;
+
+        phoenix_logo with
+            angle = -static angle;
+            thickness = .5;
+            rotate by static angle around <0 0 1>;
+        end;
+    end;    // instance
+end;    // spinning_phoenix_logo
+
+
+picture phoenix_picture
+    args type args;
+with
+    eye = <-3 -5 4>;
+    lookat = <0 0 .5>;
+    double_buffer is true;
+    args check;
+is
+    spinning_phoenix_logo type spinning_logo;
+    distant_light from <.5 -.5 1>;
+    distant_light from <-1 1 1>;
+    spinning_logo instance;
+end;    // phoenix_picture
+
+
+anim phoenix_anim
+    args type args;
+with
+    eye = <-3 -5 4>;
+    lookat = <0 0 0>;
+    facets = 12;
+    double_buffer is true;
+    args check;
+is
+    spinning_phoenix_logo type spinning_logo;
+
+    picture scene is
+        distant_light from <.5 -.5 1>;
+        distant_light from <-1 1 1>;
+        spinning_logo instance;
+        spinning_logo step;
+    end;    // scene
+
+    mouse_controlled_picture scene;
+end;    // phoenix_anim

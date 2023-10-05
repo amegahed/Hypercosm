@@ -1,0 +1,252 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           grid_meshes.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a variety of mesh generation methods           }
+{       for topologically rectangular grids.                    }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/meshes.ores";
+include "system/grid_mesh_topologies.ores";
+
+vector question find_grid_normal
+	at integer row;
+	by integer column;
+	of vector_grid type vertex_grid;
+is
+	vector vertex = vertex_grid[row, column];
+	vector u_axis, v_axis;
+	
+	// find u axis
+	//
+	if column <> max vertex_grid[] then
+		u_axis = vertex_grid[row, column + 1] - vertex;
+	else
+		// find u axis for last column
+		//
+		integer first_column = min vertex_grid[];
+		
+		if vertex <> vertex_grid[row, first_column] then
+			// no wraparound
+			//
+			u_axis = vertex - vertex_grid[row, column - 1];
+		else
+			// wraparound
+			//
+			u_axis = vertex_grid[row, first_column + 1] - 
+				vertex_grid[row, first_column];
+		end;
+	end;
+	
+	// find v axis
+	//
+	if row <> max vertex_grid then
+		v_axis = vertex_grid[row + 1, column] - vertex;
+	else
+		// find v axis for last row
+		//
+		integer first_row = min vertex_grid;
+		
+		if vertex <> vertex_grid[first_row, column] then
+			// no wraparound
+			//
+			v_axis = vertex - vertex_grid[row - 1, column];
+		else
+			// wraparound
+			//
+			v_axis = vertex_grid[first_row + 1, column] - 
+				vertex_grid[first_row, column];
+		end;
+	end;
+	
+	answer u_axis cross v_axis;
+end;    // find_grid_normal
+
+vector_grid type question find_normal_grid
+	of vector_grid type vertex_grid;
+with
+	boolean reversed is false;
+is
+	vector_grid type normal_grid;
+	integer rows = vertex_grid rows;
+	integer columns = vertex_grid columns;
+	
+	dim normal_grid[min vertex_grid .. max vertex_grid, 
+		min vertex_grid[] .. max vertex_grid[]];
+	for integer row = min vertex_grid .. max vertex_grid do
+		for integer column = min vertex_grid[] .. max vertex_grid[] do
+			vector grid_normal = find_grid_normal at row by column of vertex_grid;
+			
+			if reversed then
+				normal_grid[row, column] = -grid_normal;
+			else
+				normal_grid[row, column] = grid_normal;
+			end;
+		end;
+	end;
+	
+	answer normal_grid;
+end;    // find_normal_grid
+ 
+mesh type question get_grid_mesh
+	of vector_grid type vertex_grid;
+	oriented to vector_grid type normal_grid is none;
+with
+	// rendering paramters
+	//
+	boolean smoothing is true;
+	boolean mending is false;
+	boolean closed is false;
+	boolean reversed is false;
+	
+	// texturing parameters
+	//
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is recycleable_mesh type's get;
+	
+	// create topology
+	//
+	mesh's topology is (get_quad_grid_mesh_topology with
+		h_vertices = num vertex_grid[];
+		v_vertices = num vertex_grid;
+		reversed is static reversed);
+	  
+	// create geometry
+	//
+	mesh's geometry is recycleable_mesh_geometry type's get;
+	if some vertex_grid then
+		mesh's geometry's vertices is vertex_grid vectors;
+	end;
+	
+	// create normals
+	//
+	if not some normal_grid and some vertex_grid then
+		normal_grid is (find_normal_grid of vertex_grid with
+			reversed is static reversed);
+	end;
+	if some normal_grid then
+		mesh's geometry's normals is normal_grid vectors;
+	end;
+	
+	// create texture coordinates
+	//
+	if textured and some vertex_grid then
+		if mapping is none then
+			mapping is unit_parametric_mapping;
+		end;
+		mesh's geometry's texcoords is mapping get_grid_texcoords 
+			at vertex_grid towards normal_grid;
+	end;
+	
+	// set mesh rendering parameters
+	//
+	with mesh do
+		its smoothing is smoothing;
+		its mending is mending;
+		its closed is closed;
+	end;
+		
+	answer mesh;
+end;    // get_grid_mesh
+
+mesh type question get_rectangular_grid_mesh with
+	
+	// geometry parameters
+	//
+	vector vertex = <-1 -1 0>;
+	vector side1 = <2 0 0>;
+	vector side2 = <0 2 0>;
+	
+	// tessellation parameters
+	//
+	integer h_steps = 8, v_steps = 8;
+		
+	// rendering paramters
+	//
+	boolean smoothing is true;
+	boolean one_sided is false;
+	boolean reversed is false;
+	
+	// texturing parameters
+	//
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	vector normal;
+	
+	if not reversed then
+		normal = side1 cross side2;
+	else
+		normal = side2 cross side1;
+	end;
+	
+	answer (get_grid_mesh 
+		of (square_vector_grid v_steps by h_steps with
+		vertex = static vertex; side1 = static side1; side2 = static side2)
+		oriented to (constant_vector_grid v_steps by h_steps of normal)
+	with
+		// rendering paramters
+		//
+		smoothing is static smoothing;
+		mending is false;
+		closed is one_sided;
+		reversed is static reversed;
+		
+		// texturing parameters
+		// 
+		textured is static textured;
+		mapping is static mapping;  
+	);
+end;    // get_rectangular_grid_mesh
+
+mesh type question get_quad_grid_mesh
+	of vector point1, point2, point3, point4;
+with
+	// tessellation parameters
+	//
+	integer rows = 4;
+	integer columns = 4;
+	
+	// rendering parameters
+	//
+	boolean smoothing is true;
+	boolean one_sided is false;
+	boolean reversed is false;
+  
+	// texturing parameters
+	//
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	vector normal;
+	
+	if not reversed then
+		normal = (point3 - point1) cross (point4 - point2);
+	else
+		normal = (point4 - point2) cross (point3 - point1);
+	end;
+	
+	answer (get_grid_mesh 
+		of (quad_vector_grid rows by columns of point1 point2 point3 point4)
+		oriented to (constant_vector_grid rows by columns of normal)
+	with
+		// rendering paramters
+		//
+		smoothing is static smoothing;
+		mending is false;
+		closed is one_sided;
+		reversed is static reversed;  
+		
+		// texturing parameters
+		//
+		textured is static textured;
+		mapping is static mapping;    
+	);
+end;    // get_quad_grid_mesh

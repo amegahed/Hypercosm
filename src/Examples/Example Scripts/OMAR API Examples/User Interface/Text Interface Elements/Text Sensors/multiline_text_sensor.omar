@@ -1,0 +1,45 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       mutiline_text_sensor.omar        3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a multiline text      }
+{       sensor user interface component.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do multiline_text_sensor_anim;
+
+include "system/3d.ores";
+include "system/multiline_text_sensor.ores";
+
+strings type text is ["multiline" "text" "sensor"];
+
+anim multiline_text_sensor_anim with
+	double_buffer is on;
+is
+	verb mouse_down_action is
+		write "pressed!", ;
+	end;
+	verb mouse_up_action is
+		write "released!", ;
+	end;
+		
+	multiline_text_sensor type multiline_text_sensor of text at <.75 0 0> with
+		font is (new screen_font styled bold sized 24);
+		font_color set to white over dark green;
+		mouse_down_action is (new action of static mouse_down_action);
+		mouse_up_action is (new action of static mouse_up_action);
+	end;
+	
+	picture scene is
+		multiline_text_sensor draw;
+	end;    // scene
+	
+	while true do
+		scene;
+		multiline_text_sensor update;
+	end;
+end;    // multiline_text_sensor_anim

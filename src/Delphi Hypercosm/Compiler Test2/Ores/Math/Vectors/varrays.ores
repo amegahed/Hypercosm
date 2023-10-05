@@ -1,0 +1,119 @@
+{***************************************************************}
+{                         varrays.ores                          }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for representing       }
+{       and manipulating multidimensional grids of vectors.		}
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/native_trans.ores";
+include "system/comparisons.ores";
+include "system/vlists.ores";
+
+
+type varray is vector[];
+
+
+subject varray2
+extends
+    vector[,]
+does
+	// indexing methods	- [row, column]
+	//
+	integer question rows;
+	integer question columns;
+	
+	// serialization methods
+	//
+    varray type question vectors;
+is
+    //
+	// indexing methods	- [row, column]
+	//
+	
+	
+	integer question rows is
+		answer num varray2;
+	end;	// rows
+	
+	
+	integer question columns is
+		answer num varray2[];
+	end;	// columns
+	
+
+    //
+	// serialization methods
+	//
+	
+	
+    varray type question vectors is
+        vector list[1 .. rows * columns];
+        integer counter = 1;
+        
+        for each vector v in varray2 do
+            list[counter] = v;
+            counter = itself + 1;
+        end;
+
+        answer list;
+    end;    // vectors
+end;    // varray2
+
+
+subject varray3
+extends
+    vector[,,]
+does
+	// indexing methods	- [level, row, column]
+	//
+	integer question levels;
+	integer question rows;
+	integer question columns;
+
+	// serialization methods
+	//	
+    varray type question vectors;
+is
+    //
+	// indexing methods	- [level, row, column]
+	//
+	
+	
+	integer question levels is
+		answer num varray3;
+	end;	// levels
+	
+	
+	integer question rows is
+		answer num varray3[];
+	end;	// rows
+	
+	
+	integer question columns is
+		answer num varray3[,];
+	end;	// columns
+
+
+    //
+	// serialization methods
+	//
+	
+		
+    varray type question vectors is
+        vector list[1 .. levels * rows * columns];
+        integer counter = 1;
+
+        for each vector v in varray3 do
+            list[counter] = v;
+            counter = itself + 1;
+        end;
+
+        answer list;
+    end;    // vectors
+end;    // varray3

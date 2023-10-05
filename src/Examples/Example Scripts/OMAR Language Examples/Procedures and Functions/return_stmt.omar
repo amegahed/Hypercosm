@@ -1,0 +1,31 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          return_stmt.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the return             }
+{       statement in the OMAR language.                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do return_stmt_example;
+
+verb write_up_to_space
+	char name[];
+is
+	// Write out characters until a space is found
+	//
+	for integer counter = min name .. max name do
+		if name[counter] is " " then
+			return;
+		end;
+		write name[counter];
+	end;
+end;
+
+verb return_stmt_example
+is
+	write_up_to_space "blah blah";
+end;    // return_stmt_example

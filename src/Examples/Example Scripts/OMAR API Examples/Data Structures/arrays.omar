@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             arrays.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This is a simple example of how to use Hypercosm's      }
+{       N dimensional array utilities.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do example;
+
+include "system/array_indices.ores";
+include "system/integer_array.ores";
+include "system/object_array.ores";
+
+verb example is
+	array_indices type sizes = [2 3 4];
+	integer_array type integer_array of sizes;
+	integer counter = 1;
+	
+	write "array indices = ", sizes to_string, ;
+	
+	// set array values
+	//
+	for integer counter1 = 1 .. sizes[1] do
+		for integer counter2 = 1 .. sizes[2] do
+			for integer counter3 = 1 .. sizes[3] do
+				integer_array set_element at [counter1 counter2 counter3] to counter;
+				counter = itself + 1;
+			end;
+		end;
+	end;
+	
+	integer_array print;
+end;    // example

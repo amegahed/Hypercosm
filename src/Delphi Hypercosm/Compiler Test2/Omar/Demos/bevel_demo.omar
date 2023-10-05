@@ -1,0 +1,99 @@
+{***************************************************************}
+{                        bevel_demo.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bevel_demo_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/bevels.ores";
+include "system/native_text.ores";
+include "system/common_materials.ores";
+
+
+// This applet demonstrates the bevel_width property of beveled shapes.
+
+
+// vectors to store current user-controlled data
+//
+vector bevel_tracker = <0 .1 0>;
+vector rotate_tracker = <0 0 0>;
+
+
+picture scene is          
+    string type s;
+    
+    default_lights;
+    
+    // shapes
+    //
+    beveled_block with
+        bevel_width = bevel_tracker.y * .5;
+        rotate by rotate_tracker.x * 50 around <0 0 1>;
+        rotate by rotate_tracker.y * -50 around <1 0 0>;
+        move to <2 0 0>;
+        material is golden;
+    end;
+    
+    beveled_cylinder with
+        bevel_width = bevel_tracker.y * .5;
+        rotate by rotate_tracker.x * 50 around <0 0 1>;
+        rotate by rotate_tracker.y * -50 around <1 0 0>;
+        move to <-2 0 0>;
+        material is golden;
+    end;
+    
+    // label w/real-time feedback
+    //
+    s is "Bevel Width: ";
+    s add (scalar_to_string of (bevel_tracker.y * .5));
+    overlay_text s at <0 -.8 0> with
+        font_family is "arial";
+        size = 24;
+    end;
+    
+    // control instructions
+    overlay_text "ROTATE SHAPES: left mouse button" at <-.95 .9 0>
+    with
+        h_align is left;
+    end;
+    
+    overlay_text "CONTROL BEVEL WIDTH: right mouse button" at <-.95 .8 0>
+    with
+        h_align is left;
+    end;
+end;    // scene
+
+
+anim bevel_demo_anim with
+    double_buffer is on;
+    background = dark light blue;
+    eye = <0 -10 5>;
+    facets = 12;
+is
+    // left-drag to rotate the shapes
+    // right-drag to alter the bevel_width
+    interaction type interaction
+    with
+        button1_behavior is (new draggable_vector_behavior type
+            dragging rotate_tracker);
+        button2_behavior is (new draggable_vector_behavior type
+            dragging bevel_tracker);
+        button3_behavior is button2_behavior;
+    end;
+    
+    
+    while true do
+        // clamp bevel width
+        bevel_tracker = vclamp bevel_tracker from <0 -2 0> to <0 2 0>;
+    
+        scene;
+        interaction update;
+    end;
+end;    // bevel_demo_anim

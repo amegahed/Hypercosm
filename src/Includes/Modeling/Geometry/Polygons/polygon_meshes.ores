@@ -1,0 +1,409 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         polygon_meshes.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a set of mesh generation methods for           }
+{       polygonal (flat) mesh shapes.                           }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************} 
+
+include "system/meshes.ores";
+include "system/mesh_topologies.ores";
+include "system/grid_mesh_topologies.ores";
+include "system/polygon_utils.ores";
+include "system/vstatistics.ores";
+
+mesh type question get_convex_polygon_mesh
+	of vlist type vertices;
+	oriented to vlist type normals is none;
+with
+	// rendering paramters
+	//    
+	boolean smoothing is true;
+	boolean one_sided is true;
+	boolean reversed is false;
+	
+	// texturing parameters
+	//
+	vlist type texcoords;
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is none;
+		
+	if num vertices > 2 then
+		vector fan_vertices[1 .. num vertices + 1];
+		vector fan_normals[1 .. num vertices + 1];
+		vector fan_texcoords[];
+		vector center;
+		
+		// create mesh
+		//
+		mesh is recycleable_mesh type's get;
+		
+		// create mesh topology
+		//
+		mesh's topology is (get_triangle_fan_mesh_topology of (num vertices) with
+			open is false;
+			reversed is static reversed);
+	
+		// find center
+		//
+		if vertices[min vertices] = vertices[max vertices] then
+			vector sum = <0 0 0>;
+			for integer counter = 1 .. max vertices - 1 do
+				sum = itself + vertices[counter];
+			end;
+			sum = itself / (num vertices - 1);
+			center = sum;
+		else
+			center = vmean of vertices;
+		end;
+		
+		// create fan vertices
+		//
+		fan_vertices[1] = center;
+		for integer counter = 1 .. num vertices do
+			fan_vertices[counter + 1] = vertices[min vertices + (counter - 1)]; 
+		end;
+		
+		// create fan normals
+		//
+		fan_normals[1] = get_polygon_normal of vertices;
+		if some normals then
+			for integer counter = 1 .. num vertices do
+				fan_normals[counter + 1] = normals[min normals + (counter - 1)];
+			end;
+		else
+			for integer counter = 1 .. num vertices do
+				fan_normals[counter + 1] = fan_normals[1];
+			end;
+		end;
+	
+		// create parametric texture coordinates
+		//  
+		if textured and texcoords is none then
+			if mapping is none then
+				mapping is unit_parametric_mapping;
+			end;
+			texcoords is mapping get_texcoords at vertices towards normals;
+		end;
+		
+		// create fan texture coordinates
+		//
+		if some texcoords then
+			dim fan_texcoords[1 .. num vertices + 1];
+			fan_texcoords[1] = vmean of texcoords;
+			for integer counter = 1 .. num vertices do
+				fan_texcoords[counter + 1] = texcoords[min texcoords + (counter - 1)];
+			end;
+		end;
+		
+		// set mesh geometry
+		//
+		mesh's geometry is recycleable_mesh_geometry type's get;
+		mesh's geometry set to fan_vertices oriented to fan_normals textured by fan_texcoords;
+		
+		// set mesh rendering parameters
+		//
+		with mesh do
+			its smoothing is smoothing;
+			its mending is false;
+			its closed is one_sided;
+		end;
+	end;
+	
+	answer mesh;
+end;    // get_convex_polygon_mesh
+
+mesh type question get_polygon_mesh
+	of vlist type vertices;
+	oriented to vlist type normals is none;
+with
+	// rendering paramters
+	//    
+	boolean smoothing is true;
+	boolean one_sided is true;
+	boolean reversed is false;
+	
+	// texturing parameters
+	//
+	vlist type texcoords;
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is none;
+			
+	if num vertices > 4 and is_convex_polygon of vertices then
+		answer (get_convex_polygon_mesh of vertices oriented to normals with
+			texcoords is static texcoords;
+			smoothing is static smoothing;
+			one_sided is static one_sided;
+			reversed is static reversed;
+		);
+	elseif num vertices > 2 then
+	
+		// create mesh
+		//
+		mesh is recycleable_mesh type's get;    
+		
+		// create mesh topology
+		//
+		mesh's topology is (get_polygon_mesh_topology of num vertices with
+			reversed is static reversed);
+	
+		// create normals
+		//      
+		if normals is none then
+			vector normal = get_polygon_normal of vertices;
+			
+			if reversed then
+				normal = -itself;
+			end;
+			dim normals[min vertices .. max vertices];
+			for each vector n in normals do
+				n = normal;
+			end;
+		end;
+	
+		// create parametric texture coordinates
+		//  
+		if textured and texcoords is none then
+			if mapping is none then
+				mapping is unit_parametric_mapping;
+			end;
+			texcoords is mapping get_texcoords at vertices towards normals;
+		end;
+				
+		// set mesh geometry
+		//
+		mesh's geometry is recycleable_mesh_geometry type's get;
+		mesh's geometry set to vertices oriented to normals textured by texcoords;
+		
+		// set mesh rendering parameters
+		//
+		with mesh do
+			its smoothing is smoothing;
+			its mending is false;
+			its closed is one_sided;
+		end;
+	end;
+	
+	answer mesh;
+end;    // get_polygon_mesh
+
+mesh type question get_rectangle_mesh with
+	
+	// geometry parameters
+	//
+	vector vertex = <-1 -1 0>;
+	vector side1 = <2 0 0>;
+	vector side2 = <0 2 0>;
+		
+	// rendering paramters
+	//
+	boolean smoothing is true;
+	boolean one_sided is false;
+	boolean reversed is false;
+	
+	// texturing parameters
+	//
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is recycleable_mesh type's get;
+	
+	vector vertices[1 .. 4];
+	vector normals[1 .. 4];
+	vector texcoords[];
+	vector normal;
+	
+	// create mesh topology
+	//
+	mesh's topology is (get_quad_mesh_topology with
+		reversed is static reversed;
+	);
+	
+	// compute mesh geometry
+	//
+	if not reversed then
+		normal = side1 cross side2;
+	else
+		normal = side2 cross side1;
+	end;
+	
+	// create vertices
+	//
+	vertices[1] = vertex;
+	vertices[2] = vertices[1] + side1;
+	vertices[3] = vertices[2] + side2;
+	vertices[4] = vertices[3] - side1;
+	
+	// create vertex normals
+	//
+	for integer counter = 1 .. 4 do
+		normals[counter] = normal;
+	end;
+	
+	// compute texture coordinates if necessary
+	//
+	if textured then
+		if mapping is none then
+			mapping is unit_parametric_mapping;
+		end;
+		texcoords is mapping get_texcoords at vertices towards normals;
+	end;    
+	
+	// create and set mesh geometry
+	//
+	mesh's geometry is recycleable_mesh_geometry type's get;
+	mesh's geometry set to vertices oriented to normals textured by texcoords;
+	
+	// set mesh rendering parameters
+	//
+	with mesh do
+		its smoothing is smoothing;
+		its mending is false;
+		its closed is one_sided;
+	end;
+	
+	answer mesh;
+end;    // get_rectangle_mesh
+
+mesh type question get_quad_mesh
+	of vector point1, point2, point3, point4;
+with
+	// rendering parameters
+	//
+	boolean smoothing is true;
+	boolean one_sided is false;
+	boolean reversed is false;
+  
+	// texturing parameters
+	//
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is recycleable_mesh type's get;
+	vector vertices[] is [point1 point2 point3 point4];
+	vector normals[1 .. 4];
+	vector texcoords[];
+	vector normal;
+	vector side1 = point3 - point1;
+	vector side2 = point4 - point2;
+	
+	// create mesh topology
+	//
+	mesh's topology is (get_quad_mesh_topology with
+		reversed is static reversed;
+	);
+	
+	// compute mesh geometry
+	//
+	if not reversed then
+		normal = side1 cross side2;
+	else
+		normal = side2 cross side1;
+	end;
+	
+	// create vertex normals
+	//
+	for integer counter = 1 .. 4 do
+		normals[counter] = normal;
+	end;
+
+	// compute texture coordinates if necessary
+	//
+	if textured then
+		if mapping is none then
+			mapping is unit_parametric_mapping;
+		end;
+		texcoords is mapping get_texcoords at vertices towards normals;
+	end;
+			
+	// create and set mesh geometry
+	//
+	mesh's geometry is recycleable_mesh_geometry type's get;
+	mesh's geometry set to vertices oriented to normals textured by texcoords;
+
+	// set mesh rendering parameters
+	//
+	with mesh do
+		its smoothing is smoothing;
+		its mending is false;
+		its closed is one_sided;
+	end;
+	
+	answer mesh;
+end;    // get_quad_mesh
+
+mesh type question get_triangle_mesh
+	of vector point1, point2, point3;
+with
+	// rendering parameters
+	//
+	boolean smoothing is true;
+	boolean one_sided is false;
+	boolean reversed is false;
+  
+	// texturing parameters
+	//
+	boolean textured is false;
+	texture_mapping type mapping is unit_parametric_mapping;
+is
+	mesh type mesh is recycleable_mesh type's get;
+	vector vertices[] is [point1 point2 point3];
+	vector normals[1 .. 3];
+	vector texcoords[];
+	vector normal;
+	vector side1 = point2 - point1;
+	vector side2 = point3 - point2;
+	
+	// create mesh topology
+	//
+	mesh's topology is (get_triangle_mesh_topology with
+		reversed is static reversed;
+	);
+	
+	// compute mesh geometry
+	//
+	if not reversed then
+		normal = side1 cross side2;
+	else
+		normal = side2 cross side1;
+	end;
+	
+	// create vertex normals
+	//
+	for integer counter = 1 .. 3 do
+		normals[counter] = normal;
+	end;
+
+	// compute texture coordinates if necessary
+	//
+	if textured then
+		if mapping is none then
+			mapping is unit_parametric_mapping;
+		end;
+		texcoords is mapping get_texcoords at vertices towards normals;
+	end;
+			
+	// create and set mesh geometry
+	//
+	mesh's geometry is recycleable_mesh_geometry type's get;
+	mesh's geometry set to vertices oriented to normals textured by texcoords;  
+
+	// set mesh rendering parameters
+	//
+	with mesh do
+		its smoothing is smoothing;
+		its mending is false;
+		its closed is one_sided;
+	end;
+	
+	answer mesh;
+end;    // get_triangle_mesh

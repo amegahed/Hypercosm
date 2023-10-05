@@ -1,0 +1,69 @@
+{***************************************************************}
+{                   singly_linked_queue_test.omar               }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/singly_linked_queues.ores";
+include "system/indexed_lists.ores";
+
+
+subject thing
+extends
+	printable object
+does
+    verb new with
+        integer i = 0;
+    end;    // new
+
+    verb print;
+has
+    integer i;
+is
+    verb new with
+        integer i = 0;
+    is
+        thing's i = i;
+    end;    // new
+
+
+    verb print is
+        write "i = ", i, ;
+    end;    // print
+end;    // thing
+
+
+verb test is
+    thing type thing1 with
+        i = 5;
+    end;
+    thing type thing2 with
+        i = 10;
+    end;
+    thing type thing3 with
+        i = 15;
+    end;
+    singly_linked_queue type queue;
+    indexed_list type indexed_list indexing queue;
+    iterator type iterator is none;
+    thing type thing is none;
+
+    queue add thing1;
+    queue add thing2;
+    queue add thing3;
+    write "queue number of items = ", queue size, ;
+    write "queue element #2: ";
+    thing is thing type indexed_list get element 2;
+    thing print;
+	queue print;
+
+    write "reversing queue", ;
+    queue reverse;
+    queue print;  
+end;    // test

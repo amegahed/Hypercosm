@@ -1,0 +1,68 @@
+{***************************************************************}
+{                        satellite.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do satellite_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";   // "anims.ores" is needed for mouse_controlled_picture procedure.
+
+material type solar_cell_material is metal poster "satellite.jpg";  // Creates a textured material shaded like metal.
+material type panel_material is chalk poster "panels.jpg";          // Creates a textured material shaded like chalk.
+
+shape earth is
+    sphere with
+        magnify by 200;
+        material is chalk poster "rustrock.jpg" colored <1 .3 .2>;  // Sets the material to a texture shaded like chalk.
+    end;
+end;    // earth
+
+shape dish is
+    cylinder with radius = .1; end1 = <0 0 0>; end2 = <0 -2 0>; end;
+    paraboloid with
+        top = <0 -1 0>; base = <0 -2 0>; radius = 2;
+        material is plastic colored charcoal;
+    end;
+end;    // dish
+
+shape satellite is
+    cylinder with
+        scale by 4 along <0 0 1>;
+        material is panel_material;             // Sets the material to the panel texture.
+    end;
+
+    block with
+        vertex = <-6 0 0>; side1 = <12 0 0>; side2 = <0 .2 0>; side3 = <0 0 3>;
+        material is solar_cell_material;        // Sets the material to the solar cell material.
+    end;
+
+    // capping bulges:
+    sphere with center = <0 0 4>; vmin = 0; end;
+    sphere with center = <0 0 -4>; vmax = 0; end;
+
+    // radio dishes:
+    dish with move to <0 0 2>; end;
+    dish with move to <0 0 -3>; rotate by -135 around <0 0 1>; end;
+end;    // satellite
+
+picture satellite_picture is
+    distant_light from <0 -10 3>;
+    satellite with material is metal colored light orange; end; // Note: because of coloring precedence rules,
+                                            // this line will only change the material of the
+                                            // "capping bulges" and the cylinder in the "dish."
+    earth with rotate by 135 around <0 -1 4>; move to <-200 250 -100>; end;
+end;    // satellite_picture
+
+anim satellite_anim with
+    facets = 10;
+    eye = <5 -20 5>;
+    lookat = <-3 0 0>;
+    ambient = <.1 .1 .1>;       // Ambient light should be low because this is a space scene.
+is
+    mouse_controlled_picture satellite_picture; // This lets you use mouse controls to change the view.
+end;    // satellite_anim

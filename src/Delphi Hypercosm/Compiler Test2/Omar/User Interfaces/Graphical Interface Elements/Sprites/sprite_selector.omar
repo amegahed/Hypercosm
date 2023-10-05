@@ -1,0 +1,39 @@
+do sprite_selector_anim;
+
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/lighting.ores";
+include "system/sprite_selector.ores";
+
+
+anim sprite_selector_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+    verb selection_action is
+        write "selected!", ;
+    end;
+    verb deselection_action is
+    	write "deselected!", ;
+    end;
+    
+	sprite_selector type wireframe_sprite_sensor at <-.8 .8 0> poster "wireframe_icon.gif"
+		selecting (new action of static selection_action)
+		deselecting (new action of static deselection_action);
+	
+	picture scene is
+		sphere;
+		wireframe_sprite_sensor overlay at 10;
+		default_lights;
+		default_background at 100;
+	end;	// scene
+	
+	//wireframe_sprite_selector select;
+
+	while true do
+		scene;
+	end;
+end;	// sprite_selector_anim

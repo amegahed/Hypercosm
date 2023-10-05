@@ -1,0 +1,86 @@
+{***************************************************************}
+{                          p_orbital2.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do orbital_anim;
+
+
+include "system/3d.ores";
+include "system/densities.ores";
+include "system/physics.ores";
+include "system/fields.ores";
+include "system/shapes.ores";
+include "system/check_keys.ores";
+include "system/anims.ores";
+
+
+// density_field type density_field using noisy_field with
+density_field type density_field using wave_function_p
+    from <-1 -1 -2> to <1 1 2>
+with
+    x_steps = 11;
+    y_steps = 11;
+    z_steps = 39;
+end;    // density_field
+
+
+shape isosurface with
+    scalar threshold = .5;
+    boolean capping is off;
+    boolean clipping is on;
+is
+    volume density_field's density with
+        threshold = static threshold;
+        capping is static capping;
+        scale by .5 along <1 0 0>;
+        scale by .5 along <0 1 0>;
+    end;
+    axes;
+end;    // isosurface
+
+
+picture orbital_picture
+is
+    static scalar threshold = .5;
+    vector v = get_mouse;
+    scalar x = v dot <1 0 0>;
+    scalar y = v dot <0 1 0>;
+
+    check_keys;
+    default_lights;
+
+    isosurface with
+        material is aluminum;
+        threshold = static threshold;
+        rotate by (x * 360) around <0 0 1>;
+        rotate by (y * 360) around <1 0 0>;
+    end;
+
+    if mouse_down button 1 then
+        threshold = itself * 1.01;
+    elseif mouse_down button 3 then
+        threshold = itself / 1.01;
+    end;
+end;    // orbital_picture
+
+
+anim orbital_anim
+    args type args;
+with
+    eye = <1 -4 2>;
+    double_buffer is on;
+    render_mode is shaded;
+    facets = 4;
+    window_name is "Orbital";
+    args check;
+is
+    while true do
+        orbital_picture;
+        check_keys;
+    end;
+end;    // orbital_anim

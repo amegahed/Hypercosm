@@ -1,0 +1,250 @@
+{***************************************************************}
+{                     rotation_arrow_handles.ores               }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/manipulation.ores";
+include "system/orientations.ores";
+include "system/arrows.ores";
+include "system/handles.ores";
+include "system/shape_manipulator.ores";
+
+
+texture type rotation_arrow_texture is (new texture using 
+    (new image named "rotate_arrow.gif") with mipmapping is off);
+    
+material type unselected_rotation_handle_material is 
+    constant_color white textured rotation_arrow_texture;
+    
+material type selected_rotation_handle_material is 
+    constant_color red textured rotation_arrow_texture;
+        
+material type highlighted_rotation_handle_material is 
+    constant_color yellow textured rotation_arrow_texture;
+    
+material type center_rotation_handle_material is
+    plastic colored red;
+
+
+material type question get_rotation_handle_material
+    of handle_state type handle_state is unselected;
+is
+    when handle_state is
+        unselected:
+            answer unselected_rotation_handle_material;
+        end;
+        selected:
+            answer selected_rotation_handle_material;
+        end;
+        highlighted:
+            answer highlighted_rotation_handle_material;
+        end;    
+    end;    // when
+end;    // get_rotation_handle_material
+
+
+shape rotation_handle
+    of handle_state type handle_state is unselected;
+    along vector x_axis = <1 0 0>;
+    by vector y_axis = <0 1 0>;
+is
+    blank_label with
+        one_sided is false;
+        orient_axes2 trans from <1 0 0> <0 1 0> to normalized x_axis normalized y_axis / 2;
+        material is get_rotation_handle_material of handle_state;
+    end;
+    sphere with
+        magnify by .25;
+        material is center_rotation_handle_material;
+    end;
+end;    // rotation_handle
+
+
+shape x_rotation_handles 
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 4 rotation handles and handle states per axis
+    //
+    handle_state type handle_states[];
+is
+    handle_state type handle_state1 is unselected;
+    handle_state type handle_state2 is unselected;
+    handle_state type handle_state3 is unselected;
+    handle_state type handle_state4 is unselected;
+    
+    if some handle_states then
+        handle_state1 is handle_states[1];
+        handle_state2 is handle_states[2];
+        handle_state3 is handle_states[3];
+        handle_state4 is handle_states[4];
+    end;
+    
+    if handle_state1 isn't hidden then
+        rotation_handle of handle_state1 along trans's y_axis by trans's z_axis with
+            rotate by -45 around trans's x_axis;
+            magnify by handle_size;
+            move to trans's origin + trans's y_axis + trans's z_axis;
+        end;
+    end;
+    if handle_state2 isn't hidden then
+        rotation_handle of handle_state2 along trans's y_axis by trans's z_axis with
+            rotate by -135 around trans's x_axis;
+            magnify by handle_size; 
+            move to trans's origin + trans's y_axis - trans's z_axis;
+        end;
+    end;
+    if handle_state3 isn't hidden then
+        rotation_handle of handle_state3 along trans's y_axis by trans's z_axis with
+            rotate by 45 around trans's x_axis;
+            magnify by handle_size; 
+            move to trans's origin - trans's y_axis + trans's z_axis;
+        end;
+    end;
+    if handle_state4 isn't hidden then
+        rotation_handle of handle_state4 along trans's y_axis by trans's z_axis with
+            rotate by 135 around trans's x_axis;
+            magnify by handle_size;
+            move to trans's origin - trans's y_axis - trans's z_axis;
+        end;
+    end;
+end;    // x_rotation_handles
+
+
+shape y_rotation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 4 rotation handles and handle states per axis
+    //
+    handle_state type handle_states[];
+is
+    handle_state type handle_state1 is unselected;
+    handle_state type handle_state2 is unselected;
+    handle_state type handle_state3 is unselected;
+    handle_state type handle_state4 is unselected;
+    
+    if some handle_states then
+        handle_state1 is handle_states[1];
+        handle_state2 is handle_states[2];
+        handle_state3 is handle_states[3];
+        handle_state4 is handle_states[4];
+    end;
+    
+    if handle_state1 isn't hidden then
+        rotation_handle of handle_state1 along trans's x_axis by trans's z_axis with
+            rotate by 45 around trans's y_axis;
+            magnify by handle_size;
+            move to trans's origin + trans's x_axis + trans's z_axis;
+        end;
+    end;
+    if handle_state2 isn't hidden then
+        rotation_handle of handle_state2 along trans's x_axis by trans's z_axis with
+            rotate by 135 around trans's y_axis;
+            magnify by handle_size;
+            move to trans's origin + trans's x_axis - trans's z_axis;
+        end;
+    end;
+    if handle_state3 isn't hidden then
+        rotation_handle of handle_state3 along trans's x_axis by trans's z_axis with
+            rotate by -45 around trans's y_axis;
+            magnify by handle_size;
+            move to trans's origin - trans's x_axis + trans's z_axis;
+        end;
+    end;
+    if handle_state4 isn't hidden then
+        rotation_handle of handle_state4 along trans's x_axis by trans's z_axis with
+            rotate by -135 around trans's y_axis;
+            magnify by handle_size;
+            move to trans's origin - trans's x_axis - trans's z_axis;
+        end;
+    end; 
+end;    // y_rotation_handles
+
+
+shape z_rotation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 4 rotation handles and handle states per axis
+    //
+    handle_state type handle_states[];
+is
+    handle_state type handle_state1 is unselected;
+    handle_state type handle_state2 is unselected;
+    handle_state type handle_state3 is unselected;
+    handle_state type handle_state4 is unselected;
+    
+    if some handle_states then
+        handle_state1 is handle_states[1];
+        handle_state2 is handle_states[2];
+        handle_state3 is handle_states[3];
+        handle_state4 is handle_states[4];
+    end;
+    
+    if handle_state1 isn't hidden then
+        rotation_handle of handle_state1 along trans's x_axis by trans's y_axis with
+            rotate by -45 around trans's z_axis;
+            magnify by handle_size;
+            move to trans's origin + trans's x_axis + trans's y_axis;
+        end;
+    end;
+    if handle_state2 isn't hidden then
+        rotation_handle of handle_state2 along trans's x_axis by trans's y_axis with
+            rotate by -135 around trans's z_axis;
+            magnify by handle_size;
+            move to trans's origin + trans's x_axis - trans's y_axis;
+        end;
+    end;
+    if handle_state3 isn't hidden then
+        rotation_handle of handle_state3 along trans's x_axis by trans's y_axis with
+            rotate by 45 around trans's z_axis;
+            magnify by handle_size;
+            move to trans's origin - trans's x_axis + trans's y_axis;
+        end;
+    end;
+    if handle_state4 isn't hidden then
+        rotation_handle of handle_state4 along trans's x_axis by trans's y_axis with
+            rotate by 135 around trans's z_axis;
+            magnify by handle_size;
+            move to trans's origin - trans's x_axis - trans's y_axis;
+        end;
+    end; 
+end;    // z_rotation_handles
+
+
+shape rotation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 4 rotation handles and handle states per axis
+    //
+    handle_state type x_handle_states[];
+    handle_state type y_handle_states[];
+    handle_state type z_handle_states[];
+is
+    x_rotation_handles of trans with
+        handle_size = static handle_size;
+        handle_states is x_handle_states;
+    end;
+    y_rotation_handles of trans with
+        handle_size = static handle_size;
+        handle_states is y_handle_states;
+    end;
+    z_rotation_handles of trans with
+        handle_size = static handle_size;
+        handle_states is z_handle_states;
+    end;                
+end;    // rotation_handles

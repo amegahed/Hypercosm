@@ -1,0 +1,254 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          beveled_block.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a beveled block with           }
+{       nice round edges and corners.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/native_shapes.ores";
+include "system/native_math.ores";
+include "system/vectors.ores";
+include "system/transformations.ores";
+
+shape beveled_block with
+	vector vertex = <-1 -1 -1>;
+	vector side1 = <2 0 0>;
+	vector side2 = <0 2 0>;
+	vector side3 = <0 0 2>;
+	scalar bevel_width = .1;
+	boolean smoothing is true;
+	boolean extra_facets is true;
+is
+	scalar length1 = vlength of side1;
+	scalar length2 = vlength of side2;
+	scalar length3 = vlength of side3;
+	vector bev1, bev2, bev3;
+	vector smb1, smb2, smb3;
+	vector normal1 = vorient (side2 cross side3) towards side1;
+	vector normal2 = vorient (side1 cross side3) towards side2;
+	vector normal3 = vorient (side1 cross side2) towards side3;
+	vector vertices[], normals[];
+	integer edges[,], faces[];
+	if bevel_width > length1/2 then
+		bevel_width = length1/2;
+	end;
+	if bevel_width > length2/2 then
+		bevel_width = length2/2;
+	end;
+	if bevel_width > length3/2 then
+		bevel_width = length3/2;
+	end;
+	bev1 = normalized side1 * bevel_width;
+	bev2 = normalized side2 * bevel_width;
+	bev3 = normalized side3 * bevel_width;
+	smb1 = side1 - bev1;
+	smb2 = side2 - bev2;
+	smb3 = side3 - bev3;
+	if extra_facets then
+		vector hbev1, hbev2, hbev3; // half-bevels - distance to mid-bevel vertex
+		vector smh1, smh2, smh3;    // sides minus half-bevels
+		vector cbev1, cbev2, cbev3; // corner-bevels
+		vector smc1, smc2, smc3;    // sides minus corner-bevels
+		vector normal4 = normalized normal1 + normalized normal2;
+		vector normal5 = normalized normal1 + normalized normal3;
+		vector normal6 = normalized normal2 + normalized normal3;
+		vector normal7 = normalized normal1 - normalized normal2;
+		vector normal8 = normalized normal1 - normalized normal3;
+		vector normal9 = normalized normal2 - normalized normal3;
+		vector normal10 = normal4 + normalized normal3;
+		vector normal11 = normal7 + normalized normal3;
+		vector normal12 = normal7 - normalized normal3;
+		vector normal13 = normal4 - normalized normal3; 
+		hbev1 = bev1 - (bev1 / sqrt_2);
+		hbev2 = bev2 - (bev2 / sqrt_2);
+		hbev3 = bev3 - (bev3 / sqrt_2);
+		smh1 = side1 - hbev1;
+		smh2 = side2 - hbev2;
+		smh3 = side3 - hbev3;
+		cbev1 = bev1 - (bev1 / sqrt_3);
+		cbev2 = bev2 - (bev2 / sqrt_3);
+		cbev3 = bev3 - (bev3 / sqrt_3);
+		smc1 = side1 - cbev1;
+		smc2 = side2 - cbev2;
+		smc3 = side3 - cbev3;
+		
+		vertices =
+			[(bev1 + smb2 + side3) (smb1 + smb2 + side3)
+			(smb1 + bev2 + side3) (bev1 + bev2 + side3)
+			(cbev1 + smc2 + smc3) (bev1 + smh2 + smh3) (smb1 + smh2 + smh3)
+			(smc1 + smc2 + smc3) (smh1 + smb2 + smh3) (smh1 + bev2 + smh3)
+			(smc1 + cbev2 + smc3) (smb1 + hbev2 + smh3) (bev1 + hbev2 + smh3)
+			(cbev1 + cbev2 + smc3) (hbev1 + bev2 + smh3) (hbev1 + smb2 + smh3)
+			(hbev1 + smh2 + smb3) (bev1 + side2 + smb3)
+			(smb1 + side2 + smb3) (smh1 + smh2 + smb3)
+			(side1 + smb2 + smb3) (side1 + bev2 + smb3)
+			(smh1 + hbev2 + smb3) (smb1 + smb3)
+			(bev1 + smb3) (hbev1 + hbev2 + smb3)
+			(bev2 + smb3) (smb2 + smb3)
+			(bev1 + smb2) (smb1 + smb2)
+			(smb1 + bev2) (bev1 + bev2)
+			(cbev1 + smc2 + cbev3) (bev1 + smh2 + hbev3) (smb1 + smh2 + hbev3)
+			(smc1 + smc2 + cbev3) (smh1 + smb2 + hbev3) (smh1 + bev2 + hbev3)
+			(smc1 + cbev2 + cbev3) (smb1 + hbev2 + hbev3) (bev1 + hbev2 + hbev3)
+			(cbev1 + cbev2 + cbev3) (hbev1 + bev2 + hbev3) (hbev1 + smb2 + hbev3)
+			(hbev1 + smh2 + bev3) (bev1 + side2 + bev3)
+			(smb1 + side2 + bev3) (smh1 + smh2 + bev3)
+			(side1 + smb2 + bev3) (side1 + bev2 + bev3)
+			(smh1 + hbev2 + bev3) (smb1 + bev3)
+			(bev1 + bev3) (hbev1 + hbev2 + bev3)
+			(bev2 + bev3) (smb2 + bev3)];
+		edges =
+			[[1 2][2 3][3 4][4 1]           // upper edges
+			[1 5][1 6][2 7][2 8]
+			[2 9][3 10][3 11][3 12]
+			[4 13][4 14][4 15][1 16]
+			[5 6][6 7][7 8][8 9]
+			[9 10][10 11][11 12][12 13]
+			[13 14][14 15][15 16][16 5]
+			[5 17][5 18][6 18][7 19]
+			[8 19][8 20][8 21][9 21]
+			[10 22][11 22][11 23][11 24]
+			[12 24][13 25][14 25][14 26]
+			[14 27][15 27][16 28][5 28]
+			[17 18][18 19][19 20][20 21]
+			[21 22][22 23][23 24][24 25]
+			[25 26][26 27][27 28][28 17]
+			[17 45][18 46][19 47][20 48]    // vertical edges
+			[21 49][22 50][23 51][24 52]
+			[25 53][26 54][27 55][28 56]
+			[29 30][30 31][31 32][32 29]    // lower edges
+			[29 33][29 34][30 35][30 36]
+			[30 37][31 38][31 39][31 40]
+			[32 41][32 42][32 43][29 44]
+			[33 34][34 35][35 36][36 37]
+			[37 38][38 39][39 40][40 41]
+			[41 42][42 43][43 44][44 33]
+			[33 45][33 46][34 46][35 47]
+			[36 47][36 48][36 49][37 49]
+			[38 50][39 50][39 51][39 52]
+			[40 52][41 53][42 53][42 54]
+			[42 55][43 55][44 56][33 56]
+			[45 46][46 47][47 48][48 49]
+			[49 50][50 51][51 52][52 53]
+			[53 54][54 55][55 56][56 45]];
+		faces =
+			[1 2 3 4 0 5 17 -6 0            // upper faces
+			1 7 -18 -6 0 7 19 -8 0
+			8 20 -9 0 2 10 -21 -9 0
+			10 22 -11 0 11 23 -12 0
+			3 13 -24 -12 0 13 25 -14 0
+			14 26 -15 0 4 16 -27 -15 0
+			5 -28 -16 0 29 49 -30 0
+			17 31 -30 0 18 32 -50 -31 0
+			19 33 -32 0 33 51 -34 0
+			34 52 -35 0 20 36 -35 0
+			21 37 -53 -36 0 22 38 -37 0
+			38 54 -39 0 39 55 -40 0
+			23 41 -40 0 24 42 -56 -41 0
+			25 43 -42 0 43 57 -44 0
+			44 58 -45 0 26 46 -45 0
+			27 47 -59 -46 0 28 48 -47 0
+			29 -60 -48 0
+			
+			49 62 -121 -61 0 50 63 -122 -62 0 51 64 -123 -63 0  // side faces
+			52 65 -124 -64 0 53 66 -125 -65 0 54 67 -126 -66 0
+			55 68 -127 -67 0 56 69 -128 -68 0 57 70 -129 -69 0
+			58 71 -130 -70 0 59 72 -131 -71 0 60 61 -132 -72 0
+			
+			73 74 75 76 0 77 89 -78 0            // lower faces
+			73 79 -90 -78 0 79 91 -80 0
+			80 92 -81 0 74 82 -93 -81 0
+			82 94 -83 0 83 95 -84 0
+			75 85 -96 -84 0 85 97 -86 0
+			86 98 -87 0 76 88 -99 -87 0
+			77 -100 -88 0 101 121 -102 0
+			89 103 -102 0 90 104 -122 -103 0
+			91 105 -104 0 105 123 -106 0
+			106 124 -107 0 92 108 -107 0
+			93 109 -125 -108 0 94 110 -109 0
+			110 126 -111 0 111 127 -112 0
+			95 113 -112 0 96 114 -128 -113 0
+			97 115 -114 0 115 129 -116 0
+			116 130 -117 0 98 118 -117 0
+			99 119 -131 -118 0 100 120 -119 0
+			101 -132 -120 0];
+		normals =
+			[normal3 normal3 normal3 normal3
+			(-normal12) normal6 normal6
+			normal10 normal5 normal5
+			normal11 (-normal9) (-normal9)
+			(-normal13) (-normal8) (-normal8)
+			(-normal7) normal2 normal2
+			normal4 normal1 normal1
+			normal7 (-normal2) (-normal2)
+			(-normal4) (-normal1) (-normal1)
+			(-normal3) (-normal3) (-normal3) (-normal3)
+			(-normal11) normal9 normal9
+			normal13 normal8 normal8
+			normal12 (-normal6) (-normal6)
+			(-normal10) (-normal5) (-normal5)
+			(-normal7) normal2 normal2
+			normal4 normal1 normal1
+			normal7 (-normal2) (-normal2)
+			(-normal4) (-normal1) (-normal1)];
+	else
+		vertices =
+			[(bev1 + smb2 + side3) (smb1 + smb2 + side3)
+			(smb1 + bev2 + side3) (bev1 + bev2 + side3)
+			(bev1 + side2 + smb3) (smb1 + side2 + smb3)
+			(side1 + smb2 + smb3) (side1 + bev2 + smb3)
+			(smb1 + smb3) (bev1 + smb3)
+			(bev2 + smb3) (smb2 + smb3)
+			(bev1 + side2 + bev3) (smb1 + side2 + bev3)
+			(side1 + smb2 + bev3) (side1 + bev2 + bev3)
+			(smb1 + bev3) (bev1 + bev3)
+			(bev2 + bev3) (smb2 + bev3)
+			(bev1 + smb2) (smb1 + smb2)
+			(smb1 + bev2) (bev1 + bev2)];
+		edges =
+			[[1 2][2 3][3 4][4 1]
+			[1 5][2 6][2 7][3 8]
+			[3 9][4 10][4 11][1 12]
+			[5 6][6 7][7 8][8 9]
+			[9 10][10 11][11 12][12 5]
+			[5 13][6 14][7 15][8 16]
+			[9 17][10 18][11 19][12 20]
+			[13 14][14 15][15 16][16 17]
+			[17 18][18 19][19 20][20 13]
+			[13 21][14 22][15 22][16 23]
+			[17 23][18 24][19 24][20 21]
+			[21 22][22 23][23 24][24 21]];
+		faces =
+			[1 2 3 4 0 1 6 -13 -5 0
+			6 14 -7 0 2 8 -15 -7 0
+			8 16 -9 0 3 10 -17 -9 0
+			10 18 -11 0 4 12 -19 -11 0
+			5 -20 -12 0 13 22 -29 -21 0
+			14 23 -30 -22 0 15 24 -31 -23 0
+			16 25 -32 -24 0 17 26 -33 -25 0
+			18 27 -34 -26 0 19 28 -35 -27 0
+			20 21 -36 -28 0 29 38 -45 -37 0
+			30 39 -38 0 31 40 -46 -39 0
+			32 41 -40 0 33 42 -47 -41 0
+			34 43 -42 0 35 44 -48 -43 0
+			36 37 -44 0 45 46 47 48 0];
+		normals =
+			[normal3 normal3 normal3 normal3
+			normal2 normal2 normal1 normal1
+			(-normal2) (-normal2) (-normal1) (-normal1)
+			normal2 normal2 normal1 normal1
+			(-normal2) (-normal2) (-normal1) (-normal1)
+			(-normal3) (-normal3) (-normal3) (-normal3)];
+	end;
+	mesh vertices edges faces with
+		normals is static normals;
+		smoothing is static smoothing;
+		move to vertex;
+	end;
+end;    // beveled_block

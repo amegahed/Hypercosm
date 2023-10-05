@@ -1,0 +1,447 @@
+{***************************************************************}
+{                          spaceship.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do spaceships_picture;
+
+
+include "system/3d.ores";
+include "system/earth.omar";
+include "system/flying_car.omar";
+
+
+shape rear_bulkhead is
+    parallelogram with
+        vertex = <0 -2 0>;
+        side1 = <0 4 0>;
+        side2 = <0 0 1.5>;
+    end;
+    triangle <0 -2 1.5> <0 2 1.5> <0 0 2.25>;
+end;    // rear_bulkhead
+
+
+{rear_bulkhead}
+
+
+shape spoiler is
+    cylinder with
+        end1 = <-1.5 5 0>;
+        end2 = <-1.5 -5 0>;
+        radius = 1.5;
+        scale by .1 along <0 0 1>;
+    end;
+    sphere with
+        radius = 1.5;
+        scale by .1 along <0 1 0>;
+        scale by .1 along <0 0 1>;
+        move to <-1.5 5 0>;
+    end;
+    sphere with
+        radius = 1.5;
+        scale by .1 along <0 1 0>;
+        scale by .1 along <0 0 1>;
+        move to <-1.5 -5 0>;
+    end;
+end;    // spoiler
+
+
+{spoiler}
+
+
+shape nose is
+    parallelogram with
+        vertex = <0 -1 0>;
+        side1 = <0 2 0>;
+        side2 = <0 0 1>;
+    end;
+    triangle <0 -1 1> <0 1 1> <0 0 1.25>;
+    triangle <0 -1 0> <0 1 0> <-3 0 0>;
+    triangle <0 -1 0> <0 -1 1> <-3 0 0>;
+    triangle <0 1 0> <0 1 1> <-3 0 0>;
+    triangle <0 -1 1> <0 0 1.25> <-3 0 0>;
+    triangle <0 1 1> <0 0 1.25> <-3 0 0>;
+end;    // nose
+
+
+{nose}
+
+
+shape canopy is
+
+    {front}
+    cylinder with
+        end1 = <0 0 2.25>;
+        end2 = <2 -1 3.25>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <0 0 2.25>;
+        end2 = <2 1 3.25>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <2 -1 3.25>;
+        end2 = <5 -2 1.5>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <2 1 3.25>;
+        end2 = <5 2 1.5>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <2 1 3.25>;
+        end2 = <2 -1 3.25>;
+        radius = .1;
+    end;
+
+    {rear}
+    cylinder with
+        end1 = <5 -2 1.5>;
+        end2 = <5 -2 4>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <5 2 1.5>;
+        end2 = <5 2 4>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <5 -2 4>;
+        end2 = <5 2 4>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <5 -2 4>;
+        end2 = <2 -1 3.25>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <5 2 4>;
+        end2 = <2 1 3.25>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <5 0 4>;
+        end2 = <2 1 3.25>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <5 0 4>;
+        end2 = <2 -1 3.25>;
+        radius = .1;
+    end;
+end;    // canopy
+
+
+{canopy}
+
+
+shape canopy_glass is
+
+    {front}
+    triangle <0 0 2.25> <2 -1 3.25> <2 1 3.25>;
+    triangle <0 0 2.25> <2 1 3.25> <5 2 1.5>;
+    triangle <0 0 2.25> <2 -1 3.25> <5 -2 1.5>;
+
+    {side panels}
+    triangle <5 -2 4> <2 -1 3.25> <5 -2 1.5>;
+    triangle <5 2 4> <2 1 3.25> <5 2 1.5>;
+
+    {middle top panel}
+    triangle <5 0 4> <2 1 3.25> <2 -1 3.25>;
+
+    {top panels}
+    triangle <5 2 4> <2 1 3.25> <5 0 4>;
+    triangle <5 -2 4> <2 -1 3.25> <5 0 4>;
+end;    // canopy_glass
+
+
+{canopy_glass}
+
+
+shape fuselage is
+    canopy with
+        material is metal;
+        scale by 2.5 along <1 0 0>;
+    end;
+    transparent light blue canopy_glass with
+        scale by 2.5 along <1 0 0>;
+    end;
+    nose with
+        scale by 2 along <1 0 0>;
+        move to <-20 0 0>;
+    end;
+    rear_bulkhead;
+
+    {side triangles}
+    triangle <-20 -1 0> <0 -2 0> <0 -2 1.5>;
+    triangle <-20 1 0> <0 2 0> <0 2 1.5>;
+    triangle <-20 -1 0> <-20 -1 1> <0 -2 1.5>;
+    triangle <-20 1 0> <-20 1 1> <0 2 1.5>;
+
+    {top triangles}
+    triangle <-20 1 1> <-20 0 1.25> <0 2 1.5>;
+    triangle <-20 -1 1> <-20 0 1.25> <0 -2 1.5>;
+    triangle <-20 0 1.25> <0 -2 1.5> <0 0 2.25>;
+    triangle <-20 0 1.25> <0 2 1.5> <0 0 2.25>;
+
+    {canopy brace}
+    triangle <0 -2 1.5> <5 -2 1.5> <0 0 2.25>;
+    triangle <0 2 1.5> <5 2 1.5> <0 0 2.25>;
+
+    {rear bottom sides}
+    parallelogram with
+        vertex = <0 -2 0>;
+        side1 = <18.5 0 0>;
+        side2 = <0 0 1.5>;
+    end;
+    parallelogram with
+        vertex = <0 2 0>;
+        side1 = <18.5 0 0>;
+        side2 = <0 0 1.5>;
+    end;
+    parallelogram with
+        vertex = <0 -2 0>;
+        side1 = <18.5 0 0>;
+        side2 = <0 4 0>;
+    end;
+    parallelogram with
+        vertex = <18.5 -2 0>;
+        side1 = <0 4 0>;
+        side2 = <0 0 1.5>;
+    end;
+
+    {rear back sides}
+    parallelogram with
+        vertex = <18.5 -2 1.5>;
+        side1 = <0 4 0>;
+        side2 = <0 0 2.5>;
+    end;
+    parallelogram with
+        vertex = <18.5 -2 1.5>;
+        side1 = <0 4 0>;
+        side2 = <0 0 2.5>;
+    end;
+    parallelogram with
+        vertex = <18.5 -2 1.5>;
+        side1 = <-6 0 0>;
+        side2 = <0 0 2.5>;
+    end;
+    parallelogram with
+        vertex = <18.5 2 1.5>;
+        side1 = <-6 0 0>;
+        side2 = <0 0 2.5>;
+    end;
+    parallelogram with
+        vertex = <18.5 -2 4>;
+        side1 = <-6 0 0>;
+        side2 = <0 4 0>;
+    end;
+end;    // fuselage
+
+
+{fuselage}
+
+
+shape seat is
+    static shape seat_back is
+        sphere with
+            center = <0 -5 20>;
+            radius = 3;
+        end;
+        sphere with
+            center = <0 5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 -5 0>;
+            end2 = <0 -5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 5 0>;
+            end2 = <0 5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 5 20>;
+            end2 = <0 -5 20>;
+            radius = 3;
+        end;
+    end;    // seat_back
+
+    cylinder with
+        end1 = <8 5 0>;
+        end2 = <8 -5 0>;
+        radius = 3;
+    end;
+    sphere with
+        center = <-8 5 0>;
+        radius = 3;
+    end;
+    sphere with
+        center = <-8 -5 0>;
+        radius = 3;
+    end;
+    sphere with
+        center = <8 5 0>;
+        radius = 3;
+    end;
+    sphere with
+        center = <8 -5 0>;
+        radius = 3;
+    end;
+    cylinder with
+        end1 = <-8 0 0>;
+        end2 = <8 0 0>;
+        radius = 3;
+    end;
+    cylinder with
+        end1 = <-8 5 0>;
+        end2 = <-8 -5 0>;
+        radius = 3;
+    end;    // front of seat
+    cylinder with
+        end1 = <-8 5 0>;
+        end2 = <8 5 0>;
+        radius = 3;
+    end;    // side of seat
+    cylinder with
+        end1 = <-8 -5 0>;
+        end2 = <8 -5 0>;
+        radius = 3;
+    end;    // side of seat
+
+    // tilt seat back
+    seat_back with
+        rotate by 15 around <0 1 0>;
+        move to <8 0 0>;
+    end;
+end;    // seat
+
+
+shape space_ship_half is
+    seat with
+        material is chalk colored brown;
+        magnify by .2;
+        move to <10 2 .5>;
+    end;
+    seat with
+        material is chalk colored brown;
+        magnify by .2;
+        move to <10 -2 .5>;
+    end;
+    seat with
+        material is chalk colored brown;
+        magnify by .2;
+        move to <4 0 .5>;
+    end;
+    fuselage with
+        scale by 1.5 along <0 0 1>;
+        scale by 2 along <0 1 0>;
+    end;
+    cylinder with
+        end1 = <15 2 0>;
+        end2 = <15 30 0>;
+        radius = 4;
+        scale by .05 along <0 0 1>;
+        skew from <15 30 0> to <30 30 0> about <15 2 0>;
+        rotate by -20 around <1 0 0> about <15 2 0>;
+    end;
+    cylinder with
+        end1 = <15 2 0>;
+        end2 = <15 30 0>;
+        radius = 4;
+        scale by .05 along <0 0 1>;
+        skew from <15 30 0> to <30 30 0> about <15 2 0>;
+        rotate by 20 around <1 0 0> about <15 2 0>;
+    end;
+    flying_car type's jet_engine_pod with
+        rotate by 45 around <-1 0 0>;
+        magnify by .3;
+        move to <15 0 0>;
+    end;
+end;    // space_ship_half
+
+
+{space_ship_half}
+
+
+shape space_ship is
+    space_ship_half with
+        move to <0 4 0>;
+    end;
+    space_ship_half with
+        scale by -1 along <0 1 0>;
+        move to <0 -4 0>;
+    end;
+    spoiler with
+        scale by 3 along <0 1 0>;
+        scale by 2 along <1 0 0>;
+        move to <-20 0 0>;
+    end;
+    flying_car type's jet_engine_pod with
+        magnify by .3;
+        rotate by 90 around <-1 0 0>;
+        move to <15 4 0>;
+    end;
+    flying_car type's jet_engine_pod with
+        magnify by .3;
+        rotate by -90 around <-1 0 0>;
+        move to <15 -4 0>;
+    end;
+end;    // space_ship
+
+
+{space_ship}
+
+
+picture spaceship_picture with
+    eye = <-50 -80 70>;
+    lookat = <10 0 0>;
+    field_of_view = 50;
+    render_mode is shaded;
+    shading is vertex;
+    background = sky_blue;
+is
+    distant_light from <.3 -.5 1>;
+    space_ship with material is metal colored orange; end;
+end;    // spaceship_picture
+
+
+{spaceship_picture}
+
+
+picture spaceships_picture with
+    eye = <-50 -60 70>;
+    lookat = <0 0 0>;
+    field_of_view = 45;
+    background = black;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is off;
+is
+    distant_light from <.3 -.5 1>;
+    celestial_sphere;
+
+
+    space_ship with
+        material is copper;
+        magnify by .75;
+        move to <-8 0 0>;
+    end;
+
+end;    // spaceships_picture

@@ -1,0 +1,38 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           write_stmt.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a write          }
+{       statement in the OMAR language.                         }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do write_stmt_example;
+
+include "system/native_string.ores";
+
+char ch is "a";
+string type name is "Fred Froglegs";
+integer i = 10;
+scalar a = 64;
+double b = 3.14159265358;
+complex c = <4 1>;
+vector direction = <1 2 3>;
+
+verb write_stmt_example is
+	write "Examples of using a 'write' statement:", ;
+	write;
+	
+	write "Hello world!", ;
+	write "The value of char ch is ", ch, ;
+	write "The value of string name is ", name, ;
+	write "The value of integer i = ", i, ;
+	write "The value of scalar a = ", a, ;
+	write "The value of double b = ", b, ;
+	write "The value of complex c = ", c, ;
+	write "The value of vector diretion = ", direction, ;
+	write "The values of a, b, and c are ", a, ", ", b, ", and ", c, ;
+end;    // write_stmt_example

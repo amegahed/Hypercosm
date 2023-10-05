@@ -1,0 +1,161 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        physics_camera.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the class that defines a camera contained      }
+{       within a capsule used for a first-person interaction    }
+{       with physics scenes.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2010 Hypercosm, LLC.             }
+{***************************************************************}
+
+{***************************************************************}
+{                         usage note                            }
+{***************************************************************}
+{                                                               }
+{    The following illustrates the parameters of the            }
+{    physics_camera. The camera and the origin of the           }
+{    physics_camera's transformation are at the center of a     }
+{    capsule. When dealing with the transformation of the       } 
+{    phsyics_camera remember to account for the capsule's       }
+{    radius in addition to its height with respect to the       }
+{    ground.                                                    }
+{                                                               }
+{                    radius                                     }
+{                       _                                       }
+{                      | |                                      }
+{                      _                                        }
+{                     / \  ]--- radius                          }
+{                    |   | -                                    }
+{                    |   |  |                                   }
+{ camera/origin -->  | * |  |-- height  _                       }
+{                    |   |  |            |                      }
+{                    |   | _|            |-- bottom-to-center   }
+{                     \_/  ]--- radius  _|   =radius + height/2 }
+{         --ground---------------------------                   }
+{                                                               }
+{***************************************************************}
+
+include "system/physics_capsule_actor.ores";
+include "physics_fps_camera_interaction.ores";
+
+subject physics_camera
+extends
+	updateable activateable deactivateable physics_capsule_actor
+does
+	// constructor
+	//
+	verb new with
+		// physics parameters
+		//
+		trans type trans;
+		scalar mass = 10;
+		scalar friction = .5;
+		scalar restitution = .5;
+		
+		// cylinder parameters
+		//
+		scalar radius = 1;
+		scalar height = 1;
+		// camera parameters
+		//      
+		physics_camera_interaction type physics_camera_interaction is none;
+	end;
+	
+	// update method
+	//
+	verb update;
+	
+	// activation/deactivation methods
+	//
+	verb activate;
+	verb deactivate;
+has
+	boolean active is true;
+	scalar height = 1;
+	scalar radius = 1;
+	physics_camera_interaction type physics_camera_interaction is none;
+is
+	
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		// physics parameters
+		//
+		trans type trans;
+		scalar mass = 10;
+		scalar friction = .5;
+		scalar restitution = .5;
+		
+		// cylinder parameters
+		//
+		scalar radius = 1;
+		scalar height = 1;
+		
+		// camera parameters
+		//
+		physics_camera_interaction type physics_camera_interaction is none;
+	is
+		physics_capsule_actor new with
+			trans's origin = static trans's origin;
+			trans's z_axis = static trans's y_axis*-1;
+			trans's y_axis = <0 0 1>;
+			mass = static mass;
+			height = static height;
+			radius = static radius;
+			friction = static friction;
+			restitution = static restitution;
+		end;
+		
+		with physics_camera do
+			its height = static height;
+			its radius = static radius;
+			if some physics_camera_interaction then
+				its physics_camera_interaction is physics_camera_interaction;
+			else
+				its physics_camera_interaction is new physics_fps_camera_interaction;
+			end;
+		end;
+		set_rotation_enabled to false;
+		update;
+	end;    // new
+	
+	
+	// 
+	// activation/deactivation methods
+	//
+	
+	
+	verb activate
+	is
+		active is true;
+	end;    // activate
+	
+	
+	verb deactivate 
+	is
+		active is false;
+	end;    // deactivate
+	
+	
+	boolean question get_active is
+		answer active;
+	end;    // get_active
+	
+	
+	//
+	// update method
+	// 
+	
+	verb update is
+		if active and some physics_camera_interaction then
+			physics_camera_interaction update using physics_camera;
+		end;
+	end;    // update
+end;

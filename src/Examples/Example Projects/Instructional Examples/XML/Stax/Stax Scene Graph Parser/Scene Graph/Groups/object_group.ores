@@ -1,0 +1,289 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           object_group.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a group of objects in the      }
+{       scene graph.                                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/naming.ores";
+include "system/rendering.ores";
+include "system/linked_list.ores";
+include "object_instance.ores";
+include "scene_searching.ores";
+	
+subject object_group
+extends
+	renderable scene_searchable copyable cloneable object
+does
+	// constructor
+	//
+	verb new with
+		object_instance type children[];
+	end;
+	
+	// construction methods
+	//
+	verb add
+		object_instance type object;
+	end;
+	verb remove
+		object_instance type object;
+	end;
+	
+	// query methods
+	//
+	boolean question contains
+		object_instance type object;
+	end;
+	
+	// searching methods
+	//
+	object_instance type question get_element_by_name
+		string type name;
+	end;
+	object_instance type[] question get_elements_by_name
+		string type name;
+	end;
+	object_instance type question get_element_by_names
+		string type names[];
+	end;
+	object_instance type[] question get_elements_by_names
+		string type names[];
+	end;
+	
+	// rendering methods
+	//
+	shape instance;
+	
+	// copying and cloning methods
+	//    
+	verb copy 
+		from object_group type source;
+	end;
+	object_group type question clone;
+has
+	// attributes 
+	//
+	linked_list type list;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+		object_instance type children[];
+	is
+		// add children
+		//
+		for each object_instance type child in children do
+			add child;
+		end;
+	end;    // new
+
+	//    
+	// construction methods
+	//
+	
+	
+	verb add
+		object_instance type object;
+	is
+		list add object;
+	end;    // add
+	
+	
+	verb remove
+		object_instance type object;
+	is
+		list remove object;
+	end;    // remove
+
+	//    
+	// query methods
+	//
+	
+	
+	boolean question contains
+		object_instance type object;
+	is
+		answer list contains object;
+	end;    // contains
+	
+	//
+	// methods for concatenating together arrays of elements
+	//
+	
+	objective object_instance type[] question add_element
+		object_instance type element;
+		to object_instance type elements[];
+	is
+		if some elements then
+			object_instance type elements2[];
+			dim none elements2[1 .. num elements + 1];
+			for integer counter = 1 .. num elements do
+				elements2[counter] is elements[counter];
+			end;
+			elements2[num elements2] is element;
+			answer elements2;
+		else
+			answer [element];
+		end;
+	end;    // add_element
+	
+	
+	objective object_instance type[] question add_elements
+		object_instance type elements2[];
+		to object_instance type elements1[];
+	is
+		if some elements2 then
+			object_instance type elements3[];
+			dim none elements3[1 .. num elements1 + num elements2];
+			for integer counter = 1 .. num elements1 do
+				elements3[counter] is elements1[counter];
+			end;
+			for integer counter = 1 .. num elements2 do
+				elements3[num elements1 + counter] is elements2[counter];
+			end;
+			answer elements3;
+		else
+			answer elements1;
+		end;
+	end;    // add_elements
+	
+		
+	//
+	// searching methods
+	//
+	
+		
+	object_instance type question get_element_by_name
+		string type name;
+	is
+		iterator type iterator is list get_iterator;
+		object_instance type element is none;
+		
+		while iterator has_next and element is none do
+			object_instance type object is object_instance type iterator next;
+			if name matches object get_name then
+				element is object;
+			elseif scene_searchable type object then
+				scene_searchable type searchable is scene_searchable type object;
+				element is searchable get_element_by_name name;
+			end;
+		end;
+		
+		answer element;
+	end;    // get_element_by_name
+	
+	
+	object_instance type[] question get_elements_by_name
+		string type name;
+	is
+		iterator type iterator is list get_iterator;
+		object_instance type elements[];
+		
+		while iterator has_next do
+			object_instance type object is object_instance type iterator next;
+			if name matches object get_name then
+				elements is add_element object to elements;
+			elseif scene_searchable type object then
+				scene_searchable type searchable is scene_searchable type object;
+				object_instance type elements2[] is searchable get_elements_by_name name;
+				if some elements2 then
+					elements is add_elements elements2 to elements;
+				end;
+			end;
+		end;
+		
+		answer elements;
+	end;    // get_elements_by_name
+	
+		
+	object_instance type question get_element_by_names
+		string type names[];
+	is
+		object_instance type element is none;
+		
+		if num names > 1 then
+			object_instance type object is get_element_by_name names[min names];
+			if scene_searchable type object then
+				scene_searchable type searchable is scene_searchable type object;
+				element is searchable get_element_by_names names[min names + 1 .. max names];
+			end;
+		elseif num names = 1 then
+			element is get_element_by_name names[min names];
+		end;
+		
+		answer element;
+	end;    // get_element_by_names
+	
+	
+	object_instance type[] question get_elements_by_names
+		string type names[];
+	is
+		object_instance type elements[];
+		
+		if num names > 1 then
+			object_instance type objects[] is get_elements_by_name names[min names];
+			for integer counter = 1 .. num objects do
+				object_instance type object is objects[counter];
+				if scene_searchable type object then
+					scene_searchable type searchable is scene_searchable type object;
+					elements is add_elements searchable get_elements_by_names names[min names + 1 .. max names] to elements;    
+				end;
+			end;
+		elseif num names = 1 then
+			elements is add_elements get_elements_by_name names[min names] to elements;
+		end;
+		
+		answer elements;
+	end;    // get_elements_by_names
+	
+	
+	//
+	// rendering methods
+	//
+	
+	
+	shape instance is
+		iterator type iterator is list get_iterator;
+		while iterator has_next do
+			object_instance type object is object_instance type iterator next;
+			object instance;
+		end;
+	end;    // instance
+	
+	//  
+	// copying and cloning methods
+	//  
+	
+ 
+	verb copy 
+		from object_group type source;
+	is
+		iterator type iterator is source's list get_iterator;
+		
+		// copy attributes of source
+		//
+		list clear;
+		while iterator has_next do
+			object_instance type object is object_instance type iterator next;
+			add object clone;
+		end;                
+	end;    // copy
+	
+	   
+	object_group type question clone is
+		object_group type group2;
+		group2 copy from object_group;
+		answer group2;
+	end;    // clone
+end;    // object_group
+

@@ -1,0 +1,103 @@
+{***************************************************************}
+{                       reflection2.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+//do rotate_anim;
+do spinning_things;
+
+
+include "system/3d.ores";
+
+shape thing with
+    scalar t = 0;
+is
+    block with
+        material is plastic colored red;
+        magnify by .4;
+        rotate by t * 10 around <1 0 0>;
+        rotate by t * 10 around <0 1 0>;
+        rotate by -30 around <0 0 1>;
+        move to <0 0 1>;
+    end;
+    plane with
+        material is plastic colored grey;
+        magnify by 2;
+    end;
+    sphere with
+        material is plastic colored white;
+        move to <1 0 .5>;
+        radius = .25;
+        rotate by t * 10 around <0 0 1>;
+    end;
+    sphere with
+        material is golden;
+        move to <-1 0 .5>;
+        radius = .25;
+        rotate by -t * 10 around <0 0 1>;
+    end;
+end;    // thing
+
+
+picture rotate_picture with
+    vector v = <0 0 0>;
+    scalar t = 0;
+
+    eye = <0 -8 6>;
+    lookat = <0 0 .5>;
+    background = sky_blue;
+    render_mode is shaded;
+    shadows is on;
+    reflections is on;
+    facets = 10;
+is
+    distant_light from <.3 -.8 1> with
+        brightness = 1.3;
+    end;
+    thing with
+        t = static t;
+        rotate by (v dot <0 1 0>) around trans's x_axis;
+        rotate by (v dot <1 0 0>) around trans's z_axis;
+    end;
+end;    // thing_picture
+
+
+anim spinning_things with
+    double_buffer is on;
+is
+    integer frames = 0;
+
+    while true do
+        rotate_picture with
+            t = frames;
+        end;
+        rotate by 2 around <0 0 1>;
+        frames = frames + 1;
+    end;
+end;    // spinning_things
+
+
+anim rotate_anim with
+    double_buffer is on;
+is
+    integer frames = 0;
+    vector old_pos, new_pos, delta;
+    vector orientation = <0 0 0>;
+
+    old_pos = get_mouse;
+    while true do
+        new_pos = get_mouse;
+        delta = new_pos - old_pos;
+        old_pos = new_pos;
+        orientation = orientation + delta * 360;
+        rotate_picture with
+            t = frames;
+            v = orientation;
+        end;
+        frames = frames + 1;
+    end;
+end;    // rotate_anim

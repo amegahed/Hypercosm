@@ -1,0 +1,87 @@
+{***************************************************************}
+{                          present.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do present_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/grid_meshes.ores";
+include "system/random.ores";
+
+
+shape bow with
+    integer segments = 6;
+    integer facets = 10;
+is
+    shape bow_segment with
+        integer number = 0;
+    is
+        vector points[1..facets][1..3];
+        scalar wrinkle_size = .15;
+
+        for integer counter = 1..facets do
+            scalar angle = (counter / facets * 180);
+            scalar x = sin angle;
+            scalar y = (1 + .5 * cos angle) * .25;
+            scalar z = sin (angle * 4) * angle / 180;
+
+            points[counter][1] = <x (-y) z>;
+            points[counter][2] = <x 0 z>;
+            points[counter][3] = <x y z>;
+
+            // add wrinkles to bow vertices
+            //
+            points[counter][1] = itself + vrandom
+                <-1 -1 -1> to <1 1 1> * wrinkle_size;
+            points[counter][2] = itself + vrandom
+                <-1 -1 -1> to <1 1 1> * wrinkle_size;
+            points[counter][3] = itself + vrandom
+                <-1 -1 -1> to <1 1 1> * wrinkle_size;
+        end;
+        quad_grid_mesh of points;
+    end;    // bow_segment
+
+
+    for integer counter = 1..segments do
+        bow_segment with
+            number = counter;
+            move to <0 0 1>;
+            rotate by (counter / segments * 360) around
+                <0 0 1>;
+        end;
+    end;
+end;    // bow
+
+
+shape present is
+    block with
+        material is metal colored light green;
+        vertex = <-.5 -.5 0>;
+        side1 = <1 0 0>;
+        side2 = <0 1 0>;
+        side3 = <0 0 .5>;
+    end;
+    bow with
+        material is metal colored light red;
+        magnify by .2;
+        move to <0 0 .5>;
+    end;
+end;    // present
+
+
+anim present_anim
+    args type args;
+with
+    eye = <1 -3 2>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape present;
+end;    // present_anim

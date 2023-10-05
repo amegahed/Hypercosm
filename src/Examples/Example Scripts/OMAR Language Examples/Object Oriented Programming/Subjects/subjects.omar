@@ -1,0 +1,119 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             subjects.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of a subject (or "class") in the OMAR           }
+{       language.                                               }
+{                                                               }
+{       Subjects are just like "classes" in languages           }
+{       such as C++ or Java.  We call them "subjects"           }
+{       because we use an English language metaphor for         }
+{       the language structures.  When a subject is used        }
+{       in a sentence (or procedure call), the form of          }
+{       sentence is:                                            }
+{               <subject> <verb> [object]>                      }
+{       Using the terminology of C++ and Java, this is          }
+{       equivalent to:                                          }
+{               <class object> <method> <parameters>            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do subjects_example;
+
+include "system/constants.ores";
+
+subject circle
+does
+	// constructor
+	//
+	verb new
+		at vector center;
+	with
+		scalar radius = 1;
+	end;
+	
+	// methods
+	//
+	verb print;
+	verb move
+		to vector location;
+	end;
+	
+	// question methods
+	//
+	scalar question get_circumference;
+	scalar question get_area;
+has
+	// attributes
+	//
+	vector center = <0 0 0>;
+	public scalar radius = 1;
+is
+	//  
+	// constructor
+	//
+	
+	verb new
+		at vector center;
+	with
+		scalar radius = 1;
+	is
+		with circle do
+			its center = center;
+			its radius = radius;
+		end;
+	end;    // new
+	
+	//
+	// methods
+	//
+	
+	verb print is
+		write "circle with", ;
+		write " center = ", center, ;
+		write " radius = ", radius, ;
+		write " circumference = ", get_circumference, ;
+		write " area = ", get_area, ;
+		write "end;", ;
+	end;    // print
+	
+	verb move
+		to vector location;
+	is
+		center = location;
+	end;    // move
+	
+	//
+	// question methods
+	//
+	
+	scalar question get_circumference is
+		answer 2 * pi * radius;
+	end;    // get_circumference
+	
+	scalar question get_area is 
+		answer pi * radius * radius;
+	end;    // get_area
+end;    // circle
+
+verb subjects_example is
+
+	// object declaration - this creates an instance
+	// of the circle subject or "class"
+	//
+	circle type circle at <0 0 10> with
+		radius = 5;
+	end;
+
+	// This calls the "print" method of the circle object
+	//  
+	circle print;
+	
+	// This calls a circle's question method
+	//
+	write "The area of the circle = ", circle get_area, ;
+end;    // subjects_example

@@ -1,0 +1,149 @@
+{***************************************************************}
+{                          telephone_pole.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pole_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape telephone_pole is
+    shape transformer is
+        rod with
+            end1 = <0 0 -1.5>;
+            end2 = <0 0 1.5>;
+            radius = 1;
+        end;
+        sphere with
+            center = <0 0 1.5>;
+            radius = .3;
+            vmin = 0;
+        end;
+    end;    // transformer
+
+
+    shape insulator is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 .05>;
+            radius = .005;
+        end;
+        sphere with
+            center = <0 0 .05>;
+            radius = .01;
+        end;
+        cone with
+            end1 = <0 0 .05>;
+            end2 = <0 0 .03>;
+            radius1 = .01;
+            radius2 = .02;
+        end;
+    end;    // insulator
+
+
+    shape telephone_pole_steps with
+        integer number = 12;
+    is
+        shape telephone_pole_step is
+            cylinder with
+                end1 = <0 0 0>;
+                end2 = <0 2 0>;
+                radius = .07;
+            end;
+            cylinder with
+                end1 = <0 2 0>;
+                end2 = <0 2 .2>;
+                radius = .1;
+            end;
+        end;    // telephone_pole_step
+
+
+        for integer counter = 1..number do
+            if counter mod 2 = 0 then
+                telephone_pole_step with
+                    material is plastic colored grey;
+                    move to <0 1 ((counter - 1) * 2)>;
+                end;
+            else
+                telephone_pole_step with
+                    material is plastic colored grey;
+                    scale by -1 along <0 1 0>;
+                    move to <0 -1 ((counter - 1) * 2)>;
+                end;
+            end;
+        end;
+    end;    // telephone_pole_steps
+
+    rod with
+        material is chalk colored brown;
+        end1 = <0 0 0>;
+        end2 = <0 0 1>;
+        radius = .02;
+    end;
+    rod with
+        material is chalk colored brown;
+        end1 = <0 -.25 .9>;
+        end2 = <0 .25 .9>;
+        radius = .015;
+    end;
+    insulator with
+        material is plastic colored grey;
+        move to <0 -.2 .9>;
+    end;
+    insulator with
+        material is plastic colored grey;
+        move to <0 .2 .9>;
+    end;
+    insulator with
+        material is plastic colored grey;
+        move to <0 -.1 .9>;
+    end;
+    insulator with
+        material is plastic colored grey;
+        move to <0 .1 .9>;
+    end;
+    transformer with
+        material is plastic colored grey;
+        magnify by .04;
+        move to <0 -.05 .77>;
+    end;
+    transformer with
+        material is plastic colored grey;
+        magnify by .04;
+        move to <0 .05 .77>;
+    end;
+    telephone_pole_steps with
+
+        {
+                magnify by .02;
+                scale by 2.5 along 0 0 1;
+                }
+        magnify by .02;
+        move to <0 0 .2>;
+    end;
+end;    // telephone pole
+
+
+anim pole_anim
+    args type args;
+with
+    eye = <1 -3 2>;
+    lookat = <0 0 .5>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        telephone_pole;
+        plane;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // pole_anim

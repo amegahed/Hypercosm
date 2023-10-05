@@ -1,0 +1,296 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            planet.ores                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a planet and its orbit.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2008 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/rendering.ores";
+include "system/updating.ores";
+
+// planetary constants
+//
+const scalar AU_to_miles = 93e6; 
+const scalar earth_radius = 4e3 / AU_to_miles;
+const scalar jupiter_radius = 43e3 / AU_to_miles;
+
+subject planet
+extends
+	renderable updateable object
+does
+	// constructor
+	//
+	verb new
+		named string type name is none;
+	with
+		// physical parameters
+		//
+		scalar mass = 1;
+		color type color = white;
+		material type material is none;
+				
+		// orbital parameters
+		//
+		scalar major_axis = 1;
+		scalar eccentricity = 0;
+		scalar angle = 0;
+		scalar parent_star_mass = 1;
+		scalar right_ascension = 0;
+		scalar declination = 0;
+		
+		// animation parameters
+		//
+		scalar period = 1;
+		scalar speed = 1;
+		
+		// label parameters
+		//
+		boolean label_visible is true;
+	end;
+	
+	// attributes setting methods
+	//
+	verb set_speed
+		to scalar speed;
+	end;
+	
+	// querying methods
+	//
+	vector question get_location;
+	scalar question get_radius;
+		
+	// rendering methods
+	//
+	shape instance;
+	shape orbit with
+		integer steps = 48;
+	end;
+	
+	// drawing methods
+	//
+	verb label;
+	
+	// updating methods
+	//
+	verb update;
+has
+	// attributes
+	//
+	string type name;
+	// physical parameters
+	//
+	scalar mass;
+	
+	// drawing parameters
+	//
+	vector location;
+	scalar radius;
+	color type color;
+	material type material is none;
+			
+	// orbital parameters
+	//
+	scalar major_axis;
+	scalar eccentricity;
+	scalar angle;
+	scalar parent_star_mass;
+	scalar right_ascension;
+	scalar declination;
+	
+	// animation parameters
+	//;
+	scalar period;
+	scalar speed;
+	scalar time;
+is
+	// texture for default planet material
+	//
+	texture type planet_texture is new texture using 
+		(new image named "planet_map.jpg");
+			
+	vector question compute_location is
+		scalar rotation = time / period * 360;
+		scalar radius = major_axis * (1 - sqr eccentricity) /
+			(1 + eccentricity * cos (rotation));
+		scalar x = (eccentricity * major_axis * 1.5) + cos rotation * radius;
+		scalar y = sin rotation * radius;
+		answer rotated_vector <x y 0> by angle around <0 0 1>;
+	end;    // compute_location
+	
+	scalar question compute_radius is
+		answer jupiter_radius * mass ^ (1/3);
+	end;    // compute_radius
+	
+				
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		named string type name is none;
+	with
+		// physical parameters
+		//
+		scalar mass = 1;
+		color type color = white;
+		material type material is none;
+						
+		// orbital parameters
+		//
+		scalar major_axis = 1;
+		scalar eccentricity = 0;
+		scalar angle = 0;
+		scalar parent_star_mass = 1;
+		scalar right_ascension = 0;
+		scalar declination = 0;
+		
+		// animation parameters
+		//
+		scalar period = 1;
+		scalar speed = 1;
+		
+		// label parameters
+		//
+		boolean label_visible is true;
+	is
+		// set attributes
+		//
+		with planet do
+			
+			// set physical attributes
+			//
+			its mass = mass;
+					
+			// set orbital attributes
+			//
+			its major_axis = major_axis;
+			its eccentricity = eccentricity;
+			its angle = angle;
+			its parent_star_mass = parent_star_mass;
+			its right_ascension = right_ascension;
+			its declination = declination;
+			
+			// set animation attributes
+			//
+			its period = period;
+			its speed = speed;
+			its time = 0;
+			
+			// set label attributes
+			//
+			its name is name;
+			
+			// set drawing attributes
+			//
+			its location = compute_location;
+			its radius = compute_radius;
+			its color = color;
+			its material is material;
+		end;
+		
+		// set default material
+		//.
+		if material is none then
+			planet's material is plastic colored color textured planet_texture;
+		end;
+	end;    // new
+	
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set_speed
+		to scalar speed;
+	is
+		planet's speed = speed;
+	end;    // set_speed
+	
+		
+	//
+	// querying methods
+	//
+	
+		
+	vector question get_location is
+		answer location;
+	end;    // get_location
+	
+	scalar question get_radius is
+		answer radius;
+	end;    // get_radius
+	
+	
+	//
+	// rendering methods
+	//
+	
+		
+	shape orbit with
+		integer steps = 48;
+	is
+		scalar minor_axis = major_axis * sqrt (1 - sqr eccentricity);
+		vector points[0 .. steps];
+	 
+		for integer counter = 0 .. steps do
+			scalar angle = (counter / steps) * 360;
+			scalar x = cos angle * major_axis + (eccentricity * major_axis * .5);
+			scalar y = sin angle * minor_axis;
+			
+			points[counter] = <x y 0>;
+		end;
+		
+		line points with
+			global color = static color;
+			rotate by angle around <0 0 1>;
+		end;
+	
+		{   
+		parallelogram with
+			material is constant_color color textured orbit_texture;
+			scale by major_axis + (eccentricity * major_axis * .5) along <1 0 0>;
+			scale by minor_axis along <0 1 0>;
+			rotate by angle around <0 0 1>;
+		end;
+		}
+	end;    // orbit
+	
+	
+	shape instance is        
+		sphere with
+			radius = static radius;
+			move to location;
+			global color = color;
+			global material is material;
+		end;
+	end;    // instance
+	
+	//
+	// drawing methods
+	//
+	
+	
+	verb label is
+		label_text name at location with
+			color = static color;
+			occlusion is false;
+		end;
+	end;    // label
+	
+		
+	//
+	// updating methods
+	//
+	
+		
+	verb update is
+		time = itself + get_frame_duration * speed;
+		location = compute_location;
+	end;    // update
+end;    // planet

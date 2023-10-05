@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm   		  list_indexing.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of list indexing behavior			}
+{		that can be used to randomly access lists using 		}
+{		integer indices.               							}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/indexing.ores";
+
+
+adjective list_indexable
+extends
+    indexable
+does
+    // list querying methods
+    //
+    integer question index
+        at list_end type list_end;
+    end;
+    integer question find_index
+    	of object type element;
+    end;
+    
+	// list construction methods
+	//
+    verb insert
+        object type element;
+        at integer index;
+    end;
+    object type question removed
+        integer index;
+    end;
+    
+    // random access iterator querying methods
+    //
+    list_iterator type question indexed_iterator
+        at integer index;
+    end;
+end;    // list_indexable

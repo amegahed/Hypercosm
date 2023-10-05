@@ -1,0 +1,9 @@
+do test;
+
+
+verb test is
+	while true do
+		char[] message is "blah";
+		write "message is ", message, ;
+	end;
+end;	// test

@@ -1,0 +1,49 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       3ds_bezier_quat_key.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains key definitions that correspond to             }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_quat_key.ores";
+
+subject translated_3ds_bezier_quat_key
+extends
+	translated_3ds_quat_key
+does
+	// constructor
+	//
+	verb new
+		of quat type value;
+		from quat type in_tangent;
+		to quat type out_tangent;
+		at translated_3ds_time type time;
+	end;
+has
+	// attributes
+	//
+	public quat type in_tangent, out_tangent;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		of quat type value;
+		from quat type in_tangent;
+		to quat type out_tangent;
+		at translated_3ds_time type time;
+	is
+		translated_3ds_quat_key new of value at time;
+		with translated_3ds_bezier_quat_key do
+			its in_tangent is in_tangent;
+			its out_tangent is out_tangent;
+		end;
+	end;    // new
+end;    // translated_3ds_bezier_quat_key

@@ -1,0 +1,87 @@
+{***************************************************************}
+{                      cyclic_shape_actor.ores                  }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/cyclic_actor.ores";
+
+
+subject cyclic_shape_actor
+extends
+	cyclic_actor
+does
+	// constructor
+	//
+	verb new
+		of shape form with
+			scalar time = 0;
+		end;
+        at scalar time = 0;    
+        lasting scalar duration = 1;
+    with
+        boolean paused is false;
+        boolean autostop is false;
+        boolean autoreverse is false;
+    end; 
+
+	// rendering method
+	//
+    shape instance;	
+has
+	// animated shape actor attributes
+	//
+	shape form with
+		scalar time = 0;
+	end;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		of shape form with
+			scalar time = 0;
+		end;
+        at scalar time = 0;    
+        lasting scalar duration = 1;
+    with
+        boolean paused is false;
+        boolean autostop is false;
+        boolean autoreverse is false;
+	is
+		// call superclass constructor
+		//
+		cyclic_actor new at time lasting duration with
+			paused is static paused;
+			autostop is static autostop;
+			autoreverse is static autoreverse;
+		end;
+		
+		// set animated actor attributes
+		//
+		cyclic_shape_actor's form does form;
+	end;	// new
+	
+	
+	//
+	// rendering method
+	//
+	
+	
+    shape instance is
+    	form with
+    		time = static time;
+    	end; 
+    end;	// instance
+end;	// cyclic_shape_actor
+	
+

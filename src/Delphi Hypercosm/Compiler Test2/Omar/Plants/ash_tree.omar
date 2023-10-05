@@ -1,0 +1,245 @@
+{***************************************************************}
+{                          ash_tree.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do ash_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape ash_tree is
+    shape leaf is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = .05;
+            radius2 = 0;
+        end;
+        disk with
+            center = <0 0 1>;
+            normal = <0 1 0>;
+            radius = .5;
+            scale by .3 along <1 0 0>;
+        end;
+    end;    // leaf
+
+
+    shape twig1 is
+        material type dark_green_material is chalk colored dark green;
+        material type yellow_green_material is chalk colored blend
+            green to yellow by .5;
+        material type blue_green_material is chalk colored blend
+            green to blue by .3;
+
+        cone with
+            end1 = <0 0 0>;
+            end2 = <.5 0 1>;
+            radius1 = .1;
+            radius2 = .05;
+        end;
+        leaf with
+            material is yellow_green_material;
+            rotation of <15 20 0>;
+            move to <.5 0 1>;
+        end;
+        leaf with
+            material is dark_green_material;
+            rotation of <-15 -40 15>;
+            move to <.5 0 1>;
+        end;
+        cone with
+            end1 = <.5 0 1>;
+            end2 = <0 0 2>;
+            radius1 = .05;
+            radius2 = .04;
+        end;
+        leaf with
+            material is blue_green_material;
+            rotation of <15 0 60>;
+            move to <0 0 2>;
+        end;
+        leaf with
+            material is dark_green_material;
+            rotation of <-15 0 0>;
+            move to <0 0 2>;
+        end;
+    end;    // twig1
+
+
+    shape twig2 is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <.5 0 1>;
+            radius1 = .1;
+            radius2 = .05;
+        end;
+        twig1 with
+            rotation of <15 20 0>;
+            move to <.5 0 1>;
+        end;
+        twig1 with
+            rotation of <-15 -40 0>;
+            move to <.5 0 1>;
+        end;
+        cone with
+            end1 = <.5 0 1>;
+            end2 = <0 0 2>;
+            radius1 = .05;
+            radius2 = .04;
+        end;
+        twig1 with
+            rotation of <15 0 0>;
+            move to <0 0 2>;
+        end;
+        twig1 with
+            rotation of <-15 0 0>;
+            move to <0 0 2>;
+        end;
+    end;    // twig2
+
+
+    shape twig3 is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <.5 0 1>;
+            radius1 = .1;
+            radius2 = .05;
+        end;
+        twig2 with
+            rotation of <20 20 50>;
+            move to <.5 0 1>;
+        end;
+        twig2 with
+            rotation of <-15 -40 0>;
+            move to <.5 0 1>;
+        end;
+        cone with
+            end1 = <.5 0 1>;
+            end2 = <0 0 2>;
+            radius1 = .05;
+            radius2 = .04;
+        end;
+        twig2 with
+            rotation of <15 0 -40>;
+            move to <0 0 2>;
+        end;
+        twig2 with
+            rotation of <-15 6 0>;
+            move to <0 0 2>;
+        end;
+    end;    // twig3
+
+
+    shape twig4 is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <.1 0 2>;
+            radius1 = .2;
+            radius2 = .1;
+        end;
+        twig3 with
+            rotation of <20 20 50>;
+            move to <.1 0 2>;
+        end;
+        twig3 with
+            rotation of <-15 -40 0>;
+            move to <.1 0 2>;
+        end;
+        cone with
+            end1 = <.1 0 2>;
+            end2 = <-1 0 4>;
+            radius1 = .1;
+            radius2 = .08;
+        end;
+        twig3 with
+            rotation of <55 0 -40>;
+            move to <-1 0 4>;
+        end;
+        twig3 with
+            rotation of <-15 0 0>;
+            move to <-1 0 4>;
+        end;
+    end;    // twig4
+
+
+    shape twig5 is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <.2 0 4>;
+            radius1 = .4;
+            radius2 = .2;
+        end;
+        twig4 with
+            rotation of <-20 20 0>;
+            move to <.2 0 4>;
+        end;
+        twig4 with
+            rotation of <15 -20 0>;
+            move to <.2 0 4>;
+        end;
+        cone with
+            end1 = <.2 0 4>;
+            end2 = <-2 0 8>;
+            radius1 = .2;
+            radius2 = .16;
+        end;
+        twig4 with
+            rotation of <25 60 0>;
+            move to <-2 0 8>;
+        end;
+        twig4 with
+            rotation of <-15 30 0>;
+            move to <-2 0 8>;
+        end;
+    end;    // twig5
+
+    twig5 with
+        material is wood;
+        magnify by .1;
+    end;
+end;    // ash_tree
+
+
+picture ash_picture
+    args type args;
+with
+    eye = <1 -3 2>;
+    lookat = <0 0 1>;
+    facets = 4;
+    render_mode is shaded;
+    facets = 0;
+    shadows is on;
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    ash_tree;
+    disk with color = aqua; end;
+end;    // ash_picture
+
+
+anim ash_anim
+    args type args;
+with
+    eye = <1 -3 2>;
+    lookat = <0 0 1>;
+    double_buffer is on;
+    render_mode is wireframe;
+    background = sky_blue;
+    facets = 2;
+    args check;
+is
+    shape scene is
+        ash_tree;
+        plane with
+            render_mode is wireframe;
+        end;
+    end;
+    mouse_controlled_shape scene;
+end;    // ash_anim

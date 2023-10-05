@@ -1,0 +1,114 @@
+do icon_dock_anim;
+
+
+include "system/3d.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/check_keys.ores";
+include "system/icon_group.ores";
+include "system/dock.ores";
+
+
+anim icon_dock_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	dock type dock;
+	
+	verb select_rotate is
+		write "selecting rotate", ;
+	end;
+	verb select_zoom is
+		write "selecting zoom", ;
+	end;
+	verb select_pan is
+		write "selecting pan", ;
+	end;
+	verb select_help is
+		write "selecting help", ;
+	end;
+	verb select_smooth is
+		write "selecting smooth", ;
+	end;
+	verb select_flat is
+		write "selecting flat", ;
+	end;
+	verb select_outline is
+		write "selecting outline", ;
+	end;
+	verb select_wireframe is
+		write "select wireframe", ;
+	end;
+	
+	// navigation icons
+	//	
+	icon_group type rotate_icon poster "rotate_icon.gif" titled "Rotate"
+		selecting (new action of select_rotate);
+	icon_group type zoom_icon poster "zoom_icon.gif" titled "Zoom"
+		linked to rotate_icon selecting (new action of select_zoom);
+	icon_group type pan_icon poster "pan_icon.gif" titled "Pan"
+		linked to zoom_icon selecting (new action of select_pan);
+	components type navigation_icons is [rotate_icon zoom_icon pan_icon];
+
+	// render mode icons
+	//			
+	icon_group type smooth_icon poster "smooth_icon.gif" titled "Smooth"
+		selecting (new action of select_smooth)
+		with hidden is true; end;
+	icon_group type flat_icon poster "flat_icon.gif" titled "Flat"
+		linked to smooth_icon selecting (new action of select_flat)
+		with hidden is true; end;
+	icon_group type outline_icon poster "outline_icon.gif" titled "Outline"
+		linked to flat_icon selecting (new action of select_outline)
+		with hidden is true; end;
+	icon_group type wireframe_icon poster "wireframe_icon.gif" titled "Lines"
+		linked to outline_icon selecting (new action of select_wireframe)
+		with hidden is true; end;
+		
+	verb show_render_mode_icons is
+		smooth_icon show_all;
+		dock layout;
+	end;	// show_render_mode_icons
+	
+	verb hide_render_mode_icons is
+		smooth_icon hide_all;
+		dock layout;
+	end;	// hide_render_mode_icons
+			
+	icon type render_mode_icon poster "render_mode_icon.gif" titled "Rendering"
+		selecting (new action of show_render_mode_icons)
+		deselecting (new action of hide_render_mode_icons);
+	components type render_mode_icons is [render_mode_icon smooth_icon flat_icon outline_icon
+		wireframe_icon];		
+
+	// help icon
+	//
+	icon type help_icon poster "help_icon.gif" titled "Help"
+		selecting (new action of select_help);
+	
+	picture scene is
+		sphere;
+		default_lights;
+		default_background at 100;
+		dock overlay at 10;
+        		
+		// test dock hiding
+		//
+		if key_down char_to_key "1" then
+			dock hide;
+		elseif key_down char_to_key "2" then
+			dock show;
+		end;
+	end;	// scene
+
+	dock add_components navigation_icons;
+	dock add_components render_mode_icons;
+	dock add help_icon;
+	
+	while true do
+		scene;
+		check_keys;
+	end;
+end;	// icon_dock_anim

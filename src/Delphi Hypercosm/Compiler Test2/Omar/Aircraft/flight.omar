@@ -1,0 +1,291 @@
+{***************************************************************}
+{                          flight.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do flight;
+
+
+include "system/3d.ores";
+include "system/abs_trans.ores";
+include "system/check_keys.ores";
+include "system/text.ores";
+include "system/jumbo.omar";
+
+
+{*******************}
+{ aircraft attitude }
+{*******************}
+scalar min_height = .1;
+trans type aircraft_trans with
+    origin = <0 0 min_height>;
+end;
+
+{*******************}
+{ aircraft dynamics }
+{*******************}
+vector aircraft_cg = <0 0 0>;
+scalar aircraft_roll = 0;
+scalar aircraft_pitch = 0;
+scalar aircraft_yaw = 0;
+scalar aircraft_thrust = 0;
+scalar aircraft_speed = 0;
+scalar downward_speed = 0;
+
+{*******************}
+{ aircraft controls }
+{*******************}
+scalar aileron_deflection = 0;
+scalar elevator_deflection = 0;
+scalar rudder_deflection = 0;
+
+{**************************}
+{ aircraft characteristics }
+{**************************}
+scalar max_speed = 4;
+
+scalar air_resistance = .05;
+scalar delta_thrust = .05;
+scalar max_roll_rate = 2;
+scalar max_pitch_rate = 1;
+scalar max_yaw_rate = .4;
+
+{******************}
+{ simulation scale }
+{******************}
+scalar speed_of_sound = .01;
+
+{****************}
+{ flight physics }
+{****************}
+scalar lift = .025;
+scalar gravity = lift * speed_of_sound;
+
+
+shape aircraft with
+    scalar thrust = 0;
+    scalar aileron_deflection = 0;
+    scalar elevator_deflection = 0;
+    scalar rudder_deflection = 0;
+is
+    jumbo with
+        thrust = static thrust;
+        aileron_deflection = static aileron_deflection;
+        elevator_deflection = static elevator_deflection;
+        rudder_deflection = static rudder_deflection;
+        color = white;
+    return with
+        size of 1 along x_axis;
+    end;
+end;    // aircraft
+
+
+verb land_aircraft is
+    scalar x = aircraft_trans's origin dot <1 0 0>;
+    scalar y = aircraft_trans's origin dot <0 1 0>;
+
+    aircraft_trans's origin = <x y min_height>;
+    orient the aircraft_trans from aircraft_trans's z_axis to <0 0 1>;
+end;    // land_aircraft
+
+
+verb flight_step is
+    scalar acceleration;
+
+    // aircraft pitch, yaw, and roll
+    //
+    aircraft_roll = aileron_deflection * aircraft_speed * (
+            max_roll_rate);
+    aircraft_pitch = elevator_deflection * aircraft_speed * (
+            max_pitch_rate);
+    aircraft_yaw = rudder_deflection * aircraft_speed * (-
+            max_yaw_rate);
+    rudder_deflection = rudder_deflection * .8;
+
+    // aircraft attitude
+    //
+    if (aircraft_trans's origin dot <0 0 1> < min_height) then
+        land_aircraft;
+    else
+        // rotate aircraft to new attitude
+        //
+        revolve the aircraft_trans by aircraft_pitch around
+            aircraft_trans's y_axis;
+        revolve the aircraft_trans by aircraft_roll around
+            aircraft_trans's x_axis;
+        revolve the aircraft_trans by aircraft_yaw around
+            aircraft_trans's z_axis;
+    end;
+
+    // acceleration
+    //
+    acceleration = (aircraft_thrust * air_resistance * max_speed);
+    aircraft_speed = itself + acceleration;
+
+    // drag
+    //
+    aircraft_speed = itself * (1 - air_resistance);
+
+    // aircraft translation
+    //
+    aircraft_trans's origin = itself - aircraft_trans's x_axis *
+        aircraft_speed * speed_of_sound;
+
+    // aircraft lift
+    //
+    aircraft_trans's origin = itself + aircraft_trans's z_axis *
+        (aircraft_speed * speed_of_sound * lift);
+
+        // gravity
+        //
+        aircraft_trans's origin = itself - <0 0 gravity>;
+end;    // flight_step
+
+
+shape ground is
+    plane with
+        magnify by 1;
+    end;
+    plane with
+        magnify by 10;
+    end;
+    plane with
+        magnify by 100;
+    end;
+end;    // ground
+
+
+verb instructions with
+    scalar label_left = -.98;
+    scalar control_left = -.5;
+    integer size = height div 28;
+is
+    overlay_text "THRUST CONTROL:" at <label_left (1 - 2*size/height) 0> with
+        h_align is left;
+        size = static size;
+    end;
+    overlay_text "I / K" at <control_left (1 - 2*size/height) 0> with
+        h_align is left;
+        size = static size;
+        bold is true;
+    end;
+
+    overlay_text "DEFLECT RUDDER:" at <label_left (1 - 4*size/height) 0> with
+        h_align is left;
+        size = static size;
+    end;
+    overlay_text "mouse buttons" at <control_left (1 - 4*size/height) 0> with
+        h_align is left;
+        size = static size;
+        bold is true;
+    end;
+    
+    overlay_text "DEFLECT AILERONS:" at <label_left (1 - 6*size/height) 0> with
+        h_align is left;
+        size = static size;
+    end;
+    overlay_text "mouse left/right" at <control_left (1 - 6*size/height) 0> with
+        h_align is left;
+        size = static size;
+        bold is true;
+    end;
+    
+    overlay_text "DEFLECT ELEVATORS:" at <label_left (1 - 8*size/height) 0> with
+        h_align is left;
+        size = static size;
+    end;
+    overlay_text "mouse up/down" at <control_left (1 - 8*size/height) 0> with
+        h_align is left;
+        size = static size;
+        bold is true;
+    end;
+    
+end;
+    
+    
+picture flight_picture with
+    eye = aircraft_trans's origin + (normalize (<1 -1 1> +
+          aircraft_trans's origin)) * 2;
+    lookat = aircraft_trans's origin;
+is
+    distant_light from <.3 -.5 1> with
+        brightness = .75;
+    end;
+    aircraft with
+        thrust = aircraft_thrust;
+        aileron_deflection = static aileron_deflection;
+        elevator_deflection = static elevator_deflection;
+        rudder_deflection = static rudder_deflection;
+        trans = aircraft_trans;
+    end;
+    ground with
+        render_mode is wireframe;
+        color = green;
+    end;
+
+    instructions;
+end;    // flight_picture
+
+
+anim flight with
+    double_buffer is on;
+//    render_mode is wireframe;
+    background = dark violet;
+    facets = 4;
+is
+    scalar roll_rate = 0;
+    scalar pitch_rate = 0;
+    integer key;
+
+    while true do
+        flight_picture;
+        check_keys;
+
+        // yaw controls
+        //
+        if (mouse_down button 1) then
+            rudder_deflection = itself - .25;
+        end;
+        if (mouse_down button 3) then
+            rudder_deflection = itself + .25;
+        end;
+        rudder_deflection = clamp rudder_deflection from -1 to 1;
+
+        // pitch and roll controls
+        //
+        aileron_deflection = -get_mouse dot <.25 0 0>;
+        elevator_deflection = -get_mouse dot <0 .25 0>;
+
+        // thrust controls
+        //
+        reset_frame_events;
+        key = get_key;
+        while key <> 0 do
+            when key_to_char key is
+                "i":
+                    if (aircraft_thrust < 1) then
+                        aircraft_thrust = aircraft_thrust
+                            + delta_thrust;
+                    end;
+                end;
+
+                "k":
+                    if (aircraft_thrust > 0) then
+                        aircraft_thrust = aircraft_thrust
+                            - delta_thrust;
+                    end;
+                end;
+            end;
+
+            key = get_key;
+        end;
+
+        // flight physics
+        //
+        flight_step;
+    end;
+end;    // flight

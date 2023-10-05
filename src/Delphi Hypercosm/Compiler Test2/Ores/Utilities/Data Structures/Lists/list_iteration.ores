@@ -1,0 +1,40 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		 list_iteration.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       List iterators can be used to navigate around a         }
+{       list and also to modify the list by inserting           }
+{       and removing elements.                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/iterators.ores";
+
+
+enum list_insertion is next, prev;
+
+
+adjective list_iterable
+does    
+    // list insertion methods
+    //
+    verb insert_prev
+        object type element;
+    end;
+    verb insert_next
+        object type element;
+    end;
+    verb insert
+        list_insertion type insertion;
+        object type element;
+    end;
+    
+    // list removal methods
+    //
+    object type question removed;
+end;	// list_iterable

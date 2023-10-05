@@ -1,0 +1,289 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		    platonics.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains standard subjects which can be used to         }
+{       model the platonic solids.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/math.ores";
+include "system/vectors.ores";
+
+
+subject tetrahedric
+has
+    public static vector vertices[1..4];
+    public static integer edges[1..6][1..2];
+    public static integer sides[1..4][1..3];
+    public static scalar radius = 1 / sqrt 3;
+is
+    // initialize top vertex
+    //
+    vertices[1] = <0 0 radius>;
+
+    // initialize bottom vertices
+    //
+    for integer counter = 1..3 do
+        scalar angle = 360 * (counter - 1) / 3;
+        scalar x = radius * cos angle;
+        scalar y = radius * sin angle;
+        scalar z = -radius / 2;
+
+        vertices[counter + 1] = <x y z>;
+    end;
+
+    // initialize edge indices to vertices
+    //
+    edges = [[1 2] [1 3] [1 4] [2 3] [3 4] [4 2]];
+
+    // initialize side indices to vertices
+    //
+    sides = [[1 2 3] [1 3 4] [1 4 2] [4 3 2]];
+end;    // tetrahedric
+
+
+subject hexahedric
+has
+    public static vector vertices[1..8];
+    public static integer edges[1..12][1..2];
+    public static integer sides[1..6][1..4];
+    public static scalar radius = sqrt 3 / 2;
+is
+    // initialize hexahedron vertices
+    //
+    vertices = [<.5 .5 -.5> <-.5 .5 -.5> <-.5 -.5 -.5> <.5 -.5 -.5>
+        <.5 .5 .5> <-.5 .5 .5> <-.5 -.5 .5> <.5 -.5 .5>];
+
+    // initialize edge indices to vertices
+    //
+    edges = [[1 2] [2 3] [3 4] [4 1] [1 5] [2 6]
+        [3 7] [4 8] [5 6] [6 7] [7 8] [8 5]];
+
+    // initialize side indices to vertices
+    //
+    sides = [[4 3 2 1] [1 2 6 5] [2 3 7 6] [3 4 8 7] [4 1 5 8] [5 6 7 8]];
+end;    // hexahedric
+
+
+subject octahedric
+has
+    public static vector vertices[1..6];
+    public static integer edges[1..12][1..2];
+    public static integer sides[1..8][1..3];
+    public static scalar radius = sqrt 2 / 2;
+is
+    // initialize vertices
+    //
+    vertices = [<0 0 radius> <.5 .5 0> <-.5 .5 0> <-.5 -.5 0>
+        <.5 -.5 0> <0 0 (-radius)>];
+
+    // initialize edge indices to vertices
+    //
+    edges = [[1 2] [1 3] [1 4] [1 5] [2 3] [3 4]
+        [4 5] [5 2] [6 2] [6 3] [6 4] [6 5]];
+
+    // initialize side indices to vertices
+    //
+    sides = [[1 2 3] [1 3 4] [1 4 5] [1 5 2] [3 2 6]
+        [4 3 6] [5 4 6] [2 5 6]];
+end;    // octahedric
+
+
+subject dodecahedric
+has
+    public static vector vertices[1..20];
+    public static integer edges[1..30][1..2];
+    public static integer sides[1..12][1..5];
+    public static scalar radius;
+is
+    // distance from center of pentagon to side
+    //
+    const scalar d = 1 / (2 * tan 36);
+
+    // radius of pentagon
+    //
+    const scalar r = d / cos 36;
+
+    // height of pentagon
+    //
+    const scalar ph = r + d;
+
+    // height of side of pentagon
+    //
+    const scalar sh = sin 72;
+
+    // angle that pentagon sides make with
+    // the top and bottom of the dodecahedron
+    //
+    const scalar th = acos ((tan 54 * sin 18) / cos 18);
+
+    // height of icosahedron
+    //
+    const scalar h = (ph + sh) * sin th;
+
+    // radius of equatorial pentagons
+    //
+    const scalar pr = d + (ph * cos th);
+
+    // initialize top ring of vertices
+    //
+    for integer counter = 1..5 do
+        scalar angle = 360 * (counter - 1) / 5;
+        scalar x = r * cos angle;
+        scalar y = r * sin angle;
+        scalar z = h / 2;
+
+        vertices[counter] = <x y z>;
+    end;
+
+    // initialize radius of dodecahedron
+    //
+    radius = vlength of vertices[1];
+
+    // initialize top equatorial vertices
+    //
+    for integer counter = 1..5 do
+        scalar angle = 360 * (counter - 1) / 5;
+        scalar x = pr * cos angle;
+        scalar y = pr * sin angle;
+        scalar z = h / 2 - (sh * sin th);
+
+        vertices[5 + counter] = <x y z>;
+    end;
+
+    // initialize bottom equatorial vertices
+    //
+    for integer counter = 1..5 do
+        scalar angle = 36 + 360 * (counter - 1) / 5;
+        scalar x = pr * cos angle;
+        scalar y = pr * sin angle;
+        scalar z = -h / 2 + (sh * sin th);
+
+        vertices[10 + counter] = <x y z>;
+    end;
+
+    // initialize bottom ring of vertices
+    //
+    for integer counter = 1..5 do
+        scalar angle = 36 + 360 * (counter - 1) / 5;
+        scalar x = r * cos angle;
+        scalar y = r * sin angle;
+        scalar z = -h / 2;
+
+        vertices[15 + counter] = <x y z>;
+    end;
+
+    // initialize edge indices to vertices
+    //
+    edges = [[1 2] [2 3] [3 4] [4 5] [5 1] [1 6]
+        [2 7] [3 8] [4 9] [5 10] [6 11] [7 11]
+        [7 12] [8 12] [8 13] [9 13] [9 14]
+        [10 14] [10 15] [6 15] [11 16] [12 17]
+        [13 18] [14 19] [15 20] [16 17] [17 18]
+        [18 19] [19 20] [20 16]];
+
+    // initialize side indices to vertices
+    //
+    sides =
+        // top side
+        [[1 2 3 4 5]
+
+        // top ring of pentagons
+        [6 11 7 2 1] [7 12 8 3 2] [8 13 9 4 3]
+        [9 14 10 5 4] [10 15 6 1 5]
+
+        // bottom ring of pentagons
+        [11 16 17 12 7] [12 17 18 13 8]
+        [13 18 19 14 9] [14 19 20 15 10] [15 20 16 11 6]
+
+        // bottom side
+        [20 19 18 17 16]];
+end;    // dodecahedric
+
+
+subject icosahedric
+has
+    public static vector vertices[1..12];
+    public static integer edges[1..30][1..2];
+    public static integer sides[1..20][1..3];
+    public static scalar radius;
+is
+    // top of icosahedron consists of a
+    // pentagon of 5 isosceles triangles
+    // dist from center of pentagon to side
+    //
+    scalar d = 1 / (2 * tan 36);
+
+    // radius of pentagon
+    //
+    scalar r = d / cos 36;
+
+    // height of pentagon arrangement
+    //
+    scalar h = sqrt (.75 - 1 / (4 * sqr (tan 36)));
+
+    // initialize top and bottom vertices
+    //
+    vertices[1] = <0 0 (h + sqrt 3 / 4)>;
+    vertices[12] = <0 0 (-(h + sqrt 3 / 4))>;
+
+    // initialize radius of icosahedron
+    //
+    radius = vlength of vertices[1];
+
+    // initialize top ring of vertices
+    //
+    for integer counter = 1..5 do
+        scalar angle = 360 * (counter - 1) / 5;
+        scalar x = r * cos angle;
+        scalar y = r * sin angle;
+        scalar z = sqrt 3 / 4;
+
+        vertices[1 + counter] = <x y z>;
+    end;
+
+    // initialize bottom ring of vertices
+    //
+    for integer counter = 1..5 do
+        scalar angle = 36 + 360 * (counter - 1) / 5;
+        scalar x = r * cos angle;
+        scalar y = r * sin angle;
+        scalar z = -sqrt 3 / 4;
+
+        vertices[1 + 5 + counter] = <x y z>;
+    end;
+
+    // initialize edge indices to vertices
+    //
+    edges =
+        // top pentagon
+        [[1 2] [1 3] [1 4] [1 5] [1 6] [2 3]
+        [3 4] [4 5] [5 6] [6 2]
+
+        // side pentagons
+        [2 7] [3 7] [3 8] [4 8] [4 9] [5 9]
+        [5 10] [6 10] [6 11] [2 11]
+
+        // bottom pentagons
+        [7 8] [8 9] [9 10] [10 11] [11 7]
+        [7 12] [8 12] [9 12] [10 12] [11 12]];
+
+    // initialize side indices to vertices
+    //
+    sides =
+        // top sides
+        [[1 2 3] [1 3 4] [1 4 5] [1 5 6] [1 6 2]
+
+        // side sides
+        [2 7 3] [3 7 8] [3 8 4] [4 8 9] [4 9 5]
+        [5 9 10] [5 10 6] [6 10 11] [2 6 11] [11 7 2]
+
+        // bottom sides
+        [12 8 7] [12 9 8] [12 10 9] [12 11 10] [12 7 11]];
+end;    // icosahedric

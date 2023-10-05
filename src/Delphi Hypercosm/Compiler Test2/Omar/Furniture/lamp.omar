@@ -1,0 +1,65 @@
+{***************************************************************}
+{                          lamp.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do lamp_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape lamp is
+    shape base is
+        sphere with
+            radius = .5;
+            vmin = -45;
+            scale by 1.75 along <0 0 1>;
+            move to <0 0 .65>;
+        end;
+    end;    // base
+
+
+    shape shade is
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 1>;
+            radius1 = 1;
+            radius2 = .5;
+        end;
+    end;    // shade
+
+    base with
+        material is plastic colored blue;
+    end;
+    cylinder with
+        material is metal colored white;
+        end1 = <0 0 1.5>;
+        end2 = <0 0 3>;
+        radius = .05;
+    end;
+    shade with
+        material is chalk colored brown;
+        move to <0 0 2>;
+    end;
+end;    // lamp
+
+
+anim lamp_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    lookat = <0 0 1.5>;
+    field_of_view = 40;
+    double_buffer is on;
+    edge_orientation is all;
+    facets = 10;
+    args check;
+is
+    mouse_controlled_shape lamp;
+end;    // lamp_anim

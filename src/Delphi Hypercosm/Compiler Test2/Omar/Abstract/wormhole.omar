@@ -1,0 +1,79 @@
+{***************************************************************}
+{                          wormhole.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do wormhole_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape wormhole with
+    vector end1 = <0 0 -1>;
+    vector end2 = <0 0 1>;
+    scalar inner_radius = .1;
+    scalar outer_radius = 1;
+is
+    scalar height = vlength of (end2 - end1);
+    vector center = (end1 + end2) / 2;
+    vector axis = end2 - end1;
+    scalar radius = outer_radius - inner_radius;
+
+    torus with
+        normal = axis;
+        center = static center;
+        inner_radius = static inner_radius;
+        outer_radius = outer_radius + radius;
+        vmin = 90; vmax = 270;
+        scale by (height / radius / 2) along normal;
+        color = grey;
+        //render_mode is wireframe;
+    end;
+    
+    ring with
+    	inner_radius = static outer_radius;
+    	outer_radius = inner_radius * 4;
+    	normal = <0 0 1>;
+    	center = end2;
+    end;
+
+    sphere with
+        //material is metal colored (<2 3 55> / 255);
+        material is metal colored red;
+        center = static center;
+        radius = inner_radius * .99;
+    end;
+end;    // wormhole
+
+
+anim wormhole_anim
+    args type args;
+with
+    eye = <10 -40 20>;
+    //projection is orthographic;
+    //field_of_view = 5;
+    edges is all;
+    edge_orientation is all;
+    facets = 24;
+    args check;
+is
+    texture type graph_texture is new texture using
+        new image named "grid2.jpg";
+    material type well_material is metal colored lime_green
+        textured graph_texture;
+
+    shape scene is
+        wormhole with
+            material is well_material;
+        end;
+    end;    // scene
+
+
+    mouse_controlled_shape scene;
+end;    // wormhole_anim

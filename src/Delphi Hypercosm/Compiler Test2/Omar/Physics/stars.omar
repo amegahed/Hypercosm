@@ -1,0 +1,137 @@
+{***************************************************************}
+{                          stars.omar                           }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do moving_stars;
+
+
+include "system/anims.ores";
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/paths.ores";
+include "system/check_keys.ores";
+include "system/arrows.ores";
+include "system/shaders.ores";
+
+
+scalar g = .025;
+scalar factor = 5;
+
+
+scalar mass[1..2] = [10 1];
+vector position[1..2] = [<-4 0 0> <8 0 0>];
+vector velocity[1..2] = [<0 .01 0> <0 -.1 0>];
+vector acceleration[1..2] = [<0 0 0> <0 0 0>];
+
+
+// pixie dust trail
+//
+pixie_path type path at <8 0 0> with
+    sparkle is on;
+    particles = 20;
+    steps = 50;
+end;
+    
+
+shape body
+    at vector location;
+    moving at vector velocity;
+    attracted to vector acceleration;
+with
+    scalar radius = 1;
+is
+    sphere with
+        move to location;
+        radius = static radius;
+    end;
+    
+    // velocity vectors
+    //
+    arrow from location to location + velocity * 50 / factor with
+        arrowhead_width = .3;
+        arrowhead_length = .3;
+        color = green;
+    end;
+    
+    // acceleration vectors
+    //
+    arrow from location to location + acceleration * 100 / factor with
+        arrowhead_width = .3;
+        arrowhead_length = .3;
+        color = red;
+    end;
+end;    // body
+
+    
+picture star_picture with
+    // look between orbiting star and planet
+    //
+    lookat = (position[1] + position[2]) / 2;
+    eye = lookat + <0 -50 10>;
+is
+    distant_light from <.3 -.5 1>;
+    
+    // sun
+    //
+    body at position[1] moving at velocity[1] attracted to acceleration[1] with
+        material is glass colored yellow;
+        radius = 2;
+    end;
+    
+    // planet
+    //
+    body at position[2] moving at velocity[2] attracted to acceleration[2] with
+        material is glass colored blue;
+    end;
+    
+    // sparkly path that follows the planet
+    //
+    path instance;
+    path step to position[2];
+end;    // picture
+
+
+anim moving_stars with
+    double_buffer is on;
+    background = white;
+is
+    verb attract is
+    	// compute distance between bodies
+    	//
+    	vector difference = position[2] - position[1];
+    	scalar distance = vlength of difference;
+    
+    	// apply Newton's law of gravitation
+    	//
+    	scalar attraction = g * mass[1] * mass[2] / 
+    		sqr distance;
+    
+    	// computer acceleration vectors
+    	//
+    	vector direction = normalize difference;
+    	acceleration[1] = direction * attraction;
+    	acceleration[2] = -direction * attraction;
+    
+    	// update velocities based on acceleration
+    	//
+    	velocity[1] = itself + (acceleration[1]/mass[1]);
+    	velocity[2] = itself + (acceleration[2]/mass[2]);
+    
+    	// update positions based on velocities
+    	//
+    	position[1] = itself + velocity[1];
+    	position[2] = itself + velocity[2];
+    	check_keys;
+    end;
+    
+    velocity[1] = itself * factor;
+    velocity[2] = itself * factor;
+    g = itself * sqr factor;
+    
+    mouse_controlled_picture star_picture doing attract;
+end;    // moving_stars

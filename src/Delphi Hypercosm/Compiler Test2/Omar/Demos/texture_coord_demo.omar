@@ -1,0 +1,103 @@
+{***************************************************************}
+{                    texture_coord_demo.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do texture_coord_demo_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/slider.ores";
+include "system/view_alignments.ores";
+include "system/native_text.ores";
+
+
+// The purpose of this applet is to demonstrate the use of explicit texture 
+// coordinates in a polygon. We see our polygon, and as the texture coordinates
+// become scaled, a different piece of the texure file is visible on the 
+// polygon. In this case, the texture is a simple grid texture.
+
+texture type grid_texture using (new image type named "grid.jpg")
+    with interpolation is on; mipmapping is off; wraparound is off; end;
+material type grid_material is (constant_color <6 6 6> textured grid_texture);
+
+
+scalar texture_scale = 2;
+
+slider type texture_slider controls texture_scale from .25 to 2.5;
+
+
+picture scene
+is  
+    string type s;
+    
+    default_lights;
+    
+    // our polygon; the vertices are defined from lower left, going clockwise
+    //
+    polygon [<0 0 0> <0 0 1> <1 0 1> <1 0 0>] with
+        texcoords = [<0 0 0> <0 (1 / texture_scale) 0>
+                   <(1 / texture_scale) (1 / texture_scale) 0>
+                   <(1 / texture_scale) 0 0>];
+        material is grid_material;
+    end;
+    
+    // an outline of our polygon
+    //
+    polygon [<0 -.05 0> <0 -.05 1> <1 -.05 1> <1 -.05 0>] with
+        render_mode is wireframe;
+        color = white;
+    end;
+    
+    // a transparent representation of the texture
+    // (Note: not all graphics systems support partial transparency)
+    //
+    polygon [<0 0 0> <0 0 texture_scale> <texture_scale 0 texture_scale> <texture_scale 0 0>] with
+        texcoords = [<0 0 0> <0 1 0> <1 1 0> <1 0 0>];
+        material is glass;
+    end;
+    
+    // user interface
+    //
+    texture_slider instance with
+        scale by .05 along <0 1 0>;
+        magnify by .5;
+        rotate by 90 around <1 0 0>;
+        place_on_view_ray at <0 -.8 0> distance 2;
+    end;
+    
+    // label
+    //
+    overlay_text "polygon texture coordinates:" at <0 .9 0> with
+        font_family is "arial";
+        size = 24;
+    end;
+    s is "<0 0 0> <0 ";
+    s add (scalar_to_string of (1 / texture_scale));
+    s add " 0> <";
+    s add (scalar_to_string of (1 / texture_scale));
+    s add " ";
+    s add (scalar_to_string of (1 / texture_scale));
+    s add " 0> <";
+    s add (scalar_to_string of (1 / texture_scale));
+    s add " 0 0>";
+    overlay_text s at <0 .8 0> with
+        font_family is "arial";
+        size = 14;
+    end;
+end;    // scene
+
+
+anim texture_coord_demo_anim with
+    double_buffer is on;
+    eye = <1 -5 1>;
+    lookat = <1 0 1>;
+is  
+    while true do
+        scene;
+    end;
+end;    // texture_coord_demo_anim

@@ -1,0 +1,291 @@
+{***************************************************************}
+{                          chassis.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do chassis_anim;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/engine.omar";
+
+
+subject chassis
+extends
+    timed_actor
+does
+    objective shape form with
+        scalar t = 0;
+    end;    // form
+
+    shape instance;
+has
+    public scalar speed = 1;
+is
+    objective shape tire is
+        cylinder with
+            end1 = <0 -.3 0>;
+            end2 = <0 .3 0>;
+            radius = 1;
+        end;
+        cone with
+            end1 = <0 -.3 0>;
+            end2 = <0 -.4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        cone with
+            end1 = <0 .3 0>;
+            end2 = <0 .4 0>;
+            radius1 = 1;
+            radius2 = .8;
+        end;
+        ring with
+            center = <0 -.4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        ring with
+            center = <0 .4 0>;
+            normal = <0 1 0>;
+            inner_radius = .6;
+            outer_radius = .8;
+        end;
+        cone with
+            material is plastic colored lime_green;
+            end1 = <0 .4 0>;
+            end2 = <0 .35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;    // whitewall
+        cone with
+            material is plastic colored lime_green;
+            end1 = <0 -.4 0>;
+            end2 = <0 -.35 0>;
+            radius1 = .6;
+            radius2 = .5;
+        end;    // whitewall
+    end;    // tire
+
+
+    objective shape hubcap is
+        disk with
+            center = <0 0 0>;
+            normal = <0 1 0>;
+            radius = .5;
+        end;
+        cone with
+            end1 = <0 -.1 0>;
+            end2 = <0 0 0>;
+            radius1 = .1;
+            radius2 = .35;
+        end;
+    end;    // hubcap
+
+
+    objective shape wheel is
+        tire with material is rubber; end;
+        hubcap with
+            material is aluminum;
+            move to <0 -.35 0>;
+        end;
+        hubcap with
+            material is aluminum;
+            rotate by 180 around <0 0 1>;
+            move to <0 .35 0>;
+        end;
+    end;    // wheel
+
+
+    objective shape axel is
+        wheel with
+            move to <0 2 0>;
+        end;
+        cylinder with
+            end1 = <0 2 0>;
+            end2 = <0 -2 0>;
+            radius = .075;
+        end;
+        wheel with
+            rotate by 180 around <0 0 1>;
+            move to <0 -2 0>;
+        end;
+    end;    // axel
+
+
+    objective shape drive_train with
+        scalar t = 0;
+    is
+        engine type's form with
+            t = static t;
+            move to <7.5 0 0>;
+        end;
+
+        // driveshaft
+        cylinder with
+            end1 = <3.5 0 0>;
+            end2 = <-5 0 0>;
+            radius = .2;
+        end;
+
+        // differential
+        cone with
+            end1 = <-5 0 0>;
+            end2 = <-5.25 0 0>;
+            radius1 = .5;
+            radius2 = .25;
+        end;
+        cone with
+            end1 = <0 .25 0>;
+            end2 = <0 .5 0>;
+            radius1 = .15;
+            radius2 = .35;
+            move to <-5.25 .15 0>;
+        end;
+        cone with
+            end1 = <0 -.25 0>;
+            end2 = <0 -.5 0>;
+            radius1 = .15;
+            radius2 = .35;
+            move to <-5.25 -.15 0>;
+        end;
+
+        // rear axel
+        axel with
+            magnify by 1.75;
+            rotate by (t * 180) around <0 1 0>;
+            move to <-5.25 0 0>;
+        end;
+    end;    // drive_train
+
+
+    objective shape seat_back is
+        sphere with
+            center = <0 -5 20>;
+            radius = 3;
+        end;
+        sphere with
+            center = <0 5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <0 0 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 -5 0>;
+            end2 = <0 -5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 5 0>;
+            end2 = <0 5 20>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <0 5 20>;
+            end2 = <0 -5 20>;
+            radius = 3;
+        end;
+    end;    // seat_back
+
+
+    objective shape seat is
+
+        // tilt seat back
+        seat_back with
+            rotate by 15 around <0 1 0>;
+            move to <8 0 0>;
+        end;
+        cylinder with
+            end1 = <8 5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <-8 -5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 5 0>;
+            radius = 3;
+        end;
+        sphere with
+            center = <8 -5 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 0 0>;
+            end2 = <8 0 0>;
+            radius = 3;
+        end;
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <-8 -5 0>;
+            radius = 3;
+        end;    // front of seat
+        cylinder with
+            end1 = <-8 5 0>;
+            end2 = <8 5 0>;
+            radius = 3;
+        end;    // side of seat
+        cylinder with
+            end1 = <-8 -5 0>;
+            end2 = <8 -5 0>;
+            radius = 3;
+        end;    // side of seat
+    end;    // seat
+
+
+    objective shape form with
+        scalar t = 0;
+    is
+        drive_train with
+            t = static t;
+            rotate by -5 around <0 1 0> about <-5.25 0 0>;
+        end;
+
+        // front axel
+        axel with
+            rotate by (t * 180) around <0 1 0>;
+            magnify by 1.75;
+            move to <5.25 0 0>;
+        end;
+
+    end;    // form
+
+
+    shape instance is
+        form with
+            material is aluminum;
+            t = speed * time;
+        end;
+    end;    // instance
+end;    // chassis
+
+
+anim chassis_anim
+    args type args;
+with
+    eye = <15 -15 10>;
+    lookat = <2 0 0>;
+    double_buffer is on;
+    args check;
+is
+    chassis type chassis;
+
+    mouse_controlled_actor chassis;
+end;    // chassis_anim

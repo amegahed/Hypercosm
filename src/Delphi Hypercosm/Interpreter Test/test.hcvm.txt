@@ -1,0 +1,48 @@
+Hypercosm 0.99
+bgn 2 1 0 4 2 10 1 1 0 0 0 2
+nil
+cdd 1 0
+gid 1
+nil
+pro 0 0 0 1 0 0
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+for
+ind 0 0
+lid 1
+nil
+ili 1
+ili 10
+nil
+bis
+stw
+cax
+abl 1
+sab 1 4
+nil
+cli 98
+cli 108
+cli 97
+cli 104
+nil
+bis
+nlw
+nil
+nil
+nil
+nil
+sms
+crf 1
+gid 1
+nil
+nil
+nil
+nil
+nil
+nil
+end

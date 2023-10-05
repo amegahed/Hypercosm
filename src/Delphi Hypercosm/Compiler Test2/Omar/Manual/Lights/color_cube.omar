@@ -1,0 +1,117 @@
+{***************************************************************}
+{                          color_cube.omar                      }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do color_cube_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/surfaces.ores";
+include "system/shapes.ores";
+include "system/shaders.ores";
+include "system/arrows.ores";
+include "system/futura_l.omar";
+
+
+shape plane_cube is
+    plane with
+        move to <0 0 -1>;
+        normal = <0 0 1>;
+    end;
+    plane with
+        move to <0 0 1>;
+        normal = <0 0 1>;
+    end;
+    plane with
+        move to <1 0 0>;
+        normal = <1 0 0>;
+    end;
+    plane with
+        move to <-1 0 0>;
+        normal = <1 0 0>;
+    end;
+    plane with
+        move to <0 1 0>;
+        normal = <0 1 0>;
+    end;
+    plane with
+        move to <0 -1 0>;
+        normal = <0 1 0>;
+    end;
+end;    // plane_cube
+
+
+shape color_cube_labels is
+    arrow from <0 0 0> to <1 0 0>;
+    futura_l_word "RED" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <1.2 0 0>;
+    end;
+    arrow from <0 0 0> to <0 1 0>;
+    futura_l_word "GREEN" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <-.4 1 0>;
+    end;
+    arrow from <0 0 0> to <0 0 1>;
+    futura_l_word "BLUE" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <.2 0 1>;
+    end;
+    futura_l_word "BLACK" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <-.35 -.1 0>;
+    end;
+    futura_l_word "WHITE" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <1.1 1.1 1.1>;
+    end;
+    futura_l_word "MAGENTA" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <1.2 0 1.1>;
+    end;
+    futura_l_word "CYAN" with
+        magnify by .75;
+        rotate by 90 around <1 0 0>;
+        move to <-.1 1.1 1.1>;
+    end;
+end;    // color_cube_labels
+
+
+anim color_cube_anim with
+    render_mode is shaded;
+    shading is vertex;
+    lookat = <.5 .5 .45>;
+    eye = <-2 -8 4>;
+    field_of_view = 20;
+    eye = <-1 -3 2>;
+    field_of_view = 50;
+is
+	shape scene is
+	    flat show_rgb plane_cube with
+	        magnify by .495;
+	        move to <.5 .5 .5>;
+	    end;
+	    {
+	    unshaded show_rgb block with
+	            vertex = .01 .01 .01;
+	            side1 = .9 0 0;
+	            side2 = 0 .9 0;
+	            side3 = 0 0 .9;
+	    end;
+	    }
+	    color_cube_labels;
+    end;
+    mouse_controlled_shape scene;
+end;    // color_cube_anim

@@ -1,0 +1,64 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            physics.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{     Contains some standard physics constants and functions.   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// acceleration due to gravity (on earth), in meters per second squared
+//
+const scalar gravity = 9.807;
+
+// light-year, in meters
+//
+const scalar light_year = 9.461 * (10^15);
+
+// speed of light, in meters per second
+//
+const scalar speed_of_light = 2.998 * (10^8);
+
+// parsec, in meters
+//
+const scalar parsec = 3.08 * (10^16);
+
+// astronomical unit, in meters
+//
+const scalar astronomical_unit = 1.50 * (10^11);
+
+// speed of sound, in meters per second (in air at 0 degrees Celsius, 0% humidity)
+//
+const scalar speed_of_sound = 331.45;
+const scalar bohr_radius = .53;
+
+//
+// orbital wave functions
+//
+
+scalar question wave_function_s
+	at vector location;
+is
+	scalar r = sqrt (location dot location);
+
+	answer 1 / sqrt (pi) * bohr_radius ^ -1.5 * exp (-r / bohr_radius);
+end;    // wave_function_s
+
+scalar question wave_function_p
+	at vector location;
+is
+	scalar th = 0;
+	scalar r = sqrt (location dot location);
+	scalar x = location dot <1 0 0>;
+	scalar y = location dot <0 1 0>;
+	scalar z = location dot <0 0 1>;
+
+	if (z <> 0) then
+		th = atan (sqrt ((x * x) + (y * y)) / z);
+	end;
+
+	answer exp (-r / 2) * cos (th);
+end;    // wave_function_p

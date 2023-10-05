@@ -1,0 +1,26 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 	 orienting.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{																}
+{		Contains general behavior definitions for				}
+{		orienting 3 dimensional objects.						}
+{																}
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+adjective orientable
+does
+	quat type question get_orientation;
+end;	// orientable
+
+
+adjective reorientable
+does
+	verb set_orientation
+		to quat type orientation;
+	end;
+end;	// reorientable

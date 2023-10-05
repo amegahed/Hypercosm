@@ -1,0 +1,49 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        static_initializer.omar         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of how to use a           }
+{       static initializers of a class in the OMAR              }
+{       language.                                               }
+{                                                               }
+{       A static initializer is called once when the            }
+{       class is loaded to initialize data that is              }
+{       common to all instances ("objects") of that             }
+{       class.                                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do static_initializers_example;
+
+include "system/math.ores";
+
+subject quicksin
+does
+	objective scalar question value
+		at scalar angle;
+	end;
+is
+	// lookup table
+	//
+	scalar table[1 .. 360];
+	
+	objective scalar question value
+		at scalar angle;
+	is
+		answer table[trunc angle mod 360];
+	end;    // value
+	
+	// static initializer
+	//
+	for integer counter = 1 .. 360 do
+		table[counter] = sin counter;
+	end;
+end;    // quicksin
+
+verb static_initializers_example is
+	write "quick sin of 30 = ", quicksin type's value at 30, ;
+	write "quick sin of 60 = ", quicksin type's value at 60, ;
+end;    // static_initializers_example

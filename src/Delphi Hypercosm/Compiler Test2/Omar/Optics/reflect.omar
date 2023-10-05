@@ -1,0 +1,130 @@
+{***************************************************************}
+{                          reflect.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do reflect_anim;
+
+
+include "system/3d.ores";
+include "system/check_keys.ores";
+
+
+shape things with
+    vector v = <0 0 0>;
+is
+    scalar y = v dot <0 1 0>;
+    scalar z = sin ((y + .25) * 180);
+
+    block with
+        material is chalk colored red;
+        move to <0 0 3>;
+    end;
+
+    {
+    hyperboloid1 with
+        material is chalk colored white;
+        radius1 = abs(sin ((v dot 0 1 0) * 180)) + .1;
+        rotate by -180 around <1 0 0>;
+        move to <0 0 1>;
+        magnify by 4;
+        scale by abs(sin ((v dot 0 1 0) * 180) * 1) along 0 0 1;
+    end;
+    }
+
+    if (z = 0) then z = .01; end;
+
+    {metallic white} paraboloid with
+        rotate by -180 around <1 0 0>;
+        move to <0 0 1>;
+        magnify by 4;
+        scale by z along <0 0 1>;
+        material is silver;
+    end;
+
+    {
+    metallic white wave with
+        magnify by 5;
+        height = .25;
+        rotate by 180 around 1 0 0;
+    end;
+    }
+
+    block with
+        material is chalk colored blue;
+        scale by .1 along <0 0 1>;
+        move to <0 0 -2>;
+        magnify by 5;
+    end;
+end;    // things
+
+
+picture scene with
+    vector v = <0 0 0>;
+is
+    distant_light from <.3 -1 .5>;
+    things with
+        v = static v;
+    end;
+end;    // scene
+
+
+verb check_reflect_keys is
+    integer key;
+
+    check_keys;
+
+    reset_frame_events;
+    key = get_key;
+    while key <> 0 do
+        if key = char_to_key "r" then
+            reflections is not reflections;
+        end;
+        key = get_key;
+    end;
+end;    // check_reflect_keys
+
+
+anim reflect_anim
+    args type args;
+with
+    eye = <0 -20 0>;
+    render_mode is shaded;
+    double_buffer is on;
+
+    max_reflections = 1;
+    max_refractions = 1;
+    reflections is on;
+    refractions is on;
+    facets = 10;
+
+    args check;
+is
+    vector old_pos, new_pos, delta;
+    vector v = <0 0 0>;
+
+    old_pos = get_mouse;
+    while true do
+        scene with
+            v = static v;
+        end;
+
+        check_reflect_keys;
+        new_pos = get_mouse;
+        delta = new_pos - old_pos;
+        old_pos = new_pos;
+
+        if mouse_down then
+            v = itself + delta;
+        else
+            rotate by (delta dot <1 0 0> * 360) around
+                <0 0 1>;
+            rotate by (delta dot <0 1 0> * -360) around
+                <1 0 0>;
+        end;
+    end;
+end;    // reflect_anim

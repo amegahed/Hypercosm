@@ -1,0 +1,191 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        shape_manipulator.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/manipulation.ores";
+include "system/manipulator.ores";
+include "system/trans_manipulator.ores";
+include "system/rotation_arrow_handles.ores";
+include "system/picking.ores";
+include "system/intersections.ores";
+include "system/arrows.ores";
+
+abstract subject shape_manipulator
+extends
+	trans_manipulator
+does
+	// constructor
+	//
+	verb new
+		controlling shape target;
+		bounded by shape bounding_shape does none;
+		padded by vector pad_size = <0 0 0>;
+		transforming trans type reference trans refers to none;
+	end;
+	
+	// actor methods
+	//      
+	final verb act;
+
+	// instance methods
+	//
+	shape bounds;
+	abstract shape handles
+		of trans type trans;
+	end;
+	shape bounding_box
+		of trans type trans;
+	end;  
+  
+	// touching methods
+	//
+	boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	end;
+
+	// rendering method
+	//
+	final shape instance;
+has
+	// attributes
+	//
+	shape target;
+	shape bounding_shape;
+	vector target_size, target_center; 
+	vector pad_size, padded_target_size;
+	boolean trans_initialized is false;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		controlling shape target;
+		bounded by shape bounding_shape does none;
+		padded by vector pad_size = <0 0 0>;
+		transforming trans type reference trans refers to none;
+	is
+		trans_manipulator new transforming trans;
+		with shape_manipulator do
+			its target does target;
+			its bounding_shape does bounding_shape;
+			its pad_size = pad_size;
+		end; 
+	end;    // new
+	
+	//
+	// acting methods
+	//
+	  
+	verb act is
+		if trans_initialized then
+			manipulate touchable type pressable_actor;
+			//pressable_actor static act;
+			//reporting_manipulator static act;
+		end;
+	end;    // act
+	
+	//
+	// touching methods
+	//
+		
+	boolean question is_touched
+		from vector location;
+		towards vector direction;
+		closer than scalar reference min_t refers to none;
+	is
+		objective shape padded_bounds is
+			block with
+				trans's origin = target_center;
+				scaling the trans of padded_target_size about target_center;
+				trans transform from relative_trans;
+			end;
+		end;
+		
+		if trans_initialized then     
+			answer ray_touches_shape padded_bounds from location towards direction closer than min_t;
+		else
+			answer false;
+		end;           
+	end;    // is_touched
+
+	//
+	// rendering methods
+	//
+
+	shape manipulated_shape is
+		shape initial_shape is
+			target return with
+				target_center = trans's origin;
+				target_size = <(vlength of trans's x_axis) (vlength of trans's y_axis) (vlength of trans's z_axis)>;
+			end;
+			if some bounding_shape then
+				bounding_shape return with
+					target_center = trans's origin;
+					target_size = <(vlength of trans's x_axis) (vlength of trans's y_axis) (vlength of trans's z_axis)>;
+					magnify by 0;
+				end;
+			end;
+			padded_target_size = target_size + pad_size;
+		end;    // initial_shape
+
+		// target shape
+		//
+		if not trans_initialized then
+			initial_shape;
+			trans_initialized is true;
+		else
+			// target shape
+			//
+			target with
+				trans = relative_trans;
+			end;
+		end;
+	end;    // manipulated_shape
+
+	shape bounding_box
+		of trans type trans;
+	is
+		block with
+			global trans = trans;
+			render_mode is wireframe;
+			color = white;
+		end;
+	end;    // bounding_box
+
+	shape bounds is
+
+		// handles
+		//
+		if touched then
+			trans type trans;
+
+			// compute bounding trans
+			//
+			trans's origin = target_center;
+			scaling the trans of target_size * 1.01 about target_center;
+			trans transform from relative_trans;
+
+			// draw handles and bounds
+			//
+			handles of trans;
+			bounding_box of trans;
+		end;
+	end;    // bounds
+
+	shape instance is
+		manipulated_shape;
+		bounds;
+	end;    // instance
+end;    // shape_manipulator

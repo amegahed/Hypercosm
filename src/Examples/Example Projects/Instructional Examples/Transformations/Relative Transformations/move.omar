@@ -1,0 +1,66 @@
+{***************************************************************}
+{                          move.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do move_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/futura_l.ores";
+include "system/snowman.omar";
+
+shape move_scene with
+	scalar time = 0;
+is
+	static material type material1 is glass colored white;
+	static material type material2 is glass colored red;
+	scalar x = cos(time * 90);
+	
+	snowman with
+		magnify by .5;
+		material is material1;
+		edges is silhouette;
+		render_mode is shaded_line;
+	end;
+	
+	snowman with
+		magnify by .5;
+		material is material2;
+		edges is silhouette;
+		render_mode is shaded_line;
+		
+		// apply the "move" transformation
+		//
+		move to <x 0 0>;
+	end;
+	
+	// annotations
+	//
+	arrow from <0 0 .75> to <x 0 .75>;
+	overlay_text "move to <vector offset>;" at <0 .85 0>;
+	
+	{
+	futura_l_word "MOVE" with
+		rotate by 90 around <1 0 0>;
+		move to <.75 0 .85>;
+	end;
+	}
+end;    // move_scene
+	
+	
+anim move_anim
+	args type args;
+with
+	eye = <2 -8 4>;
+	field_of_view = 30;
+	lookat = <.75 0 .85>;
+	args check;
+is 
+	mouse_controlled_animated_shape move_scene;
+end;    // move_anim

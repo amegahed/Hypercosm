@@ -1,0 +1,101 @@
+{***************************************************************}
+{                          martini.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do martini_anim;
+//do martini_picture;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shaders.ores";
+include "system/surfaces.ores";
+
+
+shape martini_glass is
+    disk with
+        radius = 2;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 .2>;
+        radius = 2;
+    end;
+    cone with
+        end1 = <0 0 .2>;
+        end2 = <0 0 .8>;
+        radius1 = 2;
+        radius2 = .2;
+    end;
+    cone with
+        end1 = <0 0 .8>;
+        end2 = <0 0 3.2>;
+        radius1 = .2;
+        radius2 = .4;
+    end;
+    cone with
+        end1 = <0 0 3.2>;
+        end2 = <0 0 5.5>;
+        radius1 = .4;
+        radius2 = 2.6;
+    end;
+    ring with
+        center = <0 0 5.5>;
+        normal = <0 0 .1>;
+        inner_radius = 2.4;
+        outer_radius = 2.6;
+    end;
+    cone with
+        end1 = <0 0 5.5>;
+        end2 = <0 0 4>;
+        radius1 = 2.4;
+        radius2 = 1;
+    end;
+    paraboloid with
+        top = <0 0 3.5>;
+        base = <0 0 4>;
+        radius = 1;
+    end;
+end;    // martini_glass
+
+
+picture martini_picture with
+    eye = <5 -12 5>;
+    lookat = <0 0 3>;
+    render_mode is shaded;
+    facets = 0;
+    reflections is on;
+    refractions is on;
+    shadows is on;
+    background = sky_blue;
+    fog_factor = 100;
+is
+    distant_light from <.3 -.5 1>;
+    transparent white martini_glass;
+    glossy checkered red blue plane with
+        move to <0 0 -.01>;
+    end;
+end;    // martini_picture
+
+
+anim martini_anim
+    args type args;
+with
+    eye = <5 -10 8>;
+    lookat = <0 0 3>;
+    facets = 8;
+    edge_orientation is all;
+    double_buffer is on;
+is
+    shape thing is
+        martini_glass with
+            material is silver;
+        end;
+    end;
+    mouse_controlled_shape thing;
+end;    // martini_anim

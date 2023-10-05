@@ -1,0 +1,152 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm      text_selector_group.ores          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a class definition for a text selector that   }
+{        can respond to mouse clicks and mouse overs.           }
+{        A text selector group is like a group of radio         }
+{        buttons where only one of the group may be selected    }
+{        at a given time.                                       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "text_selector.ores";
+include "lists.ores";
+
+subject text_selector_group
+extends
+	text_selector
+does
+	// constructor
+	//
+	verb new
+		string type text;
+		or string type selected_text is none;
+		at vector location = <0 0 0>;
+		linked to text_selector_group type group is none;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+			   
+		// text colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = yellow, highlight_background = background;
+		color type selected_color = red, selected_background = background;
+		
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	end;
+	
+	// redefined responses
+	//
+	verb select;
+has
+	// attributes
+	//
+	public text_selector_group type next is none;
+is
+	verb add 
+		to text_selector_group type group;
+	is
+		text_selector_group type follow is none;
+		
+		if group is none then
+		
+			// first item in list
+			//
+			next is text_selector_group;
+		else
+			// add to head of list
+			//
+			next is group;
+			
+			// connect tail of list with new head
+			//
+			follow is group;
+			while follow's next isn't group do
+				follow is its next;
+			end;
+			
+			follow's next is text_selector_group;
+		end;
+	end;    // add
+	
+	// 
+	// constructor
+	//
+	
+	verb new
+		string type text;
+		or string type selected_text is none;
+		at vector location = <0 0 0>;
+		linked to text_selector_group type group is none;
+	with
+		integer text_size = proportional_text_size;
+		integer text_spacing = 0;
+		h_alignment type h_alignment is left;
+		
+		// text colors
+		//
+		color type text_color = white, background = black;
+		color type highlight_color = yellow, highlight_background = background;
+		color type selected_color = red, selected_background = background;
+		
+		// callbacks
+		//
+		actionable type mouse_down_action is none;
+		actionable type mouse_up_action is none;
+		actionable type mouse_over_action is none;
+		actionable type mouse_away_action is none;
+	is
+		text_selector new text or selected_text at location with
+			text_size = static text_size;
+			text_spacing = static text_spacing;
+			h_alignment is static h_alignment;
+			
+			// text colors
+			//
+			text_color = static text_color;
+			background = static background;
+			highlight_color = static highlight_color;
+			highlight_background = static highlight_background;
+			selected_color = static selected_color;
+			selected_background = static selected_background;
+			
+			// callbacks
+			//
+			mouse_down_action is static mouse_down_action;
+			mouse_up_action is static mouse_up_action;
+			mouse_over_action is static mouse_over_action;
+			mouse_away_action is static mouse_away_action;
+		end;
+		
+		// add to group (circularly linked list)
+		//
+		add to group;
+	end;    // new
+		
+	verb select is
+		text_selector_group type follow is text_selector_group's next;
+		
+		// deselect others in group
+		//
+		while follow isn't text_selector_group do
+			follow deselect;
+			follow is its next;
+		end;
+		
+		// select text selector
+		//
+		text_selector static select;
+	end;
+end;    // text_selector_group

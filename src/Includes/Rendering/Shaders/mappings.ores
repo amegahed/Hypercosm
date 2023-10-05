@@ -1,0 +1,61 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             mappings.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard mapping projections useful       }
+{       in texture mapping, etc.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_shading.ores";
+include "system/native_images.ores";
+
+enum mapping is cylindrical, spherical;
+
+vector question cylindrical is
+	vector p = location in local;
+	scalar x = p dot <1 0 0>;
+	scalar y = p dot <0 1 0>;
+	scalar z = p dot <0 0 1>;
+	scalar u = arctan y x;
+
+	answer <(u / 360) ((z + 1) / 2) 1>;
+end;    // cylindrical
+
+vector question spherical is
+	vector p = location in local;
+	scalar x = p dot <1 0 0>;
+	scalar y = p dot <0 1 0>;
+	scalar z = p dot <0 0 1>;
+	scalar r = sqrt (x * x + y * y);
+	scalar u = arctan y x;
+	scalar v = atan (z / r);
+
+	answer <(u / 360) ((v + 90) / 180) 1>;
+end;    // spherical
+
+shader map_image
+	image type image;
+	mapping type mapping;
+is
+	scalar x, y;
+	vector v;
+
+	when mapping is
+		cylindrical:
+			v = cylindrical;
+		end;
+		spherical:
+			v = spherical;
+		end;
+	end;
+	
+	x = v dot <1 0 0>;
+	y = v dot <0 1 0>;
+
+	answer image get_color at x y;
+end;    // map_image

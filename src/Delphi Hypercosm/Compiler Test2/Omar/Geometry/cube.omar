@@ -1,0 +1,131 @@
+{***************************************************************}
+{                             cube.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do cube_thing_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape cube_thing is
+
+    // top spheres
+    sphere with
+        move to <1 1 1>;
+        radius = .25;
+    end;
+    sphere with
+        move to <1 -1 1>;
+        radius = .25;
+    end;
+    sphere with
+        move to <-1 1 1>;
+        radius = .25;
+    end;
+    sphere with
+        move to <-1 -1 1>;
+        radius = .25;
+    end;
+
+    // bottom spheres
+    sphere with
+        move to <1 1 -1>;
+        radius = .25;
+    end;
+    sphere with
+        move to <1 -1 -1>;
+        radius = .25;
+    end;
+    sphere with
+        move to <-1 1 -1>;
+        radius = .25;
+    end;
+    sphere with
+        move to <-1 -1 -1>;
+        radius = .25;
+    end;
+
+    // top cylinders
+    cylinder with
+        end1 = <1 1 1>;
+        end2 = <1 -1 1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <1 -1 1>;
+        end2 = <-1 -1 1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <-1 -1 1>;
+        end2 = <-1 1 1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <-1 1 1>;
+        end2 = <1 1 1>;
+        radius = .125;
+    end;
+
+    // bottom cylinders
+    cylinder with
+        end1 = <1 1 -1>;
+        end2 = <1 -1 -1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <1 -1 -1>;
+        end2 = <-1 -1 -1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <-1 -1 -1>;
+        end2 = <-1 1 -1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <-1 1 -1>;
+        end2 = <1 1 -1>;
+        radius = .125;
+    end;
+
+    // side cylinders
+    cylinder with
+        end1 = <1 1 -1>;
+        end2 = <1 1 1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <1 -1 -1>;
+        end2 = <1 -1 1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <-1 -1 -1>;
+        end2 = <-1 -1 1>;
+        radius = .125;
+    end;
+    cylinder with
+        end1 = <-1 1 -1>;
+        end2 = <-1 1 1>;
+        radius = .125;
+    end;
+end;    // cube_thing
+
+
+anim cube_thing_anim
+    args type args;
+with
+    eye = <2 -8 4>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape cube_thing;
+end;    // cube_thing_anim

@@ -1,0 +1,35 @@
+{***************************************************************}
+{                          hose_test.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/spline_shapes.ores";
+include "system/arrow_shapes.ores";
+
+
+anim test
+    args type args;
+with
+    args check;
+is
+    shape scene is
+        hose through [<-1 0 0> <0 0 -1> <.5 .5 .5> <1 1 1>]
+        with
+            radius = .1;
+        end;
+        axes;
+    end;    // scene2
+
+    mouse_controlled_shape scene with
+    	auto_camera is on;
+    end;
+end;    // test

@@ -1,0 +1,26 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             while_loop.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a while          }
+{       loop in the OMAR language.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do while_loop_example;
+
+verb while_loop_example is
+	integer i = 2, counter = 1;
+	
+	write "Using a while loop to print the", ;
+	write "powers of 2 less than 1000:", ;
+	
+	while (i < 1000) do
+		write "2 to the ", counter, "th power = ", i, ;
+		i = itself * 2;
+		counter = itself + 1;
+	end;
+end;    // while_loop_example

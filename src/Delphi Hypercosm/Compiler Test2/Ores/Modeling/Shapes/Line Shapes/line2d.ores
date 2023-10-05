@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		    line2d.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{		Contains a definition of a standard line shape			}
+{		expressed as an array of 2d coordinates.				}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3d.ores";
+
+
+shape line2d
+    scalar vertex2d[][];
+is
+    vector vertex3d[min vertex2d..max vertex2d];
+
+    for integer counter = min vertex2d..max vertex2d do
+        vertex3d[counter] = (<vertex2d[counter][1] vertex2d[
+            counter][2] 0>);
+    end;
+    
+    line vertex3d;
+end;    // line2d

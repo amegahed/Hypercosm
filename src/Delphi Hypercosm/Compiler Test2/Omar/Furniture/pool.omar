@@ -1,0 +1,234 @@
+{***************************************************************}
+{                          pool.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pool_anim;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/anims.ores";
+
+
+vector ball_location[0..15];
+color type ball_color[0..15];
+vector ball_velocity[0..15];
+vector ball_orientation[0..15];
+scalar ball_radius = 3 / 24;
+scalar ball_diameter_squared = (2 * ball_radius) * (2 * ball_radius);
+scalar table_width = 4;
+scalar table_length = 7;
+vector mahagony = <.7 .4 .3>;
+
+
+verb collide
+    integer ball_a;
+is
+    scalar alx, aly;
+    scalar avx, avy;
+
+    alx = ball_location[ball_a] dot <1 0 0>;
+    aly = ball_location[ball_a] dot <0 1 0>;
+    avx = ball_velocity[ball_a] dot <1 0 0>;
+    avy = ball_velocity[ball_a] dot <0 1 0>;
+    if (alx < (-table_width / 2)) then
+        ball_velocity[ball_a] = <-avx avy 0>;
+    end;
+    if (alx > (table_width / 2)) then
+        ball_velocity[ball_a] = <-avx avy 0>;
+    end;
+    if (aly < (-table_length / 2)) then
+        ball_velocity[ball_a] = <avy (-avy) 0>;
+    end;
+    if (aly > (table_length / 2)) then
+        ball_velocity[ball_a] = <avy (-avy) 0>;
+    end;
+
+    {
+        scalar x_diff, y_diff;
+        vector difference;
+        vector average_velocity;
+
+        difference = ball_location[ball_A] - ball_location[ball_B];
+
+        x_diff = difference dot (1 0 0);
+        y_diff = difference dot (0 1 0);
+
+        if (((x_diff * x_diff) + (y_diff * y_diff)) <
+                ball_diameter_squared)
+        then
+                average_velocity = (ball_velocity[ball_A] +
+                        ball_velocity[ball_B]) / 2;
+        end;
+        }
+end;    // collide
+
+
+verb initialize_table is
+    ball_color[0] = white;
+    ball_color[1] = yellow;
+    ball_color[2] = blue;
+    ball_color[3] = red;
+    ball_color[4] = purple;
+    ball_color[5] = orange;
+    ball_color[6] = green;
+    ball_color[7] = dark red;
+    ball_color[8] = black;
+    ball_color[9] = yellow;
+    ball_color[10] = blue;
+    ball_color[11] = red;
+    ball_color[12] = purple;
+    ball_color[13] = orange;
+    ball_color[14] = green;
+    ball_color[15] = dark red;
+    ball_location[0] = <0 0 0>;
+    ball_location[1] = <0 0 0>;
+    ball_location[2] = <-2 (4 * .877) 0>;
+    ball_location[3] = <2 (4 * .877) 0>;
+    ball_location[4] = <0 (4 * .877) 0>;
+    ball_location[5] = <-1 (2 * .877) 0>;
+    ball_location[6] = <1 (2 * .877) 0>;
+    ball_location[7] = <.5 (3 * .877) 0>;
+    ball_location[8] = <0 (2 * .877) 0>;
+    ball_location[9] = <-.5 (1 * .877) 0>;
+    ball_location[10] = <.5 (1 * .877) 0>;
+    ball_location[11] = <-1.5 (3 * .877) 0>;
+    ball_location[12] = <-.5 (3 * .877) 0>;
+    ball_location[13] = <1.5 (3 * .877) 0>;
+    ball_location[14] = <-1 (4 * .877) 0>;
+    ball_location[15] = <1 (4 * .877) 0>;
+
+    for integer index = 0..15 do
+        ball_velocity[index] = <1 1 0>;
+        ball_orientation[index] = <0 0 1>;
+        ball_location[index] = (ball_location[index] * 2 *
+            ball_radius) + <0 2 (.4 + ball_radius)>;
+    end;
+    ball_location[0] = <0 -2 (.4 + ball_radius)>;
+end;    // initialize_table
+
+
+shape tableside1 is
+    extrude [[(-table_width / 2) ((-table_length / 2)
+        - .25)] [(-table_width / 2) -.25] [((-table_width / 2) -
+        .25) -.25] [((-table_width / 2) - .25) ((-table_length / 2)
+        - .5)]] with material is chalk colored dark green; end;
+    extrude [[(-table_width / 2) ((table_length / 2) +
+        .25)] [(-table_width / 2) .25] [((-table_width / 2) - .25)
+        .25] [((-table_width / 2) - .25) ((table_length / 2) + .5)]]
+         with material is chalk colored dark green; end;
+    extrude [[(table_width / 2) ((table_length / 2) +
+        .75)] [((table_width / 2) - .25) ((table_length / 2) + .5)]
+        [((-table_width / 2) + .25) ((table_length / 2) + .5)]
+        [(-table_width / 2) ((table_length / 2) + .75)]]
+         with material is chalk colored dark green; end;
+    extrude [[((-table_width / 2) - .25) ((-table_length / 2) - .75)]
+        [((-table_width / 2) - .25) 0] [((-table_width / 2) - .75)
+        0] [((-table_width / 2) - .75) ((-table_length / 2) - 1.25)]];
+    extrude [[((-table_width / 2) - .25) ((table_length / 2) + .75)]
+        [((-table_width / 2) - .25) 0] [((-table_width / 2) - .75)
+        0] [((-table_width / 2) - .75) ((table_length / 2) + 1.25)]];
+    extrude [[((-table_width / 2) - .25) ((table_length / 2) + .75)]
+        [((table_width / 2) + .25) ((table_length / 2) + .75)]
+        [((table_width / 2) + .75) ((table_length / 2) + 1.25)]
+        [((-table_width / 2) - .75) ((table_length / 2) + 1.25)]];
+end;    // tableside1
+
+
+shape tableside is
+    tableside1 with
+        rotate by 90 around <1 0 0>;
+    end;
+end;    // tableside
+
+
+shape pool_table is
+    scalar table_width = 4;
+    scalar table_length = 8;
+
+    parallelogram with
+        material is chalk colored dark dark green;
+        vertex = <(-table_width / 2) (-table_length / 2) .4>;
+        side1 = <0 table_length 0>;
+        side2 = <table_width 0 0>;
+    end;
+    tableside with material is chalk colored mahagony; end;
+    tableside with
+        material is chalk colored mahagony;
+        rotate by 180 around <0 0 1>;
+    end;
+    material is blackness;
+    disk with
+        center = <(table_width / 2) (table_length / 2) .401>;
+        radius = .25;
+        normal = <0 0 1>;
+    end;
+    disk with
+        center = <(-table_width / 2) (table_length / 2) .401>;
+        radius = .25;
+        normal = <0 0 1>;
+    end;
+    disk with
+        center = <(-table_width / 2) (-table_length / 2) .401>;
+        radius = .25;
+        normal = <0 0 1>;
+    end;
+    disk with
+        center = <(table_width / 2) (-table_length / 2) .401>;
+        radius = .25;
+        normal = <0 0 1>;
+    end;
+    disk with
+        center = <(table_width / 2) 0 .401>;
+        radius = .25;
+        normal = <0 0 1>;
+    end;
+    disk with
+        center = <(-table_width / 2) 0 .401>;
+        radius = .25;
+        normal = <0 0 1>;
+    end;
+end;    // pool_table
+
+
+shape pool_balls is
+    for integer index = 0..15 do
+        color type color = ball_color[index];
+
+        sphere with
+            material is plastic colored color;
+            center = ball_location[index];
+            radius = ball_radius;
+        end;
+    end;
+end;    // pool_balls
+
+
+verb move_everything is
+    for integer index = 0..15 do
+        ball_location[index] = ball_location[index] +
+            ball_velocity[index];
+        collide index;
+    end;
+end;    // move_everything
+
+
+anim pool_anim with
+    eye = <10 -10 10>;
+    facets = 8;
+    double_buffer is on;
+is
+    shape scene is
+        pool_table;
+        pool_balls;
+    end;    // scene
+
+    initialize_table;
+
+    mouse_controlled_shape scene;
+end;    // pool_anim

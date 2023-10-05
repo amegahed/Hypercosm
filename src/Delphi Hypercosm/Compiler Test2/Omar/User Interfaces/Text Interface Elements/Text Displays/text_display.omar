@@ -1,0 +1,34 @@
+do text_display_anim;
+
+
+include "system/3d.ores";
+include "system/background.ores";
+include "system/text_display.ores";
+
+
+anim text_display_anim with
+    double_buffer is on;
+is    
+    text_display type text_display of "press me"
+    	at <.75 0 0> aligned to middle_left
+    with
+   		font_color set to white over dark green;
+   		font is (new screen_font sized 24 styled bold with
+   			new effects with
+		   		shadowed is true;
+		   		indented is false;
+		   		background_shadowed is true;
+		   		background_indented is false;
+	   		end;
+   		);
+   	end;
+    
+    picture scene is
+        text_display draw;
+        default_background at 10;
+    end;    // scene
+    
+    while true do
+        scene;
+    end;
+end;    // text_display_anim

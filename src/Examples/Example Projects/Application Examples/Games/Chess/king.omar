@@ -1,0 +1,92 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              king.omar                 3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of a chess piece.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do king_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+shape king is
+	shape crown with
+		integer steps = 10;
+	is
+		for integer counter = 0 .. steps - 1 do
+			scalar angle = counter / steps * 360;
+			triangle <0 1 0> <0 -1 0> <0 0 5> with
+				move to <4.5 0 0>;
+				rotate by angle around <0 0 1>;
+			end;
+		end;
+	end;
+	color = white;
+	
+	cylinder with
+		end1 = <0 0 0>;
+		end2 = <0 0 1>;
+		radius = 8;
+	end;
+	disk with
+		radius = 8;
+	end;
+	hyperboloid1 with
+		end1 = <0 0 1>;
+		end2 = <0 0 5>;
+		radius1 = 8;
+		radius2 = 5;
+	end;
+	sphere with
+		radius = 6.5;
+		scale by .3 along <0 0 1>;
+		move to <0 0 5>;
+	end;
+	cone with
+		end1 = <0 0 5>;
+		end2 = <0 0 29>;
+		radius1 = 5;
+		radius2 = 1.75;
+	end;
+	rod with
+		end1 = <0 0 29>;
+		end2 = <0 0 30>;
+		radius = 5;
+	end;
+	crown with
+		move to <0 0 30>;
+	end;
+	cone with
+		end1 = <0 0 30>;
+		end2 = <0 0 32>;
+		radius1 = 2;
+		radius2 = 3.5;
+	end;
+	cone with
+		end1 = <0 0 32>;
+		end2 = <0 0 33>;
+		radius1 = 3.5;
+		radius2 = 0;
+	end;
+	sphere with
+		radius = 1;
+		center = <0 0 34>;
+	end;
+end;    // king
+
+anim king_anim
+	args type args;
+with
+	eye = <20 -60 40>;
+	lookat = <0 0 17.5>;
+	double_buffer is on;
+	args check;
+is
+	mouse_controlled_shape king;
+end;    // king_anim

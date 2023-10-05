@@ -1,0 +1,14 @@
+do test;
+
+
+verb write_array is
+	integer i[1 .. 10];
+	write "size of i = ", num i, ;
+end;	// write_array
+
+
+verb test is
+	while true do
+		write_array;
+	end;
+end;	// test

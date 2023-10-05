@@ -1,0 +1,213 @@
+{***************************************************************}
+{                          lava_lamp.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do lava_lamp_anim;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/densities.ores";
+include "system/fields.ores";
+include "system/vector_volumes.ores";
+include "system/random.ores";
+include "system/common_materials.ores";
+
+
+subject lava_lamp
+extends
+    timed_actor
+does
+    verb new with
+        integer x_steps = 5, y_steps = 5, z_steps = 15;
+        material type lamp_material is copper;
+        material type up_lava_material is plastic colored orange;
+        material type down_lava_material is plastic colored raspberry;
+        scalar lava_speed = 1;
+    end;    // new
+
+    verb advance
+        by scalar time_step;
+    end;
+    shape instance;
+has
+    integer x_steps, y_steps, z_steps;
+    vector_volume type vector_volume;
+    scalar lava_speed;
+    vector offset = vrandom <-1 -1 -1> to <1 1 1>;
+    material type lamp_material is none;
+    material type up_lava_material is none, down_lava_material is none;
+is
+    const scalar min_lamp_radius = .15;
+    const scalar max_lamp_height = 2.7;
+    const scalar max_lamp_radius = .4;
+    const scalar min_lamp_height = 1;
+    const scalar lamp_height = max_lamp_height - min_lamp_height;
+    const scalar radius_difference = max_lamp_radius - min_lamp_radius;
+    const material type glass_material is glass poster "transparent60.png";
+
+
+    verb new with
+        integer x_steps = 5, y_steps = 5, z_steps = 15;
+        material type lamp_material is copper;
+        material type up_lava_material is plastic colored orange;
+        material type down_lava_material is plastic colored raspberry;
+        scalar lava_speed = 1;
+    is
+        lava_lamp's lamp_material is lamp_material;
+        lava_lamp's up_lava_material is up_lava_material;
+        lava_lamp's down_lava_material is down_lava_material;
+        lava_lamp's lava_speed = lava_speed;
+        lava_lamp's x_steps = x_steps;
+        lava_lamp's y_steps = y_steps;
+        lava_lamp's z_steps = z_steps;
+
+        vector_volume is (square_cone_vector_volume z_steps of y_steps by
+            x_steps with radius = min_lamp_radius /
+            max_lamp_radius; roundness = 1);
+    end;    // new
+
+
+    verb advance
+        by scalar time_step;
+    is
+        offset = itself + (vnoise offset) * (lava_speed * time_step);
+    end;    // advance
+
+
+    shape up_lava is
+        density_field type density_field using noisy_field
+            from (<-1 -1 -1> - offset) to (<1 1 1> - offset)
+        with
+            x_steps = static x_steps;
+            y_steps = static y_steps;
+            z_steps = static z_steps;
+        end;
+        volume density_field's density in form of vector_volume with
+            threshold = .5;
+            scale by max_lamp_radius * .95 along <1 0 0>;
+            scale by max_lamp_radius * .95 along <0 1 0>;
+            scale by (lamp_height / 2) along <0 0 1>;
+            move to <0 0 (min_lamp_height + (lamp_height / 2))>;
+        end;
+
+        density_field's density is none;
+    end;    // up_lava
+
+
+    shape down_lava is
+        density_field type density_field using noisy_field
+            from (<-1 -1 -1> + offset) to (<1 1 1> + offset)
+        with
+            x_steps = static x_steps;
+            y_steps = static y_steps;
+            z_steps = static z_steps;
+        end;
+        volume density_field's density in form of vector_volume with
+            threshold = .5;
+            scale by max_lamp_radius * .95 along <1 0 0>;
+            scale by max_lamp_radius * .95 along <0 1 0>;
+            scale by (lamp_height / 2) along <0 0 1>;
+            move to <0 0 (min_lamp_height + (lamp_height / 2))>;
+        end;
+
+        density_field's density is none;
+    end;    // down_lava
+
+
+    shape lava is
+        up_lava with
+            material is up_lava_material;
+        end;
+        down_lava with
+            material is down_lava_material;
+        end;
+    end;    // lava
+    
+    
+    shape lava_base is
+        disk with
+            center = <0 0 1>;
+            radius = .4;
+            normal = <0 0 -1>;
+        end;
+    end;    // lava_base
+
+
+    objective shape lamp_body is
+
+        // base of lava lamp
+        //
+        cone with
+            end1 = <0 0 0>;
+            end2 = <0 0 .8>;
+            radius1 = .5;
+            radius2 = .2;
+        end;
+        cone with
+            end1 = <0 0 .8>;
+            end2 = (<0 0 min_lamp_height>);
+            radius1 = .2;
+            radius2 = max_lamp_radius;
+        end;
+
+        // glass lava enclosure
+        //
+        cone with
+            material is glass_material;
+            end1 = <0 0 min_lamp_height>;
+            end2 = <0 0 max_lamp_height>;
+            radius1 = max_lamp_radius;
+            radius2 = min_lamp_radius;
+        end;
+
+        // top cap of lava lamp
+        //
+        cone with
+            end1 = <0 0 max_lamp_height>;
+            end2 = <0 0 (max_lamp_height + .3)>;
+            radius1 = min_lamp_radius;
+            radius2 = .1;
+        end;
+        disk with
+            center = <0 0 (max_lamp_height + .3)>;
+            normal = <0 0 -1>;
+            radius = .1;
+        end;
+    end;    // lamp_body
+
+
+    shape instance is
+        lamp_body with
+            material is lamp_material;
+        end;
+        lava;
+        lava_base with
+            material is up_lava_material;
+        end;
+    end;    // instance
+end;    // lava_lamp
+
+
+anim lava_lamp_anim
+    args type args;
+with
+    double_buffer is on;
+    eye = <0 -4 2>;
+    lookat = <0 0 1.4>;
+    roll = -50;
+    window_name is "Lava!";
+    background = dark violet;
+    args check;
+is
+    lava_lamp type lava_lamp;
+
+    mouse_controlled_actor lava_lamp;
+end;    // lava_lamp_anim

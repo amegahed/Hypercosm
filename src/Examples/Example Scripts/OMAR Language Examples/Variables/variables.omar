@@ -1,0 +1,62 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            variables.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a set of examples of declarations    }
+{       and uses of variables in the OMAR language.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do variables_example;
+
+include "system/native_string.ores";
+
+// variables of primtive enumerated types
+//
+boolean done is false;
+char quit_char is "q";
+
+// variables of primitive integer types
+// 
+byte x = 128;
+short index = 1;
+integer value = 5000;
+long price = 4999999;
+
+// variables of primitive scalar types
+//
+scalar e = 2.71828;
+double pi = 3.14159265358979;
+complex i = <0 1>;
+vector color = <1 1 1>;
+
+// variables of a user defined type
+//
+string type name is "Bob";
+
+verb variables_example is
+	// write variables of primitive enumerated types
+	// 
+	write "done is ", done, ;
+	write "quit_char = ", quit_char, ;
+	
+	// write variables of primitive integer types
+	//
+	write "x = ", x ,;
+	write "index = ", index, ;
+	write "value = ", value, ;
+	write "price = ", price, ;
+	
+	// write variables of primitive scalar types
+	//
+	write "e = ", e, ;
+	write "pi = ", pi, ;
+	write "i = ", i, ;
+	write "color = ", color, ;
+	// write variables of user defined types
+	//
+	write "name = ", name, ;
+end;    // variables_example

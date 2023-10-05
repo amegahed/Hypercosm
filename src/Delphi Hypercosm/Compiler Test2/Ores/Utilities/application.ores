@@ -1,0 +1,18 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		   application.ores 			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{        Contains a base class for building reponses            }
+{        since closures do not exist in OMAR.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+adjective applicable
+does
+	verb apply;
+end;	// applicable

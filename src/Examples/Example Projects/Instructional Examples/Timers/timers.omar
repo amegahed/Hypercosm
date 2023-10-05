@@ -1,0 +1,32 @@
+do timers_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/message_listening_multi_actor.ores";
+// transformations
+//
+include "clock_timer.omar";
+include "stopwatch_timer.omar";
+include "timer.omar";
+include "interval_timer.omar";
+include "cycle_timer.omar";
+
+anim timers_anim 
+	args type args;
+with
+	eye = <0 -6 0>;
+	lookat = <0 0 .125>;
+	facets = 16;
+	show_animation_control is false;
+	args check;
+is
+	message_listening_multi_actor type multi_actor;
+	
+	multi_actor add_actor (new clock_timer_actor) named "clock_timer";     
+	multi_actor add_actor (new stopwatch_timer_actor) named "stopwatch_timer";   
+	multi_actor add_actor (new timer_actor) named "timer";   
+	multi_actor add_actor (new interval_timer_actor) named "interval_timer";   
+	multi_actor add_actor (new cycle_timer_actor) named "cycle_timer";   
+																					
+	mouse_controlled_actor multi_actor;
+end;    // timers_anim

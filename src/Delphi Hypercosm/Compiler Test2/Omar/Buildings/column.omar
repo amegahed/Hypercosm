@@ -1,0 +1,96 @@
+{***************************************************************}
+{                          column.omar                          }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do column_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+shape column with
+    integer segments = 16;
+    scalar segment_radius = .2;
+    scalar height = 10;
+is
+    {
+    disk with
+        center = <0 0 0>;
+        normal = <0 0 1>;
+        radius = 1;
+    end;
+    disk with
+        center = <0 0 10>;
+        normal = <0 0 1>;
+        radius = .7;
+    end;
+    }
+    if segments <> 0 then
+        for integer counter = 1..segments do
+            cylinder with
+                end1 = <1 0 .6>;
+                end2 = <.7 0 (height - .3)>;
+                radius = segment_radius;
+                rotate by ((counter / segments) * 360)
+                    around <0 0 1>;
+            end;
+        end;
+    else
+        cylinder with
+            end1 = <0 0 .6>;
+            end2 = <0 0 height>;
+            radius = 1;
+        end;
+    end;
+    block with
+        vertex = <-1.5 -1.5 0>;
+        side1 = <3 0 0>;
+        side2 = <0 3 0>;
+        side3 = <0 0 .6>;
+    end;
+    cone with
+        end1 = <0 0 .6>;
+        end2 = <0 0 1.4>;
+        radius1 = 1.4;
+        radius2 = 1.0;
+    end;
+    block with
+        vertex = <-1 -1 height>;
+        side1 = <2 0 0>;
+        side2 = <0 2 0>;
+        side3 = <0 0 -.3>;
+    end;
+end;    // column
+
+
+anim column_anim
+    args type args;
+with
+    eye = <-10 -15 5>;
+    lookat = <0 0 5>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        column with
+            material is stone;
+        end;
+    end;    // scene
+
+
+    shape environment is
+        plane with
+            magnify by 4;
+            render_mode is wireframe;
+        end;
+    end;    // environment
+
+
+    mouse_controlled_shape scene in environment;
+end;    // temple_anim

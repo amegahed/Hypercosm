@@ -1,0 +1,142 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           fish_parts.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a set of definitions of parts of a fish!       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/linear_patch_hull.ores";
+
+material type body_material is plastic poster "scales.jpg";
+material type fin_material is chalk colored <.5 .8 0>;
+
+shape body with
+	integer sections = 4;
+	integer steps = facets;
+is
+	// body is sampled at 9 discrete points
+	//
+	linear_patch_hull
+		// cross section
+		(round_cross_section of sections)
+		// x displacement
+		[-18 -20 -17 -14 -10 -6 0 8 15]
+		// ymins
+		[0 -1.5 -2 -3 -5 -6 -6 -4 -2]
+		// ymaxes
+		[0 1.5 2 3 5 6 6 4 2]
+		// zmins
+		[1 -2 -3 -5 -7 -8 -8 -6 -2]
+		// zmaxes
+		[1 2 3 4 6 12 13 8 2]
+	with
+		rows = steps; columns = steps;
+		closed is false;
+		triangulate is off;
+		alternate is on;
+		mending is on;
+		material is body_material;
+	end;
+end;    // body
+
+shape open_eye is
+	sphere with
+		radius = 1.8;
+		scale by .5 along <0 1 0>;
+		color = light light blue;
+	end;
+	sphere with
+		radius = 1.5;
+		scale by .75 along <0 1 0>;
+		color = charcoal;
+	end;
+end;    // open_eye
+
+shape open_eyes is
+	open_eye with
+		rotate by 45 around <0 0 1>;
+		rotate by 45 around <0 1 0>;
+		rotate by 20 around <0 0 1>;
+		move to <-7.5 2.5 9>;
+	end;
+	open_eye with
+		rotate by -45 around <0 0 1>;
+		rotate by 45 around <0 1 0>;
+		rotate by -20 around <0 0 1>;
+		move to <-7.5 -2.5 9>;
+	end;
+end;    // open_eyes
+
+shape closed_eyes is
+	sphere with
+		radius = 1.5;
+		rotate by 45 around <0 1 0>;
+		scale by .1 along <0 0 1>;
+		move to <-7 2.5 9>;
+		color = light blue;
+	end;
+	sphere with
+		radius = 1.5;
+		rotate by 45 around <0 1 0>;
+		scale by .1 along <0 0 1>;
+		move to <-7 -2.5 9>;
+		color = light blue;
+	end;
+end;    // closed_eyes
+
+shape tail with
+	scalar angle = 0;
+is
+	// end of tail
+	//
+	cone with
+		end1 = <0 0 0>;
+		end2 = <10 0 0>;
+		radius1 = 2;
+		radius2 = 0;
+		material is body_material;
+	end;
+	sphere with
+		radius = 2;
+		material is body_material;
+	end;
+	// upper tail
+	//
+	polygon2d [[0 2] [10 10] [20 15] [15 10] [10 0]] with
+		x_axis = <1 0 0>;
+		y_axis = <0 0 1>;
+		rotate by angle around <-10 0 2> about <10 0 0>;
+		material is fin_material;
+	end;
+	// lower tail
+	//
+	polygon2d [[0 -2] [5 -4] [7 -6] [15 -10] [10 -5] [10 0]] with
+		x_axis = <1 0 0>;
+		y_axis = <0 0 1>;
+		rotate by -angle around <-10 0 -2> about <10 0 0>;
+		material is fin_material;
+	end;
+end;    // tail
+
+shape side_fin is
+	polygon2d [[0 0] [3 -5] [10 -10] [8 -4] [7 0]] with
+		x_axis = <1 0 0>;
+		y_axis = <0 0 1>;
+		material is fin_material;
+	end;
+end;    // side_fin
+
+shape top_fin is
+	polygon2d [[0 0] [6 3] [14 2] [10 1] [8 -5]] with
+		x_axis = <1 0 0>;
+		y_axis = <0 0 1>;
+		material is fin_material;
+	end;
+end;    // top_fin

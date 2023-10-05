@@ -1,0 +1,237 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            materials.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{             Contains standard material definitions.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/native_materials.ores";
+include "system/modifiers.ores";     
+include "system/math.ores";         
+include "system/string_utils.ores";
+
+const scalar shiny = .5;
+
+scalar question specularity
+	of scalar shininess;
+is
+	// to compute specular power based on shininess:
+	// a material's shininess varies from 0 to 1 while
+	// the specular power varies from 1 to a large number
+	//
+	if 0 < shininess < 1 then
+		answer sqr (1 / (1 - shininess));
+	else
+		answer 0;
+	end;
+end;    // specularity
+
+texture type question get_transparency_map
+	of scalar transparency;
+is
+	static texture type textures[];
+		
+	if transparency > 0 then
+		integer index = iclamp (1 + trunc (transparency * 9)) from 1 to 9;
+	
+		// create array of transparency maps
+		//
+		if textures is none then
+			dim none textures[1 .. 10];
+		end;
+		
+		// create new transparency map
+		//  
+		if textures[index] is none then
+			string type name is "transparent";
+			name add integer_to_string of (index * 10);
+			name add ".png";
+			textures[index] is new texture using new image named name;
+		end;
+		
+		answer textures[index];
+	else
+		answer none;
+	end;
+end;    // get_transparency_map
+
+//
+// some common parametric materials
+//
+
+material type question chalk
+	colored color type color = white;
+	textured texture type texture is none;
+	painted image type image is none;
+	poster string type file_name is none;
+with
+	// texture parameters
+	//
+	boolean interpolation is global interpolation;
+	boolean mipmapping is global mipmapping;
+	boolean wraparound is global wraparound;
+is
+	// create texture if necessary
+	//
+	if texture is none then
+		if some image then
+			texture is (new texture using image with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		elseif some file_name then
+			texture is (new texture using (new image named file_name) with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		end;
+	end;
+	
+	answer (new material colored color textured texture with
+		diffuse = color;
+		specular = black;
+		specular_power = 0;
+		ambient = diffuse;
+	);
+end;    // chalk
+
+material type question plastic
+	colored color type color = white;
+	polished scalar shininess = very shiny;
+	textured texture type texture is none;
+	painted image type image is none;
+	poster string type file_name is none;
+with
+	// texture parameters
+	//
+	boolean interpolation is global interpolation;
+	boolean mipmapping is global mipmapping;
+	boolean wraparound is global wraparound;
+is
+	// create texture if necessary
+	//
+	if texture is none then
+		if some image then
+			texture is (new texture using image with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		elseif some file_name then
+			texture is (new texture using (new image named file_name) with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		end;
+	end;
+
+	answer (new material colored color textured texture with
+		diffuse = color * .8;
+		specular_power = specularity of shininess;
+		specular = white * shininess * sqrt specular_power;
+		ambient = diffuse;
+		reflected = white * shininess * .1;
+	);
+end;    // plastic
+
+material type question metal
+	colored color type color = white;
+	polished scalar shininess = shiny;
+	textured texture type texture is none;
+	painted image type image is none;
+	poster string type file_name is none;
+with
+	// texture parameters
+	//
+	boolean interpolation is global interpolation;
+	boolean mipmapping is global mipmapping;
+	boolean wraparound is global wraparound;
+is
+	// create texture if necessary
+	//
+	if texture is none then
+		if some image then
+			texture is (new texture using image with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		elseif some file_name then
+			texture is (new texture using (new image named file_name) with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		end;
+	end;
+
+	answer (new material colored color textured texture with
+		diffuse = color * .2;
+		specular_power = specularity of shininess;
+		specular = color * sqrt specular_power;
+		ambient = diffuse;
+		reflected = color * .5;
+	);
+end;    // metal
+
+material type question glass
+	colored color type color = white;
+	polished scalar shininess = semi shiny;
+with
+	scalar transparency = .8;
+is
+	answer (new material colored color textured (get_transparency_map of transparency) with
+		diffuse = color * .3;
+		specular_power = specularity of shininess;
+		specular = color * sqrt specular_power;
+		ambient = diffuse;
+		reflected = color * .5;
+	);
+end;    // glass
+
+material type question constant_color
+	color type color;
+	textured texture type texture is none;
+	painted image type image is none;
+	poster string type file_name is none;
+with
+	// texture parameters
+	//
+	boolean interpolation is global interpolation;
+	boolean mipmapping is global mipmapping;
+	boolean wraparound is global wraparound;
+is
+	// create texture if necessary
+	//
+	if texture is none then
+		if some image then
+			texture is (new texture using image with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		elseif some file_name then
+			texture is (new texture using (new image named file_name) with
+				interpolation is static interpolation;
+				mipmapping is static mipmapping;
+				wraparound is static wraparound;
+			);
+		end;
+	end;
+
+	answer (new material colored color textured texture with
+		diffuse = black;
+		specular = black;
+		specular_power = 0;
+		emissive = color;
+		ambient = black;
+	);
+end;    // constant_color

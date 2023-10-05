@@ -1,0 +1,97 @@
+{***************************************************************}
+{                          hyperwave.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do hyperwave_anim;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/fish.omar";
+include "system/banner.omar";
+
+
+subject hyperwave
+extends
+    step_actor
+does
+    shape instance;
+    verb act;
+has
+    bubbling_fish type fish with
+        tail_wags_per_sec = 1;
+        fin_wags_per_sec = 2;
+    end;
+    banner type large_banner with
+        lines = 0;
+    end;
+    banner type small_banner with
+            attach_point = <-5 0 0>;
+    end;
+is
+    const scalar orbit_radius = 2;
+
+    shape stuff is
+
+        // large banner
+        //
+        large_banner instance with
+            rotate by 180 around <0 0 1>;
+        end;
+
+        fish instance with
+            magnify by .025;
+            move to <0 orbit_radius 0>;
+            rotate by (steps * 2) around <0 0 1>;
+            rotate by 20 around <0 1 0>;
+        end;
+
+        small_banner instance with
+            rotate by -30 around <0 0 1> about <-5 0 0>;
+            magnify by .25;
+            move to <1.5 orbit_radius 0>;
+            rotate by (steps * 2) around <0 0 1>;
+            rotate by 20 around <0 1 0>;
+        end;
+    end;    // stuff
+
+
+    shape instance is
+        scalar offset = 45 * sin (steps * 1.5);
+        stuff with
+            rotate by (steps * -2 + 180 + offset) around <0 0 1>;
+        end;
+    end;    // instance
+
+
+    verb act is
+        step;
+        large_banner act;
+        small_banner act;
+        fish swim to <-.5 0 0>;
+    end;    // step
+end;    // hyperwave
+
+
+anim hyperwave_anim
+    args type args;
+with
+    eye = <-1.5 -3 .5>;
+    lookat = <.25 0 0>;
+    field_of_view = 80;
+    background = <0 .25 .5>;
+    ambient = white * .1;
+    render_mode is shaded;
+    double_buffer is on;
+    args check;
+is
+    hyperwave type hyperwave;
+
+    mouse_controlled_actor hyperwave;
+end;    // hyperwave_anim

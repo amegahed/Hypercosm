@@ -1,0 +1,300 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       native_networking.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native network utilities.                  }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "native_data_packing.ores";
+include "strings.ores";
+
+type port is integer;
+type connection is integer;
+type ttl is byte;
+
+enum socket_status is no_error, not_opened, open_failed, closed, send_failed,
+	receive_failed, length_invalid, get_remote_ip_failed, get_remote_port_failed,
+	get_local_ip_failed, get_local_port_failed, get_host_by_name_failed,
+	receive_would_block, send_would_block, tcp_no_more_connections,
+	tcp_accept_would_block, tcp_accept_failed, tcp_invalid_connection,
+	tcp_connecting, tcp_connect_failed, udp_add_membership_failed,
+	udp_drop_membership_failed, udp_set_multicast_ttl_failed;
+
+subject ip_address
+does
+	// constructor
+	//
+	native verb new;
+
+	// destructor
+	//
+	native verb free;
+
+	// getting methods
+	//
+	native verb get_host_by_name
+		string type name;
+	end;
+	native verb get_local_ip_address;
+	native verb get_broadcast;
+	native string type question get_ip_string;
+	native string type question get_host_name;
+	socket_status type question status;
+has
+	// attributes
+	//
+private
+	long id;
+	socket_status type i_status;
+is
+	socket_status type question status is
+		answer i_status;
+	end;
+end;    // ip_address
+
+subject tcp_client_socket
+does
+	// constructor
+	//
+	native verb new;
+
+	// destructor
+	//
+	native verb free;
+
+	// *** open ***
+	// Starts a connection to remote ip 'address' port 'remote_port'.
+	// You may optionally specify a local port 'local_port' to connect
+	// from, otherwise, one will be arbitrarily chosen.
+	native verb open
+		to ip_address type address;
+		port port type remote_port;
+		on port port type local_port = 0;
+	end;
+
+	// *** close ***
+	// Closes the current connection
+	native verb close;
+
+	// *** get_remote_ip_address ***
+	// Returns the ip address to which this client is connected
+	native verb get_remote_ip_address
+		ip_address type address;
+	end;
+
+	// *** get_remote_port ***
+	// Returns the remote port to which this client is connected
+	native port type question get_remote_port;
+
+	// *** get_local_port ***
+	// Returns the local port from which this client is connected
+	native port type question get_local_port;
+
+	// *** send ***
+	// Send the data over the connection
+	native integer question send
+		data_container type data;
+	with
+		integer length = 0; // 0 means as much as possible
+	end;
+
+	// *** receive ***
+	// Try to receive data over the connection
+	native integer question receive
+		data_container type data;
+	with
+		integer length = 2048;
+	end;
+
+	// *** status ***
+	// Every verb and question in this subject sets the status flag
+	// in this subject
+	socket_status type question status;
+has
+private
+	long id;
+	socket_status type i_status;
+is
+	socket_status type question status is
+		answer i_status;
+	end;
+end;    // tcp_client_socket
+
+subject tcp_server_socket
+does
+	// constructor
+	//
+	native verb new;
+
+	// destructor
+	//
+	native verb free;
+
+	// *** open ***
+	// Starts a server on local port 'local_port'
+	// Default value is for any available port.
+	native verb open
+		on port port type local_port = 0;
+	end;
+
+	// *** close_all ***
+	// Closes the server port and all of its connections
+	native verb close_all;
+
+	// *** close_server ***
+	// Closes the server port but none of the connections.
+	// Any further attempts to connect or accept will fail
+	native verb close_server;
+
+	// *** close ***
+	// Close one remote connection on this server
+	native verb close
+		connection type connection;
+	end;
+
+	// *** accept ***
+	// Check for connections to the server.  If any are available,
+	// one will be returned, and the status will be no_error.
+	// Otherwise, the status will be tcp_accept_would_block,
+	// and the value returned will be undefined and probably unusable.
+	native connection type question accept;
+
+	// *** detach ***
+	// Detach will take one connection and detach it into an independent
+	// tcp client.  The server no longer has any knowledge of it.
+	native verb detach
+		connection type connection;
+		into tcp_client_socket type client;
+	end;
+
+	// *** get_remote_ip_address ***
+	// Returns the ip address to which this connection is connected
+	native verb get_remote_ip_address
+		ip_address type address;
+		connection type connection;
+	end;
+
+	// *** get_remote_port ***
+	// Returns the remote port to which this connection is connected
+	native port type question get_remote_port
+		connection type connection;
+	end;
+
+	// *** get_local_port ***
+	// Returns the local port to which this server is listening
+	native port type question get_local_port;
+
+	// *** send ***
+	// Send the data over a connection
+	native integer question send
+		data_container type data;
+		on connection type connection;
+	with
+		integer length = 0;
+	end;
+
+	// *** receive ***
+	// Try to receive data over a connection
+	native integer question receive
+		data_container type data;
+		on connection type connection;
+	with
+		integer length = 2048;
+	end;
+
+	// *** status ***
+	// Every verb and question in this subject sets the status flag
+	// in this subject
+	socket_status type question status;
+has
+	// attributes
+	//
+private
+	long id;
+	socket_status type i_status;
+is
+	socket_status type question status is
+		answer i_status;
+	end;
+end;    // tcp_server_socket
+
+subject udp_socket
+does
+	// constructor
+	//
+	native verb new;
+
+	// destructor
+	//
+	native verb free;
+
+	// *** open ***
+	// Opens a udp socket ready to send and ready to receive on
+	// local port 'local_port'
+	native verb open
+		on port port type local_port = 0;
+	end;
+
+	// *** close ***
+	// Closes the current socket
+	native verb close;
+
+	// *** get_local_port ***
+	// Returns the local port on which this socket is ready to receive
+	native port type question get_local_port;
+
+	// *** send ***
+	// Send the data to the remote ip address and port specified
+	native verb send
+		data_container type data;
+		to ip_address type address;
+		port port type port;
+	with
+		integer length = 0;
+	end;
+
+	// *** receive ***
+	// Try to receive data from the socket.  If any is received, the
+	// ip address and port from which it is received is filled in.
+	// If nothing is available, the status will be receive_would_block
+	native integer question receive
+		data_container type data;
+		from ip_address type address;
+	with
+		integer length = 2048;
+	return
+		port type port;
+	end;
+
+	// *** status ***
+	// Every verb and question in this subject sets the status flag
+	// in this subject
+	socket_status type question status;
+
+	// igmp functionality
+	native verb add_membership
+		ip_address type multicast_group;
+	end;
+	native verb drop_membership
+		ip_address type multicast_group;
+	end;
+	native verb set_multicast_ttl
+		to ttl type ttl = 1;
+	end;
+has
+private
+	long id;
+	socket_status type i_status;
+is
+	socket_status type question status is
+		answer i_status;
+	end;
+end;    // udp_socket

@@ -1,0 +1,54 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		  3ds_splines.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains spline definitions that correspond to			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_spline.ores";
+
+
+subject translated_3ds_splines extends
+	translated_3ds_spline type[]
+does
+	verb print;
+is
+	verb print is
+		write "3ds splines:", ;
+		for each translated_3ds_spline type spline in translated_3ds_splines do
+			spline print;
+		end;
+	end;
+end;	// translated_3ds_splines
+
+
+{***************************************************************} 
+{         		utility spline construction methods          	}
+{***************************************************************}
+
+
+translated_3ds_spline type question translated_3ds_connected_spline
+	through translated_3ds_spline_vertices type vertices;
+is
+	translated_3ds_spline type spline is translated_3ds_spline type's get;
+	spline append_segments (translated_3ds_connected_spline_segments through vertices);
+	spline append_vertices vertices;
+	answer spline;
+end;	// translated_3ds_connected_spline
+
+
+translated_3ds_spline type question translated_3ds_connected_cyclic_spline
+	through translated_3ds_spline_vertices type vertices;
+is
+	translated_3ds_spline type spline is translated_3ds_spline type's get;
+	spline append_segments (translated_3ds_connected_cyclic_spline_segments through vertices);
+	spline append_vertices vertices;
+	answer spline;
+end;	// translated_3ds_connected_cyclic_spline

@@ -1,0 +1,71 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           tcb_splines.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Kochanek-Bartels Splines (also called TCB-Splines)      }
+{       are nothing more than hermite curves and a handfull     }
+{       of formulas to calculate the tangents. These curves     }
+{       were introduced by D. Kochanek and R. Bartels in        }
+{       1984 to give animators more control over keyframe       }
+{       animation.                                              }
+{                                                               }
+{       They introduced three control-values for each           }
+{       keyframe point:                                         }
+{                                                               }
+{       Tension:                                                }
+{           How sharply does the curve bend?                    }
+{                                                               }
+{       Continuity:                                             }
+{           How rapid is the change in speed and direction?     }
+{                                                               }
+{       Bias:                                                   }
+{           What is the direction of the curve as it passes     }
+{           through the keypoint?                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/cubic_splines.ores";
+
+type tcb is vector;
+type tcbs is tcb type[];
+
+cubic_spline type question tcb_spline
+	through vectors type spline;
+	using tcbs type tcbs;
+is
+	vpolynomial type cubic_spline[min spline .. max spline - 1];
+	vector in_tangents[min spline .. max spline];
+	vector out_tangents[min spline .. max spline];
+
+	// find tangent vectors
+	//
+	in_tangents[min spline] = (spline[min spline + 1] - spline[min spline]) / 2;
+	out_tangents[min spline] = in_tangents[min spline];
+	in_tangents[max spline] = (spline[max spline] - spline[max spline - 1]) / 2;
+	out_tangents[max spline] = in_tangents[max spline];
+	for integer counter = min spline + 1 .. max spline - 1 do
+		scalar t = tcbs[counter].x;
+		scalar c = tcbs[counter].y;
+		scalar b = tcbs[counter].z;
+		in_tangents[counter] = 
+			(spline[counter] - spline[counter - 1]) * ((1 - t) * (1 - c) * (1 + b)) / 2 +
+			(spline[counter + 1] - spline[counter]) * ((1 - t) * (1 + c) * (1 - b)) / 2;
+		out_tangents[counter] = 
+			(spline[counter] - spline[counter - 1]) * ((1 - t) * (1 + c) * (1 + b)) / 2 +
+			(spline[counter + 1] - spline[counter]) * ((1 - t) * (1 - c) * (1 - b)) / 2;
+	end;
+
+	// create sequence of cubic splines
+	//
+	for integer counter = min spline .. max spline - 1 do
+		cubic_spline[counter] is get_hermite_vcubic 
+			from spline[counter] in_tangents[counter] 
+			to spline[counter + 1] out_tangents[counter + 1];
+	end;
+	
+	answer cubic_spline;
+end;    // tcb_spline

@@ -1,0 +1,340 @@
+{***************************************************************}
+{                       texture_mapping.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{		Contains standard texture mapping definitions.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/texture_coordinates.ores";
+include "system/vector_grids.ores";
+include "system/copying.ores";
+
+
+{***************************************************************}
+{  texture mapping is used to calcuate the texture coordinates	}
+{***************************************************************}
+
+
+abstract subject texture_mapping
+does
+	// get texture coordinates from a point
+	//
+	abstract texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	end;
+	
+	// get list of texture coordinates from a list of points
+	//
+	texcoords type question get_texcoords
+		at vectors type points;
+		towards vectors type normals;
+	end;
+	
+	// get grid of texture coordinates from a grid of points
+	//
+	texcoord_grid type question get_texcoord_grid
+		at vector_grid type point_grid;
+		towards vector_grid type normal_grid;
+	end;
+	
+	// get list of texture coordinates from a grid of points
+	//
+	texcoords type question get_grid_texcoords
+		at vector_grid type point_grid;
+		towards vector_grid type normal_grid;
+	end;
+is
+    //
+	// get list of texture coordinates from a list of points
+	//
+	
+	
+	texcoords type question get_texcoords
+		at vectors type points;
+		towards vectors type normals;
+	is
+		if some points then
+			vector texcoords[min points .. max points];
+			
+			if some normals then
+				for integer i = min points .. max points do
+					texcoords[i] = get_texcoord at points[i] towards normals[i];
+				end;
+			else
+				for integer i = min points .. max points do
+					texcoords[i] = get_texcoord at points[i] towards <0 0 0>;
+				end;
+			end;
+			
+			answer texcoords;
+		else
+			answer none;
+		end;
+	end;	// get_texcoords
+	
+
+    //
+	// get grid of texture coordinates from a grid of points
+	//
+	
+	
+	texcoord_grid type question get_texcoord_grid
+		at vector_grid type point_grid;
+		towards vector_grid type normal_grid;
+	is
+		if some point_grid then
+			vector texcoord_grid[min point_grid .. max point_grid, 
+				min point_grid[] .. max point_grid[]];
+				
+			if some normal_grid then
+				for integer i = min point_grid .. max point_grid do
+					for integer j = min point_grid[] .. max point_grid[] do
+						texcoord_grid[i, j] = get_texcoord at point_grid[i, j] towards normal_grid[i, j];
+					end;
+				end;
+			else
+				for integer i = min point_grid .. max point_grid do
+					for integer j = min point_grid[] .. max point_grid[] do
+						texcoord_grid[i, j] = get_texcoord at point_grid[i, j] towards <0 0 0>;
+					end;
+				end;
+			end;
+			
+			answer texcoord_grid;
+		else
+			answer none;
+		end;
+	end;	// get_texcoord_grid
+	
+
+    //	
+	// get list of texture coordinates from a grid of points
+	//
+	
+	
+	texcoords type question get_grid_texcoords
+		at vector_grid type point_grid;
+		towards vector_grid type normal_grid;
+	is
+		if some point_grid then		
+			vector_grid type texcoord_grid is get_texcoord_grid at point_grid towards normal_grid;		
+			answer texcoord_grid vectors;
+		else
+			answer none;
+		end;
+	end;	// get_grid_texcoords
+end;	// texture_mapping
+
+
+adjective texturable
+does
+	// texture application methods
+	//
+	verb apply
+	    texture_mapping type texture_mapping;
+	end;    // apply
+end;    // texturable
+	
+
+{***************************************************************}
+{              specific types of texture mapping                }
+{***************************************************************}
+
+
+subject parametric_mapping
+extends
+	texture_mapping
+does
+    // constructor
+    //
+	verb new
+		from vector start = <0 0 0>;
+		to vector finish = <1 1 1>;
+	end;
+	
+	// get texture coordinates from a point
+	//
+	texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	end;
+
+	// get list of texture coordinates from a list of points
+	//
+	texcoords type question get_texcoords
+		at vectors type points;
+		towards vectors type normals;
+	end;
+	
+	// get grid of texture coordinates from a grid of points
+	//		
+	texcoord_grid type question get_texcoord_grid
+		at vector_grid type point_grid;
+		towards vector_grid type normal_grid;
+	end;
+has
+    // parametric attributes
+    //
+	public vector start, finish, direction;
+is
+    //
+    // constructor
+    //
+    
+    
+	verb new
+		from vector start = <0 0 0>;
+		to vector finish = <1 1 1>;
+	is
+		with parametric_mapping do
+			its start = start;
+			its finish = finish;
+		end;
+		direction = finish - start;
+	end;	// new
+	
+
+    //
+	// get texture coordinates from a point
+	//
+	
+		
+	texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	is
+		answer start + direction * point;
+	end;	// get_texcoord
+	
+
+    //
+	// get list of texture coordinates from a list of points
+	//
+	
+	
+	texcoords type question get_texcoords
+		at vectors type points;
+		towards vectors type normals;
+	is
+		if some points then
+		    vector texcoords[min points .. max points];
+		    
+		    for integer counter = min points .. max points do
+		        scalar t = (counter - min points) / (num points - 1);
+		        texcoords[counter] = <t 0 0>;
+		    end;
+		    
+		    answer texcoords;
+	    else
+	    	answer none;
+	    end;
+	end;    // get_texcoords
+	
+
+    //	
+	// get grid of texture coordinates from a grid of points
+	//
+	
+	
+	texcoord_grid type question get_texcoord_grid
+		at vector_grid type point_grid;
+		towards vector_grid type normal_grid;
+	is
+		if some point_grid then
+			integer rows = num point_grid - 1;
+			integer columns = num point_grid[] - 1;
+			answer (square_vector_grid rows by columns with
+				vertex = start; side1 = <direction.x 0 0>; side2 = <0 direction.y 0>);
+		else
+			answer none;
+		end;
+	end;	// get_texcoord_grid
+end;	// parametric_mapping
+
+
+abstract subject transformable_texture_mapping
+extends
+    copyable texture_mapping
+does
+    // constructor
+    //
+	verb new with
+		trans type trans;
+	end;
+	
+	// attributes setting methods
+	//
+	verb set_trans
+		to trans type trans;
+	end;
+
+	// get texture coordinates from a point
+	//
+	abstract texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	end;
+	
+	// copyable methods
+	//
+    verb copy
+        from transformable_texture_mapping type source;
+    end;
+    abstract transformable_texture_mapping type question clone;
+has
+    // transformable attributes
+    //
+	trans type trans, inverse_trans;
+is
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+		trans type trans;
+	is
+		set_trans to trans;	
+	end;	// new
+	
+
+	//
+	// attributes setting methods
+	//
+	
+	
+	verb set_trans
+		to trans type trans;
+	is
+		transformable_texture_mapping's trans = trans;
+		transformable_texture_mapping's inverse_trans = trans;
+		transformable_texture_mapping's inverse_trans invert;
+	end;	// set_trans
+	
+
+    //	
+	// copyable methods
+	//
+	
+	
+    verb copy
+        from transformable_texture_mapping type source;
+    is    
+    	trans = source's trans;
+    	inverse_trans = source's inverse_trans;
+    end;    // copy
+end;	// transformable_texture_mapping
+
+
+//
+// default parametric texture mapping
+//
+
+
+texture_mapping type unit_parametric_mapping is new parametric_mapping;

@@ -1,0 +1,116 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          othello_board.omar            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of the shape of an othello        }
+{       board.                                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do othello_board_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape othello_board with
+	integer rows = 8, columns = 8;
+	color type board_color1 = evergreen;
+	color type board_color2 = grey;
+	color type line_color = white;
+	scalar thickness = .2;
+	integer steps = 2;
+	boolean subdivide is true;
+	boolean show_lines is true;
+is
+	shape lines is
+		scalar row_size = columns / 2;
+		scalar column_size = rows / 2;
+		// horizontal lines
+		//
+		for integer row = 1 .. rows - 1 do
+			scalar offset = row - column_size;
+			line [<-row_size offset 0> <row_size offset 0>];
+		end;
+		// vertical lines
+		//
+		for integer column = 1 .. columns - 1 do
+			scalar offset = column - row_size;
+			line [<offset (-column_size) 0> <offset column_size 0>];
+		end;
+	end;    // lines
+
+	shape subdivided_board with
+		color type color1 = board_color1;
+		color type color2 = board_color2;
+	is
+		shape chess_square is
+			if thickness <> 0 then
+				block with
+					scale by .5 along <1 0 0>;
+					scale by .5 along <0 1 0>;
+					scale by (thickness / 2) along <0 0 1>;
+					move to <0 0 (thickness / 2)>;
+				end;
+			else
+				parallelogram with
+					scale by .5 along <1 0 0>;
+					scale by .5 along <0 1 0>;
+				end;
+			end;
+		end;    // chess_square
+
+		for integer row = 1 .. rows do
+			for integer column = 1 .. columns do
+				scalar column_offset = (columns + 1) / 2;
+				scalar row_offset = (rows + 1) / 2;
+				color type square_color;
+				if (row + column) mod 2 = 1 then
+					square_color = color1;
+				else
+					square_color = color2;
+				end;
+				chess_square with
+					move to <(column - column_offset)
+						(row - row_offset) 0>;
+					color = square_color;
+				end;
+			end;
+		end;
+	end;    // subdivided_board
+	if subdivide then
+		subdivided_board;
+	else
+		block with
+			scale by (columns / 2)  along <1 0 0>;
+			scale by (rows / 2) along <0 1 0>;
+			scale by (thickness / 2) along <0 0 1>;
+			move to <0 0 (thickness / 2)>;
+			color = board_color1;
+		end;
+	end;
+	if show_lines then
+		lines with
+			move to <0 0 (thickness + .02)>;
+			color = line_color;
+		end;
+	end;
+end;    // othello_board
+
+anim othello_board_anim
+	args type args;
+with
+	args check;
+is
+	shape scene is
+		othello_board with
+			rows = 4;
+			columns = 6;
+		end;
+	end;
+	mouse_controlled_shape scene with
+		auto_camera is on;
+	end;
+end;    // othello_board_anim

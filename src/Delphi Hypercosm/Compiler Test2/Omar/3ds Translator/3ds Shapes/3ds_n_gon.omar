@@ -1,0 +1,43 @@
+do n_gon_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_n_gon.ores";
+include "system/3ds_circle.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim n_gon_anim
+is
+	shape scene with
+	    scalar time = 0;
+	is
+		translated_3ds_n_gon with
+		    radius = 50;
+		    sides = 7 + trunc(sin(time * 90) * 5);
+		    circumscribed is true;
+		    color = dark blue;
+    	end;
+    	
+    	translated_3ds_circle with
+    		radius = 50;
+    		steps = 8;
+    	end;
+
+		translated_3ds_n_gon with
+		    radius = 50;
+		    sides = 7 + trunc(sin(time * 90) * 5);
+		    circumscribed is false;
+		    color = red;
+    	end;
+    			
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS NGon" with
+		auto_camera is on;
+	end;
+end;	// n_gon_anim

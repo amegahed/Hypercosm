@@ -1,0 +1,253 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         vector_volumes.ores            3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for representing       }
+{                    and manipulating grids.                    }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/vector_volume.ores";
+include "system/comparisons.ores";
+
+verb roundify
+	vector reference point;
+	by scalar roundness;
+is
+	scalar x = point dot <1 0 0>;
+	scalar y = point dot <0 1 0>;
+	scalar z = point dot <0 0 1>;
+	scalar d = vlength of point;
+	
+	if d > 0 then
+		scalar factor = (larger of (larger of (abs x) and (abs y))
+			and (abs z)) / d * roundness + (1 - roundness);
+			
+		point = itself * factor;
+	end;
+end;    // roundify
+
+verb roundify2
+	scalar reference x, y;
+	by scalar roundness;
+is
+	scalar d = sqrt (x * x + y * y);
+	if d > 0 then
+		scalar factor = (larger of (abs x) and (abs y)) / d * 
+			roundness + (1 - roundness);
+				
+		x = itself * factor;
+		y = itself * factor;
+	end;
+end;    // roundify2
+
+vector_volume type question cube_vector_volume
+	integer levels;
+	of integer rows;
+	by integer columns;
+is
+	vector_volume type vector_volume;
+	dim vector_volume[0..levels, 0..rows, 0..columns];
+	for integer level = 0..levels do
+		scalar tz = level / levels;
+		scalar z = tz * 2 - 1;
+		
+		for integer row = 0..rows do
+			scalar ty = row / rows;
+			scalar y = ty * 2 - 1;
+			
+			for integer column = 0..columns do
+				scalar tx = column / columns;
+				scalar x = tx * 2 - 1;
+				
+				vector_volume[level, row, column] = <x y z>;
+			end;
+		end;
+	end;
+
+	answer vector_volume;
+end;    // cube_vector_volume
+
+vector_volume type question cylinder_vector_volume
+	integer levels;
+	of integer rows;
+	by integer columns;
+with
+	scalar umin = 0, umax = 360;
+	scalar rmin = 0, rmax = 1;
+is
+	vector_volume type vector_volume;
+	if umin > umax then
+		umin = itself - 360;
+	end;
+	dim vector_volume[0..levels, 0..rows, 0..columns];
+	for integer row = 0..rows do
+		scalar tx = row / rows;
+		scalar u = umin + (umax - umin) * tx;
+		scalar cos_u = cos u;
+		scalar sin_u = sin u;
+		
+		for integer column = 0..columns do
+			scalar ty = column / columns;
+			scalar r = rmin + (rmax - rmin) * ty;
+			scalar x = cos_u * r;
+			scalar y = sin_u * r;
+			
+			for integer level = 0..levels do
+				scalar tz = level / levels;
+				scalar z = tz * 2 - 1;
+				
+				vector_volume[level, row, column] = <x y z>;
+			end;
+		end;
+	end;
+
+	answer vector_volume;
+end;    // cylinder_vector_volume
+
+vector_volume type question sphere_vector_volume
+	integer levels;
+	of integer rows;
+	by integer columns;
+with
+	scalar umin = 0, umax = 360;
+	scalar vmin = -90, vmax = 90;
+	scalar rmin = 0, rmax = 1;
+is
+	vector_volume type vector_volume;
+	if umin > umax then
+		umin = itself - 360;
+	end;
+	dim vector_volume[0..levels, 0..rows, 0..columns];
+	for integer level = 0..levels do
+		scalar tz = level / levels;
+		scalar v = vmin + (vmax - vmin) * tz;
+		
+		for integer row = 0..rows do
+			scalar ty = row / rows;
+			scalar r = rmin + (rmax - rmin) * ty;
+			
+			for integer column = 0..columns do
+				scalar tx = column / columns;
+				scalar u = umin + (umax - umin) * tx;
+				// rotate for lattitude
+				//
+				scalar x = cos (v) * r;
+				scalar y = 0;
+				scalar z = sin (v) * r;
+				// rotate for longitude
+				//
+				scalar cosine = cos (u);
+				scalar sine = sin (u);
+				scalar new_x = (cosine * x) - (sine * y);
+				scalar new_y = (cosine * y) + (sine * x);
+				
+				vector_volume[level, row, column] = <new_x new_y z>;
+			end;
+		end;
+	end;
+
+	answer vector_volume;
+end;    // sphere_vector_volume
+
+vector_volume type question square_cylinder_vector_volume
+	integer levels;
+	of integer rows;
+	by integer columns;
+with
+	scalar roundness = .5;
+is
+	vector_volume type vector_volume;
+	dim vector_volume[0..levels, 0..rows, 0..columns];
+	for integer column = 0..columns do
+		scalar tx = column / columns;
+		scalar x = tx * 2 - 1;
+		
+		for integer row = 0..rows do
+			scalar ty = row / rows;
+			scalar y = ty * 2 - 1;
+			scalar x2 = x;
+			scalar y2 = y;    
+			
+			roundify2 x2 y2 by roundness;
+			for integer level = 0..levels do
+				scalar tz = level / levels;
+				scalar z = tz * 2 - 1;
+				
+				vector_volume[level, row, column] = <x2 y2 z>;
+			end;
+		end;
+	end;
+
+	answer vector_volume;
+end;    // square_cylinder_vector_volume
+
+vector_volume type question square_cone_vector_volume
+	integer levels;
+	of integer rows;
+	by integer columns;
+with
+	scalar roundness = .5;
+	scalar radius = .5;
+is
+	vector_volume type vector_volume;
+	dim vector_volume[0..levels, 0..rows, 0..columns];
+	for integer column = 0..columns do
+		scalar tx = column / columns;
+		scalar x = tx * 2 - 1;
+		
+		for integer row = 0..rows do
+			scalar ty = row / rows;
+			scalar y = ty * 2 - 1;
+			scalar x2 = x;
+			scalar y2 = y;
+			
+			roundify2 x2 y2 by roundness;
+			for integer level = 0..levels do
+				scalar tz = level / levels;
+				scalar z = tz * 2 - 1;
+				scalar r = 1 - (1 - radius) * tz;
+				
+				vector_volume[level, row, column] = <(x2 * r) 
+					(y2 * r) z>;
+			end;
+		end;
+	end;
+
+	answer vector_volume;
+end;    // square_cone_vector_volume
+
+vector_volume type question square_sphere_vector_volume
+	integer levels;
+	of integer rows;
+	by integer columns;
+with
+	scalar roundness = .5;
+is
+	vector_volume type vector_volume;
+	dim vector_volume[0..levels, 0..rows, 0..columns];
+	for integer column = 0..columns do
+		scalar tx = column / columns;
+		scalar x = tx * 2 - 1;
+		
+		for integer row = 0..rows do
+			scalar ty = row / rows;
+			scalar y = ty * 2 - 1;
+			
+			for integer level = 0..levels do
+				scalar tz = level / levels;
+				scalar z = tz * 2 - 1;
+				vector v = <x y z>;
+				
+				roundify v by roundness;
+				vector_volume[level, row, column] = v;
+			end;
+		end;
+	end;
+
+	answer vector_volume;
+end;    // square_sphere_vector_volume

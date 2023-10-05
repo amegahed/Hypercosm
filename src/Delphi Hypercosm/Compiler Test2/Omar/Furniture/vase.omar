@@ -1,0 +1,61 @@
+{***************************************************************}
+{                          vase.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do vase_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/plant.omar";
+
+
+shape vase is
+    sphere with
+        radius = 6;
+        scale by 2 along <0 0 1>;
+    end;
+    sphere with
+        radius = 4.5;
+        scale by .2 along <0 0 1>;
+                move to <0 0 11.2>;
+    end;
+    sphere with
+        radius = 3.5;
+        scale by .1 along <0 0 1>;
+                move to <0 0 11.8>;
+    end;
+end;    // vase
+
+
+shape plant_vase is
+    vase;
+    plant with material is plastic colored evergreen polished semi shiny; end;
+end;    // plant_vase
+
+
+anim vase_anim
+    args type args;
+with
+        eye = <10 -100 20>;
+        lookat = <0 0 20>;
+    double_buffer is on;
+    args check;
+is
+        shape scene is
+                plant_vase with
+                        move to <0 0 12>;
+                end;
+                plane with
+                        magnify by 10;
+                        render_mode is wireframe;
+                end;
+        end;    // scene
+
+        mouse_controlled_shape scene;
+end;    // vase_anim

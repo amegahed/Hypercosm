@@ -1,0 +1,302 @@
+Hypercosm 0.99
+bgn 15 4 2 27 3 80 5 7 2 2 2 9
+tyd
+cls 0 1 1
+nil
+nil
+nil
+sbs
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+tyd
+cls 0 2 0
+trf 1
+nil
+nil
+sbs
+nil
+ind 0 0
+fdr
+erf 2
+fid 2
+nil
+nil
+nil
+cdd 1 0
+gid 1
+nil
+con 0 1 0 2 2 0
+trf 2
+std 0 0
+lid 1
+nil
+nil
+std 0 0
+lid 1
+nil
+nil
+nil
+ind 0 0
+lid 2
+ina
+its
+ili 0
+nil
+nil
+nil
+nil
+nil
+ina
+sdr
+lid 1
+fid 2
+lid 2
+nil
+cdd 1 0
+gid 3
+nil
+pro 0 2 0 1 1 1
+trf 2
+std 0 0
+lid 1
+nil
+nil
+std 0 0
+lid 1
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+bis
+stw
+cax
+abl 1
+sab 1 8
+nil
+cli 118
+cli 97
+cli 108
+cli 117
+cli 101
+cli 32
+cli 61
+cli 32
+nil
+bis
+inw
+sdr
+lid 1
+fid 2
+bis
+nlw
+nil
+nil
+nil
+nil
+crf 1
+nil
+ard 1 0
+lid 5
+sdm
+abl 1
+nil
+nil
+apa
+its
+sax
+abl 1
+sab 1 2
+nil
+snw
+trf 2
+sms
+crf 1
+gid 1
+spa
+lid 1
+nit
+trf 2
+nil
+ina
+lid 2
+ili 10
+nil
+nil
+nil
+nil
+snw
+trf 2
+sms
+crf 1
+gid 1
+spa
+lid 1
+nit
+trf 2
+nil
+ina
+lid 2
+ili 20
+nil
+nil
+nil
+nil
+nil
+cdd 1 0
+gid 6
+nil
+pro 0 0 0 3 1 0
+nil
+nil
+ard 0 0
+lid 1
+sdm
+abl 1
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+flp
+foe
+dms
+crf 2
+gid 1
+spa
+lid 1
+nid 0 1 2
+nil
+nil
+nil
+nil
+nil
+nil
+rfd 0 0
+lid 2
+nil
+sas
+ail 1
+idx
+nil
+nil
+abl 1
+sab 0 0
+nil
+abs
+lid 1
+erf 56
+nil
+nil
+asr 0
+erf 56
+erf 55
+brf 3
+nil
+cdd 1 0
+gid 8
+nil
+pro 0 0 0 0 0 0
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+sms
+crf 3
+gid 6
+nil
+apa
+lid 1
+gid 5
+nil
+nil
+nil
+nil
+sms
+crf 3
+gid 6
+nil
+sxa
+asr 0
+lid 1
+abs
+erf 62
+sab 0 0
+ele
+sax
+abl 1
+sab 1 2
+nil
+snw
+trf 2
+sms
+crf 1
+gid 1
+spa
+lid 1
+nit
+trf 2
+nil
+ina
+lid 2
+ili 30
+nil
+nil
+nil
+nil
+snw
+trf 2
+sms
+crf 1
+gid 1
+spa
+lid 1
+nit
+trf 2
+nil
+ina
+lid 2
+ili 40
+nil
+nil
+nil
+nil
+nil
+abl 1
+brf 4
+nil
+nil
+snw
+trf 2
+nil
+nil
+nil
+nil
+nil
+nil
+nil
+sms
+crf 4
+gid 8
+nil
+nil
+nil
+nil
+nil
+nil
+end

@@ -1,0 +1,58 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         pressable_actor.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "system/acting.ores";
+include "system/manipulation.ores";
+include "system/manipulation_behaviors.ores";
+
+abstract subject pressable_actor
+extends
+	pressable touchable_actor
+does
+	// acting methods
+	//
+	verb act;
+	
+	// rendering methods
+	//
+	abstract shape instance;
+	
+	// touching methods
+	//
+	abstract verb touch
+		from vector location;
+		towards vector direction;
+	end;    // touch
+	
+	// pressing methods
+	//
+	abstract verb press
+		from vector location;
+		towards vector direction;
+	with
+		boolean double_click is false;
+	end;    // press
+
+	abstract verb release
+		from vector location;
+		towards vector direction;
+	end;    // release
+is
+	//
+	// acting methods
+	//
+	
+	verb act is
+		manipulate touchable type pressable_actor;
+	end;    // act
+end;    // pressable_actor

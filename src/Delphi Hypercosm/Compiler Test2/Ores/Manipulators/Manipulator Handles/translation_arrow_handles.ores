@@ -1,0 +1,195 @@
+{***************************************************************}
+{                   translation_arrow_handles.ores              }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of an object for moving           }
+{       objects using direct manipulation.                      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/manipulation.ores";
+include "system/orientations.ores";
+include "system/arrows.ores";
+include "system/handles.ores";
+include "system/shape_manipulator.ores";
+
+
+// translation handles
+//
+
+
+texture type translation_arrow_texture is (new texture using 
+    (new image named "translate_arrow.gif") with mipmapping is off);
+    
+material type unselected_translation_handle_material is 
+    constant_color white textured translation_arrow_texture;
+    
+material type selected_translation_handle_material is 
+    constant_color green textured translation_arrow_texture;
+        
+material type highlighted_translation_handle_material is 
+    constant_color yellow textured translation_arrow_texture;
+
+material type center_translation_handle_material is 
+    plastic colored red;
+
+
+material type question get_translation_handle_material
+    of handle_state type handle_state is unselected;
+is
+    when handle_state is
+        unselected:
+            answer unselected_translation_handle_material;
+        end;
+        selected:
+            answer selected_translation_handle_material;
+        end;
+        highlighted:
+            answer highlighted_translation_handle_material;
+        end;    
+    end;    // when
+end;    // get_translation_handle_material
+    
+    
+shape translation_handle
+    as handle_state type handle_state is unselected;
+    along vector x_axis = <1 0 0>;
+    by vector y_axis = <0 1 0>;
+is
+    blank_label with
+        one_sided is false;
+        orient_axes2 trans from <1 0 0> <0 1 0> to normalized x_axis normalized y_axis;
+        rotate by 45 around x_axis cross y_axis;
+        material is get_translation_handle_material of handle_state;
+    end;
+    sphere with
+        magnify by .25;
+        material is center_translation_handle_material;
+    end;
+end;    // translation_handle
+
+
+shape xy_translation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 2 translation handles and handle states per axis
+    //
+    handle_state type handle_states[];
+is
+    handle_state type handle_state1 is unselected;
+    handle_state type handle_state2 is unselected;
+    
+    if some handle_states then
+        handle_state1 is handle_states[1];
+        handle_state2 is handle_states[2];
+    end;    
+
+    if handle_state1 isn't hidden then
+        translation_handle as handle_state1 along trans's y_axis by trans's x_axis with
+            magnify by handle_size;
+            move to trans's origin - trans's z_axis;
+        end;
+    end;
+    if handle_state2 isn't hidden then
+        translation_handle as handle_state2 along trans's x_axis by trans's y_axis with
+            magnify by handle_size;
+            move to trans's origin + trans's z_axis;
+        end;
+    end;
+end;    // xy_translation_handles
+
+
+shape yz_translation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 2 translation handles and handle states per axis
+    //
+    handle_state type handle_states[];
+is
+    handle_state type handle_state1 is unselected;
+    handle_state type handle_state2 is unselected;
+    
+    if some handle_states then
+        handle_state1 is handle_states[1];
+        handle_state2 is handle_states[2];
+    end;   
+    
+    if handle_state1 isn't hidden then
+        translation_handle as handle_state1 along trans's z_axis by trans's y_axis with
+            magnify by handle_size;
+            move to trans's origin - trans's x_axis;
+        end;
+    end;
+    if handle_state2 isn't hidden then
+        translation_handle as handle_state2 along trans's y_axis by trans's z_axis with
+            magnify by handle_size;
+            move to trans's origin + trans's x_axis;
+        end;
+    end;
+end;    // yz_translation_handles
+
+
+shape xz_translation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 2 translation handles and handle states per axis
+    //
+    handle_state type handle_states[];
+is
+    handle_state type handle_state1 is unselected;
+    handle_state type handle_state2 is unselected;
+    
+    if some handle_states then
+        handle_state1 is handle_states[1];
+        handle_state2 is handle_states[2];
+    end; 
+    
+    if handle_state1 isn't hidden then
+        translation_handle as handle_state1 along trans's x_axis by trans's z_axis with
+            magnify by handle_size;
+            move to trans's origin - trans's y_axis;
+        end;
+    end;
+    if handle_state2 isn't hidden then
+        translation_handle as handle_state2 along trans's z_axis by trans's x_axis with
+            magnify by handle_size;
+            move to trans's origin + trans's y_axis;
+        end;
+    end;   
+end;    // xz_translation_handles
+
+
+shape translation_handles
+    of trans type reference trans;
+with
+    scalar handle_size = default_handle_size;
+    
+    // there are 2 translation handles and handle states per axis
+    //
+    handle_state type xy_handle_states[];
+    handle_state type yz_handle_states[];
+    handle_state type xz_handle_states[];
+is
+    xy_translation_handles of trans with
+        handle_size = static handle_size;
+        handle_states is xy_handle_states;
+    end;
+    yz_translation_handles of trans with
+        handle_size = static handle_size;
+        handle_states is yz_handle_states;
+    end;
+    xz_translation_handles of trans with
+        handle_size = static handle_size;
+        handle_states is xz_handle_states;
+    end;   
+end;    // translation_handles

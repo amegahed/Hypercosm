@@ -1,0 +1,76 @@
+{***************************************************************}
+{                         shape_actor.ores                      }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{      Contains standard "actor" subjects, which can be used    }
+{      to regulate animations and enable behavior patterns.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/acting.ores";
+
+
+//
+// actors that don't advance at all (useful for using shapes
+// in situations are intended for actor).
+//
+
+
+subject shape_actor
+extends
+    actable object
+does
+	// constructor
+	//
+    verb new
+        of shape form;
+    end;
+    
+    // renderable method
+    //
+    shape instance;
+    
+    // actable method
+    //
+    verb act;
+has
+	// shape actor attributes
+	//
+    shape form;
+is
+	//
+	// constructor
+	//
+	
+	
+    verb new
+        of shape form;
+    is
+        shape_actor's form does form;
+    end;    // new
+    
+
+	//
+    // renderable method
+    //
+    
+        
+    shape instance is
+        form;
+    end;    // instance
+    
+
+	//
+    // actable method
+    // 
+    
+       
+    verb act is
+    	// do nothing
+    	//
+    end;    // act
+end;    // shape_actor

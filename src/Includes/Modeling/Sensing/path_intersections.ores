@@ -1,0 +1,727 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        path_intersections.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains procedures useful in finding intersections     }
+{       of paths and objects.                                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+// Extensive examples of how these functions can be used are in:
+// OMAR/Detection/ball_intersections.omar
+// OMAR/Detection/ball_bounce.omar
+
+// Given two spheres (or points if the sphere radii are 0) moving at
+// constant speeds along two straight line paths, determines if the spheres
+// will intersect, and if so, when.  The t parameter will be set to a value
+// between 0 (intersect at the start of the paths) and 1 (intersect at the
+// end of the paths) if the spheres intersect at all.
+//
+boolean question sphere_path_intersects_sphere_path
+	vector path1_start;
+	vector path1_end;
+	vector path2_start;
+	vector path2_end;
+	at scalar reference t refers to none;
+with
+	scalar radius_sum = 0;  // sum of the radii of the spheres, or 0 for points
+	boolean overlapping_objects_collide is true;
+is
+	vector diff_locations;
+	vector diff_directions;
+	scalar qa, qb, qc, qd;
+	scalar sqrt_qd;
+	scalar numerator;
+	scalar first_t;
+	boolean hit is false;
+	diff_locations = path1_start - path2_start;
+	diff_directions = (path1_end - path2_end) - diff_locations;
+	qa = diff_directions dot diff_directions;
+	qc = (diff_locations dot diff_locations) - (radius_sum * radius_sum);
+	if qa > 0 then
+		qb = 2.0 * (diff_directions dot diff_locations);
+		qd = (qb * qb) - (4.0 * qa * qc);
+		if qd >= 0 then
+			sqrt_qd = sqrt qd;
+			numerator = (-qb) - sqrt_qd;
+			if numerator < 0 then
+
+				// first point of intersection is before the path's start
+				//
+				numerator = (-qb) + sqrt_qd;
+				if numerator >= 0 then
+
+					// second point of intersection is after the path's start
+					//
+					if overlapping_objects_collide then
+						hit is true;
+						first_t = 0;
+					else
+						first_t = numerator / (2.0 * qa);
+						if first_t <= 1 then
+
+							// second point of intersection is before the path's end
+							//
+							hit is true;
+						end;
+					end;
+				end;
+			else
+				// first point of intersection is after the path's start
+				//
+				first_t = numerator / (2.0 * qa);
+				if first_t <= 1 then
+
+					// first point of intersection is before the path's end
+					//
+					hit is true;
+				end;
+			end;
+		end;
+	else
+		// the paths are parallel and the same length, so the spheres are
+		// either never intersecting or always intersecting
+		//
+		if (qc = 0) or (overlapping_objects_collide and (qc < 0)) then
+			hit is true;
+			first_t = 0;
+		end;
+	end;
+	if hit then
+		if not (t refers to none) then
+			t = first_t;
+		end;
+		answer yes;
+	end;
+	
+	answer no;
+end;
+
+// Given a sphere (or a point if the sphere radius is 0) moving at a
+// constant speed along a straight line path, determines if the sphere
+// will intersect a line, and if so, when.  The path_t parameter will be
+// set to a value between 0 (intersect at the start of the path) and 1
+// (intersect at the end of the path) if the sphere intersects the line at
+// all.  In the case of an intersection, the line_t parameter will be set
+// to a value representing where on the line the intersection occured.
+// Note that the line is considered to extend infinitely beyond its endpoints
+// in both directions.
+//
+boolean question sphere_path_intersects_line
+	vector path_start;
+	vector path_end;
+	vector line_endpoint1;
+	vector line_endpoint2;
+	at scalar reference path_t refers to none;
+with
+	scalar radius = 0;  // the radius of the sphere, or 0 for a point
+	scalar reference line_t refers to none;
+	boolean overlapping_objects_collide is true;
+is
+	vector dP, dL, dLP;
+	scalar dLdL, dPdL, dLdLP;
+	scalar qa, qb, qc, qd;
+	scalar sqrt_qd;
+	scalar numerator;
+	scalar first_t;
+	boolean hit is false;
+	dP = path_end - path_start;
+	dL = line_endpoint2 - line_endpoint1;
+	dLP = path_start - line_endpoint1;
+	dLdL = dL dot dL;
+	if dLdL = 0 then
+
+		// the target line is degenerate.  The best thing to do is return no intersection.
+		//
+		answer no;
+	end;
+	dPdL = dP dot dL;
+	dLdLP = dL dot dLP;
+	qa = (dP dot dP) - ((dPdL * dPdL) / dLdL);
+	qc = (dLP dot dLP) - ((dLdLP * dLdLP) / dLdL) - (radius * radius);
+	if qa <> 0 then
+		qb = 2.0 * ((dP dot dLP) - ((dPdL * dLdLP) / dLdL));
+		qd = (qb * qb) - (4.0 * qa * qc);
+		if qd >= 0 then
+			sqrt_qd = sqrt qd;
+			numerator = (-qb) - sqrt_qd;
+			if numerator < 0 then
+
+				// first point of intersection is before the path's start
+				//
+				numerator = (-qb) + sqrt_qd;
+				if numerator >= 0 then
+
+					// second point of intersection is after the path's start
+					//
+					if overlapping_objects_collide then
+						hit is true;
+						first_t = 0;
+					else
+						first_t = numerator / (2.0 * qa);
+						if first_t <= 1 then
+
+							// second point of intersection is before the path's end
+							//
+							hit is true;
+						end;
+					end;
+				end;
+			else
+				// first point of intersection is after the path's start
+				//
+				first_t = numerator / (2.0 * qa);
+				if first_t <= 1 then
+
+					// first point of intersection is before the path's end
+					//
+					hit is true;
+				end;
+			end;
+		end;
+	else
+		// the sphere is either not moving or is moving parallel to the line,
+		// so the path intersects at time 0 if the initial distance is less
+		// than the radius
+		//
+		if (qc = 0) or (overlapping_objects_collide and (qc < 0)) then
+			hit is true;
+			first_t = 0;
+		end;
+	end;
+	if hit then
+		if not (path_t refers to none) then
+			path_t = first_t;
+		end;
+		if not (line_t refers to none) then
+
+			// compute the line_t corresponding to the point on the line
+			// that is closest to the point where the sphere will be when it
+			// first intersects the line
+			//
+			vector P = path_start + (first_t * dP);
+			line_t = (dL dot (P - line_endpoint1)) / dLdL;
+		end;
+		answer yes;
+	end;
+	answer no;
+end;
+
+// Given a sphere (or a point if the sphere radius is 0) moving at a
+// constant speed along a straight line path, determines if the sphere
+// will intersect a plane, and if so, when.  The path_t parameter will be
+// set to a value between 0 (intersect at the start of the path) and 1
+// (intersect at the end of the path) if the sphere intersects the plane at
+// all.  In the case of an intersection, the plane_intersect parameter will be
+// set to the location on the plane where the intersection occured.
+// Note that the plane is considered to extend infinitely.
+//
+boolean question sphere_path_intersects_plane
+	vector path_start;
+	vector path_end;
+	vector plane_origin;
+	vector plane_normal;
+	at scalar reference path_t refers to none;
+with
+	scalar radius = 0;  // the radius of the sphere, or 0 for a point
+	vector reference plane_intersect refers to none;  // point of intersection
+	boolean overlapping_objects_collide is true;
+is
+	scalar lenN, dPN;
+	vector dP, dPO;
+	scalar t1, t2;
+	scalar first_t;
+	boolean hit is false;
+	dP = path_end - path_start;
+	lenN = vlength of plane_normal;
+	dPO = plane_origin - path_start;
+	dPN = dP dot plane_normal;
+	if dPN <> 0 then
+		t1 = ((dPO dot plane_normal) - (radius * lenN)) / dPN;
+		t2 = ((dPO dot plane_normal) + (radius * lenN)) / dPN;
+		if t1 <= t2 then
+			first_t = t1;
+		else
+			first_t = t2;
+			t2 = t1;
+		end;
+		if first_t < 0 then
+
+			// first point of intersection is before the path's start
+			//
+			first_t = t2;
+			if first_t >= 0 then
+
+				// second point of intersection is after the path's start
+				//
+				if overlapping_objects_collide then
+					hit is true;
+					first_t = 0;
+				elseif first_t <= 1 then
+
+					// second point of intersection is before the path's end
+					//
+					hit is true;
+				end;
+			end;
+		else
+			// first point of intersection is after the path's start
+			//
+			if first_t <= 1 then
+
+				// first point of intersection is before the path's end
+				//
+				hit is true;
+			end;
+		end;
+	else
+		// the path is parallel to the plane - see if we never or always intersect
+		//
+		if lenN = 0 then
+
+			// the plane is mis-specified, return no intersection
+			//
+			answer no;
+		else
+			scalar d = (abs (dPO dot plane_normal) / lenN) - radius;
+			if (d = 0) or (overlapping_objects_collide and (d < 0)) then
+				hit is true;
+				first_t = 0;
+			end;
+		end;
+	end;
+	if hit then
+		if not (path_t refers to none) then
+			path_t = first_t;
+		end;
+		if not (plane_intersect refers to none) then
+
+			// compute the point on the plane that is closest to the point
+			// where the sphere will be when it first intersects the plane
+			//
+			vector P = path_start + (first_t * dP);
+			scalar projNPO = ((plane_origin - P) dot plane_normal) / (plane_normal dot plane_normal);
+			plane_intersect = P + (plane_normal * projNPO);
+		end;
+		answer yes;
+	end;
+	answer no;
+end;
+
+// Given a sphere (or a point if the sphere radius is 0) moving at a
+// constant speed along a straight line path, determines if the sphere
+// will intersect a line segment, and if so, when.  The path_t parameter will
+// be set to a value between 0 (intersect at the start of the path) and 1
+// (intersect at the end of the path) if the sphere intersects the line at
+// all.  In the case of an intersection, the line_t parameter will be set
+// to a value representing where on the line the intersection occured.
+// Note that the line segment is considered to only run from one endpoint to
+// the other.  If the line_t value returned is 0 or 1 then the sphere
+// collided with one of the segment's endpoints.
+//
+boolean question sphere_path_intersects_line_segment
+	vector path_start;
+	vector path_end;
+	vector line_endpoint1;
+	vector line_endpoint2;
+	at scalar reference path_t refers to none;
+with
+	scalar radius = 0;  // the radius of the sphere, or 0 for a point
+	scalar reference line_t refers to none;
+	boolean overlapping_objects_collide is true;
+is
+	scalar lt, pt;
+	vector p;
+	boolean hit;
+	if line_endpoint1 <> line_endpoint2 then
+		hit is (sphere_path_intersects_line
+			path_start path_end line_endpoint1 line_endpoint2 at pt
+		with
+			radius = static radius;
+			line_t refers to lt;
+			overlapping_objects_collide is true;);
+		if hit then
+			if (lt >= 0) and (lt <= 1) then
+				if overlapping_objects_collide or (pt > 0) then
+					if not (path_t refers to none) then
+						path_t = pt;
+					end;
+					if not (line_t refers to none) then
+						line_t = lt;
+					end;
+					answer yes;
+				else
+					// The ball's initial position touches or overlaps the
+					// line within the line segment's bounds.  It may not
+					// collide with anything, or it may hit the line or any
+					// endpoint first.  The only thing to do now is to test
+					// against the line and both endpoints and see what's
+					// closest.
+					//
+					scalar min_pt = 2;
+					boolean some_hit is false;
+					hit is (sphere_path_intersects_line
+						path_start path_end line_endpoint1 line_endpoint2 at pt
+					with
+						radius = static radius;
+						line_t refers to lt;
+						overlapping_objects_collide is false;);
+					if hit then
+						some_hit is true;
+						min_pt = pt;
+					end;
+					hit is (sphere_path_intersects_sphere_path
+						path_start path_end line_endpoint1 line_endpoint1 at pt
+					with
+						radius_sum = radius;
+						overlapping_objects_collide is false;);
+					if hit and (pt < min_pt) then
+						some_hit is true;
+						min_pt = pt;
+						lt = 0;
+					end;
+					hit is (sphere_path_intersects_sphere_path
+						path_start path_end line_endpoint2 line_endpoint2 at pt
+					with
+						radius_sum = radius;
+						overlapping_objects_collide is false;);
+					if hit and (pt < min_pt) then
+						some_hit is true;
+						min_pt = pt;
+						lt = 1;
+					end;
+					if some_hit then
+						if not (path_t refers to none) then
+							path_t = min_pt;
+						end;
+						if not (line_t refers to none) then
+							line_t = lt;
+						end;
+						answer yes;
+					else
+						answer no;
+					end;
+				end;
+			else
+				// We intersected the line, but not within the line segment.
+				// Fall through to boundary test.
+			end;
+		else
+			// No intersection at all.
+			//
+			answer no;
+		end;
+	else
+		// Degenerate line segment.  Intersect against an endpoint.
+		//
+		lt = 0;
+	end;
+
+	// Boundary test.  Determine if we intersect the closest endpoint.
+	//
+	if lt <= 0 then
+		p = line_endpoint1;
+		lt = 0;
+	else
+		p = line_endpoint2;
+		lt = 1;
+	end;
+	hit is (sphere_path_intersects_sphere_path
+		path_start path_end p p at pt
+	with
+		radius_sum = radius;
+		overlapping_objects_collide is static overlapping_objects_collide;);
+	if hit then
+		if not (path_t refers to none) then
+			path_t = pt;
+		end;
+		if not (line_t refers to none) then
+			line_t = lt;
+		end;
+		answer yes;
+	end;
+	answer no;
+end;
+
+// Given a sphere (or a point if the sphere radius is 0) moving at a
+// constant speed along a straight line path, determines if the sphere
+// will intersect a parallelogram, and if so, when.  The path_t parameter will
+// be set to a value between 0 (intersect at the start of the path) and 1
+// (intersect at the end of the path) if the sphere intersects the line at
+// all.  In the case of an intersection, the plane_intersect parameter will be
+// set to the location on the plane where the intersection occured, in the
+// range <-1 -1 0> to <1 1 0>.  Correspondingly, the parallelogram is defined
+// by an origin, x_axis, and y_axis, where the parallelogram contains all
+// points (origin + (x * x_axis) + (y * y_axis)) where -1 <= x <= 1 and
+// -1 <= y <= 1.
+//
+boolean question sphere_path_intersects_parallelogram
+	vector path_start;
+	vector path_end;
+	vector plane_origin;
+	vector plane_x_axis;
+	vector plane_y_axis;
+	at scalar reference path_t refers to none;
+with
+	scalar radius = 0;  // the radius of the sphere, or 0 for a point
+	vector reference plane_intersect refers to none;  // point of intersection
+	boolean overlapping_objects_collide is true;
+is
+	scalar lt, pt, min_pt;
+	scalar quadrant_x, quadrant_y;
+	vector intersect_point;
+	vector plane_point;
+	vector N;
+	boolean hit, some_hit;
+	
+	N = plane_x_axis cross plane_y_axis;
+	
+	if N <> <0 0 0> then
+		hit is (sphere_path_intersects_plane
+			path_start path_end plane_origin N at pt
+		with
+			radius = static radius;
+			plane_intersect refers to intersect_point;
+			overlapping_objects_collide is true;);
+		
+		if hit then
+			plane_point = location_in_plane intersect_point
+				plane_origin plane_x_axis plane_y_axis;
+			
+			if (-1 <= plane_point.x <= 1) and (-1 <= plane_point.y <= 1) then
+				if overlapping_objects_collide or (pt > 0) then
+					if not (path_t refers to none) then
+						path_t = pt;
+					end;
+					
+					if not (plane_intersect refers to none) then
+						plane_intersect = plane_point;
+					end;
+					
+					answer yes;
+				else
+					// The ball's initial position touches or overlaps the
+					// plane within the parallelogram's bounds.  It may not
+					// collide with anything, or it may hit the plane or any
+					// edge first.  The only thing to do now is to test against
+					// the plane and all four edges and see what's closest.
+					//
+					min_pt = 2;
+					some_hit is false;
+					
+					hit is (sphere_path_intersects_plane
+						path_start path_end plane_origin N at pt
+					with
+						radius = static radius;
+						plane_intersect refers to intersect_point;
+						overlapping_objects_collide is false;);
+					
+					if hit then
+						some_hit is true;
+						min_pt = pt;
+						plane_point = location_in_plane intersect_point
+							plane_origin plane_x_axis plane_y_axis;
+					end;
+					
+					// x = 1
+					//
+					hit is (sphere_path_intersects_line
+						path_start path_end
+						(plane_origin + plane_x_axis - plane_y_axis)
+						(plane_origin + plane_x_axis + plane_y_axis) at pt
+					with
+						radius = static radius;
+						line_t refers to lt;
+						overlapping_objects_collide is false;);
+					
+					if hit and (pt < min_pt) then
+						some_hit is true;
+						min_pt = pt;
+						plane_point = <1 ((lt * 2) - 1) 0>;
+					end;
+					
+					// x = -1
+					//
+					hit is (sphere_path_intersects_line
+						path_start path_end
+						(plane_origin - plane_x_axis - plane_y_axis)
+						(plane_origin - plane_x_axis + plane_y_axis) at pt
+					with
+						radius = static radius;
+						line_t refers to lt;
+						overlapping_objects_collide is false;);
+					
+					if hit and (pt < min_pt) then
+						some_hit is true;
+						min_pt = pt;
+						plane_point = <-1 ((lt * 2) - 1) 0>;
+					end;
+					
+					// y = 1
+					//
+					hit is (sphere_path_intersects_line
+						path_start path_end
+						(plane_origin - plane_x_axis + plane_y_axis)
+						(plane_origin + plane_x_axis + plane_y_axis) at pt
+					with
+						radius = static radius;
+						line_t refers to lt;
+						overlapping_objects_collide is false;);
+					
+					if hit and (pt < min_pt) then
+						some_hit is true;
+						min_pt = pt;
+						plane_point = <((lt * 2) - 1) 1 0>;
+					end;
+					
+					// y = -1
+					//
+					hit is (sphere_path_intersects_line
+						path_start path_end
+						(plane_origin - plane_x_axis - plane_y_axis)
+						(plane_origin + plane_x_axis - plane_y_axis) at pt
+					with
+						radius = static radius;
+						line_t refers to lt;
+						overlapping_objects_collide is false;);
+					
+					if hit and (pt < min_pt) then
+						some_hit is true;
+						min_pt = pt;
+						plane_point = <((lt * 2) - 1) (-1) 0>;
+					end;
+					
+					if some_hit then
+						if not (path_t refers to none) then
+							path_t = min_pt;
+						end;
+						
+						if not (plane_intersect refers to none) then
+							plane_intersect = plane_point;
+						end;
+						
+						answer yes;
+					else
+						answer no;
+					end;
+				end;
+			else
+				// We intersected the plane, but not within the parallelogram.
+				// Fall through to boundary test.
+			end;
+		else
+			// No intersection at all.
+			//
+			answer no;
+		end;
+	else
+		// Degenerate parallelogram.  Intersect against the origin.
+		//
+		plane_point = <2 0 0>;
+	end;
+
+	// Boundary test.  Determine if we intersect the closest edge or edges.
+	//
+	some_hit is false;
+	min_pt = 2;
+	quadrant_x = plane_point.x;
+	quadrant_y = plane_point.y;
+	
+	if quadrant_x >= 1 then
+
+		// test against the x = 1 edge
+		//
+		hit is (sphere_path_intersects_line_segment
+			path_start path_end
+			(plane_origin + plane_x_axis - plane_y_axis)
+			(plane_origin + plane_x_axis + plane_y_axis) at pt
+		with
+			radius = static radius;
+			line_t refers to lt;
+			overlapping_objects_collide is static overlapping_objects_collide;);
+		
+		if hit and (pt < min_pt) then
+			some_hit is true;
+			min_pt = pt;
+			plane_point = <1 ((lt * 2) - 1) 0>;
+		end;
+	end;
+	
+	if quadrant_x <= -1 then
+
+		// test against the x = -1 edge
+		//
+		hit is (sphere_path_intersects_line_segment
+			path_start path_end
+			(plane_origin - plane_x_axis - plane_y_axis)
+			(plane_origin - plane_x_axis + plane_y_axis) at pt
+		with
+			radius = static radius;
+			line_t refers to lt;
+			overlapping_objects_collide is static overlapping_objects_collide;);
+		
+		if hit and (pt < min_pt) then
+			some_hit is true;
+			min_pt = pt;
+			plane_point = <-1 ((lt * 2) - 1) 0>;
+		end;
+	end;
+	
+	if quadrant_y >= 1 then
+
+		// test against the y = 1 edge
+		//
+		hit is (sphere_path_intersects_line_segment
+			path_start path_end
+			(plane_origin - plane_x_axis + plane_y_axis)
+			(plane_origin + plane_x_axis + plane_y_axis) at pt
+		with
+			radius = static radius;
+			line_t refers to lt;
+			overlapping_objects_collide is static overlapping_objects_collide;);
+		
+		if hit and (pt < min_pt) then
+			some_hit is true;
+			min_pt = pt;
+			plane_point = <((lt * 2) - 1) 1 0>;
+		end;
+	end;
+	
+	if quadrant_y <= -1 then
+
+		// test against the y = -1 edge
+		//
+		hit is (sphere_path_intersects_line_segment
+			path_start path_end
+			(plane_origin - plane_x_axis - plane_y_axis)
+			(plane_origin + plane_x_axis - plane_y_axis) at pt
+		with
+			radius = static radius;
+			line_t refers to lt;
+			overlapping_objects_collide is static overlapping_objects_collide;);
+		
+		if hit and (pt < min_pt) then
+			some_hit is true;
+			min_pt = pt;
+			plane_point = <((lt * 2) - 1) (-1) 0>;
+		end;
+	end;
+	
+	if some_hit then
+		if not (path_t refers to none) then
+			path_t = min_pt;
+		end;
+		
+		if not (plane_intersect refers to none) then
+			plane_intersect = plane_point;
+		end;
+		
+		answer yes;
+	end;
+	
+	answer no;
+end;

@@ -1,0 +1,326 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              alpha.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{   Contains shape definitions for basic extruded uppercase     }
+{   letters.                                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "shapes.ores";
+
+shape letter_a is
+	extrude2 [[2 -3] [.5 3] [0 3] [0 1] [.375 -.5] [-.375 -.5]
+		[0 1] [0 3] [-.5 3] [-2 -3] [-1 -3] [-.5 -1] [.5 -1]
+		[1 -3]];
+end;    // letter_a
+
+shape letter_b is
+	extrude2 [[0 .5] [-1 .5] [-1 2] [-2 2] [-2 -2] [-1 -2] [-1 -.5]
+		[0 -.5]];
+	extrude2 [[1 0] [2 1] [2 2] [1 3] [-2 3] [-2 2] [.5 2] [1 1.5]
+		[0 .5] [0 -.5] [1 -1.5] [.5 -2] [-2 -2] [-2 -3] [1 -3]
+		[2 -2] [2 -1]];
+end;    // letter_b
+
+shape letter_c is
+	extrude2 [[2 1] [2 2] [1 3] [-1 3] [-2 2] [-2 -2] [-1 -3]
+		[1 -3] [2 -2] [2 -1] [1 -1] [1 -1.5] [.5 -2] [-.5 -2]
+		[-1 -1.5] [-1 1.5] [-.5 2] [.5 2] [1 1.5] [1 1] [2 1]];
+end;    // letter_c
+
+shape letter_d is
+	extrude2 [[1 -3] [2 -2] [2 2] [1 3] [-2 3] [-1 2] [.5 2] [1 1.5]
+		[1 -1.5] [.5 -2] [-1 -2] [-1 2] [-2 3] [-2 -3]];
+end;    // letter_d
+
+shape letter_e is
+	extrude2 [[-1 .5] [-1 2] [2 2] [2 3] [-2 3] [-2 -3] [2 -3]
+		[2 -2] [-1 -2] [-1 -.5] [1 -.5] [1 .5]];
+end;    // letter_e
+
+shape letter_f is
+	extrude2 [[-1 -3] [-1 -.5] [1 -.5] [1 .5] [-1 .5] [-1 2] [2 2]
+		[2 3] [-2 3] [-2 -3]];
+end;    // letter_f
+
+shape letter_g is
+	extrude2 [[2 1] [2 2] [1 3] [-1 3] [-2 2] [-2 -2] [-1 -3]
+		[1 -3] [2 -2] [2 0] [0 0] [0 -1] [1 -1] [1 -1.5]
+		[.5 -2] [-.5 -2] [-1 -1.5] [-1 1.5] [-.5 2] [.5 2]
+		[1 1.5] [1 1]];
+end;    // letter_g
+
+shape letter_h is
+	extrude2 [[2 -3] [2 3] [1 3] [1 .5] [-1 .5] [-1 3] [-2 3]
+		[-2 -3] [-1 -3] [-1 -.5] [1 -.5] [1 -3]];
+end;    // letter_h
+
+shape letter_i is
+	extrude2 [[1.5 2] [1.5 3] [-1.5 3] [-1.5 2] [-.5 2] [-.5 -2]
+		[-1.5 -2] [-1.5 -3] [1.5 -3] [1.5 -2] [.5 -2] [.5 2]];
+end;    // letter_i
+
+shape letter_j is
+	extrude2 [[2 3] [1 3] [1 -1.5] [.5 -2] [-.5 -2] [-1 -1.5]
+		[-1 -1] [-2 -1] [-2 -2] [-1 -3] [1 -3] [2 -2]];
+end;    // letter_j
+
+shape letter_k is
+	extrude2 [[-1 3] [-2 3] [-2 -3] [-1 -3] [-1 -.5] [1 -3] [2 -3]
+		[-.4 0] [2 3] [1 3] [-1 .5] [-1 3]];
+end;    // letter_k
+
+shape letter_l is
+	extrude2 [[-1 3] [-2 3] [-2 -3] [2 -3] [2 -2] [-1 -2] [-1 3]];
+end;    // letter_l
+
+shape letter_m is
+	extrude2 [[2 3] [2 -3] [1 -3] [1 1] [0 -1] [-1 1] [-1 -3]
+		[-2 -3] [-2 3] [-1 3] [0 1] [1 3]];
+end;    // letter_m
+
+shape letter_n is
+	extrude2 [[-2 3] [-2 -3] [-1 -3] [-1 1.5] [1 -1.5] [1 -3]
+		[2 -3] [2 3] [1 3] [1 0] [-1 3] [-2 3]];
+end;    // letter_n
+
+shape letter_o is
+	tube with
+		end1 = <0 -.5 0>;
+		end2 = <0 .5 0>;
+		outer_radius = 2;
+		inner_radius = 1.3;
+		scale by 1.5 along <0 0 1>;
+		scale by 1.2 along <1 0 0>;
+	end;
+end;    // letter_o
+
+shape letter_p is
+	extrude2 [[0 3] [-2 3] [-2 -3]  [-1 -3] [-1 -1] [0 -1] [0 0] [-1 0] [-1 2] [0 2]];
+	tube with
+		end1 = <0 -.5 1>;
+		end2 = <0 .5 1>;
+		inner_radius = 1;
+		outer_radius = 2;
+		umin = -90;
+		umax = 90;
+	end;
+end;    // letter_p
+
+shape letter_q is
+	extrude2 [[-.5 0] [1 -3] [2 -3] [.5 0]];
+	tube with
+		end1 = <0 -.5 0>;
+		end2 = <0 .5 0>;
+		inner_radius = 1.3;
+		outer_radius = 2;
+		scale by 1.5 along <0 0 1>;
+		scale by 1.2 along <1 0 0>;
+	end;
+end;    // letter_q
+
+shape letter_r is
+
+	// left side
+	//
+	extrude2 [[0 3] [-2 3] [-2 -3] [-1 -3] [-1 2] [0 2]];
+
+	// round part
+	//
+	tube with
+		end1 = <0 -.5 1>;
+		end2 = <0 .5 1>;
+		inner_radius = 1;
+		outer_radius = 2;
+		umin = -90;
+		umax = 90;
+	end;
+
+	// foot of R
+	//
+	extrude2 [[0 -1] [1 -3] [2 -3] [.5 0] [-1 0] [-1 -1]];
+end;    // letter_r
+
+shape letter_s is
+	extrude2 [[2 -.5] [-1 1] [-1 1.5] [-.5 2] [.5 2] [1 1.5] [2 1.5]
+		[2 2] [1 3] [-1 3] [-2 2] [-2 .5] [1 -1] [1 -1.5]
+		[.5 -2] [-.5 -2] [-1 -1.5] [-1 -1] [-2 -1] [-2 -2]
+		[-1 -3] [1 -3] [2 -2] [2 -.5]];
+end;    // letter_s
+
+shape letter_t is
+	extrude2 [[.5 -3] [.5 2] [2 2] [2 3] [-2 3] [-2 2] [-.5 2]
+		[-.5 -3] [.5 -3]];
+end;    // letter_t
+
+shape letter_u is
+	extrude2 [[2 -2] [2 3] [1 3] [1 -1.5] [.5 -2] [-.5 -2] [-1 -1.5]
+		[-1 3] [-2 3] [-2 -2] [-1 -3] [1 -3]];
+end;    // letter_u
+
+shape letter_v is
+	extrude2 [[.5 -3] [2 3] [1 3] [0 -1] [-1 3] [-2 3] [-.5 -3]];
+end;    // letter_v
+
+shape letter_w is
+	extrude2 [[2 -3] [2 3] [1 3] [1 -1] [0 1] [-1 -1] [-1 3] [-2 3]
+		[-2 -3] [-1 -3] [0 -1] [1 -3]];
+end;    // letter_w
+
+shape letter_x is
+	extrude2 [[2 3] [1 3] [0 1] [-1 3] [-2 3] [-.5 0] [-2 -3]
+		[-1 -3] [0 -1] [1 -3] [2 -3] [.5 0]];
+end;    // letter_x
+
+shape letter_y is
+	extrude2 [[.5 -3] [.5 0] [2 3] [1 3] [0 1] [-1 3] [-2 3] [-.5 0]
+		[-.5 -3] [.5 -3]];
+end;    // letter_y
+
+shape letter_z is
+	extrude2 [[2 -2] [-1 -2] [2 2] [2 3] [-2 3] [-2 2] [1 2] [-2 -2]
+		[-2 -3] [2 -3]];
+end;    // letter_z
+
+shape comma is
+	rod with
+		end1 = <0 -.5 0>;
+		end2 = <0 .5 0>;
+		radius = 0;
+	end;
+	extrude2 [[0 0] [0 -2] [.866 -.5]];
+end;    // comma
+
+shape colon is
+	rod with
+		end1 = <0 -.5 -2>;
+		end2 = <0 .5 -2>;
+		radius = 1;
+	end;
+	rod with
+		end1 = <0 -.5 2>;
+		end2 = <0 .5 2>;
+		radius = 1;
+	end;
+end;    // colon
+
+shape letter
+	char c;
+is
+	when c is
+		"A":
+			letter_a;
+		end;
+		"B":
+			letter_b;
+		end;
+		"C":
+			letter_c;
+		end;
+		"D":
+			letter_d;
+		end;
+		"E":
+			letter_e;
+		end;
+		"F":
+			letter_f;
+		end;
+		"G":
+			letter_g;
+		end;
+		"H":
+			letter_h;
+		end;
+		"I":
+			letter_i;
+		end;
+		"J":
+			letter_j;
+		end;
+		"K":
+			letter_k;
+		end;
+		"L":
+			letter_l;
+		end;
+		"M":
+			letter_m;
+		end;
+		"N":
+			letter_n;
+		end;
+		"O":
+			letter_o;
+		end;
+		"P":
+			letter_p;
+		end;
+		"Q":
+			letter_q;
+		end;
+		"R":
+			letter_r;
+		end;
+		"S":
+			letter_s;
+		end;
+		"T":
+			letter_t;
+		end;
+		"U":
+			letter_u;
+		end;
+		"V":
+			letter_v;
+		end;
+		"W":
+			letter_w;
+		end;
+		"X":
+			letter_x;
+		end;
+		"Y":
+			letter_y;
+		end;
+		"Z":
+			letter_z;
+		end;
+		":":
+			colon;
+		end;
+		",":
+			comma;
+		end;
+	else
+		{space}
+	end;
+end;    // letter
+
+shape word
+	string type str;
+is
+	move to <((num str - 1) / 2 * 6) 0 0>;
+	for integer i = min str .. max str do
+		letter str[i];
+		move to <6 0 0>;
+	end;
+end;    // word
+
+shape rotating_word
+	string type str;
+with
+	scalar angle = 0;
+is
+	for integer i = min str .. max str do
+		letter str[i] with
+			rotate by angle around <0 0 1>;
+			move to <(6 * (i - 1 - (num str - 1) / 2)) 0 0>;
+		end;
+	end;
+end;    // rotating_word

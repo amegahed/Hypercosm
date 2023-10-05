@@ -1,0 +1,47 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm	       linear_row.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a			}
+{		linear row of other shapes.								}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/transformations.ores";
+include "system/vectors.ores";
+include "system/math.ores";
+
+
+shape linear_row
+    from vector start;
+    to vector finish;
+    of shape thing;
+with
+    scalar offset = 0;
+    scalar spacing = .5;
+is
+    vector delta = finish - start;
+    scalar length = vlength of delta;
+    vector direction = delta / length;
+    scalar distance;
+    integer number;
+    scalar starting_distance = smod offset to spacing;
+
+    if starting_distance < 0 then
+        starting_distance = itself + spacing;
+    end;
+    number = trunc ((length - starting_distance) / spacing + 1);
+
+    distance = starting_distance;
+    for integer counter = 1..number do
+        thing with
+            move to start + direction * distance;
+            distance = itself + spacing;
+        end;
+    end;
+end;    // linear_row

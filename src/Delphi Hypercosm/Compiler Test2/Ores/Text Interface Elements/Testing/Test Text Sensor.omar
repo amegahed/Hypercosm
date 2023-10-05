@@ -1,0 +1,29 @@
+do text_sensor_test;
+
+
+include "3d.ores";
+include "anims.ores";
+include "Text Sensor.ores";
+
+
+anim text_sensor_test with
+    background = dark blue;
+    double_buffer is on;
+is
+    verb mouse_down_action is
+        write "pressed!", ;
+    end;
+        
+    text_sensor type text_sensor "press me" at <.75 0 0> with
+        h_alignment is center;
+        mouse_down_action is (new action type of static mouse_down_action);
+    end;
+    
+    picture test_picture is
+        text_sensor draw;
+    end;    // test_picture
+    
+    while true do
+        test_picture;
+    end;
+end;    // text_sensor_test

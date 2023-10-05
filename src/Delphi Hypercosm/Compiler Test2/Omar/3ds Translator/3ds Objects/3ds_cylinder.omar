@@ -1,0 +1,61 @@
+do cylinder_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_cylinder.ores";
+include "system/3ds_texture_mapping.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim cylinder_anim
+is
+	material type hyper_material is plastic poster "hyper.jpg";
+	material type tie_dye_material is plastic poster "tie_dye.jpg";
+	material type flag_material is plastic textured (new texture
+		using (new image named "flag.gif") with
+		interpolation is off; wraparound is on);
+		
+	shape scene with
+		scalar t = 0;
+	is
+		translated_3ds_cylinder with		
+		    radius = 25;
+		    height = 50;
+		    height_segments = 5;
+		    cap_segments = 3;
+		    sides = 18;
+		    smooth is true;
+		    slice_on is true;
+		    slice_from = 0;
+		    slice_to = 90; 
+		    gen_mapping_coords is true;
+
+			translated_3ds_planar_mapping with
+				length = 50; width = 50;
+				u_tile = 1; v_tile = 1; w_tile = 1;
+				u_flip is false; v_flip is false; w_flip is false;
+				alignment is y;
+				with trans do
+					its origin = <0 0 25>;
+					its x_axis = <1 0 0>;
+					its y_axis = <0 1 0>;
+					its z_axis = <0 0 1>;
+				end;
+    		    //move the trans to <5 0 5> * get_seconds;
+    		    rotate the trans by get_seconds * 45 around <0 1 0> about trans's origin;
+    		    //magnify the trans by .75; 
+			end;
+			
+		    material is hyper_material; 
+		end;
+				
+		axes with
+			magnify by 25;
+		end;
+	end;	// scene
+	
+	mouse_controlled_animated_shape scene titled "3DS Cylinder" with
+		auto_camera is on;
+	end;
+end;	// cylinder_anim

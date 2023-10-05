@@ -1,0 +1,130 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       native_trans_stacks.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains the native transformation stack definition.    }
+{       This is used for transforming between different         }
+{       levels in the shape hierarchy.                          }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+	
+include "system/native_trans.ores";
+
+static subject trans_stack
+extends
+	trans type[]
+does
+	// querying methods
+	//
+	integer question levels;
+	
+	// transforming methods
+	//
+	verb transform_trans
+		trans type reference trans;
+		from integer source_level;
+		to integer dest_level;
+	end;    // transform_trans
+	
+	verb inverse_transform_trans
+		trans type reference trans;
+		from integer source_level;
+		to integer dest_level;
+	end;
+	
+	// console printing method
+	//
+	verb print;
+is
+	// querying methods
+	//
+	integer question levels is
+		answer num trans_stack;
+	end;    // levels
+	
+	verb transform_trans
+		trans type reference trans;
+		from integer source_level;
+		to integer dest_level;
+	is
+		if source_level < dest_level then
+			// transforming global to local
+			//
+			while source_level <= dest_level do 
+				trans transform from trans_stack[source_level];
+				source_level = itself + 1;
+			end;
+		else
+			// transforming local to global
+			//
+			while source_level >= dest_level do 
+				trans transform from trans_stack[source_level];
+				source_level = itself - 1;
+			end;
+		end;
+	end;    // transform_trans
+	
+	verb inverse_transform_trans
+		trans type reference trans;
+		from integer source_level;
+		to integer dest_level;
+	is
+		if source_level < dest_level then
+			// transforming global to local
+			//
+			while source_level <= dest_level do
+				trans inverse_transform to trans_stack[source_level];
+				source_level = itself + 1;
+			end;
+		else
+			// transforming local to global
+			//
+			while source_level >= dest_level do 
+				trans inverse_transform to trans_stack[source_level];
+				source_level = itself - 1;
+			end;
+		end;
+	end;    // inverse_transform_trans
+	
+	   
+	// console printing method
+	//    
+	verb print is
+		write "trans stack with ", levels, " levels", ;
+		for integer level = 1 .. levels do
+			write "level ", level, ":", ;
+			trans_stack[level] print;
+		end;
+	end;    // print
+end;    // trans_stack
+
+// this question is used to create unit transformation stacks
+// that consist of a sequence of unit transformations
+//
+trans_stack type question unit_trans_stack
+	of integer levels;
+is
+	trans_stack type trans_stack;
+	dim trans_stack[1..levels];
+	answer trans_stack;
+end;    // unit_trans_stack
+
+// these transformation stacks record the history of
+// transformation that have been made during the hierarchical 
+// scene construction process.
+//
+const integer max_transformations = 32;
+native trans_stack type trans_stack is unit_trans_stack of max_transformations;
+native trans_stack type shader_trans_stack is unit_trans_stack of max_transformations;
+
+// this question returns the level of the current transformation
+// on the transformation stack
+//
+native integer question trans_level;

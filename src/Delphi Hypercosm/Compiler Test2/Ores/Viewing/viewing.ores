@@ -1,0 +1,202 @@
+{***************************************************************}
+{                         viewing.ores                          }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{ 		Contains standard procedures for setting viewing 		}
+{		parameters.  											}
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/native_viewing.ores";
+include "system/native_display.ores";
+include "system/vectors.ores";
+include "system/transformations.ores";
+include "system/proximity.ores";
+
+
+scalar question get_diagonal
+	of scalar width = global width;
+	by scalar height = global height;
+is
+	answer sqrt (sqr width + sqr height);
+end;	// get_diagonal
+
+
+// get_view_trans constructs a trans that represents the location and
+// orientation of the "camera" as defined by the eye, lookat, yaw,
+// pitch, and roll global variables.  In the returned trans, the x_axis
+// will point to the right, the y_axis will point forward, and the
+// z_axis will point up, as seen by the camera.
+//
+verb get_view_trans
+    into trans type reference camera_trans;
+with
+    vector eye = global eye;
+    vector lookat = global lookat;
+    scalar roll = global roll;
+    scalar yaw = global yaw;
+    scalar pitch = global pitch;
+is
+    vector focus = lookat;
+    
+    if focus = eye then
+        // The camera's orientation is unspecified.  Look along the
+        // positive y axis.
+        //
+        focus = eye + <0 1 0>;
+    end;
+    
+    camera_trans's origin = eye;
+    camera_trans's y_axis = normalized (focus - eye);
+    camera_trans's x_axis = camera_trans's y_axis cross <0 0 1>;
+    
+    if camera_trans's x_axis = <0 0 0> then
+        // We're looking along the "up" vector - the system will draw
+        // <1 0 0> to the right when roll is 0.
+        //
+        camera_trans's x_axis = <1 0 0>;
+    else
+        camera_trans's x_axis = normalized (camera_trans's x_axis);
+    end;
+    
+    camera_trans's z_axis =
+        camera_trans's x_axis cross camera_trans's y_axis;
+    
+    // This is the order the system applies the camera rotations:
+    // roll, then yaw, then pitch.
+    
+    if roll <> 0 then
+        revolve the camera_trans by (-roll) around camera_trans's y_axis;
+    end;
+    
+    if yaw <> 0 then
+        revolve the camera_trans by (-yaw) around camera_trans's z_axis;
+    end;
+    
+    if pitch <> 0 then
+        revolve the camera_trans by pitch around camera_trans's x_axis;
+    end;
+end;    // get_view_trans
+
+
+// set_view_from_trans takes a trans that represents the location and
+// orientation of the "camera" and uses it to set the eye, lookat, yaw,
+// pitch, and roll global variables.  In the provided trans, the x_axis
+// should point to the right, the y_axis should point forward, and the
+// z_axis should point up, as seen by the camera.
+//
+verb set_view_from_trans
+    trans type camera_trans;
+with
+    boolean preserve_view_distance is true;
+    vector reference eye refers to global eye;
+    vector reference lookat refers to global lookat;
+    scalar reference roll refers to global roll;
+    scalar reference yaw refers to global yaw;
+    scalar reference pitch refers to global pitch;
+is
+    vector line_of_sight;
+    vector right_at_roll0;
+    vector up_at_roll0;
+    vector right;
+    
+    line_of_sight = camera_trans's y_axis;
+    
+    if preserve_view_distance and (eye <> lookat) and
+            (line_of_sight <> <0 0 0>) then
+        scalar view_distance = vlength of (eye - lookat);
+        
+        eye = camera_trans's origin;
+        lookat = eye + (normalized line_of_sight * view_distance);
+    else
+        eye = camera_trans's origin;
+        lookat = eye + line_of_sight;
+    end;
+    
+    right_at_roll0 = line_of_sight cross <0 0 1>;
+    
+    if right_at_roll0 = <0 0 0> then
+        // We're looking along the "up" vector, or the line_of_sight
+        // is <0 0 0> - either way the system will draw <1 0 0> to
+        // the right when roll is 0.
+        //
+        right_at_roll0 = <1 0 0>;
+        
+        if line_of_sight = <0 0 0> then
+            line_of_sight = <0 1 0>;
+        end;
+    else
+        right_at_roll0 = normalized right_at_roll0;
+    end;
+    
+    up_at_roll0 = normalized (right_at_roll0 cross line_of_sight);
+    
+    right = camera_trans's x_axis perpendicular line_of_sight;
+    
+    roll = arctan
+        (right dot up_at_roll0)
+        (right dot right_at_roll0);
+    
+    // We have completely specified the camera using eye, lookat, and roll.
+    // These variables are redundant, and most applets don't use them
+    // at all anyway.
+    pitch = 0;
+    yaw = 0;
+end;    // set_view_from_trans
+
+
+// To prevent rendering glitches from clipping planes too close to the
+// near and far extents of the scene, we apply a fudge factor to nudge
+// the clipping planes slightly to fully enclose the view volume.
+//
+const scalar clipping_plane_fudge_factor = .25;
+
+
+scalar question get_near_distance
+	of trans type trans;
+	using scalar far_distance = 0;
+with
+	boolean snap is on;
+is
+	vector point = closest_point_on_trans_to_point on trans to eye;
+	scalar distance;
+	
+	if point = eye then
+		distance = far_distance / 100;
+	else
+		distance = vlength of (point - eye);
+	end;
+	
+	// snap to next lowest power of 2
+	//	
+	if snap then
+		distance = 2 ^ (trunc(log base 2 of distance)) * .99;
+	end;
+	
+	answer distance * (1 - clipping_plane_fudge_factor);
+end;	// get_near_distance
+
+
+scalar question get_far_distance
+	of trans type trans;
+with
+	boolean snap is on;
+is
+	vector farthest_point = farthest_point_on_trans_from_point on trans from eye;
+	scalar distance = vlength of (farthest_point - eye);
+
+	// snap to next highest power of 2
+	//	
+	if snap then
+		distance = 2 ^ (trunc(log base 2 of distance) + 1);
+	end;
+	
+	answer distance * (1 + clipping_plane_fudge_factor);
+end;	// get_far_distance
+
+
+

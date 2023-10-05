@@ -1,0 +1,36 @@
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+
+trans type trans1;
+trans type trans2;
+
+
+shape scene is
+	block with
+		trans = trans1;
+		color = light blue;
+	end;
+	block with
+		trans = trans2;
+		color = light red;
+	end;
+end;	// scene
+
+
+anim test is
+	trans type trans3;
+	
+	magnify the trans1 by 2;
+	move the trans2 to <5 0 5>;
+	rotate the trans2 by 135 around <0 0 1>;
+	
+	trans3 compute from trans1 to trans2;
+	trans1 transform from trans3;
+	magnify the trans1 by 1.001 about trans1's origin;
+	
+	mouse_controlled_shape scene;
+end;

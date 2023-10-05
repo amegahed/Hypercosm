@@ -1,0 +1,49 @@
+{***************************************************************}
+{                          test_materials.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/common_materials.ores";
+
+
+anim test
+    args type args;
+with
+    facets = 10;
+    double_buffer is on;
+    args check;
+is
+    shape thing is
+        sphere with
+            // material is plastic colored blue polished semi shiny;
+            material is wood_veneer;
+            move to <-2 0 0>;
+        end;
+        sphere with
+            // material is plastic colored blue polished shiny;
+            material is brushed_metal;
+        end;
+        sphere with
+            material is plastic colored blue polished very shiny;
+            move to <2 0 0>;
+        end;
+        torus with
+            material is wood;
+            inner_radius = 2;
+            outer_radius = 3.5;
+        end;
+    end;    // thing
+
+    mouse_controlled_shape thing with
+    	auto_camera is on;
+    end;
+end;    // test

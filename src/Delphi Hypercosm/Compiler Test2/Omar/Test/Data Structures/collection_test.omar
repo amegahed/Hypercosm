@@ -1,0 +1,75 @@
+{***************************************************************}
+{                       collection_test.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do collection_test;
+
+
+include "system/singly_linked_lists.ores";
+
+
+subject thing
+extends
+	printable object
+does
+    verb new with
+        integer i = 0;
+    end;    // new
+
+    verb print;
+has
+    integer i;
+is
+    verb new with
+        integer i = 0;
+    is
+        thing's i = i;
+    end;    // new
+
+
+    verb print is
+        write "i = ", i, ;
+    end;    // print
+end;    // thing
+
+
+verb collection_test is
+    thing type thing1 with
+        i = 5;
+    end;
+    thing type thing2 with
+        i = 10;
+    end;
+    thing type thing3 with
+        i = 15;
+    end;
+    collection type collection is new singly_linked_list;
+    iterator type iterator is none;
+    thing type thing is none;
+
+    collection add thing1;
+    collection add thing2;
+    collection add thing3;
+    collection add thing2;
+    collection add thing2;
+    
+    write "collection of ", collection size, " items :", ;
+	collection print;
+
+	write "after removing thing2 from head of collection: ", ;
+	collection remove thing2;
+    collection print;
+    	
+	write "after removing thing3 from middle of collection: ", ;
+	collection remove thing3;
+    collection print;
+    
+    write "after purging thing2 from collection: ", ;
+    collection purge thing2;
+    collection print;
+end;    // collection_test

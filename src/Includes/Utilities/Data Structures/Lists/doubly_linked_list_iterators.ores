@@ -1,0 +1,34 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    doubly_linked_list_iterators.ores   3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains utilities which provide a few useful           }
+{       listing utilities for doubly linked lists.              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/iterators.ores";
+include "system/bidirectional_iteration.ores";
+
+enum iterator_direction is prev, next;
+
+abstract subject doubly_linked_list_iterator
+extends
+	bidirectional_iterable iterator
+does
+	// doubly linked list insertion methods
+	//
+	abstract verb insert
+		iterator_direction type direction;
+		object type element;
+	end;
+	
+	// doubly linked list deletion and querying methods
+	//
+	abstract verb remove;
+	abstract object type question removed;
+end;    // doubly_linked_list_iterator

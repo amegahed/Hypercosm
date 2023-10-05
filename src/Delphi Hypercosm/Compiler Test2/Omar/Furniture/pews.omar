@@ -1,0 +1,92 @@
+{***************************************************************}
+{                          pews.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do pews_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+
+
+shape pew with
+    scalar length = 8;
+    scalar depth = .25;
+    scalar height = 1;
+is
+    shape cushion with
+        scalar length = 1;
+        scalar width = 1;
+        scalar thickness = .1;
+    is
+        rounded_rod with
+            end1 = <(-length / 2) 0 0>;
+            end2 = <(length / 2) 0 0>;
+            radius = thickness / 2;
+            scale by (width / 2 / thickness) along <0 1 0>;
+        end;
+    end;    // cushion
+
+
+    extrude [[1 0] [.5 .3] [1 1] [.8 1] [0 .4] [-1 .4] [-1 0]]
+        along <1 0 0>
+    with
+        material is wood_veneer;
+        scale by length along <1 0 0>;
+        scale by depth along <0 1 0>;
+        scale by height along <0 0 1>;
+    end;
+    cushion with
+        material is plastic colored dark red;
+        length = static length;
+        move to <0 .25 .4>;
+    end;
+end;    // pew
+
+
+shape pews with
+    scalar length = 8;
+    scalar depth = .25;
+    scalar height = 1;
+    scalar spacing = 1;
+    integer number = 8;
+is
+    for integer counter = 1 .. number do
+        scalar placement = (counter - number / 2) * spacing;
+
+        pew with
+            length = static length;
+            depth = static depth;
+            height = static height;
+            move to <0 placement 0>;
+        end;
+    end;
+end;    // pews
+
+
+anim pews_anim
+    args type args;
+with
+    eye = <4 -10 8>;
+    double_buffer is on;
+    args check;
+is
+    shape scene is
+        pews;
+    end;
+
+    shape environment is
+        plane with
+            magnify by 6;
+            render_mode is wireframe;
+        end;
+    end;
+
+    mouse_controlled_shape scene in environment;
+end;    // pews_anim

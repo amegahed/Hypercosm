@@ -1,0 +1,167 @@
+{***************************************************************}
+{                         matrices.ores                         }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{           Contains the "matrix" subject, useful for           }
+{        representing matrices and carrying out various         }
+{                      matrix operations.                       }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+subject matrix
+extends
+    scalar[,]
+does
+    // operators
+    //
+    matrix type question plus
+        matrix type matrix2;
+    end;    // plus
+    matrix type question minus
+        matrix type matrix2;
+    end;    // minux
+    matrix type question times
+        matrix type matrix2;
+    end;    // times
+    matrix type question transposed;
+    
+    // methods
+    //
+    reference verb transpose; 
+    
+    // printable methods
+    //
+    verb print;
+is
+    //
+    // operators
+    //
+    
+    
+    matrix type question plus
+        matrix type matrix2;
+    is
+        matrix type matrix3;
+        integer row_offset = min matrix2 - min matrix;
+        integer column_offset = min matrix2[] - min matrix[];
+    
+        if (num matrix <> num matrix2) or (num matrix[] <> 
+            num matrix2[])
+        then
+            write "matrix dimensions mismatched for plus.", ;
+            answer none;
+        end;
+
+        matrix3 = matrix;
+        for integer row = min matrix .. max matrix do
+            for integer column = min matrix[] .. max matrix[] do
+                matrix3[row, column] = itself + matrix2[row + 
+                    row_offset, column + column_offset];
+            end;
+        end;
+        answer matrix3;
+    end;    // plus
+
+
+    matrix type question minus
+        matrix type matrix2;
+    is
+        matrix type matrix3;
+        integer row_offset = min matrix2 - min matrix;
+        integer column_offset = min matrix2[] - min matrix[];
+
+        if (num matrix <> num matrix2) or (num matrix[] <> 
+            num matrix2[])
+        then
+            write "matrix dimensions mismatched for minus.", ;
+            answer none;
+        end;
+
+        matrix3 = matrix;
+        for integer row = min matrix .. max matrix do
+            for integer column = min matrix[] .. max matrix[] do
+                matrix3[row, column] = itself + matrix2[row + 
+                    row_offset, column - column_offset];
+            end;
+        end;
+        answer matrix3;
+    end;    // minus
+
+
+    matrix type question times
+        matrix type matrix2;
+    is
+        matrix type matrix3;
+    
+        integer rows1 = num matrix, columns1 = num matrix[];
+        integer rows2 = num matrix2, columns2 = num matrix2[];
+        integer row_offset = min matrix2 - 1;
+        integer column_offset = min matrix2[] - min matrix2;
+
+        if rows1 <> columns2 then
+            write "matrix dimensions mismatched for times.", ;
+            answer none;
+        end;
+        
+        dim matrix3[1..rows1, 1..columns2];
+        for integer row = min matrix3 .. max matrix3 do            
+            for integer column = min matrix3[] .. max matrix3[] do
+                scalar sum = 0;
+                
+                for integer counter = 1 .. columns1 do
+                    sum = itself + matrix[row, counter] *
+                        matrix2[counter + row_offset, 
+                            column + column_offset];
+                end;
+            
+                matrix3[row, column] = sum;
+            end;
+        end;
+        answer matrix3;
+    end;    // times
+
+
+    matrix type question transposed is
+        matrix type matrix2;
+
+        dim matrix2[min matrix[] .. max matrix[], 
+            min matrix.. max matrix];
+        for integer row = min matrix .. max matrix do
+            for integer column = min matrix[] .. max matrix[] do
+                matrix2[column, row] = matrix[row, column];
+            end;
+        end;
+
+        answer matrix2;    
+    end;    // transposed
+
+
+    // 
+    // methods
+    //
+    
+    
+    reference verb transpose is
+        matrix is matrix transposed;
+    end;    // transpose
+
+
+    //
+    // printable methods
+    //
+    
+    
+    verb print is    
+        for integer v = min matrix .. max matrix do
+            for integer h = min matrix[] .. max matrix[] do
+                write matrix[v, h], " ";
+            end;
+            write;
+        end;
+    end;    // print
+end;    // matrix
+

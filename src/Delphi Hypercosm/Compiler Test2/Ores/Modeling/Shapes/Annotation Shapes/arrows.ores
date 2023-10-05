@@ -1,0 +1,445 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm		 	 arrows.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains definitions of various styles of arrow 		}
+{		shapes that are used to annotate 3 dimensional			}
+{		scenes.													}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/native_rendering.ores";
+include "system/arc.ores";
+
+
+{***************************************************************}
+{                       arrow drawing styles                    }
+{***************************************************************}
+
+
+enum arrow_style is line, poly, solid;
+arrow_style type arrow_head_style is solid;
+arrow_style type arrow_shaft_style is line;
+
+
+{***************************************************************}
+{   		  arrow components in all drawing styles    		}
+{***************************************************************}
+
+
+shape line_arrow_head with
+    scalar length = .1;
+    scalar width = .1;
+is
+    line [<(-width / 2) 0 0> <0 0 length>];
+    line [<(width / 2) 0 0> <0 0 length>];
+end;	// line_arrow_head
+	
+	
+shape poly_arrow_head with
+    scalar length = .1;
+    scalar width = .1;
+is
+    triangle
+        <0 0 length>
+        <(-width / 2) 0 0>
+        <(width / 2) 0 0>;
+end;	// poly_arrow_head
+
+
+shape solid_arrow_head with
+    scalar length = .1;
+    scalar width = .1; 
+is
+    disk with
+        center = <0 0 0>;
+        radius = (width / 2);
+    end;
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 length>;
+        radius1 = (width / 2);
+        radius2 = 0;
+    end;
+end;	// solid_arrow_head
+
+
+shape arrow_head with
+    scalar length = .1;
+    scalar width = .1;
+    arrow_style type style is arrow_head_style;    
+is
+	when style is
+		
+		line:
+			line_arrow_head with
+			    length = static length;
+			    width = static width;
+			end;
+		end;
+		
+		poly:
+			poly_arrow_head with
+			    length = static length;
+			    width = static width;
+			end;
+		end;
+		
+		solid:
+			solid_arrow_head with
+			    length = static length;
+			    width = static width;
+			end;
+		end;
+		
+	end;
+end;	// arrow_head
+
+
+shape line_arrow_shaft is
+	line [<0 0 0> <0 0 1>];
+end;	// line_arrow_shaft
+
+
+shape poly_arrow_shaft with
+    scalar arrow_head_length = .1;
+    scalar shaft_width = .025;
+is
+    polygon [
+        <(-shaft_width / 2) 0 0>
+        <(shaft_width / 2) 0 0>
+        <(shaft_width / 2) 0 (1 - arrow_head_length)>
+        <(-shaft_width / 2) 0 (1 - arrow_head_length)>
+    ];   
+end;	// poly_arrow_shaft
+
+
+shape solid_arrow_shaft with
+    scalar arrow_head_length = .1;
+    scalar shaft_width = .025;
+is
+    disk with
+        radius = shaft_width / 2;
+    end;
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 (1 - arrow_head_length)>;
+        radius = (shaft_width / 2);
+    end;
+end;	// solid_arrow_shaft
+
+
+shape arrow_shaft with
+    scalar arrow_head_length = .1;
+    scalar shaft_width = .025;
+    arrow_style type style is arrow_shaft_style;
+is
+	when style is
+	
+		line:
+			line_arrow_shaft;
+		end;
+		
+		poly:
+			poly_arrow_shaft with
+				arrow_head_length = static arrow_head_length;
+				shaft_width = static shaft_width;
+			end;
+		end;
+		
+		solid:
+			solid_arrow_shaft with
+				arrow_head_length = static arrow_head_length;
+				shaft_width = static shaft_width;
+			end;
+		end;
+		
+	end;
+end;	// arrow_shaft
+
+
+{***************************************************************}
+{         single straight arrows in all drawing styles          }
+{***************************************************************}
+
+
+shape arrow
+    from vector start = <0 0 0>;
+    to vector finish;
+with
+	// arrow geometry
+	//
+    scalar arrow_head_length = .1;
+    scalar arrow_head_width = .1;
+    scalar shaft_width = .025;
+    
+    // arrow drawing style
+    //
+    arrow_style type head_style is global arrow_head_style;
+    arrow_style type shaft_style is global arrow_shaft_style;
+    color type color = uncolored;
+    color type head_color = uncolored;
+    color type shaft_color = uncolored;  
+is
+    static shape unit_arrow
+    with
+		// arrow geometry
+		//
+        scalar arrow_head_length = .1;
+        scalar arrow_head_width = .1;
+        scalar shaft_width = .025;
+        
+	    // arrow drawing style
+	    //
+	    arrow_style type head_style is global arrow_head_style;
+	    arrow_style type shaft_style is global arrow_shaft_style;
+	    color type head_color = white;
+	    color type shaft_color = white;  
+    is
+    	arrow_head with
+    		length = arrow_head_length;
+    		width = arrow_head_width;
+    		move to <0 0 (1 - arrow_head_length)>;
+    		style is head_style;
+    		global color = head_color;
+    	end;
+    	arrow_shaft with
+		    arrow_head_length = static arrow_head_length;
+		    shaft_width = static shaft_width;
+		    style is shaft_style;
+		    global color = shaft_color;
+    	end;
+    end;    // unit_arrow
+
+	// set default arrow colors
+	//
+	if color = uncolored then
+		color = white;
+	end;
+	if head_color = uncolored then
+		head_color = color;
+	end;
+	if shaft_color = uncolored then
+		shaft_color = color;
+	end;
+
+    if (start <> finish) then	
+        unit_arrow with
+            arrow_head_length = static arrow_head_length;
+            arrow_head_width = static arrow_head_width;
+            shaft_width = static shaft_width; 
+            
+		    head_style is static head_style;
+		    shaft_style is static shaft_style;
+		    head_color = static head_color;
+		    shaft_color = static shaft_color;              
+            
+            orient from <0 0 1> to (finish - start);
+            move to start;
+		end;
+    end;
+end;    // arrow
+
+
+{***************************************************************}
+{         double straight arrows in all drawing styles          }
+{***************************************************************}
+
+
+shape double_arrow
+    from vector start = <0 0 0>;
+    to vector finish;
+with
+    // arrow geometry
+    //
+    scalar arrow_head_length = .1;
+    scalar arrow_head_width = .1;
+    scalar shaft_width = .025;
+    
+    // arrow drawing style
+    //
+    arrow_style type head_style is global arrow_head_style;
+    arrow_style type shaft_style is global arrow_shaft_style;
+    color type head_color = white;
+    color type shaft_color = white;
+is
+    vector middle = (start + finish) / 2;
+    
+    arrow from middle to start with
+        arrow_head_length = static arrow_head_length * 2;
+        arrow_head_width = static arrow_head_width;
+        shaft_width = static shaft_width;
+        
+	    head_style is static head_style;
+	    shaft_style is static shaft_style;
+	    head_color = static head_color;
+	    shaft_color = static shaft_color; 
+    end;
+    
+    arrow from middle to finish with
+        arrow_head_length = static arrow_head_length * 2;
+        arrow_head_width = static arrow_head_width;
+        shaft_width = static shaft_width;
+        
+	    head_style is static head_style;
+	    shaft_style is static shaft_style;
+	    head_color = static head_color;
+	    shaft_color = static shaft_color; 
+    end;
+end;    // double_arrow
+
+
+{***************************************************************}
+{            single arc arrows in all drawing styles            }
+{***************************************************************}
+
+
+shape arrow_arc
+    from scalar umin = 0;
+    to scalar umax = 180;
+with
+    // arrow geometry
+    //
+    scalar radius = 1;
+    integer steps = 10;
+    scalar arrow_head_length = .1;
+    scalar arrow_head_width = .05;
+    
+    // arrow drawing style
+    //
+    arrow_style type head_style is global arrow_head_style;
+    color type head_color = white;
+    color type shaft_color = white;  
+is
+    arc from umin to umax with
+        radius = static radius;
+        steps = static steps;
+        color = shaft_color;
+    end;
+
+    if (umax > umin) then
+        arrow_head with
+		    length = static arrow_head_length;
+		    width = static arrow_head_width;
+    
+    		rotate by -90 around  <1 0 0>;
+            move to <radius (-arrow_head_length) 0>;
+            rotate by umax around <0 0 1>;
+            
+		    style is head_style; 
+            color = head_color;
+        end;
+    else
+        arrow_head with
+		    length = static arrow_head_length;
+		    width = static arrow_head_width;
+		    
+            rotate by 90 around <1 0 0>;
+            move to <radius (arrow_head_length) 0>;
+            rotate by umax around <0 0 1>;
+
+		    style is head_style;             
+            color = head_color;
+        end;
+    end;
+end;    // arrow_arc
+
+
+{***************************************************************}
+{            double arc arrows in all drawing styles            }
+{***************************************************************}
+
+
+shape double_arrow_arc
+    from scalar umin = 0;
+    to scalar umax = 180;
+with
+    // arrow geometry
+    //
+    scalar radius = 1;
+    integer steps = 10;
+    scalar arrow_head_length = .1;
+    scalar arrow_head_width = .05;
+    
+    // arrow drawing style
+    //
+    arrow_style type head_style is global arrow_head_style;
+    color type head_color = white;
+    color type shaft_color = white; 
+is
+	scalar umiddle = (umin + umax) / 2;
+	
+	arrow_arc from umiddle to umin with
+	    radius = static radius;
+	    steps = static steps;
+	    arrow_head_length = static arrow_head_length;
+	    arrow_head_width = static arrow_head_width;
+	    
+	    head_style is static head_style;
+	    head_color = static head_color;
+	    shaft_color = static shaft_color;
+	end;
+	
+	arrow_arc from umiddle to umax with
+	    radius = static radius;
+	    steps = static steps;
+	    arrow_head_length = static arrow_head_length;
+	    arrow_head_width = static arrow_head_width;
+	    
+	    head_style is static head_style;
+	    head_color = static head_color;
+	    shaft_color = static shaft_color;
+	end;
+end;    // double_arrow_arc
+
+
+{***************************************************************}
+{             groups of arrows in all drawing styles            }
+{***************************************************************}
+
+
+shape dimensional_arrow
+    from vector v1 = <0 0 0>;
+    to vector v2;
+with
+    scalar arrow_head_length = .1;
+    scalar arrow_head_width = .1;
+    scalar shaft_width = .025;
+    color type color = white;
+is
+    vector delta = v2 - v1;
+    scalar x = delta dot <1 0 0>;
+    scalar y = delta dot <0 1 0>;
+
+    arrow from v1 to v1 + (<x 0 0>) with
+        arrow_head_length = static arrow_head_length;
+        arrow_head_width = static arrow_head_width;
+        shaft_width = static shaft_width;
+        
+        head_color = static color;
+        shaft_color = static color;
+    end;
+    
+    arrow from v1 + (<x 0 0>) to v1 + (<x y 0>) with
+        arrow_head_length = static arrow_head_length;
+        arrow_head_width = static arrow_head_width;
+        shaft_width = static shaft_width;
+        
+        head_color = static color;
+        shaft_color = static color;
+    end;
+    
+    arrow from v1 + (<x y 0>) to v1 + delta with
+        arrow_head_length = static arrow_head_length;
+        arrow_head_width = static arrow_head_width;
+        shaft_width = static shaft_width;
+        
+        head_color = static color;
+        shaft_color = static color;
+    end;
+end;    // dimensional_arrow

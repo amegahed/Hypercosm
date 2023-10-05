@@ -1,0 +1,127 @@
+{***************************************************************}
+{                          test_conveyors.omar                  }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do test;
+
+
+include "system/3d.ores";
+include "system/conveyors.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/figures.ores";
+include "system/arrows.ores";
+
+
+shape roller with
+    scalar radius = 1;
+is
+    scalar rim_width = .5;
+
+    color = red;
+
+    cylinder with
+        radius = static radius;
+    end;
+    cylinder with
+        radius = static radius - rim_width;
+    end;
+
+        cone with
+                end1 = <0 0 -1.5>;
+        end2 = <0 0 -1>;
+                radius1 = 0;
+        radius2 = radius - rim_width;
+        color = grey;
+        end;
+        cone with
+                end1 = <0 0 1.5>;
+        end2 = <0 0 1>;
+                radius1 = 0;
+        radius2 = radius - rim_width;
+        color = grey;
+        end;
+
+    ring with
+        outer_radius = radius;
+        inner_radius = radius - rim_width;
+        move to <0 0 -.99>;
+    end;
+    ring with
+        outer_radius = radius;
+        inner_radius = radius - rim_width;
+        rotate by 180 around <0 1 0>;
+        move to <0 0 .99>;
+    end;
+end;    // roller
+
+
+shape arrow_roller with
+    scalar radius = 1;
+is
+    rod with
+        radius = static radius;
+    end;
+    arrow_arc from 0 to 270 with
+        radius = static radius * .75;
+        move to <0 0 1.1>;
+        color = white;
+    end;
+end;    // arrow_roller
+
+
+shape tread is
+    block;
+end;    // tread
+
+
+anim test
+    args type args;
+with
+    double_buffer is on;
+//  render_mode is wireframe;
+    facets = 8;
+    args check;
+is
+    conveyor_belt type conveyor_belt with
+        tread_thickness = .2;
+    end;
+
+    // build conveyor belt
+    //
+    conveyor_belt add_roller at <-4 0 0> with
+        radius = 1;
+    end;
+    conveyor_belt add_roller at <0 0 -4> using roller with
+        radius = 4;
+    end;
+    conveyor_belt add_roller at <8 0 0> using arrow_roller with
+        radius = 3;
+    end;
+    conveyor_belt add_roller at <2 0 5> with
+        radius = 1.5;
+    end;
+    conveyor_belt add_roller at <-2 0 5> with
+        radius = 1;
+    end;
+    conveyor_belt add_roller at <-6 0 6> with
+        radius = .5;
+    end;
+    conveyor_belt add_roller at <-7 0 0> with
+        radius = 1;
+    end;
+
+    conveyor_belt add_belts with
+        orientation is false;
+        closed is false;
+        tread does static tread;
+    end;
+        conveyor_belt set_speed to 1;
+
+    mouse_controlled_actor conveyor_belt;
+end;    // test

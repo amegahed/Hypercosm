@@ -1,0 +1,558 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           3ds_tube.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains tube definitions that correspond to            }
+{       entities from Discreet's 3D Studio Max software.        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3ds_sliceable_object.ores";
+include "system/3ds_editable_mesh.ores";
+include "system/3ds_modifier_stacks.ores";
+include "system/grid_meshes.ores";
+include "system/polygon_meshes.ores";
+include "system/tessellation.ores";
+
+final subject translated_3ds_tube
+extends
+	translated_3ds_collapsable translated_3ds_sliceable_object
+does
+	// constructor
+	//
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar radius1 = .5;
+		scalar radius2 = 1;
+		scalar height = 2;
+		
+		// tessellation parameters
+		//
+		integer height_segments = 1;
+		integer cap_segments = 1;
+		integer sides = 16;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+		
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+	end;
+	
+	// setting method
+	//
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius1 = .5;
+		scalar radius2 = 1;
+		scalar height = 2;
+		
+		// tessellation parameters
+		//
+		integer height_segments = 1;
+		integer cap_segments = 1;
+		integer sides = 16;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+		
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+	end;
+		
+	// collapsing method
+	//
+	translated_3ds_stackable type question get_collapsed;
+	
+	// recycling methods
+	//
+	objective translated_3ds_tube type question get;
+	reference verb recycle; 
+has
+	// attributes
+	//
+	scalar radius1;
+	scalar radius2;
+	scalar height;
+	
+	// tessellation attributes
+	//
+	integer height_segments;
+	integer cap_segments;
+	integer sides;
+	boolean smooth;
+	
+	// additional attributes that
+	// are not provided by 3DS Max
+	//
+	boolean capping;
+	
+private 
+	// recycling attributes
+	//
+	translated_3ds_tube type next is none;
+is
+	// recycling free list
+	//
+	translated_3ds_tube type free_list is none;
+	
+	//
+	// constructor
+	//
+		
+	verb new with
+	
+		// geometry parameters
+		//
+		scalar radius1 = .5;
+		scalar radius2 = 1;
+		scalar height = 2;
+		
+		// tessellation parameters
+		//
+		integer height_segments = 1;
+		integer cap_segments = 1;
+		integer sides = 16;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+		
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+	is
+		translated_3ds_sliceable_object new with
+			
+			// set slicing parameters
+			//
+			slice_on is static slice_on;
+			slice_from = static slice_from;
+			slice_to = static slice_to;
+					
+			// set texturing parameters
+			//
+			gen_mapping_coords is static gen_mapping_coords;
+		end;
+
+		if verbose_recycling then
+			write "new 3ds tube", ;
+		end;
+					
+		with translated_3ds_tube do
+		
+			// set geometry parameters
+			//
+			its radius1 = radius1;
+			its radius2 = radius2;
+			its height = height;
+			
+			// set tessellation parameters
+			//
+			its height_segments = height_segments;
+			its cap_segments = cap_segments;
+			its sides = sides;
+			its smooth is smooth;
+			
+			// set additional parameters that
+			// are not provided by 3DS Max
+			//
+			its capping is capping;
+		end;
+	end;    // new  
+
+	//
+	// setting method
+	//
+	
+	verb set with
+	
+		// geometry parameters
+		//
+		scalar radius1 = .5;
+		scalar radius2 = 1;
+		scalar height = 2;
+		
+		// tessellation parameters
+		//
+		integer height_segments = 1;
+		integer cap_segments = 1;
+		integer sides = 16;
+		boolean smooth is true;
+		
+		// slicing parameters
+		//
+		boolean slice_on is false;
+		scalar slice_from = 0;
+		scalar slice_to = 0;
+		
+		// texturing parameters
+		//
+		boolean gen_mapping_coords is false;
+		
+		// additional parameters that
+		// are not provided by 3DS Max
+		//
+		boolean capping is true;
+	is
+		with translated_3ds_tube do
+		
+			// set geometry parameters
+			//
+			its radius1 = radius1;
+			its radius2 = radius2;
+			its height = height;
+			
+			// set tessellation parameters
+			//
+			its height_segments = height_segments;
+			its cap_segments = cap_segments;
+			its sides = sides;
+			its smooth is smooth;
+			
+			// set additional parameters that
+			// are not provided by 3DS Max
+			//
+			its capping is capping;
+			
+			// set slicing parameters
+			//
+			its slice_on is slice_on;
+			its slice_from = slice_from;
+			its slice_to = slice_to;
+					
+			// set texturing parameters
+			//
+			its gen_mapping_coords is gen_mapping_coords;
+		end;    
+	end;    // set
+	
+	//
+	// collapsing method
+	//
+	
+	translated_3ds_stackable type question get_collapsed is
+		translated_3ds_editable_mesh type editable_mesh is translated_3ds_editable_mesh type's get;     
+		
+		// tube sweep parameters
+		//
+		scalar umin, umax, uspan;
+	 
+		// compute range in longitude
+		//
+		if slice_on then
+			umin = normalized_positive_angle of slice_to;
+			umax = normalized_positive_angle of slice_from;
+			if umax = 0 then
+				umax = 360;
+			end;
+			if umax < umin then
+				umin = itself - 360;
+			end;
+			uspan = umax - umin;
+		else
+			umin = 0;
+			umax = 360;
+			uspan = 360;
+		end;
+		
+		// restrict radii to positive values
+		//
+		radius1 = larger of radius1 and 0;
+		radius2 = larger of radius2 and 0;  
+		
+		// order radii
+		//
+		if radius1 > radius2 then
+			scalar temp;
+			temp = radius1;
+			radius1 = radius2;
+			radius2 = temp;
+		end;
+		
+		if radius2 > 0 then 
+			vector_grid type vertex_grid1;
+			vector_grid type vertex_grid2;
+			vector_grid type normal_grid;
+			vector_grid type cap1;
+			vector_grid type cap2;
+								
+			// rows = number of vertical divisions
+			// columns = number of horizontal divisions
+			//
+			integer rows = height_segments;
+			integer columns = sides;
+			integer cap_rows = cap_segments;
+			
+			// clamp grid tessellation to minimum values
+			//
+			if rows < 1 then
+				rows = 1;
+			end;
+			if columns < min_circle_tessellation then
+				columns = min_circle_tessellation;
+			end;
+			if cap_rows < 1 then
+				cap_rows = 1;
+			end;
+		
+			// create grids
+			//
+			dim vertex_grid1[0 .. rows, 0 .. columns];
+			dim vertex_grid2[0 .. rows, 0 .. columns];
+			dim normal_grid[0 .. rows, 0 .. columns];
+		
+			// compute side vertices
+			//       
+			for integer row = 0 .. rows do
+				scalar t = row / rows;
+				scalar h = height * t;
+				 
+				for integer column = 0 .. columns do
+					scalar s = column / columns;
+					scalar u = umin + s * uspan;
+					
+					// rotate for longitude
+					//
+					vertex_grid1[row, column] = rotated_point <0 radius1 h> by u around <0 0 1>;
+					vertex_grid2[row, column] = rotated_point <0 radius2 h> by u around <0 0 1>;
+					normal_grid[row, column] = vertex_grid2[row, column] * <1 1 0>;
+				end;
+			end;
+			editable_mesh add_element (get_grid_mesh 
+				of vertex_grid1 oriented to normal_grid
+			with
+				smoothing is smooth;
+				closed is true;
+				reversed is (height > 0);
+				mending is off;
+				textured is gen_mapping_coords;     
+			);
+			
+			editable_mesh add_element (get_grid_mesh 
+				of vertex_grid2 oriented to normal_grid
+			with
+				smoothing is smooth;
+				closed is true;
+				reversed is (height < 0);
+				mending is off;
+				textured is gen_mapping_coords; 
+			);
+			// top and bottom caps
+			//  
+			dim cap1[0 .. cap_rows, 0 .. columns];
+			dim cap2[0 .. cap_rows, 0 .. columns];
+			
+			for integer row = 0 .. cap_rows do
+				scalar t = row / cap_rows;
+				scalar r = radius1 + (radius2 - radius1) * t;
+				 
+				for integer column = 0 .. columns do
+					scalar s = column / columns;
+					scalar u = umin + s * uspan;
+					
+					// rotate for longitude
+					//
+					cap1[row, column] = rotated_point <0 r 0> by u around <0 0 1>;
+					cap2[row, column] = rotated_point <0 r height> by u around <0 0 1>;
+				end;
+			end;
+			
+			editable_mesh add_element (get_grid_mesh of cap1 with
+				smoothing is smooth;
+				closed is true;
+				reversed is (height < 0);
+				mending is off; 
+				textured is gen_mapping_coords; 
+			);
+			editable_mesh add_element (get_grid_mesh of cap2 with
+				smoothing is smooth;
+				closed is true;
+				reversed is (height > 0);
+				mending is off; 
+				textured is gen_mapping_coords; 
+			);                  
+		
+			// add capping faces
+			//
+			if capping then
+				
+				// sweep capping faces
+				// 
+				if uspan <> 360 then
+					vector face1[0 .. 3], face2[0 .. 3];
+					
+					face1[3] = vertex_grid1[0, 0];
+					face1[2] = vertex_grid1[rows, 0];
+					face1[1] = vertex_grid2[rows, 0];
+					face1[0] = vertex_grid2[0, 0];
+					
+					editable_mesh add_element (get_quad_mesh 
+						of face1[0] face1[1] face1[2] face1[3]
+					with
+						one_sided is true;
+						reversed is (height < 0);
+						textured is gen_mapping_coords;
+					);
+					
+					face2[0] = vertex_grid1[0, columns];
+					face2[1] = vertex_grid1[rows, columns];
+					face2[2] = vertex_grid2[rows, columns];
+					face2[3] = vertex_grid2[0, columns];
+					editable_mesh add_element (get_quad_mesh 
+						of face2[0] face2[1] face2[2] face2[3]
+					with
+						one_sided is true;
+						reversed is (height < 0);
+						textured is gen_mapping_coords;
+					);
+				end;    // if u_span <> 360
+			end;    // if capping
+		end;    // if radius2
+		
+		answer editable_mesh;
+	end;    // get_collapsed
+	
+	//  
+	// recycling methods
+	//
+	
+	objective translated_3ds_tube type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_tube type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_tube;
+		end;
+	end;    // get
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_tube;
+		
+		translated_3ds_tube is none;
+	end;        // recycle          
+end;    // translated_3ds_tube
+
+//
+// procedural interface
+//
+
+shape translated_3ds_tube with
+	
+	// geometry parameters
+	//
+	scalar radius1 = .5;
+	scalar radius2 = 1;
+	scalar height = 2;
+	
+	// tessellation parameters
+	//
+	integer height_segments = 1;
+	integer cap_segments = 1;
+	integer sides = 16;
+	boolean smooth is true;
+	
+	// slicing parameters
+	//
+	boolean slice_on is false;
+	scalar slice_from = 0;
+	scalar slice_to = 0;
+	
+	// texturing parameters
+	//
+	boolean gen_mapping_coords is false;
+	
+	// additional parameters that
+	// are not provided by 3DS Max
+	//
+	boolean capping is true;
+	
+	// modifier stack
+	//
+	translated_3ds_tube type translated_3ds_tube is translated_3ds_tube type's get;
+	modifier_stack push translated_3ds_stackable type translated_3ds_tube;
+is
+	// set first entry in modifier stack to object
+	//
+	translated_3ds_tube set with
+	
+		// set geometry parameters
+		//
+		radius1 = static radius1;
+		radius2 = static radius2;
+		height = static height;
+		
+		// set tessellation parameters
+		//
+		height_segments = static height_segments;
+		cap_segments = static cap_segments;
+		sides = static sides;
+		smooth is static smooth;
+		
+		// set slicing parameters
+		//
+		slice_on is static slice_on;
+		slice_from = static slice_from;
+		slice_to = static slice_to;
+		
+		// set texturing parameters
+		//
+		gen_mapping_coords is static gen_mapping_coords;
+		
+		// set additional parameters that
+		// are not provided by 3DS Max
+		//
+		capping is static capping;
+	end;
+	
+	// render
+	//
+	modifier_stack instance;
+end;    // translated_3ds_tube

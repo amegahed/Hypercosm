@@ -1,0 +1,237 @@
+{***************************************************************}
+{                          cubicles.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do office_hell;
+
+
+include "system/3d.ores";
+include "system/surfaces.ores";
+include "system/desk.omar";
+include "system/office_chair.omar";
+
+
+shape unit_cube is
+    block with
+        vertex = <-.5 -.5 -.5>;
+        side1 = <1 0 0>;
+        side2 = <0 1 0>;
+        side3 = <0 0 1>;
+    end;
+end;    // unit_cube
+
+
+shape walls is
+    unit_cube with
+        scale by 2 along <0 1 0>;
+        scale by .05 along <1 0 0>;
+        move to <1 0 .5>;
+    end;    // left side
+    unit_cube with
+        scale by 2 along <0 1 0>;
+        scale by .05 along <1 0 0>;
+        move to <-1 0 .5>;
+    end;    // right side
+    unit_cube with
+        scale by 2 along <1 0 0>;
+        scale by .05 along <0 1 0>;
+        move to <0 1 .5>;
+    end;    // back side
+    unit_cube with
+        scale by 1.2 along <1 0 0>;
+        scale by .05 along <0 1 0>;
+        move to <.4 -1 .5>;
+    end;    // front side
+
+    // door frame
+    //
+    unit_cube with
+        material is aluminum;
+        scale by .05 along <1 0 0>;
+        scale by .05 along <0 1 0>;
+        scale by 2.5 along <0 0 1>;
+        move to <-1 -1 1.25>;
+    end;    // left side
+    unit_cube with
+        material is aluminum;
+        scale by .05 along <1 0 0>;
+        scale by .05 along <0 1 0>;
+        scale by 2.5 along <0 0 1>;
+        move to <-.2 -1 1.25>;
+    end;    // left side
+    unit_cube with
+        material is aluminum;
+        scale by .05 along <0 1 0>;
+        scale by .05 along <0 0 1>;
+        scale by .8 along <1 0 0>;
+        move to <-.6 -1 2.5>;
+    end;    // left side
+end;    // walls
+
+
+shape wastebasket is
+    cone with
+        end1 = <0 0 0>;
+        end2 = <0 0 .8>;
+        radius1 = .3;
+        radius2 = .4;
+    end;
+    disk with
+        center = <0 0 0>;
+        normal = <0 0 1>;
+        radius = .3;
+    end;
+end;    // wastbasket
+
+
+shape cubicle is
+    office_chair with
+        material is chalk colored brown;
+        rotate by 90 around <0 0 1>;
+        magnify by .5;
+        move to <0 -.6 0>;
+    end;
+    messy_desk with
+        rotate by 90 around <0 0 1>;
+        move to <0 .4 0>;
+    end;
+    walls with
+        magnify by 2.2;
+        scale by .6 along <0 0 1>;
+    end;
+end;    // cubicle
+
+
+shape cubicle_group is
+    cubicle with
+        material is chalk colored light grey;
+        move to <3 3 0>;
+    end;
+    cubicle with
+        material is chalk colored light pink;
+        rotate by 90 around <0 0 1>;
+        move to <-3 3 0>;
+    end;
+    cubicle with
+        material is chalk colored light green;
+        rotate by 180 around <0 0 1>;
+        move to <-3 -3 0>;
+    end;
+    cubicle with
+        material is chalk colored light brown;
+        rotate by 270 around <0 0 1>;
+        move to <3 -3 0>;
+    end;
+end;    // cubicle_group
+
+
+shape department is
+    cubicle_group with
+        move to <6 6 0>;
+    end;
+    cubicle_group with
+        rotate by 90 around <0 0 1>;
+        move to <-6 6 0>;
+    end;
+    cubicle_group with
+        rotate by 180 around <0 0 1>;
+        move to <-6 -6 0>;
+    end;
+    cubicle_group with
+        rotate by 270 around <0 0 1>;
+        move to <6 -6 0>;
+    end;
+end;    // department
+
+
+shape division is
+    department with
+        move to <12 12 0>;
+    end;
+    department with
+        rotate by 90 around <0 0 1>;
+        move to <-12 12 0>;
+    end;
+    department with
+        rotate by 180 around <0 0 1>;
+        move to <-12 -12 0>;
+    end;
+    department with
+        rotate by 270 around <0 0 1>;
+        move to <12 -12 0>;
+    end;
+end;    // division
+
+
+shape company is
+    division with
+        move to <24 24 0>;
+    end;
+    division with
+        rotate by 90 around <0 0 1>;
+        move to <-24 24 0>;
+    end;
+    division with
+        rotate by 180 around <0 0 1>;
+        move to <-24 -24 0>;
+    end;
+    division with
+        rotate by 270 around <0 0 1>;
+        move to <24 -24 0>;
+    end;
+end;    // company
+
+
+shape hell is
+    company with
+        move to <48 48 0>;
+    end;
+    company with
+        rotate by 90 around <0 0 1>;
+        move to <-48 48 0>;
+    end;
+    company with
+        rotate by 180 around <0 0 1>;
+        move to <-48 -48 0>;
+    end;
+    company with
+        rotate by 270 around <0 0 1>;
+        move to <48 -48 0>;
+    end;
+end;    // hell
+
+
+picture office_hell with
+    field_of_view = 75;
+    eye = <-10 -20 5>;
+    lookat = <0 0 -6>;
+    render_mode is shaded;
+    background = sky_blue;
+    shading is pixel;
+    fog_factor = 50;
+    facets = 0;
+    reflections is on;
+    shadows is on;
+is
+    distant_light from <.75 -1 1> with
+        brightness = .5;
+    end;
+
+    {
+        cubicle_group with
+                magnify by 2.5;
+                rotate by 30 around 0 0 1;
+                move to lookat;
+        end;
+    }
+    distant_light from <-1 -.75 .5> with
+        brightness = .75;
+    end;
+    hell;
+    flat speckled grey plane;
+end;    // office_hell

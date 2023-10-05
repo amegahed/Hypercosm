@@ -1,0 +1,231 @@
+{***************************************************************}
+{                          bounce_balls.omar                    }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do variable_balls;
+
+
+include "system/3d.ores";
+include "system/actors.ores";
+include "system/anims.ores";
+include "system/random.ores";
+include "system/spline_shapes.ores";
+include "system/common_materials.ores";
+
+
+subject bouncing_balls
+extends
+    timed_actor
+does
+    // methods
+    //
+    verb new with
+        integer number = 10;
+        scalar speed = 1;
+        scalar rpm = 30;
+    end;    // new
+
+    verb advance
+    	by scalar time_step;
+    end;
+    shape instance;
+has
+private
+    // attributes
+    //
+    struct ball has
+        vector location;
+        vector velocity;
+        scalar radius;
+        color type color;
+        vector axis;
+    end;    // ball
+
+
+    ball type balls[];
+    scalar rpm;
+is
+    material type block_material is chalk colored white poster "transparent60.png";
+    
+    
+    // implementation
+    //
+    verb new with
+        integer number = 10;
+        scalar speed = 1;
+        scalar rpm = 30;
+    is
+        integer counter = 0;
+        color type colors[] = [blue red yellow green purple
+            white orange cyan];
+
+        // initialize balls
+        //
+        write "initializing ", number, " balls...", ;
+        dim balls[1..number];
+        bouncing_balls's rpm = rpm;
+        for each ball type ball in balls do
+            ball's radius = random .1 to .2;
+            ball's location = vrandom <-1 -1 -1> to <1 1 1>;
+            ball's location = itself * (1 - ball's radius);
+            ball's velocity = (vrandom <-1 -1 -1> to
+                <1 1 1>) * speed;
+            ball's color = colors[counter mod num colors + 1];
+            ball's axis = normalized vrandom <-1 -1 -1> to
+                <1 1 1>;
+            counter = itself + 1;
+        end;
+    end;    // new
+
+
+    verb advance
+    	by scalar time_step;
+    is 
+        for each ball type ball in balls do
+            scalar x = ball's location dot <1 0 0>;
+            scalar y = ball's location dot <0 1 0>;
+            scalar z = ball's location dot <0 0 1>;
+            scalar r = 1 - ball's radius;
+
+            if abs x > r then
+                ball's velocity = itself * <-1 1 1>;
+                x = r * sign x;
+            end;
+            if abs y > r then
+                ball's velocity = itself * <1 -1 1>;
+                y = r * sign y;
+            end;
+            if abs z > r then
+                ball's velocity = itself * <1 1 -1>;
+                z = r * sign z;
+            end;
+
+            ball's location = <x y z> + ball's velocity
+                * time_step;
+        end;
+    end;    // advance
+
+
+    shape instance is
+        scalar angle = 360 * rpm * (time / 60);
+        vector centers[1 .. num balls];
+
+        for each ball type ball in balls do
+            {glossy ball's color} sphere with
+                magnify by ball's radius;
+                rotate by angle around ball's axis;
+                move to ball's location;
+                color = ball's color;
+            end;
+        end;
+        
+        for integer counter = min balls .. max balls do
+            centers[counter] = balls[counter]'s location;
+        end;
+        hose through centers with
+            steps = 6;
+            spline_steps = 4;
+            radius = .1;
+            material is aluminum;
+        end;
+            
+        block with
+            material is block_material;
+        end;
+    end;    // instance
+end;    // bouncing_balls;
+
+
+shape box is
+
+    // bottom edges
+    cylinder with
+        end1 = <-1 -1 -1>;
+        end2 = <1 -1 -1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <1 -1 -1>;
+        end2 = <1 1 -1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <1 1 -1>;
+        end2 = <-1 1 -1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <-1 1 -1>;
+        end2 = <-1 -1 -1>;
+        radius = .1;
+    end;
+
+    // top edges
+    cylinder with
+        end1 = <-1 -1 1>;
+        end2 = <1 -1 1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <1 -1 1>;
+        end2 = <1 1 1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <1 1 1>;
+        end2 = <-1 1 1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <-1 1 1>;
+        end2 = <-1 -1 1>;
+        radius = .1;
+    end;
+
+    // side edges
+    cylinder with
+        end1 = <-1 -1 -1>;
+        end2 = <-1 -1 1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <1 -1 -1>;
+        end2 = <1 -1 1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <1 1 -1>;
+        end2 = <1 1 1>;
+        radius = .1;
+    end;
+    cylinder with
+        end1 = <-1 1 -1>;
+        end2 = <-1 1 1>;
+        radius = .1;
+    end;
+end;    // box
+
+
+anim variable_balls
+    args type args;
+with
+    eye = <4 -4 3>;
+    lookat = <0 0 0>;
+    double_buffer is on;
+    background = dark blue;
+    args check;
+is
+    bouncing_balls type balls;
+    {
+    write "how many balls? ";
+    new balls with
+        read number;
+    end;
+    }
+    mouse_controlled_actor balls;
+end;    // variable_balls

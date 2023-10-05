@@ -1,0 +1,414 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm       singly_linked_lists.ores         3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a few useful singly linked list utilities.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/lists.ores";
+include "system/nodes.ores";
+include "system/singly_linked_nodes.ores";
+include "system/singly_linked_node_iterators.ores";
+
+subject singly_linked_list
+extends
+	list
+does
+	// list construction methods
+	//
+	verb append_first
+		object type item;
+	end;
+	object type question detached_first;
+	
+	// list querying methods
+	//
+	object type question get_first;
+	list_iterator type question get_start;
+	
+	// collection querying methods
+	//
+	boolean question is_empty;
+	integer question get_size;
+		
+	// collection construction methods
+	//
+	verb clear;
+
+	// copying and cloning methods
+	//    
+	verb copy 
+		from object type source;
+	end;
+	object type question clone;
+has
+	// attributes
+	//
+	integer elements = 0;
+	
+	// list of singly linked node nodes
+	//
+	singly_linked_node type head is none;
+is
+	//
+	// private singly linked list iterator class
+	//
+	
+	subject singly_linked_list_iterator
+	extends
+		prev_queryable singly_linked_node_iterator
+	does
+		// list iterator constructor
+		//
+		verb new
+			of singly_linked_list type list;
+		end;
+		
+		// list iterator querying methods
+		//
+		boolean question is_iterating;
+		boolean question is_done;
+			 
+		// list iterator navigation methods
+		//
+		verb to_first;
+		verb to_next;
+   
+		// list iterator insertion methods
+		//
+		verb insert_prev
+			object type item;
+		end;
+		verb insert_next
+			object type item;
+		end;
+		
+		// list iterator removal methods
+		//
+		object type question removed;
+		
+		// list iterator querying methods
+		//
+		boolean question has_prev;
+		object type question get_prev;
+	has
+		singly_linked_list type list is none;
+		
+		// in order to insert and remove into the list,
+		// we need a reference to the previous element
+		//
+		singly_linked_node type prev is none;
+	is
+		//
+		// list iterator constructor
+		//
+		
+		verb new
+			of singly_linked_list type list;
+		is
+			with singly_linked_list_iterator do
+				its list is list;
+				its current is list's head;
+			end;
+		end;    // new
+
+		//     
+		// list iterator querying methods
+		//
+				
+		boolean question is_iterating is
+			answer some current;
+		end;    // is_iterating
+			
+		boolean question is_done is
+			answer current is none;
+		end;    // is_done
+		
+		//     
+		// list iterator navigation methods
+		//
+		
+		verb to_first is
+			current is list's head;
+			prev is none;
+		end;    // to_first
+		
+		verb to_next is
+			if some current then
+				prev is current;
+				current is its next;
+			end;
+		end;    // to_next
+		
+		//        
+		// list iterator insertion methods
+		//
+		
+		verb insert_prev
+			object type item;
+		is
+			// create new node
+			//
+			singly_linked_node type node is singly_linked_node type's get_node
+				containing item;
+
+			// add new node to list
+			//            
+			if is_iterating then
+			
+				// add new node to existing list
+				//
+				node's next is current;
+								
+				if some prev then
+				
+					// insert into middle of list
+					//
+					prev's next is node;
+				else
+					// insert into head of list
+					//
+					list's head is node;
+				end;
+			else
+				// begin new list
+				//
+				list's head is node;
+				current is node;
+			end;
+			
+			list's elements = itself + 1;
+		end;    // insert_prev
+		
+		verb insert_next
+			object type item;
+		is
+			// create new node
+			//
+			singly_linked_node type node is singly_linked_node type's get_node containing item;
+			
+			// add new node to list
+			//
+			if is_iterating then
+			
+				// add node to existing list
+				//
+				if some current's next then
+				
+					// insert into middle of list
+					//
+					node's next is current's next;
+					current's next is node;
+				else
+					// insert into tail of list
+					//
+					current's next is node;
+				end;
+			else
+				// begin new list
+				//
+				list's head is node;
+				current is node;
+			end;
+			
+			list's elements = itself + 1;
+		end;    // insert_next
+	  
+		//        
+		// list iterator removal methods
+		//
+		
+		object type question removed is
+			object type element is none;
+		
+			// delete current node from list
+			//
+			if is_iterating then
+			
+				// get current node
+				//
+				singly_linked_node type node is current;
+				
+				// remove current node from list
+				//
+				if some prev then
+				
+					// remove from middle of list
+					//
+					prev's next is current's next;
+					current is its next;
+				else
+					// remove from head of list
+					//
+					list's head is current's next;
+					current is its next;
+				end;
+				
+				list's elements = itself - 1;
+				
+				// return current node's element
+				//
+				element is node get;
+				node recycle;
+				answer element;
+			else
+				answer none;
+			end;
+		end;    // removed
+				
+		object type question removed_next is
+			object type element is none;
+		
+			// delete next node from list
+			//
+			if is_iterating then
+		   
+				// find next node from current node
+				//
+				singly_linked_node type next is current's next;
+				
+				if some next then      
+					if some next's next then
+					
+						// remove from middle of list
+						//
+						current's next is next's next; 
+					else
+						// remove from tail of list
+						//
+						current's next is none;
+					end;
+					
+					list's elements = itself - 1;
+					
+					// return next node's element
+					//
+					element is next get;
+					next recycle;
+					answer element;
+				else
+					answer none;
+				end;
+			else
+				answer none;
+			end;
+		end;    // removed_next
+		
+		//        
+		// list iterator querying methods
+		//
+		
+		boolean question has_prev is
+			answer some prev;
+		end;    // has_prev
+		
+		object type question get_prev is
+			if has_prev then
+				answer prev get;
+			else
+				answer none;
+			end;
+		end;    // get_prev
+	end;    // singly_linked_list_iterator
+	
+	//    
+	// list construction methods
+	//
+	
+	verb append_first
+		object type element;
+	is
+		// create new node
+		//
+		singly_linked_node type node is singly_linked_node type's get_node containing element;
+
+		// add to head of list
+		// 
+		node's next is head;
+		head is node;
+				
+		elements = itself + 1;
+	end;    // append_first
+	
+	object type question detached_first is
+		if some head then
+			singly_linked_node type node is head;
+			object type element is none;
+		
+			// remove node from head of list
+			//
+			head is head's next;
+			elements = itself - 1;
+			
+			// return node's element
+			//
+			element is node get;
+			node recycle;
+			answer element;
+		else
+			answer none;
+		end;   
+	end;    // detached_first
+	
+	//        
+	// list querying methods
+	//
+   
+	object type question get_first is
+		answer head get;
+	end;    // get_first
+		 
+	list_iterator type question get_start is
+		answer new singly_linked_list_iterator of singly_linked_list;
+	end;    // get_start
+	
+	//
+	// collection querying methods
+	//
+	
+	boolean question is_empty is
+		answer (elements = 0);
+	end;    // is_empty
+	
+	integer question get_size is
+		answer elements;
+	end;    // get_size
+	
+	//    
+	// collection construction methods
+	//
+				
+	verb clear is
+		head is none;
+		elements = 0;
+		{
+		while not is_empty do
+			discard removed_first;
+		end;
+		}
+	end;    // clear
+	
+	//    
+	// copying and cloning methods
+	//
+	   
+	verb copy 
+		from object type source;
+	is
+		singly_linked_list type source_list is singly_linked_list type source;
+		with singly_linked_list do
+			its head is source_list's head;
+		end;
+	end;    // copy
+	
+	object type question clone is
+		singly_linked_list type new_list;
+		new_list copy from singly_linked_list;
+		answer new_list;
+	end;    // clone
+end;    // singly_linked_list

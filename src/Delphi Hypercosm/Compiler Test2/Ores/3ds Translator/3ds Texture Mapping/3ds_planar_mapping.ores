@@ -1,0 +1,371 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		3ds_planar_mapping.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains planar mapping definitions that correspond  	}
+{		to entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_uvw_mapping.ores";
+include "system/copying.ores";
+
+
+subject translated_3ds_planar_mapping
+extends
+	translated_3ds_uvw_mapping
+does
+    // constructor
+    //
+	verb new with
+	
+	    // scaling and tiling parameters
+	    //
+		scalar length = 1, width = 1;
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+		boolean u_flip is false, v_flip is false, w_flip is false;
+		
+		// transformation parameters
+		//		
+		translated_3ds_xyz_alignment type alignment is z;
+		trans type trans;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	end;
+
+    // attributes setting method
+    //
+	verb set with
+	
+	    // scaling and tiling parameters
+	    //
+		scalar length = 1, width = 1;
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+		boolean u_flip is false, v_flip is false, w_flip is false;
+		
+		// transformation parameters
+		//		
+		translated_3ds_xyz_alignment type alignment is z;
+		trans type trans;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	end;
+		
+	// texture mapping methods
+	//
+	texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	end;
+	
+	// copyable and cloneable methods
+	//
+    verb copy
+        from translated_3ds_planar_mapping type source;
+    end;
+    translated_3ds_planar_mapping type question clone;
+    
+	// recycling methods
+	//
+	objective translated_3ds_planar_mapping type question get;
+	reference verb recycle;	
+has
+    // planar mapping attributes
+    //
+	scalar length, width;
+	
+private	
+	// recycling attributes
+	//
+	translated_3ds_planar_mapping type next is none;
+is
+    // recycling free list
+    //
+    translated_3ds_planar_mapping type free_list is none;
+    
+    
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+	
+	    // scaling and tiling parameters
+	    //
+		scalar length = 1, width = 1;
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+		boolean u_flip is false, v_flip is false, w_flip is false;
+		
+		// transformation parameters
+		//	
+		translated_3ds_xyz_alignment type alignment is z;
+		trans type trans;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	is	
+		// set general uvw mapping parameters
+		// 
+		translated_3ds_uvw_mapping new with
+		
+    	    // set scaling and tiling parameters
+    	    //
+			u_tile = static u_tile;
+			v_tile = static v_tile;
+			w_tile = static w_tile;
+			u_flip is static u_flip;
+			v_flip is static v_flip;
+			w_flip is static w_flip;
+			
+    		// set transformation parameters
+    		//	
+			alignment is static alignment;
+			trans = static trans;
+			
+    		// set activation parameters
+    		//
+    		active is static active;
+		end;
+
+		if verbose_recycling then
+			write "new 3ds planar mapping", ;
+		end;
+					
+		with translated_3ds_planar_mapping do
+		
+			// set planar mapping attributes
+			//
+			its length = length;
+			its width = width;
+		end;
+	end;	// new
+
+
+	//
+    // attributes setting method
+    //
+    
+    
+	verb set with
+	
+	    // scaling and tiling parameters
+	    //
+		scalar length = 1, width = 1;
+		scalar u_tile = 1, v_tile = 1, w_tile = 1;
+		boolean u_flip is false, v_flip is false, w_flip is false;
+		
+		// transformation parameters
+		//		
+		translated_3ds_xyz_alignment type alignment is z;
+		trans type trans;
+		
+		// activation parameters
+		//
+		boolean active is true;
+	is
+		// reset texture mapping transformation
+		//
+		set_trans to trans;
+
+		// reset texture mapping attributes
+		//			
+		with translated_3ds_planar_mapping do
+		
+			// set planar mapping attributes
+			//
+			its length = length;
+			its width = width;
+			
+    	    // set scaling and tiling attributes
+    	    //
+			its u_tile = u_tile;
+			its v_tile = v_tile;
+			its w_tile = w_tile;
+			its u_flip is u_flip;
+			its v_flip is v_flip;
+			its w_flip is w_flip;
+			
+    		// set transformation attributes
+    		//	
+			its alignment is alignment;
+			
+    		// set activation attributes
+    		//
+    		its active is active;
+		end;	
+	end;	// set
+	
+	
+    //	
+	// texture mapping methods
+	//
+	
+		
+	texcoord type question get_texcoord
+		at vector point;
+		towards vector normal;
+	is
+		scalar u, v;
+		
+		// get coordinates of point in texture space
+		//
+		point = get_transformed_point point;
+
+        // flip coordinates according to axis alignment
+        //
+		when alignment is
+			x: point = <point.z point.y point.x>; end;
+			y: point = <point.x point.z point.y>; end;
+			z: point = <point.x point.y point.z>; end;
+		end;
+		
+		// scale coordinates
+		//
+		point = itself / <width length 1>;
+		
+		// find texture coordinates
+		//
+		u = point.x + .5;
+		v = point.y + .5;
+				
+		// scale texture coordinates
+		//
+		u = itself * u_tile;	
+		v = itself * v_tile;
+
+		// flip texture coordinates
+		//
+		if u_flip then
+			u = itself * -1;
+		end;
+		if v_flip then
+			v = itself * -1;
+		end;
+				
+		answer <u v 0>;
+	end;	// get_texcoord
+	
+
+    //
+	// copyable and cloneable methods
+	//
+	
+		
+    verb copy
+        from translated_3ds_planar_mapping type source;
+    is
+		// copy general uvw mapping parameters
+		//    
+        translated_3ds_uvw_mapping static copy from source;
+        
+		// copy specific planar mapping parameters
+		//
+        with source do
+            length = its length;
+            width = its width;
+        end;
+    end;    // copy
+    
+    
+    translated_3ds_planar_mapping type question clone is
+        translated_3ds_planar_mapping type new_mapping;
+        new_mapping copy from translated_3ds_planar_mapping;
+        answer new_mapping;
+    end;    // clone
+    
+    
+	//	
+	// recycling methods
+	//
+	
+	
+	objective translated_3ds_planar_mapping type question get is
+		if some free_list then
+		
+			// get from free list
+			//
+			translated_3ds_planar_mapping type next is free_list;
+			free_list is its next;
+			
+			answer next;
+		else
+			// create new
+			//
+			answer new translated_3ds_planar_mapping;
+		end;
+	end;	// get
+	
+	
+	reference verb recycle is
+	
+		// add to free list
+		//
+		next is free_list;
+		free_list is translated_3ds_planar_mapping;
+		
+		translated_3ds_planar_mapping is none;
+	end;		// recycle	
+end;	// translated_3ds_planar_mapping
+
+
+//
+// procedural interface
+//
+
+
+verb translated_3ds_planar_mapping with
+	
+    // scaling and tiling parameters
+    //
+	scalar length = 1, width = 1;
+	scalar u_tile = 1, v_tile = 1, w_tile = 1;
+	boolean u_flip is false, v_flip is false, w_flip is false;
+	
+	// transformation parameters
+	//		
+	translated_3ds_xyz_alignment type alignment is z;
+	trans type trans;
+	
+	// activation parameters
+	//
+	boolean active is true;
+is
+	translated_3ds_planar_mapping type translated_3ds_planar_mapping is
+		translated_3ds_planar_mapping type's get;
+		
+	translated_3ds_planar_mapping set with   
+	
+		// scaling and tiling parameters
+	    //
+		length = static length;
+		width = static width;
+		u_tile = static u_tile;
+		v_tile = static v_tile;
+		w_tile = static w_tile;
+		u_flip is static u_flip;
+		v_flip is static v_flip;
+		w_flip is static w_flip;
+		
+		// transformation parameters
+		//		
+		alignment is static alignment;
+		trans = static trans;
+		
+		// activation parameters
+		//
+		active is static active;
+	end;
+	
+	modifier_stack push translated_3ds_stackable type translated_3ds_planar_mapping;
+end;	// translated_3ds_planar_mapping

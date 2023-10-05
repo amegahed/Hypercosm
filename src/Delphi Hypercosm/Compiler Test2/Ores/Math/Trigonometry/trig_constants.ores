@@ -1,0 +1,17 @@
+{***************************************************************}
+{                        trig_constants.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{               Contains some standard math functions.          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/constants.ores";
+
+
+const scalar radians_to_degrees = (180 / pi);
+const scalar degrees_to_radians = (pi / 180);

@@ -1,0 +1,368 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	  	   proximity.ores				3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains utilities for querying shapes about their     	}
+{		proximity.												}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/bounding_squares.ores";
+include "system/bounding_boxes.ores";
+include "system/native_trans.ores";
+include "system/shape_querying.ores";
+include "system/intersections.ores";
+
+
+{***************************************************************}
+{				closest point finding methods					}
+{***************************************************************}
+
+
+vector question closest_point_of_points_to_point
+	of vector points[];
+	to vector point;
+is
+	vector closest_point = point;
+	scalar closest_distance = infinity;
+	
+	for each vector candidate in points do
+		scalar distance = vlength of (candidate - point);
+		if distance < closest_distance then
+			closest_point = candidate; 
+			closest_distance = distance;
+		end;
+	end;
+	
+	answer closest_point;
+end;	// closest_point_of_points_to_point
+
+
+vector question closest_point_on_line_to_point
+	on vector point1, point2;
+	to vector point;
+is
+	vector closest_point;
+	scalar closest_distance;
+	vector ray_location = point1;
+	vector ray_direction = (point2 - point1);
+	scalar min_t = infinity;
+	vector plane_location;
+
+	// check line end points
+	//
+	scalar distance1 = vlength of (point1 - point);
+	scalar distance2 = vlength of (point2 - point);	
+	if distance1 < distance2 then
+		closest_point = point1;
+		closest_distance = distance1;
+	else
+		closest_point = point2;
+		closest_distance = distance2;
+	end;
+	
+	// check line middle
+	//
+	if (ray_hits_infinite_plane 
+		from ray_location towards ray_direction 
+		closer than min_t with
+		origin = point; normal = ray_direction;
+		return plane_location)
+	then
+		if min_t > 0 and min_t < 1 then
+			scalar distance = vlength of (plane_location - point);
+			if distance < closest_distance then
+				closest_point = plane_location;
+			end;
+		end;
+	end;
+	
+	answer closest_point;
+end;	// closest_point_on_line_to_point
+
+
+vector question closest_point_on_edges_to_point
+	on vector edges[,];
+	to vector point;
+is
+	vector closest_point;
+	scalar closest_distance = infinity;
+	
+	for integer counter = min edges .. max edges do
+		vector vertex1 = edges[counter, 1];
+		vector vertex2 = edges[counter, 2];
+		vector edge_point = closest_point_on_line_to_point
+			on vertex1 vertex2 to point;
+		scalar edge_distance = vlength of (point - edge_point);
+		
+		if edge_distance < closest_distance then
+			closest_point = edge_point;
+			closest_distance = edge_distance;
+		end;
+	end;
+	
+	answer closest_point;
+end;	// closest_point_on_edges_to_point
+
+
+vector question closest_point_on_plane_to_point
+	at vector origin = <0 0 0>;
+	along vector x_axis = <1 0 0>;
+	by vector y_axis = <0 1 0>;
+	to vector point;
+is
+	vector z_axis = x_axis cross y_axis;
+	
+	if z_axis = <0 0 0> then
+	
+		// degenerate plane
+		//
+		if x_axis = <0 0 0> then
+			answer closest_point_on_line_to_point
+				on (origin - y_axis) (origin + y_axis) to point;
+		else
+			answer closest_point_on_line_to_point
+				on (origin - x_axis) (origin + x_axis) to point;
+		end;
+	else
+		trans type trans with
+			origin = static origin;
+			x_axis = static x_axis;
+			y_axis = static y_axis;
+			z_axis = static z_axis;
+		end;
+		trans type inverse_trans = trans;
+		vector local_point;
+	
+		inverse_trans invert;
+		local_point = inverse_trans transformed point;
+		local_point.z = 0;
+		answer trans transformed local_point;
+	end;	
+end;	// closest_point_on_plane_to_point
+
+
+vector question closest_point_on_parallelogram_to_point
+	at vector origin = <0 0 0>;
+	along vector x_axis = <1 0 0>;
+	by vector y_axis = <0 1 0>;
+	to vector point;
+is
+	vector z_axis = x_axis cross y_axis;
+	
+	if z_axis = <0 0 0> then
+	
+		// degenerate parallogram
+		//
+		if x_axis = <0 0 0> then
+			answer closest_point_on_line_to_point
+				on (origin - y_axis) (origin + y_axis) to point;
+		else
+			answer closest_point_on_line_to_point
+				on (origin - x_axis) (origin + x_axis) to point;
+		end;
+	else
+		// valid parallogram
+		//
+		trans type trans with
+			origin = static origin;
+			x_axis = static x_axis;
+			y_axis = static y_axis;
+			z_axis = static z_axis;
+		end;
+		trans type inverse_trans = trans;
+		vector local_point;
+		
+		// find point in space of plane
+		//
+		inverse_trans invert;
+		local_point = inverse_trans transformed point;
+		
+		// find closest point on face
+		//
+		if (-1 < local_point.x < 1) and (-1 < local_point.y < 1) then
+		
+			// point is inside face
+			//
+			local_point.z = 0;
+			answer trans transformed local_point;
+		else
+			// find bounding square of parallogram
+			//
+			bounding_square type bounding_square of [(origin + x_axis + y_axis)
+				(origin - x_axis + y_axis) (origin - x_axis - y_axis) (origin + x_axis - y_axis)];	
+		
+			// find closest vertex
+			//	
+			vector closest_point = closest_point_of_points_to_point
+				of (bounding_square get_vertices) to point;
+			scalar closest_distance = vlength of (closest_point - point);		
+			
+			// find closest edge point
+			//
+			vector closest_edge_point = closest_point_on_edges_to_point
+				on (bounding_square get_edges) to point;
+			scalar closest_edge_distance = vlength of (closest_edge_point - point);	
+			
+			// replace closest vertex with closest edge point
+			//
+			if closest_edge_distance < closest_distance then
+				closest_point = closest_edge_point;
+				closest_distance = closest_edge_distance;
+			end;
+			
+			answer closest_point;
+		end;
+	end;	
+end;	// closest_point_on_parallelogram_to_point
+
+
+vector question closest_point_on_trans_to_point
+	on trans type trans;
+	to vector point;
+is
+	static bounding_box type bounding_box;
+			
+	// degenerate trans
+	//
+	if trans's z_axis = <0 0 0> then
+		answer closest_point_on_parallelogram_to_point
+			at trans's origin along trans's x_axis by trans's y_axis
+			to point;
+	elseif trans's y_axis = <0 0 0> then
+		answer closest_point_on_parallelogram_to_point
+			at trans's origin along trans's x_axis by trans's z_axis
+			to point;
+	elseif trans's z_axis = <0 0 0> then
+		answer closest_point_on_parallelogram_to_point
+			at trans's origin along trans's z_axis by trans's y_axis
+			to point;
+	else
+		// valid trans
+		//
+		trans type inverse_trans = trans;
+		inverse_trans invert;
+				
+		if unit_extents contains (inverse_trans transformed point) then
+			answer point;
+		else
+			vector closest_point, closest_edge_point, local_point;
+			scalar closest_distance, closest_edge_distance;
+
+			verb check_faces 
+				towards vector direction;
+			is
+				scalar min_t = infinity;
+				if ray_hits_cube from local_point towards direction closer than min_t then
+					vector side_point = trans transformed (local_point + direction * min_t);			
+					scalar side_distance = vlength of (point - side_point);
+					if side_distance < closest_distance then
+						closest_point = side_point;
+						closest_distance = side_distance;
+					end;
+				end;
+			end;	// check_faces
+						
+			// find bounding box
+			//
+		    trans set_bounding_box bounding_box;
+		    
+			// find closest vertex
+			//
+			closest_point = closest_point_of_points_to_point
+				of (bounding_box get_vertices) to point;
+			closest_distance = vlength of (closest_point - point);	
+			
+			// find closest edge point
+			//
+			closest_edge_point = closest_point_on_edges_to_point
+				on (bounding_box get_edges) to point;
+			closest_edge_distance = vlength of (closest_edge_point - point);		
+			
+			// find closest point on faces
+			//
+			local_point = inverse_trans transformed point;
+			
+			// replace closest vertex with closest edge point
+			//
+			if closest_edge_distance < closest_distance then
+				closest_point = closest_edge_point;
+				closest_distance = closest_edge_distance;
+			end;
+			
+			// check faces of bounds for closest point in each direction
+			//
+			check_faces towards <1 0 0>;
+			check_faces towards <-1 0 0>;
+			check_faces towards <0 1 0>;
+			check_faces towards <0 -1 0>;		
+			check_faces towards <0 0 1>;
+			check_faces towards <0 0 -1>;	
+			
+			answer closest_point;
+		end;
+	end;
+end;	// closest_point_on_trans_to_point
+
+
+vector question closest_point_of_shape_bounds_to_point
+	of shape thing;
+	from vector point;
+is
+	trans type shape_trans;
+	set_shape_trans shape_trans of thing;
+	answer closest_point_on_trans_to_point on shape_trans to point;
+end;	// closest_point_of_shape_bounds_to_point
+
+
+{***************************************************************}
+{				farthest point finding methods					}
+{***************************************************************}
+
+
+vector question farthest_point_of_points_from_point
+	of vector points[];
+	from vector point;
+is
+	vector farthest_point = point;
+	scalar farthest_distance = 0;
+	
+	for each vector candidate in points do
+		scalar distance = vlength of (candidate - point);
+		if distance > farthest_distance then
+			farthest_point = candidate; 
+			farthest_distance = distance;
+		end;
+	end;
+	
+	answer farthest_point;
+end;	// farthest_point_of_points_from_point
+
+
+vector question farthest_point_on_trans_from_point
+	on trans type trans;
+	from vector point;
+is
+	static bounding_box type bounding_box;
+	trans set_bounding_box bounding_box;
+    answer farthest_point_of_points_from_point
+    	of bounding_box's vertices from point;
+end;	// farthest_point_on_trans_from_point
+
+
+vector question farthest_point_of_shape_bounds_from_point
+	of shape thing;
+	from vector point;
+is
+	static bounding_box type bounding_box;
+	set_shape_bounding_box bounding_box of thing;
+	answer farthest_point_of_points_from_point
+		of (bounding_box get_vertices) from point;
+end;	// farthest_point_of_shape_bounds_from_point
+
+

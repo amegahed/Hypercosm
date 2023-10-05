@@ -1,0 +1,256 @@
+do lunar_he3_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/meshes.ores";
+include "system/vector_grids.ores";
+include "system/mesh_shapes.ores";
+include "system/beveled_slider.ores";
+include "system/text_selector.ores";
+include "system/view_alignments.ores";
+include "system/common_materials.ores";
+
+scalar moon_phase = 0;
+
+// user interface
+//
+text_selector type he3_selector is none;
+text_selector type map_selector is none;
+highlighted_text_sensor type reset_view_sensor is none;
+highlighted_text_sensor type reset_light_sensor is none;
+beveled_slider type moon_phase_control controls moon_phase from -1 to 1 with
+    end1 = <-1 0 0>;
+    end2 = <1 0 0>;
+    radius = .0125;
+    knob_size = .05;
+    bevel_width = .025;
+    knob_material is aluminum;
+    bar_material is plastic colored red;
+end;
+
+// materials
+material type moon_material is chalk poster "Albedo Map (1024x512).jpg";
+material type moon_map_material is chalk poster "Moon Map (1024x512).jpg";
+material type he3_material is chalk poster "He3 Map (512x256).gif";
+material type starry_material is constant_color white poster "stars.jpg";
+
+shape sphere_mesh is
+    quad_grid_mesh of (get_spherical_vector_grid 32 by 64) with
+        mending is on;
+        closed is true;
+        smoothing is on;
+    end;
+end;    // sphere_mesh
+
+shape moon is
+    sphere_mesh with
+        material is moon_material;
+    end;
+end;    // moon
+
+shape moon_map is
+    sphere_mesh with
+        material is moon_map_material;
+    end;
+end;    // moon_map
+
+shape he3_map is
+    sphere_mesh with
+        material is he3_material;
+    end;
+end;    // he3_map
+
+shape texture_block with
+    scalar texture_scale = 4;
+is  
+    shape unit_grid is
+        mesh 
+            // vertices
+            //
+            [<-1 -1 0> <-1 1 0> <1 1 0> <1 -1 0>]
+            
+            // edges
+            //
+            [[1 2] [2 3] [3 4] [4 1]]
+            
+            // faces
+            //
+            [1 2 3 4 0]
+        with
+            texcoords = [(<-1 -1 0> * texture_scale) (<-1 1 0> * texture_scale)
+                (<1 1 0> * texture_scale) (<1 -1 0> * texture_scale)];
+        end;
+    end;
+    shape unit_grid_pair is
+        unit_grid with
+            trans's origin = <0 0 1>;
+            trans's x_axis = <1 0 0>;
+            trans's y_axis = <0 1 0>;
+            trans's z_axis = trans's x_axis cross trans's y_axis;
+        end;
+        unit_grid with
+            trans's origin = <0 0 -1>;
+            trans's x_axis = <1 0 0>;
+            trans's y_axis = <0 -1 0>;
+            trans's z_axis = trans's x_axis cross trans's y_axis;
+        end;
+    end;    // unit_grid_pair
+    
+      
+    shape unit_grid_block is
+        // top and bottom faces
+        //
+        unit_grid_pair;
+        
+        // left and right faces
+        //
+        unit_grid_pair with
+            rotate by 90 around <0 1 0>;
+        end;
+        
+        // front and back faces
+        //
+        unit_grid_pair with
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // unit_grid_block
+    
+    unit_grid_block;    
+end;	// texture_block
+
+shape cosmic_cube is
+    texture_block with
+        texture_scale = 2;
+        material is starry_material;
+    end;
+end;    // cosmic_cube
+
+picture lunar_he3_picture is
+    if map_selector is_selected then
+        moon_map with
+            rotate by 90 around <0 0 1>;
+        end;
+    else
+        moon with
+            rotate by 90 around <0 0 1>;
+        end;
+    end;
+    if he3_selector is_selected then
+        he3_map with
+            rotate by 90 around <0 0 1>;
+        end;
+    end;
+    
+    // environment
+    //
+    distant_light from <0 -1 0> with
+        color = <1 1 .9> * 1.5;
+		get_view_trans into trans;
+        rotate by 180 * moon_phase around trans's z_axis;
+    end;
+    cosmic_cube with
+        magnify by 10;
+        move to eye;
+    end;
+      
+    moon_phase_control instance with
+        magnify by .05;
+        place_on_view_ray at <0 -.85 0> distance .15;
+    end; 
+    
+    if moon_phase_control's mouse_is_over then
+        set_cursor to crosshair;
+    else
+        set_cursor to arrow;
+    end;
+end;    // lunar_he3_piture
+
+verb draw is
+	// moon phase slider label
+	//
+    overlay_text "Phase of the Moon" at <0 -.95 0> with
+        size = width div 50; 
+    end;  
+    
+    // interface
+    //
+    he3_selector draw;
+    map_selector draw;
+    reset_view_sensor draw;
+    reset_light_sensor draw;
+end;	// draw
+
+verb reset_view is
+	simulation type current_simulation is none;
+	interaction type current_interaction is none;
+	
+	current_simulation is (global simulation);
+	current_interaction is (global interaction);
+    eye = <0 -4.5 0>;
+    lookat = <0 0 0>;
+    
+    if some current_interaction then
+		current_interaction reset;
+    end;
+end;    // reset_view
+
+verb update is
+	draw;
+	
+    // update interface
+    //
+    reset_frame_events;
+    he3_selector update;
+    map_selector update;
+    reset_view_sensor update;
+    reset_light_sensor update;
+    if moon_phase_control's mouse_is_over then
+    	simulation type current_simulation is none;
+    	mouse_interaction type current_interaction is none;
+    	
+    	current_simulation is (global simulation);
+    	current_interaction is mouse_interaction type (global interaction);
+    	    	
+    	if some current_interaction then
+        	current_interaction override;
+        end;
+    end; 
+end;	// update
+
+anim lunar_he3_anim with
+    reset_view;
+    ambient = <.25 .25 1> * .05;
+is
+	verb reset_illumination is
+	    moon_phase = 0;
+	end;    // reset_illumination
+    new he3_selector of "Show Helium 3 Map" 
+      	at <.9 .75 0> aligned to middle_right
+    with
+    	selected_text is "Hide Helium 3 Map";
+    end;
+    new map_selector of "Show Moon Map Labels"  
+    	at <.9 .65 0> aligned to middle_right
+    with
+        selected_text is "Hide Moon Map Labels";
+    end;
+    new reset_view_sensor of "Reset to Earth View" 
+    	at <.9 .55 0> aligned to middle_right
+   	with
+        mouse_down_action is new action of reset_view;
+    end;
+    new reset_light_sensor of "Reset Phase to Full" 
+    	at <.9 .45 0> aligned to middle_right
+    with
+        mouse_down_action is new action of reset_illumination;
+    end;
+    set_manual_near_far_planes on from .01 to 20;
+    // deactivate standard user interface controls
+    //
+    show_controls is false;
+    
+	// animate!
+	//
+    mouse_controlled_picture lunar_he3_picture {titled "Helium 3 Concentrations on the Moon"} 
+    	about <0 0 0> doing update;
+end;    // lunar_he3_anim

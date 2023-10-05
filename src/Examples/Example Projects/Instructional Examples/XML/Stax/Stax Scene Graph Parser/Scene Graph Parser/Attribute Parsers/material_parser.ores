@@ -1,0 +1,70 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         material_parser.ores           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a parser for parsing object          }
+{       materials from an XML stream.                           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2007 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/xml_reading.ores";
+include "system/native_standard_material.ores";
+
+material type question parse_material
+	from xml_reading type xml_reader;
+is
+	// material attributes
+	//
+	string type material_name;
+	color type diffuse_color = grey;
+	color type ambient_color = black;
+	color type specular_color = white;
+	scalar specular_power = 0;
+	color type reflected_color = black;
+	color type edge_color = black;
+	// parse start element
+	//          
+	xml_reader require start_element named "material";
+	
+	// parse attributes
+	//
+	for integer counter = 1 .. xml_reader get_attribute_count do
+		string type name is xml_reader get_attribute_name of counter;
+		string type value is xml_reader get_attribute_value of counter;
+		
+		if name matches "name" then
+			material_name = value;
+		elseif name matches "diffuse" then
+			diffuse_color = value to_vector;
+		elseif name matches "ambient" then
+			ambient_color = value to_vector;
+		elseif name matches "specular" then
+			specular_color = value to_vector;
+		elseif name matches "specular_power" then
+			specular_power = value to_scalar;
+		elseif name matches "reflected" then
+			reflected_color = value to_vector;
+		elseif name matches "color" then
+			edge_color = value to_vector;
+		end;
+	end;
+	xml_reader skip_element;
+	// parse end element
+	//  
+	xml_reader require end_element named "material";        
+	xml_reader skip_element;
+	// create and return material
+	//      
+	answer (new standard_material with
+		diffuse_color = static diffuse_color;
+		ambient_color = static ambient_color;
+		specular_color = static specular_color;
+		specular_power = static specular_power;
+		reflected_color = static reflected_color;
+		edge_color = static edge_color;
+	);
+end;    // parse_material

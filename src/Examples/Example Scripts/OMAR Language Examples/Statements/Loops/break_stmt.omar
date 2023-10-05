@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            break_stmt.omar             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains a simple example of a break          }
+{       statement that can be used to break out of a            }
+{       loop in the OMAR language.                              }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do break_stmt_example;
+
+verb break_stmt_example is
+	integer i[,] = [[1 7 4 2] [3 6 4 6] [2 5 4 9]];
+	
+	write "Writing out an array, breaking when we find the value, 3:", ;
+	loop outer:
+	for integer counter1 = min i .. max i do
+		for integer counter2 = min i[] .. max i[] do
+			if i[counter1, counter2] = 3 then
+				break outer;
+			end;
+			write "i[", counter1, ", ", counter2, "] = ", i[counter1,counter2], ;
+		end;
+	end;
+end;    // break_stmt_example

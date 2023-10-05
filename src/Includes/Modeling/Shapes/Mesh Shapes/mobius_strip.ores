@@ -1,0 +1,53 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm         mobius_strip.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of a         }
+{       mobius strip.  A mobius strip is a shape with just      }
+{       one continues side where the front wraps around to      }
+{       the back surface and vice versa.                        }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/math.ores";
+include "system/grid_mesh.ores";
+
+shape mobius_strip with
+	scalar inner_radius = .5;
+	scalar outer_radius = 1;
+	integer steps = 50;
+	boolean triangulate is false;
+	boolean alternate is false;
+is
+	vector vertices[0..steps, 1..2];
+	scalar r1 = (inner_radius + outer_radius) / 2;
+	scalar r2 = (outer_radius - inner_radius) / 2;
+
+	for integer counter = 0..steps do
+		scalar angle = counter / steps * 360;
+		scalar theta = angle / 2;
+		scalar d = r1 + (cos theta * r2);
+		scalar x = cos angle * d;
+		scalar y = sin angle * d;
+		scalar z = sin theta * r2;
+		vertices[counter, 1] = <x y z>;
+		d = r1 - (cos theta * r2);
+		x = cos angle * d;
+		y = sin angle * d;
+		z = -sin theta * r2;
+		vertices[counter, 2] = <x y z>;
+	end;
+
+	// create mesh from grid of vertices
+	//
+	grid_mesh of vertices with
+		smoothing is true;
+		closed is false;
+		triangulate is static triangulate;
+		alternate is static alternate;
+	end;
+end;    // mobius_strip

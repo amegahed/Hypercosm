@@ -1,0 +1,440 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	  singly_linked_queues.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a few useful singly linked queue utilities.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/queues.ores";
+include "system/singly_linked_nodes.ores";
+include "system/singly_linked_node_iterators.ores";
+
+
+subject singly_linked_queue
+extends
+    queue
+does
+    // queue construction methods
+    //
+    verb add_first
+        object type element;
+    end;
+    verb add_last
+    	object type element;
+    end;
+    object type question removed_first;
+    
+    // queue querying methods
+    //
+    object type question get_first;
+    object type question get_last;
+    list_iterator type question get_start;
+    
+    // collection querying methods
+    //
+    boolean question is_empty;
+    integer question get_size;
+    
+    // collection construction methods
+    //
+    verb clear;
+
+    // copyable and cloneable methods
+    //    
+    verb copy 
+        from object type source;
+    end;
+    object type question clone;
+has
+    // count of elements in list
+    //
+    integer elements = 0;
+    
+    // queue of singly linked container nodes
+    //
+    singly_linked_node type head is none;
+    singly_linked_node type tail is head;
+is
+	//
+	// private singly linked queue iterator class
+	//
+	
+	
+    subject singly_linked_queue_iterator
+    extends
+        prev_queryable singly_linked_node_iterator
+    does
+        // queue iterator constructor
+        //
+        verb new
+            of singly_linked_queue type queue;
+        end;
+     
+        // queue iterator navigation methods
+        //
+        verb to_first;
+        verb to_next;
+        boolean question is_iterating;
+        boolean question is_done;
+        
+        // queue iterator insertion methods
+        //
+        verb insert_prev
+            object type element;
+        end;
+        verb insert_next
+            object type element;
+        end;
+        
+        // queue iterator removal methods
+        //
+        object type question removed;
+        
+	    // queue iterator querying methods
+	    //
+	    boolean question has_prev;
+	    object type question get_prev;
+    has
+        singly_linked_queue type queue is none;
+        
+        // in order to insert and remove into the queue,
+        // we need a reference to the previous element
+        //
+        singly_linked_node type prev is none;
+    is
+    	//
+        // queue iterator constructor
+        //
+        
+        
+        verb new
+            of singly_linked_queue type queue;
+        is
+            with singly_linked_queue_iterator do
+                its queue is queue;
+                its current is queue's head;
+            end;
+        end;    // new
+        
+
+		//     
+        // queue iterator navigation methods
+        //
+        
+        
+        verb to_first is
+            current is queue's head;
+            prev is none;
+        end;    // to_first
+        
+        
+        verb to_next is
+        	if some current then
+	        	prev is current;
+	        	current is its next;
+        	end;
+        end;	// to_next
+        
+
+		boolean question is_iterating is
+			answer some current;
+		end;	// is_iterating
+		
+		        
+        boolean question is_done is
+            answer current is none;
+        end;    // is_done
+        
+
+		//        
+        // queue iterator insertion methods
+        //
+        
+        
+        verb insert_prev
+            object type element;
+        is
+            // create new node
+            //
+            singly_linked_node type node containing element;
+
+            // add new node to queue
+            //            
+            if is_iterating then
+            
+	            // add new node to existing queue
+	            //
+	            node's next is current;
+	                            
+	            if some prev then
+	            
+	                // insert into middle of queue
+	                //
+	                prev's next is node;
+	            else
+	                // insert into head of queue
+	                //
+	                queue's head is node;
+	            end;
+            else
+            	// begin new queue
+            	//
+            	queue's head is node;
+            	queue's tail is node;
+            end;
+            
+            queue's elements = itself + 1;
+        end;    // insert_prev
+        
+        
+        verb insert_next
+            object type element;
+        is
+            // create new node
+            //
+            singly_linked_node type node containing element;
+            
+            // add new node to queue
+            //
+            if is_iterating then
+            
+                // add node to existing queue
+                //
+                if some current's next then
+                
+                    // insert into middle of queue
+                    //
+                    node's next is current's next;
+                    current's next is node;
+                else
+                    // insert into tail of queue
+                    //
+                    current's next is node;
+                    queue's tail is node;
+                end;
+            else
+                // begin new queue
+                //
+                queue's head is node;
+                queue's tail is node;
+                current is node;
+            end;
+            
+            queue's elements = itself + 1;
+        end;    // insert_next
+      
+
+		//        
+        // queue iterator removal methods
+        //
+        
+        
+		object type question removed is
+		
+			// delete current node from list
+			//
+			if is_iterating then
+			
+                // get current node
+                //
+                singly_linked_node type node is current;
+                
+                // remove current node from list
+                //
+				if some prev then
+					
+					// remove from middle of list
+					//
+					prev's next is current's next;
+					current is its next;
+						
+					// removed tail of list
+					//
+					if not has_next then
+						queue's tail is none;
+					end;
+				else
+					// remove from head of list
+					//
+					queue's head is current's next;
+					current is its next;
+				end;
+				
+				queue's elements = itself - 1;
+				
+				answer node;
+			else
+				answer none;
+			end;
+		end;	// removed
+        
+
+		//        
+	    // queue iterator querying methods
+	    //
+	    
+	    
+	    boolean question has_prev is
+	    	answer some prev;
+	    end;	// has_prev
+	    
+	    
+	    object type question get_prev is
+	    	if has_prev then
+	    		answer prev get;
+	    	else
+	    		answer none;
+	    	end;
+	    end;	// get_prev
+    end;    // singly_linked_queue_iterator
+    
+
+	//    
+    // queue construction methods
+    //
+    
+    
+    verb add_first
+        object type element;
+    is
+        // create new node
+        //
+        singly_linked_node type node containing element;
+
+        // add to head of list
+        // 
+        if some head then
+        
+            // add to head of existing list
+            //
+            node's next is head;
+        else
+            // begin new list
+            //
+            tail is node;
+        end;
+        head is node;   
+             
+        elements = itself + 1;
+    end;    // add_first
+    
+    
+    verb add_last
+        object type element;
+    is
+        // create new node
+        //
+        singly_linked_node type node containing element;
+
+        // add to tail of queue
+        // 
+        if some tail then
+        
+            // add to tail of existing queue
+            //
+            tail's next is node;
+        else
+            // begin new queue
+            //
+            head is node;
+        end;
+        tail is node;
+        
+        elements = itself + 1;
+    end;    // add_last
+    
+       
+    object type question removed_first is
+        if some head then
+            singly_linked_node type node is head;
+        
+            // remove from head of list
+            //
+            head is head's next;
+            if head is none then
+                tail is none;
+            end;
+            
+            elements = itself - 1;
+            
+            answer node get;
+        else
+            answer none;
+        end;  
+    end;    // removed_first
+    
+
+	//        
+    // queue querying methods
+    //
+ 
+   
+    object type question get_first is
+        answer head get;
+    end;    // get_first
+         
+
+    object type question get_last is
+        answer tail get;
+    end;    // get_last
+    
+    
+    list_iterator type question get_start is
+        answer new singly_linked_queue_iterator of singly_linked_queue;
+    end;    // get_start
+    
+
+	//
+    // collection querying methods
+    //
+    
+    
+    boolean question is_empty is
+        answer (elements = 0);
+    end;    // is_empty
+    
+    
+    integer question get_size is
+        answer elements;
+    end;    // get_size
+    
+
+	//    
+    // collection construction methods
+    //
+    
+                
+    verb clear is
+        head is none;
+        tail is none;
+    end;    // clear
+    
+
+	//    
+    // copyable and cloneable methods
+    //
+    
+       
+    verb copy 
+        from object type source;
+    is
+        singly_linked_queue type source_queue is singly_linked_queue type source;
+        with singly_linked_queue do
+            its head is source_queue's head;
+            its tail is source_queue's tail;
+        end;
+    end;    // copy
+    
+    
+    object type question clone is
+        singly_linked_queue type new_queue;
+        new_queue copy from singly_linked_queue;
+        answer new_queue;
+    end;    // clone
+end;    // singly_linked_queue

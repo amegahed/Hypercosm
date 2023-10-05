@@ -1,0 +1,21 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            queueing.ores               3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of queueing behavior.             }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+adjective queueable
+does
+	// queueing methods
+	//
+	verb enqueue
+		object type element;
+	end;
+	object type question dequeue;
+end;    // queueable

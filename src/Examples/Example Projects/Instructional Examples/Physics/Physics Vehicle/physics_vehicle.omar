@@ -1,0 +1,136 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm    phsyics_vehicle.omar                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains examples of the use of the           }
+{       vehicle in the physics engine.                          }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2009 Hypercosm, LLC.             }
+{***************************************************************}
+do physics_vehicle_anim;
+
+{***************************************************************}
+{                         instructions                          }
+{***************************************************************}
+{                                                               }
+{     - Press 'w' to accelerate                                 }
+{     - Press 's' to reverse                                    }
+{     - Press 'a' to steer left                                 }
+{     - Press 'd' to steer right                                }
+{     - Press SPACE to brake                                    }
+{                                                               }
+{***************************************************************}
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/physics.ores";
+include "system/infinite_plane.ores";
+include "car.omar";
+
+shape vehicle_body is
+	body with
+		rotate by 90 around <0 0 1>;
+		move to <0 0 -2>;
+	end;
+end;
+
+renderable type vehicle_body_renderable is new static_shape of vehicle_body;
+
+shape vehicle_wheel is
+	wheel with
+		rotate by 90 around <0 0 1>;
+	end;
+end;
+
+renderable type vehicle_wheel_renderable is new static_shape of vehicle_wheel;
+
+anim physics_vehicle_anim with
+	show_controls is false;
+	auto_rotation is false;
+	auto_upright is true;
+is
+	vector eye_offset = eye - lookat;
+	renderable_physics_scene type physics;
+	
+	// chassis
+	//
+	physics_box_actor type chassis is (new renderable_physics_box_actor rendering vehicle_body_renderable with
+		trans's origin = <0 0 3>;
+		mass = 200;
+		height = 4;
+		width = 4;
+		length = 10;
+	);
+	
+	verb draw is
+	
+		// display on screen instructions
+		//
+		overlay_text "Press 'w' to accelerate and 's' to reverse" at <0 .9 0> with bold is true; end;
+		overlay_text "Press 'a' to steer left and 'd' to steer right" at <0 .85 0> with bold is true; end;
+		overlay_text "Press the spacebar to brake" at <0 .8 0> with bold is true; end;
+	end;    // draw
+	
+		
+	verb update is
+		trans type trans;
+		 
+		draw; 
+	   
+		// update scene
+		//
+		physics update;
+		
+		// update camera to follow car
+		//
+		//chassis get_trans trans;
+		//lookat = trans's origin;
+		//eye = lookat + eye_offset;
+	end;    // update
+	
+	shape instance with
+		scalar time = 0;
+	is
+		static material type ground_material is plastic colored black poster "grid.png";
+		infinite_plane to 1000 with
+			material is ground_material;
+			one_sided is false;
+			magnify by 10;
+		end;
+		
+		physics instance;
+	end;    // instance
+	
+	
+	// add the chassis
+	//
+	physics add_physics_actor chassis;
+	
+	// add the vehicle
+	//
+	physics add_physics_vehicle (new renderable_physics_vehicle using chassis rendering wheel vehicle_wheel_renderable with
+		front_left_wheel is (new renderable_physics_vehicle_wheel rendering vehicle_wheel_renderable at front_left offset by <1.75 3.5 -2> with radius = .95);
+		front_right_wheel is (new renderable_physics_vehicle_wheel rendering vehicle_wheel_renderable at front_right offset by <-1.75 3.5 -2> with radius = .95);
+		rear_left_wheel is (new renderable_physics_vehicle_wheel rendering vehicle_wheel_renderable at rear_left offset by <1.75 -3 -2> with radius = .95);
+		rear_right_wheel is (new renderable_physics_vehicle_wheel rendering vehicle_wheel_renderable at rear_right offset by <-1.75 -3 -2> with radius = .95);
+		
+		physics_vehicle_interaction is (new physics_vehicle_keyboard_interaction with
+			steering_wheels is front_wheels;
+			max_engine_force = 600);
+	);
+	
+	// add the plane shape
+	//
+	physics add_physics_actor (new physics_plane_actor with
+		restitution = .2; friction = .9);
+		
+	// turn on/off proxy rendering aka debug mode  
+	//                      
+	physics set_render_proxies to true; 
+	// run!
+	//
+	mouse_controlled_animated_shape instance doing update;
+end;    // physics_vehicle_anim

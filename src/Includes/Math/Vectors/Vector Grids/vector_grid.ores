@@ -1,0 +1,67 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           vector_grid.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains some standard utilities for representing       }
+{                    and manipulating grids.                    }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+include "system/vectors.ores";
+include "system/native_trans.ores";
+include "system/varrays.ores"; 
+
+subject vector_grid
+extends
+	varray2 type
+does
+	// transforming methods
+	//
+	verb direct
+		from axes type axes;
+	end;    // direct
+	verb transform
+		from trans type trans;
+	end;    // transform
+	
+	// printing methods
+	//
+	verb print;
+is
+	//
+	// transforming methods
+	//
+	
+	verb direct
+		from axes type axes;
+	is
+		for each vector v in vector_grid do
+			v = axes oriented v;
+		end;
+	end;    // direct
+
+	verb transform
+		from trans type trans;
+	is
+		for each vector v in vector_grid do
+			v = trans transformed v;
+		end;
+	end;    // transform
+	
+	//    
+	// printing methods
+	//
+	
+	verb print is
+		for integer row = min vector_grid .. max vector_grid do
+			for integer column = min vector_grid[] .. max vector_grid[] do
+				write "vector grid[", row, ", ", column, "] = ",
+					vector_grid[row, column], ;
+			end;
+		end;
+	end;    // print
+end;    // vector_grid

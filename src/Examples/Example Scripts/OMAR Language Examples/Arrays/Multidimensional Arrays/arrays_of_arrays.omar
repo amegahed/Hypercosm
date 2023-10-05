@@ -1,0 +1,70 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm        arrays_of_arrays.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of arrays of arrays in the OMAR language.       }
+{                                                               }
+{       This is similar to how Java deals with multi-           }
+{       dimensional arrays.                                     }
+{                                                               }
+{       Note that OMAR also has the capability to create        }
+{       true multi-dimensional arrays, which are different      }
+{       because they are always "square" and they are           }
+{       allocated much more efficiently as a single unit        }
+{       instead of as a collection of pieces.                   }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do array_of_arrays_example;
+
+// array of arrays of characters
+//
+char names[1..10][];
+
+// array of arrays of integers
+//
+integer values[][];
+
+verb array_of_arrays_example is
+
+	// assigning array of arrays of chars
+	//
+	names[1] = "Fred";
+	names[3] = "Barney";
+	names[5] = "Wilma";
+	names[10] = "Betty";
+	
+	// dereferencing array of arrays of chars
+	//
+	write "array of arrays of characters:", ;
+	for integer row = min names .. max names do
+		write "name = ";
+		for integer column = min names[row] .. max names[row] do
+			write names[row][column];
+		end;
+		write;
+	end;
+	write;
+	
+	// assigning arrays of arrays of integers
+	//
+	values = [[1 2 3 4] [5 6 7] [8 9] [10]];
+
+	// dereferencing array of arrays of chars
+	//
+	write "array of arrays of integers:", ;
+	for integer row = min values .. max values do
+		write "values = ";
+		for integer column = min values[row] .. max values[row] do
+			write values[row][column], " ";
+		end;
+		write;
+	end;
+	write;
+		
+	write "ok!", ;
+end;    // array_of_arrays_example

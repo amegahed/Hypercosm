@@ -1,0 +1,34 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm              arc.ores                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of a standard line shape          }
+{       in the form on an arc.                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/3d.ores";
+
+shape arc
+	from scalar umin = 0;
+	to scalar umax = 180;
+with
+	scalar radius = 1;
+	integer steps = 10;
+is
+	vector vertex[0..steps];
+	scalar angle = umax - umin;
+	
+	for integer counter = 0..steps do
+		scalar degrees = angle * (counter / steps) + umin;
+		scalar x = (cos degrees) * radius;
+		scalar y = (sin degrees) * radius;
+		vertex[counter] = <x y 0>;
+	end;
+	
+	line vertex;
+end;    // arc

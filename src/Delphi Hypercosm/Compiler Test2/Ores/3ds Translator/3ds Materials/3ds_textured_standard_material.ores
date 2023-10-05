@@ -1,0 +1,151 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  3ds_textured_standard_material.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains material definitions that correspond to        }
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_standard_material.ores";
+include "system/3ds_material_maps.ores";
+
+
+subject translated_3ds_textured_standard_material
+extends
+	translated_3ds_standard_material
+does
+	// constructor
+	//
+	verb new with
+
+		// color component parameters
+		//
+	    color type ambient_color = black;
+	    color type diffuse_color = white;
+	    color type specular_color = white;
+	    color type self_illum_color = black;
+	
+		// scalar parameters
+		//        
+	    scalar specular_level = 5;
+	    scalar glossiness = 25;
+	    scalar soften = .1;
+	    scalar opacity = 1;
+	    
+	    // mapping parameters
+	    //
+	    translated_3ds_material_maps type mapping;
+	end;
+	
+	// querying methods
+	//
+	material type question to_material;
+has
+    // mapping attributes
+    //
+	translated_3ds_material_maps type mapping;	
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new with
+
+		// color component parameters
+		//
+	    color type ambient_color = black;
+	    color type diffuse_color = white;
+	    color type specular_color = white;
+	    color type self_illum_color = black;
+	
+		// scalar parameters
+		//        
+	    scalar specular_level = 5;
+	    scalar glossiness = 25;
+	    scalar soften = .1;
+	    scalar opacity = 1;
+	    
+	    // mapping parameters
+	    //
+	    translated_3ds_material_maps type mapping;
+	is
+		// call superclass constructor
+		//
+		translated_3ds_standard_material new with
+		
+			// set color component parameters
+			//
+		    ambient_color = static ambient_color;
+		    diffuse_color = static diffuse_color;
+		    specular_color = static specular_color;
+		    self_illum_color = static self_illum_color;
+		
+			// set scalar parameters
+			//        
+		    specular_level = static specular_level;
+		    glossiness = static glossiness;
+		    soften = static soften;
+		    opacity = static opacity;
+		end;
+		
+		with translated_3ds_textured_standard_material do
+		
+		    // set mapping attributes
+		    //
+		    its mapping = mapping;	
+		end;
+	end;	// new
+
+
+	//
+	// querying methods
+	//
+	
+	
+	material type question to_material is
+	    vector wireframe_color;
+	    texture type texture is none;
+	    
+	    if vlength of diffuse_color > vlength of specular_color then
+	        wireframe_color = diffuse_color;
+	    else
+	        if (specular_color <> white) then
+	            wireframe_color = specular_color;
+	        else
+	            wireframe_color = diffuse_color;        
+	        end;    
+	    end;
+	    
+	    texture is mapping's diffuse_map;
+	    if texture is none then
+	        texture is mapping's illumination_map;
+	    end;
+	    if texture is none then
+	        texture is mapping's specular_map;
+	    end;
+	    
+	    answer (new material colored wireframe_color textured texture with
+	        if some texture and texture is mapping's diffuse_map then
+	            diffuse = white;
+	        else
+	            diffuse = diffuse_color;
+	        end;
+	        if some texture and texture is mapping's specular_map then
+	            specular = white;
+	        else
+	            specular = specular_color * glossiness / 100;
+	        end; 
+	        
+	        specular_power = specular_level;
+	        ambient = diffuse;
+	        emissive = self_illum_color;
+	    );
+	end;	// to_material
+end;    // translated_3ds_textured_standard_material

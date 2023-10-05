@@ -1,0 +1,29 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          global_scoping.omar           3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the "global"           }
+{       scoping modifier in the OMAR language.                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do global_scoping_example;
+
+integer i = 5;
+
+verb global_scoping_example is
+	integer i = 10;                 // local i 'shadows' global i
+	
+	// without the global scoping modifier, "i" refers
+	// to the "i" from the local scope (value = 10)
+	//
+	write "i = ", i, ;
+	
+	// with the global scoping modifier, "i" refers
+	// to the "i" from the global scope (value = 5)
+	//  
+	write "i = ", global i, ;
+end;    // global_scoping_example

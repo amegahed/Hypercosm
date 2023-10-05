@@ -1,0 +1,32 @@
+.outset-top, .outset-left {
+    background-color: #FFFFFF;
+	opacity: .75;
+	filter: alpha(opacity=75); 
+}
+.outset-bottom, .outset-right {
+    background-color:#333333;
+	opacity: .5;
+	filter: alpha(opacity=50); 
+}
+.inset-top, .inset-left {
+    background-color:#333333;
+	opacity: .5;
+	filter: alpha(opacity=50); 
+}
+.inset-bottom, .inset-right {
+    background-color: #FFFFFF;
+	opacity: .75;
+	filter: alpha(opacity=75); 
+}
+table.toolbar {
+}
+table.applet {
+    background-color:#FFFFFF;
+    border-style:inset;
+    border-color:white;
+    border-width:2;
+}
+table.interface {
+    border-style:inset;
+    border-width:1;
+}

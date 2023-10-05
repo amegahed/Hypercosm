@@ -1,0 +1,65 @@
+do animated_opacity_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/3ds_teapot.ores";
+include "system/3ds_standard_animated_material.ores";
+include "system/3ds_linear_float_controller.ores";
+include "system/3ds_constant_color_controller.ores";
+include "system/3ds_time_conversion.ores";
+include "system/arrow_shapes.ores";
+
+shape animated_opacity_scene with
+    scalar time = 0;
+    scalar tessellation = 1;
+is
+	static translated_3ds_linear_float_controller type opacity_controller of [
+		0.0 1.0
+	] at converted_3ds_ticks_array_from_seconds_array of [
+		0.0 5.0
+	];
+	
+	static translated_3ds_standard_animated_material type material with
+		diffuse_color_controller is new translated_3ds_constant_color_controller of orange;
+	    opacity_controller is static opacity_controller;
+	end;
+	
+	static shape thing with
+	    scalar tessellation = 1;
+	is
+		translated_3ds_teapot with		
+		    radius = 25;
+		    segments = trunc (segments * tessellation);
+		    smooth is true;
+		    body is true;
+		    handle is true;
+		    spout is true;
+		    lid is true;
+		    gen_mapping_coords is false;
+		end;
+	end;	// thing
+	
+	thing with
+	    tessellation = static tessellation;
+		material apply at (converted_3ds_ticks_from_seconds of (smod time to 5));
+	end;
+end;    // animated_opacity_scene
+
+anim animated_opacity_anim with
+    background_name is none;
+    background = light grey;
+is
+    shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+    end;    // environment
+		
+	mouse_controlled_animated_tessellated_shape animated_opacity_scene
+		within new static_shape of environment 
+	    titled "3DS Animated Opacity" 
+	with
+		auto_camera is on;
+	end;
+end;	// animated_opacity_anim

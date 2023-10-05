@@ -1,0 +1,65 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm            adjective.omar              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of an adjective in the OMAR language.           }
+{                                                               }
+{       Adjectives are used to describe a set of behaviors      }
+{       that an object may have.                                }
+{                                                               }
+{       Subjects are just like "interfaces" in languages        }
+{       such as C++ or Java.  We call them "adjectives"         }
+{       because we use an English language metaphor for         }
+{       the language structures.                                }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do adjective_example;
+
+adjective printable
+does
+	verb print;
+end;    // printable
+
+subject circle
+extends
+	printable object
+does
+	verb print;
+is
+	verb print is
+		write "circle";
+	end;
+end;    // circle
+
+subject square
+extends
+	printable object
+does
+	verb print;
+is
+	verb print is
+		write "square";
+	end;
+end;    // square
+
+verb adjective_example is
+	object type thing1 is new circle;
+	object type thing2 is new square;
+	
+	if printable type thing1 then
+		write "thing1 is ";
+		(printable type thing1) print;
+		write;
+	end;
+	
+	if printable type thing2 then
+		write "thing2 is ";
+		(printable type thing2) print;
+		write;
+	end;
+end;    // adjective_example

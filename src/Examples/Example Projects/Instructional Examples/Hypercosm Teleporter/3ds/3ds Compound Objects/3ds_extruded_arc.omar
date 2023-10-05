@@ -1,0 +1,60 @@
+do translated_3ds_extruded_arc_anim;
+
+include "system/3d.ores";
+include "system/3ds_arc.ores";
+include "system/3ds_extrude.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+include "system/3ds_cameras.ores";
+	
+shape translated_3ds_extruded_arc_scene with
+	scalar time = 0;
+	scalar tessellation = 1;
+is
+	static material type hyper_material is plastic poster "hyper.jpg";
+	
+	translated_3ds_arc with
+	    radius = 25;
+	    pie_slice is true;
+	    from_angle = 0;
+	    to_angle = 240;
+		to_angle = 240 + sin(time * 90) * 120;
+	    steps = round (8 * tessellation);
+	    
+	    translated_3ds_extrude with
+            amount = cos (time * 90) * 15;
+            segments = round (3 * tessellation);
+            cap_start is true;
+            cap_end is true;
+            capping_kind is morph;
+            output_kind is mesh;
+            gen_mapping_coords is true;
+            gen_mat_IDs is true;
+            use_shape_IDs is false;
+            smooth is true;
+    		active is true;
+	    end;
+	    
+	    material is hyper_material;
+	end;
+end;    // translated_3ds_extruded_arc_scene
+	
+		
+anim translated_3ds_extruded_arc_anim with
+    background_name is none;
+    background = light grey;
+is
+	shape environment is
+		plane with
+			magnify by 50;
+			render_mode is wireframe;
+		end;
+	end;    // environment
+	
+	mouse_controlled_animated_tessellated_shape translated_3ds_extruded_arc_scene
+		within new static_shape of environment
+	    titled "3DS Extruded Arc"
+    with
+		auto_camera is true;
+	end;
+end;	// translated_3ds_extruded_arc_anim

@@ -1,0 +1,36 @@
+{***************************************************************}
+{                        turbulence.ores                        }
+{                     OMAR Resources (ORES)                     }
+{***************************************************************}
+{                                                               }
+{       Contains the "turbulence" procedure, which is used      }
+{       to generate a function which has noise at multiple      }
+{       scales.                                                 }
+{                                                               }
+{***************************************************************}
+{              Copyright (c) 2000 Hypercosm, Inc.               }
+{***************************************************************}
+
+
+include "system/native_noise.ores";
+
+
+scalar question turbulence
+    vector v;
+    chaos scalar c = .5;        // 0 to 1
+    level integer levels = 4;    // usually about 2 to 6
+is
+    scalar sum = 0, factor = 0;
+    scalar scale = 1, weight = 1;
+    scalar falloff = 1 / (2 - clamp c from 0 to 1);
+    
+    for integer counter = 1 .. levels do
+        factor = itself + noise(v * scale) * weight;
+        sum = itself + weight;
+        weight = itself * falloff;
+        scale = itself * 2;
+    end;
+    
+    answer factor / sum;
+end;    // turbulence
+

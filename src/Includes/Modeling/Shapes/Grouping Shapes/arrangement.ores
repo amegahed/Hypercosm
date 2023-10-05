@@ -1,0 +1,25 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm           arrangement.ores             3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a definition of shape in the form of an        }
+{       arrangement of other shapes.                            }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+include "system/transformations.ores";
+
+shape arrangement
+	of shape thing;
+	at vector locations[];
+is
+	for each vector location in locations do
+		thing with
+			move to location;
+		end;
+	end;
+end;    // arrangement

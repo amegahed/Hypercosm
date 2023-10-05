@@ -1,0 +1,88 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 		3ds_free_camera.ores			3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains free camera definitions that correspond to 	}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_camera.ores";
+
+
+subject translated_3ds_free_camera
+extends
+	translated_3ds_camera
+does
+    // constructor
+    //
+	verb new
+		// camera placement parameters
+		//
+		from vector location;
+		towards vector direction;
+	with		
+		// camera lens and focus parameters
+		//
+		scalar fov = 60;
+		scalar distance = 100;
+		boolean orthographic is false;
+		
+		// camera rendering parameters
+		//
+		boolean visible is false;
+		
+		// camera tilt parameters
+		//
+		scalar roll = 0;
+	end;
+is
+	const vector up_vector = <0 0 1>;
+	
+	
+    //
+    // constructor
+    //
+    
+    
+	verb new
+		// camera placement parameters
+		//
+		from vector location;
+		towards vector direction;
+	with
+		// camera lens and focus parameters
+		//
+		scalar fov = 60;		
+		scalar distance = 100;
+		boolean orthographic is false;
+						
+		// camera rendering parameters
+		//
+		boolean visible is false;
+		
+		// camera tilt parameters
+		//
+		scalar roll = 0;
+	is
+		// call superclass constructor
+		//
+		translated_3ds_camera new at location towards direction with
+
+			// set camera lens and focus parameters
+			//
+			fov = static fov;
+			distance = static distance;
+			orthographic is static orthographic;
+			
+			// set camera rendering parameters
+			//
+			visible is static visible;
+		end;	
+	end;
+end;	// translated_3ds_free_camera

@@ -1,0 +1,35 @@
+{***************************************************************}
+{                      vertical_alignment.ores                  }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{             Contains text alignment definitions.        	 	}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/strings.ores";
+
+
+enum vertical_alignment is top, middle, bottom;
+
+
+string type question vertical_alignment_to_string
+	of vertical_alignment type alignment;
+is
+	when alignment is
+		top: 
+			answer "top"; 
+		end;
+		
+		middle: 
+			answer "middle"; 
+		end;
+		
+		bottom: 
+			answer "bottom"; 
+		end;
+	end;
+end;	// vertical_alignment_to_string

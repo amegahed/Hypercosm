@@ -1,0 +1,170 @@
+{***************************************************************}
+{                          sts.omar                             }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do sts_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shuttle.omar";
+
+
+shape srb is
+    cone with
+        end1 = <-13 0 0>;
+        end2 = <-18 0 0>;
+        radius1 = 1.6;
+        radius2 = 0;
+    end;
+    cylinder with
+        end1 = <-13 0 0>;
+        end2 = <-12.8 0 0>;
+        radius = 1.7;
+    end;
+    cylinder with
+        end1 = <-13 0 0>;
+        end2 = <16 0 0>;
+        radius = 1.6;
+    end;
+    cone with
+        end1 = <15 0 0>;
+        end2 = <17 0 0>;
+        radius1 = 1.6;
+        radius2 = 2.5;
+    end;
+    cylinder with
+        end1 = <15 0 0>;
+        end2 = <18 0 0>;
+        radius = 1.4;
+    end;
+    cylinder with
+        end1 = <13 0 0>;
+        end2 = <13.5 0 0>;
+        radius = 1.7;
+    end;
+    cylinder with
+        end1 = <14 0 0>;
+        end2 = <14.5 0 0>;
+        radius = 1.7;
+    end;
+end;    // srb
+
+
+shape external_tank is
+    shape nose is
+        sphere with
+            radius = 3.5;
+            vmax = 0;
+            rotate by 90 around <0 1 0>;
+            scale by 2.5 along <1 0 0>;
+        end;
+        cone with
+            end1 = <-10 0 0>;
+            end2 = <-7 0 0>;
+            radius1 = 0;
+            radius2 = 2.13;
+        end;
+        cylinder with
+            end1 = <-7 0 0>;
+            end2 = <-7.2 0 0>;
+            radius = 2.15;
+        end;
+    end;    // nose
+
+    cylinder with
+        end1 = <-10 0 0>;
+        end2 = <10 0 0>;
+        radius = 3.5;
+    end;
+    sphere with
+        radius = 3.5;
+        vmin = 0;
+        rotate by 90 around <0 1 0>;
+        move to <10 0 0>;
+    end;
+    nose with
+        scale by 1.4 along <1 0 0>;
+        move to <-10 0 0>;
+    end;
+end;    // external_tank
+
+
+shape shuttle_stack is
+    external_tank with material is chalk colored orange; end;
+
+    // connects et with shuttle
+    //
+    cylinder with
+        end1 = <0 0 0>;
+        end2 = <0 0 6>;
+        radius = .4;
+    end;
+    cylinder with
+        end1 = <10 1 0>;
+        end2 = <10 1 6>;
+        radius = .4;
+    end;
+    cylinder with
+        end1 = <10 -1 0>;
+        end2 = <10 -1 6>;
+        radius = .4;
+    end;
+    shuttle with
+        material is plastic colored white;
+        move to <6 0 6>;
+    end;
+    srb with
+        material is plastic colored white;
+        move to <3 -5.1 0>;
+    end;
+    srb with
+        material is plastic colored white;
+        move to <3 5.1 0>;
+    end;
+end;    // shuttle_stack
+
+
+picture sts_picture with
+    eye = <0 -50 60>;
+    lookat = <0 0 22>;
+    field_of_view = 60;
+    eye = <10 -30 50>;
+    lookat = <0 0 25>;
+    field_of_view = 90;
+    render_mode is shaded;
+    shading is vertex;
+    background = sky_blue;
+    facets = 0;
+    shadows is on;
+    reflections is on;
+is
+    distant_light from <.3 -.5 1>;
+    shuttle_stack with
+        rotate by 90 around <0 1 0>;
+        rotate by -90 around <0 0 1>;
+        move to <0 0 21>;
+
+    end;
+    plane with
+        color = light brown;
+        magnify by 20;
+    end;
+end;    // sts_picture
+
+
+anim sts_anim
+    args type args;
+with
+    eye = <10 -50 30>;
+    double_buffer is on;
+        background = black;
+    args check;
+is
+    mouse_controlled_shape shuttle_stack;
+end;    // sts_anim

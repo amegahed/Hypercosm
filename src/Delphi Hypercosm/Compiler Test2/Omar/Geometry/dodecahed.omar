@@ -1,0 +1,137 @@
+{***************************************************************}
+{                          dodecahed.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do dodecahedron_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/platonics.ores";
+include "system/mesh_utils.ores";
+include "system/comparisons.ores";
+
+
+shape dodecahedron with
+    boolean show_vertices is true;
+    boolean show_edges is true;
+    boolean show_faces is true;
+
+    scalar vertex_radius = .1;
+    scalar edge_radius = .05;
+    boolean unit_radius is true;
+
+    // face colors
+    //
+    color type colors[];
+is
+    static material type vertex_material is plastic colored red;
+    static material type edge_material is plastic colored white;
+    static vector vertices[] is dodecahedric type's vertices;
+    static integer edges[][] is dodecahedric type's edges;
+    static integer sides[][] is dodecahedric type's sides;
+
+
+    static shape mesh_faces is
+        mesh_sides sides through edges to vertices;
+    end;    // mesh_faces
+
+
+    shape polyhedron is
+        if show_vertices then
+            mesh_vertices vertices with
+                material is vertex_material;
+                radius = vertex_radius;
+            end;
+        end;
+        if show_edges then
+            mesh_edges edges to vertices with
+                material is edge_material;
+                radius = edge_radius;
+            end;
+        end;
+        if show_faces then
+            if some colors then
+                mesh_sides sides through edges to vertices
+                    colored colors;
+            else
+                mesh_faces;
+            end;
+        end;
+    end;    // polyhedron
+
+
+    // scale regular polyhedron
+    //
+    if unit_radius then
+
+        // find radius of regular polyhedron
+        //
+        scalar radius = dodecahedric type's radius;
+
+        if show_vertices and show_edges then
+            radius = itself + larger of vertex_radius and
+                edge_radius;
+        elseif show_vertices then
+            radius = itself + vertex_radius;
+        elseif show_edges then
+            radius = itself + edge_radius;
+        end;
+
+        polyhedron with
+            magnify by 1 / radius;
+        end;
+    else
+        polyhedron;
+    end;
+end;    // dodecahedron
+
+
+anim dodecahedron_anim
+    args type args;
+with
+    eye = <1 -3 2>;
+    double_buffer is on;
+    args check;
+is
+    static boolean show_vertices is true;
+    static boolean show_edges is true;
+    static boolean show_faces is true;
+    static boolean show_colors is true;
+
+
+    verb check_polyhedron_keys is
+        check_keys;
+        if key_down char_to_key "v" then
+            show_vertices is not show_vertices;
+        end;
+        if key_down char_to_key "e" then
+            show_edges is not show_edges;
+        end;
+        if key_down char_to_key "f" then
+            show_faces is not show_faces;
+        end;
+        if key_down char_to_key "c" then
+            show_colors is not show_colors;
+        end;
+    end;    // check_polyhedron_keys
+
+    shape scene is
+        dodecahedron with
+            show_vertices is static show_vertices;
+            show_edges is static show_edges;
+            show_faces is static show_faces;
+            if show_colors then
+                colors = [red green blue cyan magenta yellow
+                    orange violet];
+            end;
+        end;
+    end;    // scene
+
+    mouse_controlled_shape scene doing check_polyhedron_keys;
+end;    // dodecahedron_anim

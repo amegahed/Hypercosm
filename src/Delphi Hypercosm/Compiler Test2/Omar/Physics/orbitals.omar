@@ -1,0 +1,76 @@
+{***************************************************************}
+{                          orbitals.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do orbital_anim;
+
+
+include "system/3d.ores";
+include "system/anims.ores";
+include "system/shapes.ores";
+include "system/physics.ores";
+include "system/random.ores";
+
+
+shape orbital with
+    integer resolution = 16;
+    scalar range = 5;
+    scalar threshold = .2;
+    integer particles = 100;
+is
+    scalar cube_size = (range * 2) / resolution;
+    scalar offset = cube_size * (resolution - 1) / 2;
+
+    for integer x_counter = 0..(resolution - 1) do
+        for integer y_counter = 0..(resolution - 1) do
+            for integer z_counter = 0..(resolution - 1) do
+                scalar x = (x_counter * cube_size) - offset;
+                scalar y = (y_counter * cube_size) - offset;
+                scalar z = (z_counter * cube_size) - offset;
+                scalar psi = wave_function_p at <x y z>;
+
+                if psi > threshold then
+
+                    {
+                                        sphere with
+                                                move to x y z;
+                                                radius = (cube_size * psi) / 2;
+                                                color = (psi) 0 (1 - psi);
+                                        end;
+                                        }
+
+                    point_cloud with
+                        rotation of vrandom
+                        <0 0 0> to <360 360 360>;
+                        magnify by cube_size / 2;
+                        move to <x y z>;
+                        particles = round (
+                        static particles * psi);
+                        color = <(psi) 0 (1 - psi)>;
+                    end;
+                end;
+            end;
+        end;
+    end;
+end;    // orbital
+
+
+anim orbital_anim with
+    double_buffer is on;
+    eye = <1 -3 2>;
+    render_mode is wireframe;
+is
+    shape scene is
+        orbital with
+            magnify by 1 / range;
+        end;
+        axes;
+    end;    // scene
+
+    mouse_controlled_shape scene;
+end;    // orbital_anim

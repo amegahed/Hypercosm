@@ -1,0 +1,287 @@
+{***************************************************************}
+{                          xmas_tree.omar                       }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do xmas_tree_picture;
+
+
+include "system/3d.ores";
+include "system/shapes.ores";
+include "system/fir.omar";
+
+
+shape rim is
+    ring with
+        center = <0 -1.5 0>;
+        normal = <0 1 0>;
+        inner_radius = 21;
+        outer_radius = 22;
+    end;    // front
+    ring with
+        center = <0 1.5 0>;
+        normal = <0 1 0>;
+        inner_radius = 21;
+        outer_radius = 22;
+    end;    // back
+    cylinder with
+        end1 = <0 -.5 0>;
+        end2 = <0 .5 0>;
+        radius = 23;
+    end;    // outside
+    cylinder with
+        end1 = <0 -.5 0>;
+        end2 = <0 .5 0>;
+        radius = 20;
+    end;    // inside
+    cone with
+        end1 = <0 -1.5 0>;
+        end2 = <0 -.5 0>;
+        radius1 = 22;
+        radius2 = 23;
+    end;    // front-top edge
+    cone with
+        end1 = <0 -1.5 0>;
+        end2 = <0 -.5 0>;
+        radius1 = 21;
+        radius2 = 20;
+    end;    // front-bottom edge
+    cone with
+        end1 = <0 1.5 0>;
+        end2 = <0 .5 0>;
+        radius1 = 22;
+        radius2 = 23;
+    end;    // back-top edge
+    cone with
+        end1 = <0 1.5 0>;
+        end2 = <0 .5 0>;
+        radius1 = 21;
+        radius2 = 20;
+    end;    // back-bottom edge
+end;    // rim
+
+
+shape torus_rim is
+    torus with
+        center = <0 0 0>;
+        normal = <0 1 0>;
+        inner_radius = 20;
+        outer_radius = 23;
+    end;
+end;    // torus_rim
+
+
+shape star with
+    integer points = 5;
+is
+    shape square_pyramid is
+        triangle <-1 -1 0> <1 -1 0> <0 0 1>;
+        triangle <1 -1 0> <1 1 0> <0 0 1>;
+        triangle <1 1 0> <-1 1 0> <0 0 1>;
+        triangle <-1 1 0> <-1 -1 0> <0 0 1>;
+    end;    // square_pyramid
+
+
+    shape skewed_pyramid is
+        square_pyramid with
+            rotate by 45 around <0 0 1>;
+            scaling of <2 1 23>;
+        end;
+    end;    // skewed_pyramid
+
+
+    scalar angle = 360 / points;
+
+    rim;
+    for integer counter = 1..points do
+        skewed_pyramid with
+            rotate by counter * angle around <0 1 0>;
+        end;
+    end;
+    cone with
+        end1 = <0 0 -23>;
+        end2 = <0 0 -40>;
+        radius1 = 1;
+        radius2 = 3;
+    end;
+end;    // star
+
+
+shape tree_stand is
+    shape knob is
+        cylinder with
+            end1 = <0 0 0>;
+            end2 = <1.5 0 0>;
+            radius = .1;
+        end;
+        disk with
+            center = <1.3 0 0>;
+            normal = <1 0 0>;
+            radius = .2;
+        end;
+        disk with
+            center = <1.4 0 0>;
+            normal = <1 0 0>;
+            radius = .2;
+        end;
+        cylinder with
+            end1 = <1.3 0 0>;
+            end2 = <1.4 0 0>;
+            radius = .2;
+        end;
+    end;    // knob
+
+
+    shape leg is
+        extrude [[0 2] [1 2] [3 0] [4 0] [4 1] [3 1] [1 3]
+            [0 3]]
+        with
+            move to <3 0 0>;
+            magnify by .3;
+        end;
+    end;    // leg
+
+    paraboloid with
+        top = <0 0 0>;
+        base = <0 0 1>;
+        radius = 1;
+    end;
+    paraboloid with
+        top = <0 0 .1>;
+        base = <0 0 1>;
+        radius = .9;
+    end;
+    ring with
+        center = <0 0 1>;
+        inner_radius = .9;
+    end;
+    knob with
+        material is metal colored white;
+        move to <0 0 .9>;
+    end;
+    knob with
+        material is metal colored white;
+        move to <0 0 .9>;
+        rotate by 120 around <0 0 1>;
+    end;
+    knob with
+        material is metal colored white;
+        move to <0 0 .9>;
+        rotate by 240 around <0 0 1>;
+    end;
+    leg with
+        rotate by 60 around <0 0 1>;
+    end;
+    leg with
+        rotate by 180 around <0 0 1>;
+    end;
+    leg with
+        rotate by 300 around <0 0 1>;
+    end;
+end;    // tree_stand
+
+
+shape ornaments with
+    scalar height = 100;
+    scalar radius = 50;
+    integer number = 100;
+is
+    seed = 101;
+    for integer counter = 1..number do
+        scalar x = random -1 to 1;
+        scalar y = random -1 to 1;
+        scalar z = random 0 to 1;
+
+        if (x * x + y * y) < (1 - z) then
+            x = x * radius;
+            y = y * radius;
+            z = z * height;
+            sphere with
+                material is metal colored light red;
+                center = <x y z>;
+                radius = 5;
+            end;
+        end;
+    end;
+end;    // ornaments
+
+
+shape trimmed_tree with
+    integer height = 10;
+is
+    // first 10% of tree has branches trimmed
+    //
+    scalar trim_factor = .15;
+    integer branch_start = trunc (height * trim_factor);
+    integer counter;
+
+    // tree trunk
+    //
+    counter = height;
+    while (counter >= height - branch_start) do
+        cone with
+            material is chalk colored brown;
+            end1 = <0 0 (10 * (height - counter))>;
+            end2 = <0 0 (10 * (height - counter + 1))>;
+            radius1 = counter / 5;
+            radius2 = (counter - 1) / 5;
+        end;
+        counter = counter - 1;
+    end;
+
+    // tree with branches
+    //
+    fir_tree with
+        height = static height - branch_start;
+        move to <0 0 (branch_start * 10)>;
+    end;
+
+    // ornaments
+    //
+    ornaments with
+        radius = 50;
+        height = (static height - branch_start) * 10;
+        move to <0 0 ((branch_start + 1) * 10)>;
+    end;
+end;    // trimmed_tree
+
+
+shape xmas_tree with
+    integer height = 23;
+is
+    seed = 17;
+    star with
+        material is golden;
+        magnify by .5;
+        move to <0 0 ((height * 10) + 15)>;
+    end;
+    trimmed_tree with
+        material is chalk colored dark green;
+        height = static height;
+        move to <0 0 1>;
+    end;
+    tree_stand with
+        material is plastic colored red;
+        magnify by 15;
+    end;
+end;    // xmas_tree
+
+
+picture xmas_tree_picture
+    args type args;
+with
+    eye = <10 -50 20>;
+    lookat = <0 0 12>;
+    render_mode is shaded;
+    facets = 0;
+    args check;
+is
+    distant_light from <.3 -.5 1>;
+    xmas_tree with
+        magnify by .1;
+    end;
+end;    // xmas_tree_picture

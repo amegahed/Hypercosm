@@ -1,0 +1,143 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             button.ores                3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a subject definition for creating buttons      }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+include "interactions.ores";
+include "futura_l.ores";
+include "picking.ores";
+
+subject button
+extends
+	mouse_state_filter object
+does
+	// constructor
+	//
+	verb new
+		labelled string type label is none;
+		controls boolean reference state refers to none;
+	with
+		scalar label_size = 1;
+		color type border_color = white;
+		color type label_color = white;
+	end;
+
+	verb relabel
+		string type label;
+	end;
+
+	// querying methods
+	//
+	boolean question accept_click at vector location; end;
+	boolean question in_region at vector location; end;
+
+	// rendering method
+	//
+	shape instance;
+has
+	// attributes
+	//
+	public boolean reference pressed;
+	public boolean mouse_is_over is false;
+	public mouse_state type mouse_state is none;    // allocated in new
+	public trans type label_trans;
+
+	// private attributes
+	//
+	string type label;
+	color type border_color;
+	color type label_color;
+	boolean internal_pressed is false;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		labelled string type label is none;
+		controls boolean reference state refers to none;
+	with
+		scalar label_size = 1;
+		color type border_color = white;
+		color type label_color = white;
+	is
+		button's label is label;
+		button's border_color = border_color;
+		button's label_color = label_color;
+		magnify the label_trans by label_size;
+		if state refers to none then
+			button's pressed refers to internal_pressed;
+		else
+			button's pressed refers to state;
+		end;
+		mouse_state is (new mouse_state type with filter is button;);
+	end;    // new
+
+	verb relabel
+		string type label;
+	is
+		button's label is label;
+	end;    // relabel
+
+	//
+	// querying methods
+	//
+
+	boolean question accept_click
+		at vector location;
+	is
+		answer in_region at location;
+	end;    // accept_click
+
+	boolean question in_region
+		at vector location;
+	is
+		if mouse_state's down then
+			answer yes;
+		else
+			answer (xy_plane_touched at location with
+				restrict_to_bounds is true;
+				min_bounds = <(-1) (-1) 0>;
+				max_bounds = <1 1 0>;);
+		end;
+	end;    // in_region
+
+	//
+	// rendering methods
+	//
+
+	shape face is
+		parallelogram with
+			color = border_color;
+		end;
+		parallelogram with
+			magnify by .9;
+			move to <0 0 .01>;
+		end;
+	end;    // face
+
+	shape instance is
+		if some mouse_state then
+			mouse_state update;
+			if not (pressed refers to none) then
+				pressed is (mouse_state's down) and
+					(mouse_state's location =
+					 mouse_state's location_in_region);
+			end;
+		end;
+		mouse_is_over is in_region at get_mouse;
+		face;
+		futura_l_word label with
+			color = label_color;
+			trans = label_trans;
+			move to <0 0 .02>;
+		end;
+	end;    // instance
+end;    // button

@@ -1,0 +1,292 @@
+{***************************************************************}
+{                          shaders.ores                         }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{             Contains some standard texture shaders.           }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_shading.ores";
+include "system/native_rendering.ores";
+include "system/native_noise.ores";
+include "system/math.ores";
+include "system/standard_colors.ores";
+include "system/random.ores";
+include "system/vectors.ores";
+
+
+shader gradient
+    from color type color1;
+    to color type color2;
+    between vector location1 = <0 0 -1>;
+    and vector location2 = <0 0 1>;
+    in coords type coords is local;
+is
+    vector v = location in coords;
+    vector g_line = location2 - location1;
+    vector v_from_loc1 = v - location1;
+    vector v_along_g = v_from_loc1 parallel g_line;
+
+    scalar mag_v = vlength of v_along_g;
+    scalar mag_g = vlength of g_line;
+    scalar g_loc = mag_v / mag_g;
+    scalar g_val = sin (180*g_loc - 90) / 2 + .5;
+
+    color type g;
+
+    if v_from_loc1 dot g_line < 0 then
+        g = color1;
+    elseif g_loc < 1 then
+        g = (1 - g_val) * color1 + g_val * color2;
+    else
+        g = color2;
+    end;
+
+    answer g;
+end;
+
+
+shader tie_dye is
+    answer vrandom white to black;
+end;    // tie_dye
+
+
+shader splotchy is
+    answer vnoise (location * 10);
+end;    // splotchy
+
+
+shader speckled
+    color type color;
+is
+    answer color * random .5 to 1;
+end;    // speckled
+
+
+shader show_rgb
+    in coords type coords is world;
+is
+    vector v = location in coords;
+    scalar r = v dot <1 0 0>;
+    scalar g = v dot <0 1 0>;
+    scalar b = v dot <0 0 1>;
+
+    {
+        r = abs(r - trunc r);
+        g = abs(g - trunc g);
+        b = abs(b - trunc b);
+    }
+
+    answer <r g b>;
+end;    // show_rgb
+
+
+shader show_normal
+    in coords type coords is local;
+is
+    vector v = normal in coords;
+    scalar r = v dot <1 0 0>;
+    scalar g = v dot <0 1 0>;
+    scalar b = v dot <0 0 1>;
+
+    r = abs (r - trunc r);
+    g = abs (g - trunc g);
+    b = abs (b - trunc b);
+
+    answer <r g b>;
+end;    // show_normal
+
+
+shader striped
+    color type color1, color2;
+    in coords type coords is local;
+    along vector direction = <0 0 1>;
+    step scalar stepsize = 10;
+is
+    scalar x = (location in coords) dot direction;
+    scalar offset = (sin (x * 360 * stepsize) + 1) / 2;
+
+    answer (color1 * offset) + (color2 * (1 - offset));
+end;    // striped
+
+
+shader polka_dot
+    color type color1;
+    color type color2;
+    in coords type coords is local;
+is
+    vector v = location in coords;
+    scalar x = v dot <1 0 0>;
+    scalar y = v dot <0 1 0>;
+    scalar z = v dot <0 0 1>;
+
+    x = itself - round x;
+    y = itself - round y;
+    z = itself - round z;
+
+    if (<x y z>) dot (<x y z>) < .2 then
+        answer color1;
+    else
+        answer color2;
+    end;
+end;    // polka_dot
+
+
+shader checkered
+    color type color1;
+    color type color2;
+    in coords type coords is local;
+is
+    scalar epsilon = .0123;
+    vector v = location in coords;
+    scalar x = v dot <1 0 0> + epsilon;
+    scalar y = v dot <0 1 0> + epsilon;
+    scalar z = v dot <0 0 1> + epsilon;
+    integer i = 1;
+
+    if x < 0 then
+        x = 1 - x;
+    end;
+    if y < 0 then
+        y = 1 - y;
+    end;
+    if z < 0 then
+        z = 1 - z;
+    end;
+
+    if (trunc x mod 2) = 0 then
+        i = -itself;
+    end;
+    if (trunc y mod 2) = 0 then
+        i = -itself;
+    end;
+    if (trunc z mod 2) = 0 then
+        i = -itself;
+    end;
+
+    if (i < 0) then
+        answer color1;
+    else
+        answer color2;
+    end;
+end;    // checkered
+
+
+shader show_texture is
+    answer location in parametric;
+end;    // show_texture
+
+
+shader show_image
+    image type image;
+    in coords type coords is parametric;
+is
+    vector v = location in coords;
+    scalar x = (v dot <1 0 0>);
+    scalar y = (v dot <0 1 0>);
+
+    answer image get_color at x y;
+end;    // show_image
+
+
+shader show_background
+    of image type image;
+is
+    vector v = location in screen;
+    scalar x = (v dot <1 0 0>);
+    scalar y = (v dot <0 1 0>);
+
+    answer image get_color at x y;
+end;    // show_background
+
+
+shader graph_paper
+    color type color;
+    in coords type coords is parametric;
+    step scalar stepsize = 15;
+is
+    scalar x, y;
+    vector v = location in coords;
+
+    x = (v dot <1 0 0>) * stepsize;
+    y = (v dot <0 1 0>) * stepsize;
+
+    if (sqr (x - round x) + sqr (y - round y)) < .1 then
+        answer red;
+    elseif abs (x - trunc x) < .1 then
+        answer black;
+    elseif abs (y - trunc y) < .1 then
+        answer black;
+    else
+        answer color;
+    end;
+end;    // graph_paper
+
+
+shader panelled
+    color type color;
+    x scalar x_factor = 10;
+    y scalar y_factor = 10;
+is
+    vector v = location in parametric;
+    scalar x = (v dot <1 0 0>) * x_factor;
+    scalar y = (v dot <0 1 0>) * y_factor;
+    scalar s = noise2 (trunc x) (trunc y);
+
+    answer color * (1 - s * .3);
+end;    // panelled
+
+
+shader lighted
+    color type color;
+    x scalar x_factor = 10;
+    y scalar y_factor = 10;
+is
+    vector v = location in parametric;
+    scalar x = (v dot <1 0 0>) * x_factor * 3;
+    scalar y = (v dot <0 1 0>) * y_factor * 1;
+    scalar s = noise2 (trunc x) (trunc y);
+
+    if (s > .975) then
+        answer <1 1 .8>;
+    else
+        answer color;
+    end;
+end;    // lighted
+
+
+shader sunset is
+    vector v = location in local * 5;
+    // vector place = (location in world) - eye;
+    vector place = location in world;
+    scalar sum = 0, factor = 1;
+    color type transmitted, scattered;
+    color type zenith_color = sky_blue;
+    color type horizon_color = orange;
+    scalar height;
+
+    for integer counter = 1..4 do
+        factor = factor * 2;
+        sum = itself + noise (v * factor) / factor;
+    end;
+    sum = sum * sum * sum;
+    scattered = white * sum;
+
+    height = place dot <0 0 1> * 4;
+    factor = clamp (height / distance) from 0 to 1;
+        transmitted = blend horizon_color to zenith_color by factor;
+    // set_distance to 0;   // counteract fog
+    answer scattered + transmitted;
+end;    // sunset
+
+
+shader fiery is
+        color type hue = blend light yellow to orange by random 0 to 1;
+        scalar opacity = abs (direction dot normal) ^ 4;
+
+        answer blend background to (hue * 4) by opacity;
+end;    // fiery

@@ -1,0 +1,361 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm     beveled_slider_component.ores      3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{      Contains a subject definition for a 3D slider widget.    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 1999 Hypercosm, Inc.             }
+{***************************************************************}
+
+// The slider lets you select any value between the min_value and
+// the max_value.
+//
+// See OMAR/Widgets/widget_panel.omar for an example of its use.
+//
+
+include "widget_panel.ores";
+include "bevels.ores";
+
+// widget_panel_components are special interface elements that behave like
+// flat 2D elements, even though they can be drawn as arbitrary 3D shapes.
+// All of the mouse click locations are in the range <-1 -1 0> to <1 1 0>.
+//
+subject beveled_slider_component
+extends
+	widget_panel_component object
+does
+	// constructor
+	//
+	verb new
+		controls scalar reference value refers to none;
+		from scalar min_value = 0;
+		to scalar max_value = 1;
+	with
+		boolean horizontal is true;
+		scalar bar_radius = 0.8;
+		scalar bevel_width = 0.1;
+		boolean capped is true;
+		scalar knob_size = 0.2; // as a portion of the main bar
+		material type bar_material is plastic colored blue;
+		material type knob_material is plastic colored red;
+		material type lit_knob_material is plastic colored yellow;
+		material type disabled_bar_material is plastic colored dark blue;
+		material type disabled_knob_material is plastic colored dark red;
+	end;
+	
+	verb enable;
+	verb disable;
+	boolean question is_enabled;
+	
+	// widget_panel_component interface methods:
+	//
+	
+	// in_region should answer true if a click at the given location
+	// should be handled by this component.  For most components,
+	// in_region can simply compare the location against the bounds of
+	// the component's "hotspot" region.
+	//
+	boolean question in_region
+		at vector location;
+	end;
+	
+	// write_id is used for debugging purposes only, and should write out
+	// some kind of indentifying name for the component.
+	//
+	verb write_id;
+	
+	// start_track will be called when a mouse click occurs and the
+	// in_region question answered true.
+	//
+	verb start_track
+		at vector location;
+		boolean is_double_click;
+		widget_panel_track_manager type manager;
+	end;
+	
+	// continue_track will be called if the mouse button is still being
+	// held down from a click that was accepted.
+	//
+	verb continue_track
+		boolean on_plane;
+		at vector location;
+	end;
+	
+	// end_track will be called when the mouse button is released from
+	// a click that was accepted.
+	//
+	verb end_track
+		boolean on_plane;
+		at vector location;
+		boolean selected;
+	end;
+
+	// rendering method
+	//
+	shape instance
+		component_highlight_style type highlight;
+	end;
+has
+	// attributes
+	//
+	public scalar reference value;
+	
+	// private attributes
+	//
+	boolean enabled is true;
+	scalar min_value;
+	scalar max_value;
+	boolean horizontal;
+	scalar bar_radius;
+	scalar bevel_width;
+	boolean capped;
+	scalar knob_size;
+	material type bar_material is none;
+	material type knob_material is none;
+	material type lit_knob_material is none;
+	material type disabled_bar_material is none;
+	material type disabled_knob_material is none;
+	scalar internal_value;
+	
+	widget_panel_track_manager type cur_manager is none;
+	
+	scalar track_offset;
+is
+	//
+	// constructor
+	//
+
+	verb new
+		controls scalar reference value refers to none;
+		from scalar min_value = 0;
+		to scalar max_value = 1;
+	with
+		boolean horizontal is true;
+		scalar bar_radius = 0.8;
+		scalar bevel_width = 0.1;
+		boolean capped is true;
+		scalar knob_size = 0.2; // as a portion of the main bar
+		material type bar_material is plastic colored blue;
+		material type knob_material is plastic colored red;
+		material type lit_knob_material is plastic colored yellow;
+		material type disabled_bar_material is plastic colored dark blue;
+		material type disabled_knob_material is plastic colored dark red;
+	is
+		beveled_slider_component's min_value = min_value;
+		beveled_slider_component's max_value = max_value;
+		beveled_slider_component's horizontal is horizontal;
+		beveled_slider_component's bar_radius = bar_radius;
+		beveled_slider_component's bevel_width = bevel_width;
+		beveled_slider_component's capped is capped;
+		beveled_slider_component's knob_size = knob_size;
+		beveled_slider_component's bar_material is bar_material;
+		beveled_slider_component's knob_material is knob_material;
+		beveled_slider_component's lit_knob_material is lit_knob_material;
+		beveled_slider_component's disabled_bar_material is disabled_bar_material;
+		beveled_slider_component's disabled_knob_material is disabled_knob_material;
+		if value refers to none then
+			beveled_slider_component's value refers to internal_value;
+			internal_value = min_value;
+		else
+			beveled_slider_component's value refers to value;
+			if min_value > max_value then
+				value = clamp value from max_value to min_value;
+			else
+				value = clamp value from min_value to max_value;
+			end;
+		end;
+	end;    // new
+	
+	verb enable
+	is
+		enabled is true;
+	end;    // enable
+	
+	verb disable
+	is
+		enabled is false;
+		
+		if some cur_manager then
+			cur_manager drop_track;
+		end;
+	end;    // disable
+	
+	boolean question is_enabled
+	is
+		answer enabled;
+	end;    // is_enabled
+	
+	verb correct_orientation
+		vector reference location;
+	is
+		if not horizontal then
+			scalar tmp;
+			tmp = location.x;
+			location.x = location.y;
+			location.x = tmp;
+		end;
+	end;    // correct_orientation
+	
+	boolean question in_region
+		at vector location;
+	is
+		scalar knob_center;
+		
+		if not enabled then
+			answer no;
+		end;
+		
+		if      (value refers to none) or
+				(knob_size >= 1) or
+				(min_value = max_value) then
+			answer no;
+		end;
+		
+		knob_center = (knob_size - 1) +
+			(((value - min_value) / (max_value - min_value)) *
+			 (1 - knob_size) * 2);
+		
+		correct_orientation location;
+		
+		if (location.y < -1) or (location.y > 1) then
+			answer no;
+		end;
+		
+		if (abs (location.x - knob_center)) > knob_size then
+			answer no;
+		end;
+		
+		answer yes;
+	end;    // in_region
+	
+	verb write_id
+	is
+		write "beveled_slider_component",;
+	end;    // write_id
+	
+	verb start_track
+		at vector location;
+		boolean is_double_click;
+		widget_panel_track_manager type manager;
+	is
+		scalar knob_center;
+		
+		knob_center = (knob_size - 1) +
+			(((value - min_value) / (max_value - min_value)) *
+			 (1 - knob_size) * 2);
+		
+		correct_orientation location;
+		
+		track_offset = knob_center - location.x;
+		
+		cur_manager is manager;
+	end;    // start_track
+	
+	verb update_value
+		to scalar new_knob_center;
+	is
+		value = min_value +
+			(((max_value - min_value) * (new_knob_center - (knob_size - 1))) /
+			 ((1 - knob_size) * 2));
+		
+		if min_value > max_value then
+			value = clamp value from max_value to min_value;
+		else
+			value = clamp value from min_value to max_value;
+		end;
+	end;    // update_value
+	
+	verb continue_track
+		boolean on_plane;
+		at vector location;
+	is
+		if on_plane then
+			correct_orientation location;
+			update_value to (location.x + track_offset);
+		end;
+	end;    // continue_track
+	
+	verb end_track
+		boolean on_plane;
+		at vector location;
+		boolean selected;
+	is
+		if on_plane then
+			correct_orientation location;
+			update_value to (location.x + track_offset);
+		end;
+		
+		cur_manager is none;
+	end;    // end_track
+
+	//
+	// rendering method
+	//
+
+	shape instance
+		component_highlight_style type highlight;
+	is
+		material type cur_bar_material is none;
+		material type cur_knob_material is none;
+		vector low_end;
+		vector direction;
+
+		if horizontal then
+			low_end = <-1 0 0>;
+			direction = <2 0 0>;
+		else
+			low_end = <0 -1 0>;
+			direction = <0 2 0>;
+		end;
+
+		if enabled then
+			cur_bar_material is bar_material;
+
+			if some highlight then
+				cur_knob_material is lit_knob_material;
+			else
+				cur_knob_material is knob_material;
+			end;
+		else
+			cur_bar_material is disabled_bar_material;
+			cur_knob_material is disabled_knob_material;
+		end;
+
+		if some cur_bar_material then
+			beveled_cylinder with
+				end1 = low_end;
+				end2 = low_end + direction;
+				radius = bar_radius;
+				bevel_width = beveled_slider_component's bevel_width;
+				capped is beveled_slider_component's capped;
+				material is cur_bar_material;
+			end;
+		end;
+
+		if some cur_knob_material then
+			beveled_cylinder with
+				end1 = low_end;
+				end2 = low_end + (knob_size * direction);
+				radius = 1;
+				bevel_width = beveled_slider_component's bevel_width;
+				if bar_radius < (1 - bevel_width) then
+					capped is true;
+				else
+					capped is false;
+				end;
+				material is cur_knob_material;
+
+				if      (not (value refers to none)) and
+						(knob_size < 1) and
+						(min_value <> max_value) then
+					// position the knob along the bar
+					move to (direction * (1 - knob_size) *
+						((value - min_value) / (max_value - min_value)));
+				end;
+			end;
+		end;
+	end;    // instance
+end;    // beveled_slider_component

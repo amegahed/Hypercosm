@@ -1,0 +1,303 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm             dock.omar                  3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains an example of the use of a dock user           }
+{       interface component.                                    }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2006 Hypercosm, LLC.             }
+{***************************************************************}
+do dock_anim;
+
+include "system/3d.ores";
+include "system/args.ores";
+include "system/lighting.ores";
+include "system/background.ores";
+include "system/icon.ores";
+include "system/overlay_selector_group.ores";
+include "system/overlay_component_subtree.ores";
+include "system/dock.ores";
+include "system/hiding_actions.ores";
+
+{***************************************************************}
+{                         camera control icons                  }
+{***************************************************************}
+
+verb default_reset_view_action is
+	write "selecting reset view", ;
+end;    // default_reset_view_action
+verb default_zoom_out_action is
+	write "selecting zoom out", ;
+end;    // default_zoom_out_action
+
+components type question get_camera_controls 
+with
+	// selection actions
+	//
+	activateable type select_reset_view_action is new action of default_reset_view_action;
+	activateable type select_zoom_out_action is new action of default_zoom_out_action; 
+is
+	icon type reset_view_icon poster "camera_icon.gif" labelled "Reset View"
+		selecting select_reset_view_action;
+	icon type zoom_out_icon poster "camera_icon.gif" labelled "Zoom Out"
+		selecting select_zoom_out_action;
+		
+	answer [reset_view_icon zoom_out_icon];
+end;    // get_camera_controls
+
+{***************************************************************}
+{                         navigation icons                      }
+{***************************************************************}
+
+verb default_rotate_action is
+	write "selecting rotate", ;
+end;
+verb default_zoom_action is
+	write "selecting zoom", ;
+end;
+verb default_pan_action is
+	write "selecting pan", ;
+end;
+
+verb add_navigation_selector
+	to container type container;
+with
+	boolean hidden is false;
+	
+	// selection actions
+	//
+	activateable type select_rotate_action is new action of default_rotate_action;
+	activateable type select_zoom_action is new action of default_zoom_action; 
+	activateable type select_pan_action is new action of default_pan_action;
+is
+	// create new icons
+	//
+	icon type navigation_icon poster "navigation_icon.gif" labelled "Navigation";
+	icon type rotate_icon poster "rotate_icon.gif" labelled "Rotate"
+		selecting select_rotate_action;
+	icon type zoom_icon poster "zoom_icon.gif" labelled "Zoom"
+		selecting select_zoom_action;
+	icon type pan_icon poster "pan_icon.gif" labelled "Pan"
+		selecting select_pan_action;
+	components type navigation_icons is [navigation_icon rotate_icon zoom_icon pan_icon];
+
+	// add icons to container
+	//
+	container add (new overlay_selector_group containing navigation_icons with
+		hidden is static hidden;
+	);
+end;    // add_navigation_selector
+
+{***************************************************************}
+{                         render mode icons                     }
+{***************************************************************}
+
+verb default_smooth_action is
+	write "selecting smooth", ;
+end;
+verb default_flat_action is
+	write "selecting flat", ;
+end;
+verb default_outline_action is
+	write "selecting outline", ;
+end;
+verb default_wireframe_action is
+	write "select wireframe", ;
+end;
+verb default_pointplot_action is
+	write "select pointplot", ;
+end;
+	
+verb add_render_mode_selector
+	to container type container;
+with
+	// selection actions
+	//
+	activateable type select_smooth_action is new action of default_smooth_action;
+	activateable type select_flat_action is new action of default_flat_action;
+	activateable type select_outline_action is new action of default_outline_action;
+	activateable type select_wireframe_action is new action of default_wireframe_action;    
+	activateable type select_pointplot_action is new action of default_pointplot_action;
+is
+	// create new icons
+	//
+	icon type smooth_icon poster "smooth_icon.gif" labelled "Smooth"
+		selecting select_smooth_action;
+	icon type flat_icon poster "flat_icon.gif" labelled "Flat"
+		selecting select_flat_action;
+	icon type outline_icon poster "outline_icon.gif" labelled "Outline"
+		selecting select_outline_action;
+	icon type wireframe_icon poster "wireframe_icon.gif" labelled "Lines"
+		selecting select_wireframe_action;
+	icon type pointplot_icon poster "pointplot_icon.gif" labelled "Points"
+		selecting select_pointplot_action;
+	components type render_mode_icons is [smooth_icon flat_icon outline_icon
+		wireframe_icon pointplot_icon];
+	overlay_selector_group type render_mode_selector
+		containing render_mode_icons
+	with
+		hidden is true;
+	end;
+	icon type render_mode_icon poster "render_modes_icon.gif" labelled "Rendering"
+		selecting (new show_action of render_mode_selector)
+		deselecting (new hide_action of render_mode_selector);
+	
+	// add icons to container
+	//
+	container add render_mode_icon; 
+	container add render_mode_selector;
+end;    // add_render_mode_selector
+
+{***************************************************************}
+{                         render mode icons                     }
+{***************************************************************}
+
+verb default_master_action is
+	write "selecting master", ;
+end;
+verb default_slave_action is
+	write "selecting slave", ;
+end;
+
+verb add_collaboration_selector
+	to container type container;
+with
+	// selection actions
+	//
+	activateable type select_master_action is new action of default_master_action;
+	activateable type select_slave_action is new action of default_slave_action;
+is
+	// create new icons
+	//
+	icon type master_icon poster "master_icon.gif" labelled "Master"
+		selecting select_master_action;
+	icon type slave_icon poster "slave_icon.gif" labelled "Slave"
+		selecting select_slave_action;
+	components type collaboration_mode_icons is [master_icon slave_icon];
+	overlay_selector_group type collaboration_mode_selector containing collaboration_mode_icons with
+		hidden is true;
+	end;
+	icon type collaboration_icon poster "collaboration_icon.gif" labelled "Collaborate"
+		selecting (new show_action of collaboration_mode_selector)
+		deselecting (new hide_action of collaboration_mode_selector);
+	
+	// add icons to container
+	//
+	container add collaboration_icon;   
+	container add collaboration_mode_selector;
+end;    // add_collaboration_selector
+
+{***************************************************************}
+{                            help icon                          }
+{***************************************************************}
+
+verb add_performance_icons
+	to container type container;
+is
+	// create new icons
+	//
+	icon type fps_icon poster "gauge_icon.gif" labelled "FPS";
+
+	// add icons to container
+	//      
+	container add fps_icon;
+end;    // add_performance_icons
+
+{***************************************************************}
+{                            help icon                          }
+{***************************************************************}
+
+verb default_help_action is
+	write "selecting help", ;
+end;
+	
+verb add_help_icon
+	to container type container;
+with
+	// selection actions
+	//
+	activateable type select_help_action is new action of default_help_action;
+is
+	// create new icons
+	//
+	icon type help_icon poster "help_icon.gif" labelled "Help"
+		selecting select_help_action;
+	// add icons to container
+	//      
+	container add help_icon;
+end;    // add_help_icon
+
+{***************************************************************}
+{                         dock animation                        }
+{***************************************************************}
+
+verb add_icons
+	to container type container;
+is
+	// build dock
+	//
+	add_navigation_selector to container;
+	add_render_mode_selector to container;
+	add_collaboration_selector to container;
+	add_performance_icons to container;
+	add_help_icon to container;
+end;    // add_icons
+
+{***************************************************************}
+{                         dock animation                        }
+{***************************************************************}
+
+anim dock_anim 
+	args type args;
+with
+	double_buffer is on;
+	args check;
+is
+	dock type dock at bottom;
+	dock type dock2 at top;
+	dock type dock3 at left;
+	dock type dock4 at right;
+			
+	verb check_keys is
+		if key_down char_to_key of "1" then
+			dock set_visible to false;
+		elseif key_down char_to_key of "2" then
+			dock set_visible to true;
+		end;
+	end;    // check_keys
+	
+	verb update is
+		dock update;
+		dock2 update;
+		dock3 update;
+		dock4 update;
+		check_keys;
+	end;    // update
+		
+	picture scene is
+		sphere;
+		default_lights;
+		default_background at 100;
+		
+		dock overlay at 10;
+		dock2 overlay at 10;
+		dock3 overlay at 10;
+		dock4 overlay at 10;
+	end;    // scene
+
+	// add icons docks
+	//
+	add_navigation_selector to dock;
+	add_help_icon to dock;
+	add_render_mode_selector to dock2;
+	add_collaboration_selector to dock3;
+	add_performance_icons to dock4;
+		
+	while true do
+		scene;
+		update;
+	end;
+end;    // dock_anim

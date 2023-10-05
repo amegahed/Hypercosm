@@ -1,0 +1,77 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm     3ds_xyz_scale_controller.ores	    3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_trans_controller.ores";
+include "system/3ds_xyz_controller.ores";
+
+
+subject translated_3ds_xyz_scale_controller 
+extends
+	translated_3ds_trans_controller
+does
+    // constructor
+    //
+	verb new with
+		translated_3ds_float_controllable type x_scale_controller is none;
+		translated_3ds_float_controllable type y_scale_controller is none;
+		translated_3ds_float_controllable type z_scale_controller is none;
+	end;
+	
+	// trans controller method
+	//
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	end;
+has
+	translated_3ds_point3_controllable type controller is none;
+is
+    //
+    // constructor
+    //
+    
+    
+	verb new with
+		translated_3ds_float_controllable type x_scale_controller is none;
+		translated_3ds_float_controllable type y_scale_controller is none;
+		translated_3ds_float_controllable type z_scale_controller is none;
+	is
+		translated_3ds_xyz_scale_controller's controller is (
+			new translated_3ds_xyz_controller with
+				x_controller is x_scale_controller;
+				y_controller is y_scale_controller;
+				z_controller is z_scale_controller;
+		);
+	end;	// new
+	
+
+    //
+	// trans controller method
+	//
+	
+		
+	verb transform
+		trans type reference trans;
+		at translated_3ds_time type time;
+	is
+		vector scaling = controller get_value at time;
+		scale the trans by scaling.x along <1 0 0>;
+		scale the trans by scaling.y along <0 1 0>;
+		scale the trans by scaling.z along <0 0 1>;
+	end;	// transform
+end;	// translated_3ds_xyz_scale_controller
+
+
+
+

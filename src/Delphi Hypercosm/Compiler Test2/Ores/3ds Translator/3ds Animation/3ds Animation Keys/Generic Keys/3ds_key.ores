@@ -1,0 +1,86 @@
+{***************************************************************}
+{                         3ds_key.ores              			}
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************} 
+{                                                               }
+{   	Contains key definitions that correspond to 			}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************} 
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/sorting.ores";
+include "system/3ds_time.ores";
+
+
+abstract subject translated_3ds_key
+extends
+	sortable printable object
+does
+	// constructor
+	//
+	verb new
+		at translated_3ds_time type time;
+	end;
+	
+	// sortable methods
+	//
+	boolean question less
+		than sortable type sortable;
+	end;
+	boolean question greater
+		than sortable type sortable;
+	end;
+	
+	// printable methods
+	//
+	verb print;
+has
+	// key attributes
+	//
+	public translated_3ds_time type time;
+is
+	//
+	// constructor
+	//
+	
+	
+	verb new
+		at translated_3ds_time type time;
+	is
+		translated_3ds_key's time = time;
+	end;	// new
+	
+
+	//
+	// sortable methods
+	//
+	
+
+	boolean question less
+		than sortable type sortable;
+	is
+		translated_3ds_key type key is translated_3ds_key type sortable;
+		answer time < key's time;
+	end;	// less
+	
+		
+	boolean question greater
+		than sortable type sortable;
+	is
+		translated_3ds_key type key is translated_3ds_key type sortable;
+		answer time > key's time;
+	end;	// greater
+	
+
+	//	
+	// printable methods
+	//
+	
+	
+	verb print is
+		write "key at time = ", time, ;
+	end;	// print
+end;	// translated_3ds_key

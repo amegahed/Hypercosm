@@ -1,0 +1,24 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          native_time.ores              3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       Contains native time procedures which can be used       }
+{       both to access the current time and to control          }
+{       animation speed and execution.                          }
+{                                                               }
+{       Native entities are recognized by the interpreter.      }
+{       Only their variable initializers may be modified.       }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+// time in hours / minutes / seconds
+//
+type time is vector;
+
+// get current time
+//
+native time type question get_time;

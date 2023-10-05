@@ -1,0 +1,38 @@
+do test;
+
+
+include "system/grid_tables.ores";
+
+
+subject string
+extends
+	char[]
+does
+	verb print;
+is
+    verb print is
+		write string;
+    end;	// print
+end;    // string
+
+
+verb test 
+is
+    // tessellate a grid of points    o---o---o---o---o
+    // in the following pattern:      |  /|  /|  /|  /|
+    //                                | / | / | / | / |
+    //                                |/  |/  |/  |/  |
+    //                                o---o---o---o---o
+    //                                |  /|  /|  /|  /|
+    //                                | / | / | / | / |
+    //                                |/  |/  |/  |/  |
+    //                                o---o---o---o---o
+    //
+	static grid_table type cache of 25 by 25;
+	static string type string is "blah";
+			
+	string print;
+	if some cache then
+		write "some cache", ;
+	end;
+end;	// test

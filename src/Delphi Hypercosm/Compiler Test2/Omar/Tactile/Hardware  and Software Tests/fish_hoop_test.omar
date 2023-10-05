@@ -1,0 +1,98 @@
+do hoop_test;
+
+
+include "system/3d.ores";
+include "system/interactions.ores";
+include "system/fob_interactions.ores";
+include "system/fish.omar";
+include "system/common_materials.ores";
+        
+        
+fish type fish;
+bubble_stream type bubble_stream; 
+interaction type shape_interaction is none;
+
+           
+picture hoop_picture is
+    shape static_shape is
+        torus with
+            inner_radius = 9;
+            outer_radius = 10;
+            rotate by 90 around <1 0 0>;
+        end;
+    end;    // static_shape
+    
+    
+    static material type hit_material is plastic colored red;
+    static material type miss_material is golden;
+    vector point, normal;
+    vector fish_mouth_location = <0 0 0>;
+   
+    shape moving_shape is
+        fish instance with
+            rotate by 90 around <0 0 1>;
+            magnify by .5;
+            trans transform from shape_interaction's camera's trans;
+            fish_mouth_location = trans transformed <-21 0 0>;
+        end;
+        
+        shape_interaction's camera's trans print;
+    end;
+       
+    if shape_interaction is none then
+        shape_interaction is new fob_interaction;
+    end;
+        
+    // build scene
+    //
+
+    if shape_hits_shape static_shape moving_shape
+        return at point towards normal
+    then
+        sphere with
+            move to point;
+            radius = 1;
+            color = red;
+        end;
+        arrow from point to (point + normal * 10) with
+            color = red;
+            arrow_head_length = .25;
+            arrow_head_width = .5;
+        end;
+        static_shape with
+            material is hit_material;
+        end;
+    else
+        static_shape with
+            material is miss_material;
+        end;
+    end;
+
+    moving_shape;
+    bubble_stream move to fish_mouth_location;
+    bubble_stream instance;
+    default_lights;
+end;    // hoop_picture
+
+
+verb picture_update is
+    if some shape_interaction then
+        shape_interaction update;
+    end;
+    if some fish then
+        fish act;
+    end;
+    if some bubble_stream then
+        bubble_stream act;
+    end;
+    check_keys;
+end;    // picture_update
+
+
+anim hoop_test with
+    eye = <0 -50 0>;
+    background = dark blue;
+is
+    interaction type interaction;
+    mouse_controlled_picture hoop_picture using interaction doing picture_update;
+end;    // hoop_test

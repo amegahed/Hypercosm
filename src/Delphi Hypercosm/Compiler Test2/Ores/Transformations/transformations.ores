@@ -1,0 +1,266 @@
+{***************************************************************}
+{                       transformations.ores                    }
+{                       OMAR Resources (ORES)                   }
+{***************************************************************}
+{                                                               }
+{       Contains the standard set of relative transformations.  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+
+
+include "system/native_trans.ores";
+include "system/vector_rotations.ores";
+include "system/axes_orientations.ores";
+
+
+verb move
+    the trans type reference trans refers to global trans;
+    to vector offset;
+is
+    trans translate by offset;
+end;    // move
+
+
+verb place
+	the trans type reference trans refers to global trans;
+	at vector location;
+is
+	trans's origin = location;
+end;	// place
+
+
+verb magnify
+    the trans type reference trans refers to global trans;
+    by scalar s;
+    about vector point = <0 0 0>;
+is
+    trans translate by -point;
+    trans's origin = itself * s;
+    trans's x_axis = itself * s;
+    trans's y_axis = itself * s;
+    trans's z_axis = itself * s;
+    trans translate by point;
+end;    // magnify
+
+
+verb rotate
+    the trans type reference trans refers to global trans;
+    by scalar angle;
+    around vector axis;
+    about vector point = <0 0 0>;
+is
+    rotate_point trans's origin by angle around axis about point;
+    rotate_vector trans's x_axis by angle around axis;
+    rotate_vector trans's y_axis by angle around axis;
+    rotate_vector trans's z_axis by angle around axis;
+end;    // rotate
+
+
+verb revolve
+    the trans type reference trans refers to global trans;
+    by scalar angle;
+    around vector axis;
+is
+    rotate_vector trans's x_axis by angle around axis;
+    rotate_vector trans's y_axis by angle around axis;
+    rotate_vector trans's z_axis by angle around axis;
+end;    // revolve
+
+
+verb rotation
+    the trans type reference trans refers to global trans;
+    of vector v;
+    about vector point = <0 0 0>;
+is
+    rotate the trans by v dot <1 0 0> around <1 0 0> about point;
+    rotate the trans by v dot <0 1 0> around <0 1 0> about point;
+    rotate the trans by v dot <0 0 1> around <0 0 1> about point;
+end;    // rotation
+
+
+verb revolution
+    the trans type reference trans refers to global trans;
+    of vector v;
+is
+    revolve the trans by v dot <1 0 0> around <1 0 0>;
+    revolve the trans by v dot <0 1 0> around <0 1 0>;
+    revolve the trans by v dot <0 0 1> around <0 0 1>;
+end;    // revolution
+
+
+verb scale
+    the trans type reference trans refers to global trans;
+    by scalar s;
+    along vector axis;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    scale_axes axes by s along axis;
+    trans translate by -point;
+    trans direct from axes;
+    trans translate by point;
+end;    // scale
+
+
+verb scaling
+    the trans type reference trans refers to global trans;
+    of vector v;
+    about vector point = <0 0 0>;
+is
+    scale the trans by (v dot <1 0 0>) along <1 0 0> about point;
+    scale the trans by (v dot <0 1 0>) along <0 1 0> about point;
+    scale the trans by (v dot <0 0 1>) along <0 0 1> about point;
+end;    // scaling
+
+
+verb stretch
+    the trans type reference trans refers to global trans;
+    by scalar s;
+    along vector axis;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    stretch_axes axes by s along axis;
+    trans translate by -point;
+    trans direct from axes;
+    trans translate by point;
+end;    // stretch
+
+
+verb squash
+    the trans type reference trans refers to global trans;
+    by scalar s;
+    along vector axis;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    stretch_axes axes by 1 / s along axis;
+    trans translate by -point;
+    trans direct from axes;
+    trans translate by point;
+end;	// squash
+
+
+verb skew
+    the trans type reference trans refers to global trans;
+    from vector point1;
+    to vector point2;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    skew_axes axes from (point1 - point) to (point2 - point);
+    trans translate by -point;
+    trans direct from axes;
+    trans translate by point;
+end;    // skew
+
+
+verb slant
+    the trans type reference trans refers to global trans;
+    by scalar angle;
+    about vector point = <0 0 0>;
+with
+    vector x_axis = <1 0 0>;
+    vector y_axis = <0 1 0>;
+is
+    vector point1 = y_axis;
+    vector point2 = (x_axis * tan angle) + (y_axis);
+
+    skew the trans from point1 to point2 about point;
+end;    // slant
+
+
+verb direct
+    the trans type reference trans refers to global trans;
+    from vector point1;
+    to vector point2;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    orient_axes axes from (normalized (point1 - point)) to
+        (normalized (point2 - point));
+
+    trans translate by -point;
+        trans direct from axes;
+    trans translate by point;
+end;    // direct
+
+
+verb orient
+    the trans type reference trans refers to global trans;
+    from vector point1;
+    to vector point2;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    orient_axes axes from (point1 - point) to (point2 - point);
+
+    trans translate by -point;
+    trans direct from axes;
+    trans translate by point;
+end;    // orient
+
+
+verb orient2
+    the trans type reference trans refers to global trans;
+    from vector x_axis1, y_axis1;
+    to vector x_axis2, y_axis2;
+    about vector point = <0 0 0>;
+is
+    axes type axes;
+
+    orient_axes2 axes from x_axis1 y_axis1 to x_axis2 y_axis2;
+    trans translate by -point;
+    trans direct from axes;
+    trans translate by point;
+end;    // orient2
+
+
+verb orient3
+    the trans type reference trans refers to global trans;
+    from vector point1, point2, point3;
+    to vector point4, point5, point6;
+is
+    trans type trans2;
+
+    orient_axes3 trans2 from point1 point2 point3 to
+        point4 point5 point6;
+    trans transform from trans2;
+end;    // orient3
+
+
+verb set_pivot_trans
+	to trans type pivot_trans;
+is
+	trans type relative_trans = global trans;
+	global trans = pivot_trans;
+	global trans invert;
+	global trans transform from relative_trans;
+	global trans transform from pivot_trans;
+end;	// set_pivot_trans
+
+
+verb set_pivot
+	to vector origin = <0 0 0>;
+with
+	vector x_axis = <1 0 0>;
+	vector y_axis = <0 1 0>;
+	vector z_axis = <0 0 1>;
+is
+	trans type trans;
+	with trans do
+		its origin = origin;
+		its x_axis = x_axis;
+		its y_axis = y_axis;
+		its z_axis = z_axis;
+	end;
+	set_pivot_trans to trans;
+end;	// set_pivot

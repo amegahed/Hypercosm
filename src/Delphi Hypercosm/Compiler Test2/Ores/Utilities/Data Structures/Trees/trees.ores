@@ -1,0 +1,62 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm  	        trees.ores					3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{       Contains a class definition to store hierarchical       }
+{       trees.                                                  }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/singly_linked_queues.ores";
+include "system/indexed_lists.ores";
+
+
+subject tree
+extends
+    hierarchical hierarchically_indexable collection
+does
+	// tree descendent querying methods
+	//
+    integer question num_children;    
+    integer question num_descendents;
+    
+    // tree ancestor querying methods
+    //
+    abstract hierarchical type question get_ancestor
+        removed integer indices;
+    end;
+    
+    // hierarchical querying methods
+    //
+    boolean question is_leaf;
+is
+    integer question num_children is
+   		collection type children is get_children;
+   		answer children size;
+    end;	// num_children
+    
+    
+    integer question num_descendents is
+    	collection type descendents is get_descendents;
+    	answer descendents size;
+    end;
+    
+
+    
+    // This method returns an ancestor multiple levels removed.
+    // A parent is one level removed, a grandparent is two levels
+    // removed and so on up the tree.
+    //
+    abstract hierarchical type question get_ancestor
+        removed integer indices;
+    end;
+    
+    // hierarchical querying methods
+    //
+    boolean question is_leaf;
+end;    // tree

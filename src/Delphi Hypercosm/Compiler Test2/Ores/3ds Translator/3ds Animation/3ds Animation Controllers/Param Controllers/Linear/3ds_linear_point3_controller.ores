@@ -1,0 +1,131 @@
+{***************************************************************}
+{ |\  /|												We Put  }
+{ | >< Hypercosm 	3ds_linear_point3_controller.ores	3d      }
+{ |/  \|												To Work }
+{***************************************************************}
+{                                                               }
+{   	Contains controller definitions that correspond to 		}
+{		entities from Discreet's 3D Studio Max software.		}
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+
+
+include "system/3ds_keys.ores";
+include "system/3ds_point3_key.ores";
+include "system/3ds_key_controller.ores";
+include "system/3ds_point3_controlling.ores";
+include "system/rendering.ores";
+include "system/arrows.ores";
+
+
+subject translated_3ds_linear_point3_controller 
+extends
+	translated_3ds_point3_controllable renderable translated_3ds_key_controller
+does
+    // constructor
+    //
+	verb new
+		of vector values[];
+		at translated_3ds_time type times[];
+	end;
+	
+	// evaluation methods
+	//
+	vector question get_value
+		at translated_3ds_time type t;
+	end;
+	vector[] question get_values;
+	
+	// renderable method
+	//
+	shape instance;
+is
+	objective translated_3ds_keys type question point3_keys
+		of vector values[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_keys type keys;
+		integer key_number = num values;
+		
+		// create array of keys
+		//
+		dim none keys[1 .. key_number];
+		for integer counter = 1 .. key_number do
+			keys[counter] is new translated_3ds_point3_key
+				of values[counter] at times[counter];
+		end;
+		
+		answer keys;
+	end;	// point3_keys
+	
+
+    //
+    // constructor
+    //
+    
+    	
+	verb new
+		of vector values[];
+		at translated_3ds_time type times[];
+	is
+		translated_3ds_key_controller new using point3_keys of values at times;
+	end;	// new
+	
+	
+	//
+	// evaluation methods
+	//
+	
+	
+	vector question get_value
+		at translated_3ds_time type time;
+	is
+		translated_3ds_point3_key type prev_key is
+			translated_3ds_point3_key type (keys get_prev at time);
+		translated_3ds_point3_key type next_key is
+			translated_3ds_point3_key type (keys get_next at time);
+			
+		if some prev_key and some next_key then
+			scalar duration = next_key's time - prev_key's time;
+			scalar t1 = (time - prev_key's time) / duration;
+			scalar t2 = 1 - t1;
+			answer prev_key's value * t2 + next_key's value * t1;
+		elseif some next_key then
+			answer next_key's value;
+		elseif some prev_key then
+			answer prev_key's value;
+		else
+			answer <0 0 0>;
+		end;
+	end;	// get_value
+	
+	
+	vector[] question get_values is
+		vector values[1 .. num keys];
+		for integer counter = 1 .. num keys do
+			translated_3ds_point3_key type key is translated_3ds_point3_key type keys[counter];
+			values[counter] = key's value;
+		end;
+		answer values;
+	end;	// get_values
+	
+	
+	//
+	// renderable method
+	//
+	
+		
+	shape instance is
+		vector points[] is get_values;	
+		for integer counter = 1 .. num points - 1 do
+			scalar length = vlength of (points[counter + 1] - points[counter]);
+			arrow from points[counter] to points[counter + 1] with
+				arrow_head_width = itself * length;
+			end;
+		end;
+	end;	// instance
+end;	// translated_3ds_linear_point3_controller
+
+

@@ -1,0 +1,41 @@
+{***************************************************************}
+{                          gallery.omar                         }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do gallery_anim;
+
+
+include "system/column.omar";
+include "system/hyperlogo.omar";
+
+
+shape hyper_pedestal is
+    column with
+        material is stone;
+        height = 6;
+        magnify by .5;
+        scale by 2.5 along <1 0 0>;
+        scale by 2.5 along <0 1 0>;
+    end;
+    hyperlogo with
+        material is metal colored lime_green;
+        move to <0 0 4>;
+    end;
+end;    // hyper_pedestal
+
+
+anim gallery_anim
+    args type args;
+with
+    eye = <4 -10 2>;
+    lookat = <0 0 2.5>;
+    double_buffer is on;
+    args check;
+is
+    mouse_controlled_shape hyper_pedestal;
+end;    // gallery_anim

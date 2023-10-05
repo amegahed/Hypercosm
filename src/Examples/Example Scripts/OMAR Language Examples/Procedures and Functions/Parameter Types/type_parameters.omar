@@ -1,0 +1,39 @@
+{***************************************************************}
+{ |\  /|                                                We Put  }
+{ | >< Hypercosm          type_parameters.omar          3d      }
+{ |/  \|                                                To Work }
+{***************************************************************}
+{                                                               }
+{       This file contains an example of the declaration        }
+{       and use of type parameters in the OMAR language.        }
+{                                                               }
+{       Type parameters are used whenever a specific            }
+{       type declaration is needed for parameters of a          }
+{       method, but is only needed for that particular          }
+{       method.  Rather than making that type declaration       }
+{       global, we can confine it to the parameters of          }
+{       that method.                                            }               
+{                                                               }
+{       There is no direct analogy for these types of           }
+{       parameters in languages such as C, C++, and Pascal.     }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2004 Hypercosm, LLC.             }
+{***************************************************************}
+do type_parameters_example;
+
+verb greeting
+	enum language is English, French, German;
+	in language type language is English;
+is
+	when language is
+		English: write "Hello", ; end;
+		French: write "Bonjour", ; end;
+		German: write "Guten Tag", ; end;
+	end;    // case
+end;    // greeting
+
+verb type_parameters_example is
+	greeting;                   // The default language is English
+	greeting in French;         // Specify language to be French
+end;    // type_parameters_example

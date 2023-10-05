@@ -1,0 +1,65 @@
+{***************************************************************}
+{                           bat.omar                            }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do bat_anim;
+
+include "system/3d.ores";
+include "system/anims.ores";
+
+shape bat is
+    sphere with
+        radius = .4;
+        material is aluminum;
+        scale by .6 along <1 0 0>;
+        move to <8 0 0>;
+    end;
+    cylinder with
+        end1 = <6 0 0>;
+        end2 = <8 0 0>;
+        radius = .4;
+        material is aluminum;
+    end;
+    cone with
+        end1 = <6 0 0>;
+        end2 = <2.5 0 0>;
+        radius1 = .4;
+        radius2 = .2;
+        material is aluminum;
+    end;
+    cylinder with
+        end1 = <2.5 0 0>;
+        end2 = <0 0 0>;
+        radius = .2;
+        material is chalk colored <.1 0 .2>;
+    end;
+    torus with
+        normal = <1 0 0>;
+        inner_radius = .1;
+        outer_radius = .3;
+        vmin = -90;
+        vmax = 90;
+        material is aluminum;
+    end;
+    disk with
+        center = <-.1 0 0>;
+        normal = <1 0 0>;
+        radius = .2;
+        material is aluminum;
+    end;
+end;
+
+anim bat_anim with
+    eye = <8 -15 0>;
+    lookat = <2 0 0>;
+    double_buffer is on;
+    facets = 10;
+    background = dark dark dark green;
+is
+    mouse_controlled_shape bat;
+end;

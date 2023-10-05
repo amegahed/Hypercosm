@@ -1,0 +1,27 @@
+do circle_anim;
+
+
+include "system/3d.ores";
+include "system/3ds_circle.ores";
+include "system/anims.ores";
+include "system/arrow_shapes.ores";
+
+
+anim circle_anim is
+	shape scene with
+	    scalar time = 0;
+	is	
+		translated_3ds_circle with
+		    radius = 50 + sin(time * 90) * 25;
+		    steps = 8; 
+    	end;
+		
+		axes with
+			magnify by 25;
+		end;
+	end;
+	
+	mouse_controlled_animated_shape scene titled "3DS Circle" with
+		auto_camera is on;
+	end;
+end;	// circle_anim

@@ -1,0 +1,55 @@
+{***************************************************************}
+{                          raytrace.omar                        }
+{          Object-Oriented Modelling and Rendering (OMAR)       }
+{***************************************************************}
+{                                                               }
+{                                                               }
+{***************************************************************}
+{                Copyright (c) 2000 Hypercosm, Inc.             }
+{***************************************************************}
+do raytrace;
+
+
+include "native_sensing.ores";
+include "native_shapes.ores";
+
+
+shape thing is
+    cone with
+        end1 = <-2 0 -1>;
+        end2 = <-2 0 1>;
+        radius1 = 1;
+        radius2 = 0;
+    end;
+    sphere with
+        center = <0 0 0>;
+        radius = 1;
+    end;
+    paraboloid with
+        base = <2 0 -1>;
+        top = <2 0 1>;
+        radius = 1;
+    end;
+end;    // thing
+
+
+verb raytrace with
+    integer width = 60;
+    integer height = 20;
+is
+    for integer v = 0 .. height do
+        scalar y = .49 - (v / height);
+
+        for integer h = 0 .. width do
+            scalar x = (h / width) - .49;
+            vector direction = <x 1 (y * .75)> ;
+
+            if ray_hits_shape <0 -6 0> direction thing then
+                write "X";
+            else
+                write ".";
+            end;
+        end;
+        write;
+    end;
+end;    // test
